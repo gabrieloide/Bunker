@@ -13,9 +13,9 @@ public class Enemy : MonoBehaviour
 {
     public EnemyType enemyType = EnemyType.Enemy1;
 //---------------------------------------------------------
+    [SerializeField] EnemyData enemyData;
     public float Life;
     [HideInInspector]public float Damage;
-    [SerializeField] EnemyData enemyData;
     float Defense;
     float MoveSpeed;
     //---------------------------------------------------------

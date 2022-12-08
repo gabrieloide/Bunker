@@ -1,0 +1,6 @@
+Event	ID	Name			Wwise Object Path	Notes
+	3633238891	Music_InGame_Play			\Default Work Unit\Music\Music_InGame_Play	
+
+Source plug-ins	ID	Name	Type		Wwise Object Path	Notes
+	64582098	Sine	Wwise Sine		\Actor-Mixer Hierarchy\Default Work Unit\Test\Test Tone\Sine	
+
