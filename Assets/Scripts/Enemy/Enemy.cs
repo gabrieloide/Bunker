@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
 //---------------------------------------------------------
     public float Life;
     [HideInInspector]public float Damage;
+    [SerializeField] EnemyData enemyData;
     float Defense;
     float MoveSpeed;
     //---------------------------------------------------------
