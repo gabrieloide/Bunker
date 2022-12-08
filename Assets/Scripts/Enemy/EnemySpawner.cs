@@ -41,7 +41,6 @@ public class EnemySpawner : MonoBehaviour
         int rnd = Random.Range(0, 4);
         Instantiate(Enemy[rnd]);
         yield return new WaitForSeconds(nextEnemy);
-
     }
 
 }

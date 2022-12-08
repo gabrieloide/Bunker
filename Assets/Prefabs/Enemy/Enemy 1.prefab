@@ -100,6 +100,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
+  enemyData: {fileID: 11400000, guid: ab8e046a89009b844a574aa5901d6438, type: 2}
+  Life: 1
   Damage: 0
 --- !u!61 &2386549145774214801
 BoxCollider2D:

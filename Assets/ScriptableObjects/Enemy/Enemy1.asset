@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e4de928f3161f64c9e81bfd3fc0492a, type: 3}
-  m_Name: New Tower Data
+  m_Script: {fileID: 11500000, guid: c9056f0116739e542949ccd07de5d797, type: 3}
+  m_Name: Enemy1
   m_EditorClassIdentifier: 
   Name: 
-  lifeBullet: 0
-  damage: 0
-  fireRate: 0
+  Life: 0
+  Damage: 0
+  Defense: 0
+  MoveSpeed: 0

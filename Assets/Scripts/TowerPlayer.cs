@@ -17,9 +17,14 @@ public class TowerPlayer : MonoBehaviour
             instance = this;
         }
         enemy = FindObjectOfType<Enemy>();
+        
     }
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            LaunchBullet();
+        }
 
     }
     void LaunchBullet()
