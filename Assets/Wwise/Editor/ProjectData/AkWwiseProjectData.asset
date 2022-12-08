@@ -38,7 +38,7 @@ MonoBehaviour:
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
     guid: c1de00f4a073ab408c19f59bf0f7c78c
     GuidInternal: 
-    m_lastTime: -8585311017086972645
+    m_lastTime: -8585310991643473840
     List:
     - name: Master Audio Bus
       guid: d8a41415a61d2a41a17e75ca0c2149f3
@@ -54,6 +54,57 @@ MonoBehaviour:
         ObjectType: 2
         guid: d8a41415a61d2a41a17e75ca0c2149f3
       Path: Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus
+    - name: MusicBus
+      guid: 257fccc5ed6f9b469d908127d998d005
+      id: 2886307548
+      PathAndIcons:
+      - ElementName: Master-Mixer Hierarchy
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: c1de00f4a073ab408c19f59bf0f7c78c
+      - ElementName: Master Audio Bus
+        ObjectType: 2
+        guid: d8a41415a61d2a41a17e75ca0c2149f3
+      - ElementName: MusicBus
+        ObjectType: 2
+        guid: 257fccc5ed6f9b469d908127d998d005
+      Path: Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\MusicBus
+    - name: Reverbs
+      guid: 16e9842e2a25714c90e321907901a746
+      id: 3545700988
+      PathAndIcons:
+      - ElementName: Master-Mixer Hierarchy
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: c1de00f4a073ab408c19f59bf0f7c78c
+      - ElementName: Master Audio Bus
+        ObjectType: 2
+        guid: d8a41415a61d2a41a17e75ca0c2149f3
+      - ElementName: Reverbs
+        ObjectType: 1
+        guid: 16e9842e2a25714c90e321907901a746
+      Path: Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\Reverbs
+    - name: SFXBus
+      guid: b640490186e6f246851aba3cedba986d
+      id: 3803850708
+      PathAndIcons:
+      - ElementName: Master-Mixer Hierarchy
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: c1de00f4a073ab408c19f59bf0f7c78c
+      - ElementName: Master Audio Bus
+        ObjectType: 2
+        guid: d8a41415a61d2a41a17e75ca0c2149f3
+      - ElementName: SFXBus
+        ObjectType: 2
+        guid: b640490186e6f246851aba3cedba986d
+      Path: Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\SFXBus
   BankWwu:
   - PhysicalPath: SoundBanks\Default Work Unit.wwu
     PathAndIcons:
@@ -80,8 +131,45 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: d5ed0b368b64444698455db8feef2eee
     GuidInternal: 
-    m_lastTime: -8585311017086862665
-    List: []
+    m_lastTime: -8585310991643433838
+    List:
+    - name: Music
+      guid: 754041c9d75f7646ab30619ebd403eba
+      id: 3991942870
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Music
+        ObjectType: 4
+        guid: 754041c9d75f7646ab30619ebd403eba
+      Path: Events\Default Work Unit\Music
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Music_InGame_Play
+      guid: 80444ef03f02f549971a5f8c091aab1e
+      id: 3633238891
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Music
+        ObjectType: 4
+        guid: 754041c9d75f7646ab30619ebd403eba
+      - ElementName: Music_InGame_Play
+        ObjectType: 3
+        guid: 80444ef03f02f549971a5f8c091aab1e
+      Path: Events\Default Work Unit\Music\Music_InGame_Play
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:

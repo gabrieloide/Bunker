@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{360BEDD5-648B-4644-9845-5DB8FEEF2EEE}" SchemaVersion="110">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{360BEDD5-648B-4644-9845-5DB8FEEF2EEE}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{360BEDD5-648B-4644-9845-5DB8FEEF2EEE}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="Music" ID="{C9414075-5FD7-4676-AB30-619EBD403EBA}" ShortID="172404969">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="10"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
+					<ChildrenList>
+						<Event Name="Music_InGame_Play" ID="{F04E4480-023F-49F5-971A-5F8C091AAB1E}">
+							<PropertyList>
+								<Property Name="Color" Type="int16" Value="10"/>
+								<Property Name="OverrideColor" Type="bool" Value="True"/>
+							</PropertyList>
+							<ChildrenList>
+								<Action Name="" ID="{920BE349-EBFB-44A8-9DBF-B9B5CD186AE2}" ShortID="428112116">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Test Tone" ID="{6F0535FC-E4E4-489F-AA1E-309BA7C47F8C}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

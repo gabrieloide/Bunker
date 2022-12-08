@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Mac" BasePlatform="Mac" SchemaVersion="16" SoundBankVersion="145">
+	<RootPaths>
+		<ProjectRoot>../..</ProjectRoot>
+		<SourceFilesRoot>../../.cache/Mac</SourceFilesRoot>
+		<SoundBanksRoot>.</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>.</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Type="User" Language="SFX" Hash="{9D0219F2-37F0-20BD-D456-D2BD4427ADF9}">
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+			<Plugins>
+				<AudioDevices>
+					<Plugin Id="2317455096" Name="No_Output" LibName="No Output" LibId="11862023"/>
+					<Plugin Id="3859886410" Name="System" LibName="System" LibId="11403271"/>
+				</AudioDevices>
+			</Plugins>
+			<Busses>
+				<Bus Id="2886307548" Name="MusicBus"/>
+				<Bus Id="3803692087" Name="Master Audio Bus"/>
+				<Bus Id="3803850708" Name="SFXBus"/>
+			</Busses>
+			<AuxBusses>
+				<AuxBus Id="3545700988" Name="Reverbs"/>
+			</AuxBusses>
+		</SoundBank>
+		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{BB8F67C2-5260-1169-C54E-3972663EC5F2}">
+			<ShortName>Main</ShortName>
+			<Path>Main.bnk</Path>
+			<Plugins>
+				<Custom>
+					<Plugin Id="64582098" Name="Sine" LibName="Wwise Sine" LibId="6553602"/>
+				</Custom>
+			</Plugins>
+			<Events>
+				<Event Id="3633238891" Name="Music_InGame_Play" DurationType="OneShot" DurationMin="1" DurationMax="1">
+					<PluginRefs>
+						<Custom>
+							<PluginRef Id="64582098"/>
+						</Custom>
+					</PluginRefs>
+				</Event>
+			</Events>
+		</SoundBank>
+	</SoundBanks>
+	<FileHash>{2CEC21C0-CA27-5D10-C841-342A3D3B91E3}</FileHash>
+</SoundBanksInfo>
