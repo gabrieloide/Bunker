@@ -13,14 +13,16 @@ public class Enemy : MonoBehaviour
 {
     public EnemyType enemyType = EnemyType.Enemy1;
 //---------------------------------------------------------
-    float Life;
+    public float Life;
     [HideInInspector]public float Damage;
     float Defense;
     float MoveSpeed;
     //---------------------------------------------------------
     EnemySpawner enemySpawner;
     EnemyMovement enemyMovement;
+    TowerD towerD;
     int i;
+
     private void Start()
     {
         enemySpawner = FindObjectOfType<EnemySpawner>();
@@ -30,6 +32,15 @@ public class Enemy : MonoBehaviour
     {
         Move();
         EnemyDamage();
+        LifeBehaviour();
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            for (int i = 0; i < enemySpawner._Life.Length; i++)
+            {
+                enemySpawner._Life[i] -= 100f;
+            }
+            Debug.Log("234");
+        }
     }
     void Move()
     {
@@ -43,6 +54,13 @@ public class Enemy : MonoBehaviour
             }
         }
         if(i< enemyMovement.points.Length) transform.position = Vector3.MoveTowards(transform.position, enemyMovement.Points[i], MoveSpeed * Time.deltaTime);
+    }
+    void LifeBehaviour()
+    {
+        if (Life <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
     void EnemyDamage()
     {

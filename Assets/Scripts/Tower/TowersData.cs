@@ -5,15 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Tower Data", menuName = "Tower Data")]
 public class TowersData : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //Definir propiedades de las torres
+    public string Name;
+    public float lifeBullet;
+    public float damage;
+    public float fireRate;
 }
