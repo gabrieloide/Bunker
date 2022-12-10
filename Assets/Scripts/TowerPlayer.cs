@@ -6,33 +6,33 @@ public class TowerPlayer : MonoBehaviour
 {
     public static TowerPlayer instance;
     public float life;
-    Enemy enemy;
     [SerializeField] GameObject Projectile;
     [SerializeField] float bulletSpeed;
     [SerializeField] float bulletTimeLife;
+    [SerializeField] LayerMask Enemy;
+    [SerializeField] float fireRate;
     private void Start()
     {
         if (!instance)
         {
             instance = this;
         }
-        enemy = FindObjectOfType<Enemy>();
         
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        bool hitEnemy = Physics2D.Raycast(transform.position, Vector2.right, 42f, Enemy);
+        if (hitEnemy)
         {
-            LaunchBullet();
+            Invoke("LaunchBullet", fireRate);
         }
-
     }
     void LaunchBullet()
     {
         GameObject b = Instantiate(Projectile, transform.position, transform.rotation);
+        CancelInvoke("LaunchBullet");
         Rigidbody2D rb2d = b.GetComponent<Rigidbody2D>();
         rb2d.velocity = (Vector2.right) * bulletSpeed;
         Destroy(b, bulletTimeLife);
     }
-
 }

@@ -7,6 +7,7 @@ public class TowersData : ScriptableObject
 {
     //Definir propiedades de las torres
     public string Name;
+    public string Description;
     public float lifeBullet;
     public float damage;
     public float fireRate;

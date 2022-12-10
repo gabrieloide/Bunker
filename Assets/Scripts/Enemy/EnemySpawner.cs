@@ -4,23 +4,11 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] int enemyCount = 10;
     [SerializeField]GameObject[] Enemy;
-    Enemy enemy;
     [SerializeField] float delayBtwSpawns;
+    [SerializeField] int enemyAmount;
     [SerializeField] float WaitForNextEnemy;
-    [Space]
-    [Header("Enemy stats")]
-    public float[] _Life;
-    public float[] _Damage;
-    public float[] _Defense;
-    public float[] _MoveSpeed;
     public bool inGame;
-    private void Start()
-    {
-        enemy = FindObjectOfType<Enemy>();
-        
-    }
     private void Update()
     {
         if (inGame)
@@ -31,16 +19,16 @@ public class EnemySpawner : MonoBehaviour
     }
     void EnemyGenerator()
     {
-        for (int i = 0; i < enemyCount; i++)
+        //spawn 1 enemy every this function is called
+         StartCoroutine(Enemyspawn());
+    }
+    IEnumerator Enemyspawn()
+    {
+        for (int i = 0; i < enemyAmount; i++)
         {
-            StartCoroutine(Enemyspawn(WaitForNextEnemy));
+            int rnd = Random.Range(0, 4);
+            Instantiate(Enemy[rnd], transform.position, transform.rotation);
+            yield return new WaitForSeconds(0);
         }
     }
-    IEnumerator Enemyspawn(float nextEnemy)
-    {
-        int rnd = Random.Range(0, 4);
-        Instantiate(Enemy[rnd]);
-        yield return new WaitForSeconds(nextEnemy);
-    }
-
 }

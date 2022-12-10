@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8316505337117789105}
   - component: {fileID: 8316505337117789104}
+  - component: {fileID: 1942972086351479437}
   - component: {fileID: 8316505337117789107}
   m_Layer: 0
   m_Name: Turret3
@@ -46,6 +47,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towersData: {fileID: 11400000, guid: a0c76e6385f8db243b27d9ea6d11d7e0, type: 2}
+--- !u!114 &1942972086351479437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8316505337117789106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c13dea1c25e8c4fbef7dc28c221086, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &8316505337117789107
 SpriteRenderer:
   m_ObjectHideFlags: 0
