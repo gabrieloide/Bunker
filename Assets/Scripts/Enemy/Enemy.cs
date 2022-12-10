@@ -5,17 +5,23 @@ public class Enemy : MonoBehaviour
 {
     //-------------------------STATS--------------------------------
     [SerializeField]EnemyData enemyData;
-    public float Life;
-    public float Damage;
+    float Life;
+    float Damage;
     float Defense;
     float MoveSpeed;
-    //---------------------------------------------------------
+    //--------------------------------------------------------------
+    public static Enemy instance;
     EnemyMovement enemyMovement;
-    TowerD towerD;
+    CardDrop cardDrop;
     int i;
 
     private void Start()
     {
+        if (!instance)
+        {
+            instance = this;
+        }
+        cardDrop = FindObjectOfType<CardDrop>();
         enemyMovement = FindObjectOfType<EnemyMovement>();
         initializeStats();
     }
@@ -36,26 +42,34 @@ public class Enemy : MonoBehaviour
             }
         }
         if(i< enemyMovement.points.Length) transform.position = Vector3.MoveTowards(transform.position, enemyMovement.Points[i], MoveSpeed * Time.deltaTime);
+        // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa.
     }
     void LifeBehaviour()
     {
         if (Life <= 0)
         {
+            ChanceToDrop();
             Destroy(gameObject);
         }
     }
-    
-    private void OnTriggerEnter2D(Collider2D collision)
+    void ChanceToDrop()
     {
-        if (collision.CompareTag("Player"))
+        float item = Random.Range(0, 1001);
+
+        if (item <= 250.67f)
         {
-            TowerPlayer.instance.life -= Damage;
+            Instantiate(cardDrop.Cards[0], transform.position, transform.rotation);
         }
-        if (collision.CompareTag("Bullet"))
+        else if (item >580.8f && item < 637.7f)
         {
-            DealDamage();
+            Instantiate(cardDrop.Cards[1], transform.position, transform.rotation);
+        }
+        else if(item > 930.7f)
+        {
+            Instantiate(cardDrop.Cards[2], transform.position, transform.rotation);
         }
     }
+    
     void DealDamage()
     {
        Life--;
@@ -66,5 +80,16 @@ public class Enemy : MonoBehaviour
         Damage = enemyData.Damage;
         Defense = enemyData.Defense;
         MoveSpeed = enemyData.MoveSpeed;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            TowerPlayer.instance.life -= Damage;
+        }
+        if (collision.CompareTag("Bullet"))
+        {
+            DealDamage();
+        }
     }
 }
