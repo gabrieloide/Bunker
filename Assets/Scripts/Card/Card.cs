@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject towwer;
+    public GameObject tower;
     private Vector3 scaleChange;
     private BoxCollider2D B2D;
+
+    private bool trashCard;
+    public bool onDrag;
 
     public int handIndex;
 
@@ -18,19 +20,26 @@ public class Card : MonoBehaviour
         dc = FindObjectOfType<Deck>();
         scaleChange = new Vector3(transform.localScale.x / 3f, transform.localScale.y / 3f, 0f);
         B2D = gameObject.GetComponent<BoxCollider2D>();
+        onDrag = false;
     }
 
     private void OnMouseEnter()
     {
-        gameObject.transform.position += new Vector3 (0f , gameObject.transform.localScale.y/5f, 0f);
-        B2D.size += new Vector2(0f, 0.2f);
-        B2D.offset += new Vector2(0f, -0.1f);
+        if (!onDrag)
+        {
+            gameObject.transform.position += new Vector3 (0f , gameObject.transform.localScale.y/5f, 0f);
+            B2D.size += new Vector2(0f, 0.2f);
+            B2D.offset += new Vector2(0f, -0.1f);
+        }
     }
     private void OnMouseExit()
     {
-        transform.position = dc.cardSlots[handIndex].position;
-        B2D.size -= new Vector2(0f, 0.2f);
-        B2D.offset -= new Vector2(0f, -0.1f);
+        if (!onDrag)
+        {
+            transform.position = dc.cardSlots[handIndex].position;
+            B2D.size -= new Vector2(0f, 0.2f);
+            B2D.offset -= new Vector2(0f, -0.1f);
+        }
     }
     
     private void OnMouseDrag()
@@ -40,19 +49,34 @@ public class Card : MonoBehaviour
 
     private void OnMouseDown()
     {
+        onDrag = true;
         gameObject.transform.localScale -= scaleChange;
     }
 
     private void OnMouseUp()
     {
-        if (false)
+        if (trashCard)
         {
             dc.availableCardSlots[handIndex] = true;
+            Destroy(gameObject);
         }
         else
         {
+            onDrag = false;
             transform.position = dc.cardSlots[handIndex].position;
-        gameObject.transform.localScale += scaleChange;
+            gameObject.transform.localScale += scaleChange;
         }
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Trash"))
+            trashCard = true;
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Trash"))
+            trashCard = false;
     }
 }
