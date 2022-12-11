@@ -41,7 +41,7 @@ public class Enemy : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        if(i< enemyMovement.points.Length) transform.position = Vector3.MoveTowards(transform.position, enemyMovement.Points[i], MoveSpeed * Time.deltaTime);
+        if(i< enemyMovement.points.Length) transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[i], MoveSpeed * Time.deltaTime);
         // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa.
     }
     void LifeBehaviour()

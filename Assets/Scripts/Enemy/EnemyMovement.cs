@@ -14,6 +14,11 @@ public class EnemyMovement : MonoBehaviour
     {
         _gameStarted = true;
         _currentPosition = transform.position;
+
+    }
+    private void Update()
+    {
+        
     }
     public Vector3 GetPointsPosition(int index)
     {
