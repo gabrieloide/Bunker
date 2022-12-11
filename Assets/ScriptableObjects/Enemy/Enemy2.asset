@@ -16,4 +16,4 @@ MonoBehaviour:
   Life: 2
   Damage: 0
   Defense: 0
-  MoveSpeed: 2
+  MoveSpeed: 15

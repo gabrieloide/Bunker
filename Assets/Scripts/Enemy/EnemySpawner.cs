@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]GameObject[] Enemy;
-    [SerializeField] float delayBtwSpawns;
+    [SerializeField] float startDelaySpawns;
     [SerializeField] int enemyAmount;
     [SerializeField] float WaitForNextEnemy;
     public bool inGame;
@@ -13,7 +13,7 @@ public class EnemySpawner : MonoBehaviour
     {
         if (inGame)
         {
-            Invoke("EnemyGenerator", delayBtwSpawns);
+            Invoke("EnemyGenerator", startDelaySpawns);
             inGame = false;
         }
     }
@@ -28,7 +28,7 @@ public class EnemySpawner : MonoBehaviour
         {
             int rnd = Random.Range(0, 4);
             Instantiate(Enemy[rnd], transform.position, transform.rotation);
-            yield return new WaitForSeconds(0);
+            yield return new WaitForSeconds(WaitForNextEnemy);
         }
     }
 }
