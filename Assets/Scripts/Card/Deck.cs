@@ -24,7 +24,8 @@ public class Deck : MonoBehaviour
             if(availableCardSlots[i] == true)
             {
                 Card newCard = Instantiate(deck[card], cardSlots[i].position, transform.rotation);
-                newCard.handIndex = i; 
+                newCard.handIndex = i;
+                newCard.transform.SetParent(CameraMovement.instance.transform);
                 availableCardSlots[i] = false;
                 return;
             }

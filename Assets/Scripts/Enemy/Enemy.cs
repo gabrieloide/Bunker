@@ -14,6 +14,8 @@ public class Enemy : MonoBehaviour
     EnemyMovement enemyMovement;
     CardDrop cardDrop;
     int i;
+    public int route;
+    bool changeWave;
 
     private void Start()
     {
@@ -41,8 +43,16 @@ public class Enemy : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        if(i< enemyMovement.points.Length) transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[i], MoveSpeed * Time.deltaTime);
-        // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa.
+        if (i < enemyMovement.points.Length)
+        {   
+            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[i], MoveSpeed * Time.deltaTime);
+        }
+        // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa
+        //if (changeWave)
+        //{
+        //    i -= 3;
+        //    changeWave = false;
+        //}
     }
     void LifeBehaviour()
     {
@@ -56,11 +66,11 @@ public class Enemy : MonoBehaviour
     {
         float item = Random.Range(0, 1001);
 
-        if (item <= 250.67f)
+        if (item <= 190.67f)
         {
             Instantiate(cardDrop.Cards[0], transform.position, transform.rotation);
         }
-        else if (item >580.8f && item < 637.7f)
+        else if (item >580.8f && item < 590.7f)
         {
             Instantiate(cardDrop.Cards[1], transform.position, transform.rotation);
         }
