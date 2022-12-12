@@ -21,7 +21,7 @@ public class TowerPlayer : MonoBehaviour
     }
     private void Update()
     {
-        bool hitEnemy = Physics2D.Raycast(transform.position, Vector2.right, 42f, Enemy);
+        bool hitEnemy = Physics2D.Raycast(transform.position, Vector2.right, 18, Enemy);
         if (hitEnemy)
         {
             Invoke("LaunchBullet", fireRate);
