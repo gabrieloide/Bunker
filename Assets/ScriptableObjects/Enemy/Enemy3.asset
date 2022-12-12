@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy3
   m_EditorClassIdentifier: 
   Name: 
-  Life: 3
-  Damage: 0
+  Life: 10
+  Damage: 4
   Defense: 0
   MoveSpeed: 5

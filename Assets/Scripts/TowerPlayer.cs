@@ -8,7 +8,6 @@ public class TowerPlayer : MonoBehaviour
     public float life;
     [SerializeField] GameObject Projectile;
     [SerializeField] float bulletSpeed;
-    [SerializeField] float bulletTimeLife;
     [SerializeField] LayerMask Enemy;
     [SerializeField] float fireRate;
     private void Start()
@@ -21,7 +20,7 @@ public class TowerPlayer : MonoBehaviour
     }
     private void Update()
     {
-        bool hitEnemy = Physics2D.Raycast(transform.position, Vector2.right, 18, Enemy);
+        bool hitEnemy = Physics2D.Raycast(transform.position, Vector2.right, 15, Enemy);
         if (hitEnemy)
         {
             Invoke("LaunchBullet", fireRate);
@@ -32,7 +31,8 @@ public class TowerPlayer : MonoBehaviour
         GameObject b = Instantiate(Projectile, transform.position, transform.rotation);
         CancelInvoke("LaunchBullet");
         Rigidbody2D rb2d = b.GetComponent<Rigidbody2D>();
-        rb2d.velocity = (Vector2.right) * bulletSpeed;
-        Destroy(b, bulletTimeLife);
+        rb2d.velocity = Vector2.right * bulletSpeed;
+        Destroy(b, 0.7f);
     }
+
 }

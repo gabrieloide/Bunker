@@ -8,14 +8,13 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] float startDelaySpawns;
     [SerializeField] int enemyAmount;
     [SerializeField] float WaitForNextEnemy;
+    public GameObject[] Waves;
     public bool inGame;
-    private void Update()
+    private void Start()
     {
-        if (inGame)
-        {
-            Invoke("EnemyGenerator", startDelaySpawns);
-            inGame = false;
-        }
+        Invoke("EnemyGenerator", startDelaySpawns);
+        StartCoroutine(Wave());
+        
     }
     void EnemyGenerator()
     {
@@ -30,5 +29,12 @@ public class EnemySpawner : MonoBehaviour
             Instantiate(Enemy[rnd], transform.position, transform.rotation);
             yield return new WaitForSeconds(WaitForNextEnemy);
         }
+    }
+    IEnumerator Wave()
+    {
+        yield return new WaitForSeconds(100f);
+        Invoke("EnemyGenerator", 0);
+        yield return new WaitForSeconds(170f);
+        Invoke("EnemyGenerator", 0);
     }
 }
