@@ -45,7 +45,7 @@ public class Card : MonoBehaviour
     
     private void OnMouseDrag()
     {
-        gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3 (0f ,0f, 10f);
+        gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3 (0f ,1.5f, 10f);
     }
 
     private void OnMouseDown()
