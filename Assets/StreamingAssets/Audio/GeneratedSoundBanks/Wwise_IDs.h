@@ -14,6 +14,7 @@ namespace AK
     namespace EVENTS
     {
         static const AkUniqueID MUSIC_INGAME_PLAY = 3633238891U;
+        static const AkUniqueID TANK_DESTROY = 1096303618U;
     } // namespace EVENTS
 
     namespace BANKS
