@@ -1,6 +1,8 @@
 Event	ID	Name			Wwise Object Path	Notes
+	1096303618	tank_destroy			\Default Work Unit\Enemy\tank_destroy	
 	3633238891	Music_InGame_Play			\Default Work Unit\Music\Music_InGame_Play	
 
-Source plug-ins	ID	Name	Type		Wwise Object Path	Notes
-	64582098	Sine	Wwise Sine		\Actor-Mixer Hierarchy\Default Work Unit\Test\Test Tone\Sine	
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	860640938	Level 1 Track	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\Main 1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\MasterMXSwitch\InGameMx\InGame\Main\Level 1 Track		29929840
+	1063858601	sfx_npx_tank_destroy	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\NPCCharacters\Tank\npc_tank_destroy\sfx_npx_tank_destroy		178488
 

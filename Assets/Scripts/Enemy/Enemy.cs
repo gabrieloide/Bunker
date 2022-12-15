@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Enemy : MonoBehaviour
 {
+    public AK.Wwise.Event tank_destroy;
     //-------------------------STATS--------------------------------
     [SerializeField]EnemyData enemyData;
     float Life;
@@ -97,6 +98,7 @@ public class Enemy : MonoBehaviour
         }
         if (collision.CompareTag("Bullet"))
         {
+            tank_destroy.Post(gameObject);
             DealDamage();
         }
     }
