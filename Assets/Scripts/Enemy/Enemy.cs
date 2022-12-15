@@ -16,10 +16,11 @@ public class Enemy : MonoBehaviour
     CardDrop cardDrop;
     SpriteRenderer spriteRenderer;
     public int nextWavePosition;
+    bool changeP;
 
     private void Start()
     {
-        if (!instance)
+        if (!instance) 
         {
             instance = this;
         }
@@ -51,7 +52,13 @@ public class Enemy : MonoBehaviour
         }
         // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa
     }
-
+    void ChanceStartPosition()
+    {
+        if (changeP)
+        {
+            changeP = false;
+        }
+    }
     void LifeBehaviour()
     {
         if (Life <= 0)

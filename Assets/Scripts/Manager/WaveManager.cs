@@ -7,7 +7,7 @@ public class WaveManager : MonoBehaviour
     public static WaveManager instance;
     public int enemyAmount;
     public Vector3[] SpawnsPositions;
-    public int NewPositionSpawn;
+    public int Wave;
     EnemySpawner enemySpawner;
     private void Awake()
     {
@@ -23,9 +23,17 @@ public class WaveManager : MonoBehaviour
     private void Update()
     {
         //1 7 14
-        if (enemyAmount <=0)
+        if (enemyAmount <=0 && Wave ==  1)
         {
-            NewPositionSpawn++;
+
+        }
+        else if(enemyAmount <= 0 && Wave == 2)
+        {
+
+        }
+        else if (enemyAmount <= 0 && Wave == 3)
+        {
+
         }
     }
 }
