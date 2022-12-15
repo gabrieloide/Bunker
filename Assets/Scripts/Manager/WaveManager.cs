@@ -4,21 +4,28 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    public GameObject[] Waves;
+    public static WaveManager instance;
+    public int enemyAmount;
+    public Vector3[] SpawnsPositions;
+    public int NewPositionSpawn;
     EnemySpawner enemySpawner;
+    private void Awake()
+    {
+        if (!instance)
+        {
+            instance = this;
+        }
+    }
     private void Start()
     {
         enemySpawner = FindObjectOfType<EnemySpawner>();
-        enemySpawner.inGame = true;
-        StartCoroutine(Wave());
     }
-    IEnumerator Wave()
+    private void Update()
     {
-        yield return new WaitForSeconds(100f);
-        Waves[0].SetActive(false);
-        Waves[1].SetActive(true);
-        yield return new WaitForSeconds(170f);
-        Waves[1].SetActive(false);
-        Waves[2].SetActive(true);
+        //1 7 14
+        if (enemyAmount <=0)
+        {
+            NewPositionSpawn++;
+        }
     }
 }

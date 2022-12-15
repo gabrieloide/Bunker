@@ -7,6 +7,7 @@ public class TowerPlayer : MonoBehaviour
     public static TowerPlayer instance;
     public float life;
     [SerializeField] GameObject Projectile;
+    public float damage;
     [SerializeField] float bulletSpeed;
     [SerializeField] LayerMask Enemy;
     [SerializeField] float fireRate;
@@ -32,7 +33,7 @@ public class TowerPlayer : MonoBehaviour
         CancelInvoke("LaunchBullet");
         Rigidbody2D rb2d = b.GetComponent<Rigidbody2D>();
         rb2d.velocity = Vector2.right * bulletSpeed;
-        Destroy(b, 0.7f);
+        Destroy(b, 0.175f);
     }
 
 }

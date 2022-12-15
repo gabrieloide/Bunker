@@ -14,6 +14,7 @@ public class Card : MonoBehaviour
     public int handIndex;
 
     private Deck dc;
+        
 
     private void Start()
     {
