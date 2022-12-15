@@ -48,6 +48,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towersData: {fileID: 11400000, guid: 08ea08372fea822489ce467fe97976ed, type: 2}
+  target: {fileID: 0}
+  range: 3
+  partToRotate: {fileID: 0}
+  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
 --- !u!114 &-3137105594511990587
 MonoBehaviour:
   m_ObjectHideFlags: 0
