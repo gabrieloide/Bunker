@@ -51,7 +51,7 @@ MonoBehaviour:
   target: {fileID: 0}
   range: 3
   partToRotate: {fileID: 0}
-  bulletPrefab: {fileID: 4611739682271087416, guid: 4360da27142d1a14185e651931e4b744, type: 3}
+  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
 --- !u!114 &3862871300805866321
 MonoBehaviour:
   m_ObjectHideFlags: 0
