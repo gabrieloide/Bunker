@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5744818967393508665}
   m_Layer: 0
   m_Name: Card1
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,4 +125,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tower: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
+  onDrag: 0
   handIndex: 0
