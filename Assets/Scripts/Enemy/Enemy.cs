@@ -13,9 +13,8 @@ public class Enemy : MonoBehaviour
     public static Enemy instance;
     EnemyMovement enemyMovement;
     CardDrop cardDrop;
-    int i;
-    public int route;
-    bool changeWave;
+    SpriteRenderer spriteRenderer;
+    public int nextWavePosition;
 
     private void Start()
     {
@@ -25,6 +24,7 @@ public class Enemy : MonoBehaviour
         }
         cardDrop = FindObjectOfType<CardDrop>();
         enemyMovement = FindObjectOfType<EnemyMovement>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         initializeStats();
     }
     private void Update()
@@ -34,31 +34,29 @@ public class Enemy : MonoBehaviour
     }
     void Move()
     {
-        float dis = Vector2.Distance(transform.position, enemyMovement.points[i]);
+        float dis = Vector2.Distance(transform.position, enemyMovement.points[nextWavePosition]);
         if (dis < 0.1f)
         {
-            i++;
-            if (i == enemyMovement.points.Length)
+            nextWavePosition++;
+            if (nextWavePosition == enemyMovement.points.Length)
             {
                 Destroy(gameObject);
             }
         }
-        if (i < enemyMovement.points.Length)
+        if (nextWavePosition < enemyMovement.points.Length)
         {   
-            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[i], MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], MoveSpeed * Time.deltaTime);
+            flip();
         }
         // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa
-        //if (changeWave)
-        //{
-        //    i -= 3;
-        //    changeWave = false;
-        //}
     }
+
     void LifeBehaviour()
     {
         if (Life <= 0)
         {
             ChanceToDrop();
+            WaveManager.instance.enemyAmount--;
             Destroy(gameObject);
         }
     }
@@ -82,7 +80,7 @@ public class Enemy : MonoBehaviour
     
     void DealDamage()
     {
-       Life--;
+       Life -= TowerPlayer.instance.damage;
     }
     void initializeStats() 
     {
@@ -100,6 +98,17 @@ public class Enemy : MonoBehaviour
         if (collision.CompareTag("Bullet"))
         {
             DealDamage();
+        }
+    }
+    void flip()
+    {
+        if (enemyMovement.points[nextWavePosition].x < transform.position.x)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else
+        {
+            spriteRenderer.flipX = false;
         }
     }
 }
