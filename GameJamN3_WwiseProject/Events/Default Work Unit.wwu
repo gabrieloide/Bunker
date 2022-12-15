@@ -18,7 +18,22 @@
 								<Action Name="" ID="{920BE349-EBFB-44A8-9DBF-B9B5CD186AE2}" ShortID="428112116">
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="Test Tone" ID="{6F0535FC-E4E4-489F-AA1E-309BA7C47F8C}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+											<ObjectRef Name="InGame" ID="{31020F64-0D99-4B67-B0F5-24D7111B19D9}" WorkUnitID="{93DB262C-EB5F-42E8-AC4F-3F64B82A67CD}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Enemy" ID="{C1D95BAC-18B8-4BE0-8F91-470C1A258CDF}" ShortID="449915376">
+					<ChildrenList>
+						<Event Name="tank_destroy" ID="{2216B3AF-83B6-4756-A925-4B86399B2C82}">
+							<ChildrenList>
+								<Action Name="" ID="{4AEEDDBE-860C-4E99-9915-CE28579A249B}" ShortID="767568134">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="npc_tank_destroy" ID="{B08C53A1-89EB-4D0B-9932-D50891C5FA13}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
