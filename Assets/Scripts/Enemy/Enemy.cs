@@ -78,11 +78,6 @@ public class Enemy : MonoBehaviour
             Instantiate(cardDrop.Cards[2], transform.position, transform.rotation);
         }
     }
-    
-    void DealDamage()
-    {
-       Life -= TowerPlayer.instance.damage;
-    }
     void initializeStats() 
     {
         Life = enemyData.Life;
@@ -99,7 +94,6 @@ public class Enemy : MonoBehaviour
         if (collision.CompareTag("Bullet"))
         {
             tank_destroy.Post(gameObject);
-            DealDamage();
         }
     }
     void flip()
