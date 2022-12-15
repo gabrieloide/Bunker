@@ -14,6 +14,7 @@ public class Card : MonoBehaviour
     public int handIndex;
 
     private Deck dc;
+    [SerializeField] CursorType cursor, defaultCursor;
         
 
     private void Start()
@@ -28,6 +29,7 @@ public class Card : MonoBehaviour
     {
         if (!onDrag)
         {
+            Cursor.SetCursor(cursor.cursorTexture, cursor.cursorHotspot, CursorMode.Auto);
             gameObject.transform.position += new Vector3 (0f , gameObject.transform.localScale.y/5f, 0f);
             B2D.size += new Vector2(0f, 0.2f);
             B2D.offset += new Vector2(0f, -0.1f);
@@ -37,6 +39,7 @@ public class Card : MonoBehaviour
     {
         if (!onDrag)
         {
+            Cursor.SetCursor(defaultCursor.cursorTexture, defaultCursor.cursorHotspot, CursorMode.Auto);
             transform.position = dc.cardSlots[handIndex].position;
             B2D.size -= new Vector2(0f, 0.2f);
             B2D.offset -= new Vector2(0f, -0.1f);

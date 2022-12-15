@@ -6,5 +6,4 @@ public class TowerPlayer : MonoBehaviour
 {
     public static TowerPlayer instance;
     public float life;
-
 }
