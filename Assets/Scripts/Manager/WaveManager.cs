@@ -6,9 +6,13 @@ public class WaveManager : MonoBehaviour
 {
     public static WaveManager instance;
     public int enemyAmount;
+    public int[] newEnemyAmount;
     public Vector3[] SpawnsPositions;
+    public int NewPositionSpawn;
     public int Wave;
-    EnemySpawner enemySpawner;
+    public float[] newWaitBtwSpawn;
+
+    public bool changeWave;
     private void Awake()
     {
         if (!instance)
@@ -18,22 +22,34 @@ public class WaveManager : MonoBehaviour
     }
     private void Start()
     {
-        enemySpawner = FindObjectOfType<EnemySpawner>();
+        enemyAmount = newEnemyAmount[0];
     }
     private void Update()
     {
+        for (int i = 0; i < 6; i++)
+        {
+            if (enemyAmount <= 0)
+            {
+                Wave++;
+                enemyAmount = newEnemyAmount[i];
+                if (Wave == 3)
+                {
+                    changeWave = true;
+                    Debug.Log("Segunda oleada");
+                    NewPositionSpawn++;
+                    EnemySpawner.instance.startBtwSpawns = newWaitBtwSpawn[0];
+                    
+                }
+
+                if (Wave == 5)
+                {
+                    changeWave = true;
+                    Debug.Log("Tercera oleada");
+                    NewPositionSpawn++;
+                    EnemySpawner.instance.startBtwSpawns = newWaitBtwSpawn[1];
+                }
+            }
+        }
         //1 7 14
-        if (enemyAmount <=0 && Wave ==  1)
-        {
-
-        }
-        else if(enemyAmount <= 0 && Wave == 2)
-        {
-
-        }
-        else if (enemyAmount <= 0 && Wave == 3)
-        {
-
-        }
     }
 }
