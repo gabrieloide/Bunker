@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a7581619da8f1d743b99036955b9dafe
+guid: eb0094c88f3486445a96d8265b5577a9
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Pixeled
+  - Pixel Maz
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

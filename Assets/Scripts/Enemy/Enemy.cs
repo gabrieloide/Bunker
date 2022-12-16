@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     CardDrop cardDrop;
     SpriteRenderer spriteRenderer;
     public int nextWavePosition;
+    int i;
     bool changeP;
 
     private void Start()
@@ -28,6 +29,14 @@ public class Enemy : MonoBehaviour
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initializeStats();
+        if (WaveManager.instance.Wave == 3 || WaveManager.instance.Wave == 4)
+        {
+            nextWavePosition = 7;
+        }
+        else if (WaveManager.instance.Wave == 5 || WaveManager.instance.Wave == 6)
+        {
+            nextWavePosition = 1;
+        }
     }
     private void Update()
     {
@@ -51,13 +60,6 @@ public class Enemy : MonoBehaviour
             flip();
         }
         // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa
-    }
-    void ChanceStartPosition()
-    {
-        if (changeP)
-        {
-            changeP = false;
-        }
     }
     void LifeBehaviour()
     {
@@ -100,7 +102,7 @@ public class Enemy : MonoBehaviour
         }
         if (collision.CompareTag("Bullet"))
         {
-            tank_destroy.Post(gameObject);
+           // tank_destroy.Post(gameObject);
         }
     }
     void flip()
