@@ -8,6 +8,7 @@ public class TowerSlot : MonoBehaviour
     Animator animator;
     private void Start()
     {
+        slotAvailable = true;
         animator = GetComponent<Animator>();
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -29,5 +30,17 @@ public class TowerSlot : MonoBehaviour
         {
             animator.SetBool("animationOn", false);
         }
+        slotAvailable = true;
+    }
+
+    public void SpawnTower(GameObject towerObject)
+    {
+        Instantiate(towerObject, transform.position, transform.rotation);
+        slotAvailable = false;
+    }
+
+    public void TowerDelete()
+    {
+        slotAvailable = true;
     }
 }
