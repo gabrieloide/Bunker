@@ -8,7 +8,7 @@ public class TowerD : MonoBehaviour
 
     public Transform target;
     private string enemyTag = "Enemy";
-
+    public int damage;
     public float range = 3f;
     public float fireRateCountDown = 0f;
 
@@ -19,6 +19,7 @@ public class TowerD : MonoBehaviour
 
     void Start()
     {
+        damage = towersData.damage;
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
         Destroy(gameObject, timeToDestroy);
     }
