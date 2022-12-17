@@ -10,7 +10,7 @@ enum BuffType
 public class BuffInteractions : MonoBehaviour
 {
     BuffType buffType = BuffType.attackPlus;
-    float attackBonus;
+    int attackBonus;
     float ASBonus;
 
     private bool overTower = false;

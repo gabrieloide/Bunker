@@ -9,6 +9,6 @@ public class TowersData : ScriptableObject
     public string Name;
     public string Description;
     public float lifeBullet;
-    public float damage;
+    public int damage;
     public float fireRate;
 }

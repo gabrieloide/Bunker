@@ -15,5 +15,5 @@ MonoBehaviour:
   Name: 
   Description: 
   lifeBullet: 0
-  damage: 0
+  damage: 9
   fireRate: 1
