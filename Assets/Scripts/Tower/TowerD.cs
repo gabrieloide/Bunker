@@ -10,14 +10,17 @@ public class TowerD : MonoBehaviour
     private string enemyTag = "Enemy";
 
     public float range = 3f;
-    private float fireRateCountDown = 0f;
+    public float fireRateCountDown = 0f;
 
-    public GameObject partToRotate;
     public GameObject bulletPrefab;
+
+    [SerializeField]
+    private float timeToDestroy = 30f;
 
     void Start()
     {
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
+        Destroy(gameObject, timeToDestroy);
     }
 
     void UpdateTarget()
@@ -49,16 +52,11 @@ public class TowerD : MonoBehaviour
     {
         if (target == null)
             return;
-        /*
-        Vector2 dir = target.position - partToRotate.transform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(dir);
-        Vector2 rotation = lookRotation.eulerAngles;
-        partToRotate.transform.rotation = Quaternion.Euler();
-        */
+        
         if(fireRateCountDown <= 0f)
         {
-            Shoot();
             fireRateCountDown = 1f / towersData.fireRate;
+            Shoot();
         }
 
         fireRateCountDown -= Time.deltaTime;
@@ -66,7 +64,7 @@ public class TowerD : MonoBehaviour
 
     void Shoot()
     {
-        GameObject b = Instantiate(bulletPrefab, partToRotate.transform.position, partToRotate.transform.rotation);
+        GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
         TowerBullet bullet = b.GetComponent<TowerBullet>();
         bullet.GetData(target, towersData.damage, towersData.lifeBullet);
     }
