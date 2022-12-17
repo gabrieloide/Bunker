@@ -38,6 +38,7 @@ public class WaveManager : MonoBehaviour
                     Debug.Log("Segunda oleada");
                     NewPositionSpawn++;
                     EnemySpawner.instance.startBtwSpawns = newWaitBtwSpawn[0];
+                    CameraMovement.instance.maxX = 34;
                     
                 }
 
