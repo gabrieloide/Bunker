@@ -6,13 +6,19 @@ public class TowerSlot : MonoBehaviour
 {
     public bool slotAvailable;
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void Start()
     {
-        if (collision.GetComponent<Card>() != null && !collision.GetComponent<Card>().onDrag && slotAvailable)
-        {
-            Instantiate(collision.GetComponent<Card>().tower, transform.position, transform.rotation);
-            Destroy(collision.gameObject);
-            slotAvailable = false;
-        }
+        slotAvailable = true;
+    }
+
+    public void SpawnTower(GameObject towerObject)
+    {
+        Instantiate(towerObject, transform.position, transform.rotation);
+        slotAvailable = false;
+    }
+
+    public void TowerDelete()
+    {
+        slotAvailable = true;
     }
 }

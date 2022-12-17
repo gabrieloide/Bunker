@@ -9,6 +9,8 @@ public class WaveManager : MonoBehaviour
     public Vector3[] SpawnsPositions;
     public int Wave;
     EnemySpawner enemySpawner;
+    public int NewPositionSpawn;
+
     private void Awake()
     {
         if (!instance)
