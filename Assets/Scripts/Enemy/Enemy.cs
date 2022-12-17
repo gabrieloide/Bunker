@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Enemy : MonoBehaviour
 {
+    public static Enemy instance;
     public AK.Wwise.Event tank_destroy;
     //-------------------------STATS--------------------------------
     [SerializeField]EnemyData enemyData;
@@ -11,13 +12,10 @@ public class Enemy : MonoBehaviour
     float Defense;
     float MoveSpeed;
     //--------------------------------------------------------------
-    public static Enemy instance;
     EnemyMovement enemyMovement;
     CardDrop cardDrop;
     SpriteRenderer spriteRenderer;
     public int nextWavePosition;
-    int i;
-    bool changeP;
 
     private void Start()
     {
@@ -66,6 +64,7 @@ public class Enemy : MonoBehaviour
         if (Life <= 0)
         {
             ChanceToDrop();
+            UIManager.instance.score += enemyData.score;
             WaveManager.instance.enemyAmount--;
             Destroy(gameObject);
         }
