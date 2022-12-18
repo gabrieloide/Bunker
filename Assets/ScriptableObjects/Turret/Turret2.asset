@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: 
   Description: 
-  lifeBullet: 0
+  lifeBullet: 2
   damage: 9
   fireRate: 1
