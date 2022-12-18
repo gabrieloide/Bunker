@@ -20,12 +20,6 @@ public class TowerSlot : MonoBehaviour
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.GetComponent<Card>() != null && !collision.GetComponent<Card>().onDrag && slotAvailable)
-        {
-            Instantiate(collision.GetComponent<Card>().tower, transform.position, transform.rotation);
-            Destroy(collision.gameObject);
-            slotAvailable = false;
-        }
         if (collision.gameObject.CompareTag("MainCamera"))
         {
             animator.SetBool("animationOn", false);

@@ -128,5 +128,3 @@ MonoBehaviour:
   towerSlot: {fileID: 0}
   onDrag: 0
   handIndex: 0
-  cursor: {fileID: 0}
-  defaultCursor: {fileID: 0}
