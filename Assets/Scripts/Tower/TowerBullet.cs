@@ -6,8 +6,7 @@ public class TowerBullet : MonoBehaviour
 {
     [SerializeField]
     private float speed;
-    private float damage;
-    private float lifeBullet;
+    public float damage, lifeBullet;
     [SerializeField]
     private float timeToDestroy;
     public Transform target;
@@ -26,6 +25,14 @@ public class TowerBullet : MonoBehaviour
         damage = _damage;
         lifeBullet = _lifeBullet;
         dir =  target.position -transform.position;
+    }
+
+    private void Update()
+    {
+        if(lifeBullet <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void FixedUpdate()
