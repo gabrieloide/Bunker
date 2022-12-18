@@ -6,7 +6,9 @@ public class PauseMenu : MonoBehaviour
 {
     public static bool GameIsPaused = false;
     public GameObject pauseMenuUI, inGameMenu;
-    // Update is called once per frame
+    [SerializeField]
+    private GameObject panelPauseMain, panelPauseOptions;
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.P)|| Input.GetKeyDown(KeyCode.Escape))
@@ -20,6 +22,11 @@ public class PauseMenu : MonoBehaviour
                 Pause();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            SlowTime();
+        }
     }
     public void Resume()
     {
@@ -32,7 +39,14 @@ public class PauseMenu : MonoBehaviour
     {
         inGameMenu.SetActive(false);
         pauseMenuUI.SetActive(true);
+        panelPauseMain.SetActive(true);
+        panelPauseOptions.SetActive(false);
         Time.timeScale = 0f;
         GameIsPaused = true;
+    }
+
+    public void SlowTime()
+    {
+        Time.timeScale = 0.1f;
     }
 }

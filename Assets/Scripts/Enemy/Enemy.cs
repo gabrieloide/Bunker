@@ -101,7 +101,8 @@ public class Enemy : MonoBehaviour
         }
         if (collision.CompareTag("Bullet"))
         {
-            Life -= FindObjectOfType<TowerD>().damage;
+            Life -= collision.GetComponent<TowerBullet>().damage;
+            collision.GetComponent<TowerBullet>().lifeBullet -= 1;
            // tank_destroy.Post(gameObject);
         }
     }
