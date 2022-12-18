@@ -10,6 +10,7 @@ public class WaveManager : MonoBehaviour
     public Vector3[] SpawnsPositions;
     public int NewPositionSpawn;
     public int Wave;
+    public GameObject winScreen;
     public float[] newWaitBtwSpawn;
 
     public bool changeWave;
@@ -50,6 +51,12 @@ public class WaveManager : MonoBehaviour
                     EnemySpawner.instance.startBtwSpawns = newWaitBtwSpawn[1];
                 }
             }
+        }
+        if (Wave >= 7)
+        {
+            Debug.Log("termino el juego");
+            winScreen.SetActive(true);
+            Time.timeScale = 0;
         }
         //1 7 14
     }
