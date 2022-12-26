@@ -6,7 +6,8 @@ public enum CardType
 {
     Card1,
     Card2,
-    Card3
+    Card3,
+    Card4
 }
 
 public class DroppedCard : MonoBehaviour
@@ -17,7 +18,7 @@ public class DroppedCard : MonoBehaviour
 
     private void Start()
     {
-        Invoke("DestroyInTime", dissapearTime);
+        Destroy(gameObject, dissapearTime);
     }
 
     private void OnMouseDown()
@@ -33,12 +34,10 @@ public class DroppedCard : MonoBehaviour
             case CardType.Card3:
                 Deck.instance.SearchAviableSlots(2);
                 break;
+            case CardType.Card4:
+                Deck.instance.SearchAviableSlots(3);
+                break;
         }
-        Destroy(gameObject);
-    }
-
-    private void DestroyInTime()
-    {
         Destroy(gameObject);
     }
 }
