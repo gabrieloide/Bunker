@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+    ///Cartas de campo = 3
+    ///cartas de slots = 5
+    ///cartas de buff 
+    
 public class Card : MonoBehaviour
 {
     public GameObject tower;
@@ -15,7 +19,7 @@ public class Card : MonoBehaviour
     public int handIndex;
 
     private Deck dc;
-    //[SerializeField] CursorType cursor, defaultCursor;
+   //[SerializeField] CursorType cursor, defaultCursor;
 
 
     private void Start()
@@ -74,7 +78,6 @@ public class Card : MonoBehaviour
         }
 
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.GetComponent<TowerSlot>() != null)
@@ -92,4 +95,12 @@ public class Card : MonoBehaviour
         if (collision.gameObject.GetComponent<TowerSlot>() != null)
             towerSlot = null;
     }
+}
+public class CardTowerSlot : MonoBehaviour
+{
+
+}
+public class CardOnField : MonoBehaviour
+{
+
 }
