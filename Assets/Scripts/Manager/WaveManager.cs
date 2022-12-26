@@ -55,8 +55,8 @@ public class WaveManager : MonoBehaviour
         if (Wave >= 7)
         {
             Debug.Log("termino el juego");
+            enemyAmount = 0;
             winScreen.SetActive(true);
-            Time.timeScale = 0;
         }
         //1 7 14
     }
