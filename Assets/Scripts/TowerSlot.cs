@@ -11,21 +11,6 @@ public class TowerSlot : MonoBehaviour
         slotAvailable = true;
         animator = GetComponent<Animator>();
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("MainCamera"))
-        {
-            animator.SetBool("animationOn", true);
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("MainCamera"))
-        {
-            animator.SetBool("animationOn", false);
-        }
-        slotAvailable = true;
-    }
 
     public void SpawnTower(GameObject towerObject)
     {
