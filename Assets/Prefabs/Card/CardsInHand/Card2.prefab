@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 602895478212763535}
   - component: {fileID: -2123125648976956640}
   - component: {fileID: -6805057479063158895}
+  - component: {fileID: -8399590512894728407}
   m_Layer: 0
   m_Name: Card2
   m_TagString: Card
@@ -99,7 +100,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0072717667, y: 0.01043117}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -128,3 +129,16 @@ MonoBehaviour:
   towerSlot: {fileID: 0}
   onDrag: 0
   handIndex: 0
+--- !u!114 &-8399590512894728407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019712750083430843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c5a7e4bef39b443868c015a8ee225b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardToInstantiate: {fileID: 0}

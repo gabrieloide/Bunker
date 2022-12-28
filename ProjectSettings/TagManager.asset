@@ -8,6 +8,8 @@ TagManager:
   - Trash
   - Bullet
   - Card
+  - Wave
+  - Hand
   layers:
   - Default
   - TransparentFX

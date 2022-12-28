@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8265833938104050149}
   - component: {fileID: 2607700782867712522}
   - component: {fileID: -1288623802054063192}
+  - component: {fileID: 3160457758827648538}
   m_Layer: 0
   m_Name: AirAttack
   m_TagString: Untagged
@@ -128,3 +129,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3160457758827648538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952522679187629482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05c5a7e4bef39b443868c015a8ee225b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tower: {fileID: 0}
+  towerSlot: {fileID: 0}
+  onDrag: 0
+  handIndex: 0

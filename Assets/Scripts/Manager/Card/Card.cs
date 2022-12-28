@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-    ///Cartas de campo = 3
-    ///cartas de slots = 5
-    ///cartas de buff 
     
 public class Card : MonoBehaviour
 {
@@ -51,9 +47,10 @@ public class Card : MonoBehaviour
         }
     }
 
-    private void OnMouseDrag()
+    public virtual void OnMouseDrag()
     {
         gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.2f, 10f);
+
     }
 
     private void OnMouseDown()
@@ -61,7 +58,6 @@ public class Card : MonoBehaviour
         onDrag = true;
         gameObject.transform.localScale -= scaleChange;
     }
-
     private void OnMouseUp()
     {
         if (towerSlot != null && towerSlot.GetComponent<TowerSlot>().slotAvailable)
@@ -78,29 +74,8 @@ public class Card : MonoBehaviour
         }
 
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.GetComponent<TowerSlot>() != null)
-            towerSlot = collision.gameObject;
-        
-    }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (towerSlot == null && collision.gameObject.GetComponent<TowerSlot>() != null)
-            towerSlot = collision.gameObject;
-        
-    } 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.GetComponent<TowerSlot>() != null)
-            towerSlot = null;
-    }
 }
-public class CardTowerSlot : MonoBehaviour
-{
-
-}
-public class CardOnField : MonoBehaviour
+public class CardOnField : Card
 {
 
 }

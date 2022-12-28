@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 556cfac7a905c0a49b91c02b1cad27ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardType: 0
+  cardType: 3
   dissapearTime: 15
 --- !u!61 &5399175614832916906
 BoxCollider2D:
