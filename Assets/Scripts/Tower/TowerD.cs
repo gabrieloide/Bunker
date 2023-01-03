@@ -13,8 +13,7 @@ public class TowerD : MonoBehaviour
 
     public GameObject bulletPrefab;
 
-    [SerializeField]
-    private float timeToDestroy = 30f;
+    public float timeToDestroy = 30f;
 
     void Start()
     {

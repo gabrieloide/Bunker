@@ -6,12 +6,15 @@ enum BuffType
 {
     attackPlus,
     attackSpeed,
+    turretLifeBonus,
 }
 public class BuffInteractions : MonoBehaviour
 {
-    BuffType buffType = BuffType.attackPlus;
-    int attackBonus;
-    float ASBonus;
+    [SerializeField]BuffType buffType = BuffType.attackPlus;
+    [SerializeField]int attackBonus;
+    [SerializeField]int lifeBulletAditional;
+    [SerializeField]int lifeTurrentAditional;
+    [SerializeField]float ASBonus;
 
     private bool overTower = false;
     private GameObject tower;
@@ -25,7 +28,10 @@ public class BuffInteractions : MonoBehaviour
                 towerd.towersData.damage *= attackBonus;
                 break;
             case BuffType.attackSpeed:
-                towerd.towersData.fireRate *= ASBonus;
+                towerd.fireRateCountDown *= ASBonus;
+                break;
+            case BuffType.turretLifeBonus:
+                towerd.timeToDestroy += lifeTurrentAditional;
                 break;
         }
         Destroy(gameObject);
@@ -48,12 +54,6 @@ public class BuffInteractions : MonoBehaviour
             overTower = false;
         }
     }
-
-    private void OnMouseDrag()
-    {
-        gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0f, 10f);
-    }
-
     private void OnMouseUp()
     {
         if (overTower)

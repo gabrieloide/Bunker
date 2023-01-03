@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: -2828869116309983211}
   - component: {fileID: 2514580154843593817}
   - component: {fileID: 7575010616867755838}
-  m_Layer: 6
+  - component: {fileID: 464573207472212918}
+  m_Layer: 0
   m_Name: Enemy 3
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -31,7 +32,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1452678203366704559}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.08, y: -0.47, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -107,6 +108,7 @@ MonoBehaviour:
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 11400000, guid: 957abb1391e1bbd4faa0f4e488a5afed, type: 2}
   enemyData: {fileID: 11400000, guid: 97a77ca41e1495e4394426db6eccfd8e, type: 2}
+  Life: 0
   nextWavePosition: 14
 --- !u!61 &-5855894389994365845
 BoxCollider2D:
@@ -226,3 +228,24 @@ MonoBehaviour:
   eventIdInternal: 0
   valueGuidInternal: 
   m_callbackDataInternal: {fileID: 0}
+--- !u!114 &464573207472212918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452678203366704559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4496d61581f0385469e98e53ced8cb31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lootList:
+  - {fileID: 11400000, guid: 1d07fe95b65120a4c83bc50124116b87, type: 2}
+  - {fileID: 11400000, guid: 7aeac220f01418d41bd29392d344b63d, type: 2}
+  - {fileID: 11400000, guid: 48a0424b73a1cb743beabd19db982a4c, type: 2}
+  - {fileID: 11400000, guid: 0b0835625350d5049be9cb6f0bce5447, type: 2}
+  - {fileID: 11400000, guid: 673bfeeac8624b54d830bd26c9e95d87, type: 2}
+  - {fileID: 11400000, guid: f5ad6066a4b89bc4a9f45187a2751e68, type: 2}
+  - {fileID: 11400000, guid: 093226d1d5ba2ca49a859e5801394fc1, type: 2}
+  - {fileID: 11400000, guid: c883ac6ba641b544081c302c48169d9b, type: 2}

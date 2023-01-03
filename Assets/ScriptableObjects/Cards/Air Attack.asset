@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Air attack
   Description: 
-  lifeBullet: 0
-  damage: 0
+  lifeBullet: 1
+  damage: 11
   fireRate: 0

@@ -15,5 +15,5 @@ MonoBehaviour:
   Name: Cannon
   Description: 
   lifeBullet: 1
-  damage: 6
-  fireRate: 1
+  damage: 7
+  fireRate: 3

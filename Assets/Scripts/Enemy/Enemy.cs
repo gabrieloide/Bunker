@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
     public AK.Wwise.Event tank_destroy;
     //-------------------------STATS--------------------------------
     [SerializeField]EnemyData enemyData;
-    float Life;
+    public float Life;
     float Damage;
     float Defense;
     float MoveSpeed;
@@ -23,7 +23,6 @@ public class Enemy : MonoBehaviour
         {
             instance = this;
         }
-        cardDrop = FindObjectOfType<CardDrop>();
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initializeStats();
@@ -57,33 +56,15 @@ public class Enemy : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], MoveSpeed * Time.deltaTime);
             flip();
         }
-        // para las oledas, cambiar el primer movetowars hacia la primera posicion que se quiere llegar, despues cambiar el i por la siguiente oleada del mapa
     }
     void LifeBehaviour()
     {
         if (Life <= 0)
         {
-            ChanceToDrop();
+            GetComponent<LootBag>().InstantiateLoot(transform.position);
             UIManager.instance.score += enemyData.score;
             WaveManager.instance.enemyAmount--;
             Destroy(gameObject);
-        }
-    }
-    void ChanceToDrop()
-    {
-        float item = Random.Range(0, 1001);
-
-        if (item <= 190.67f)
-        {
-            Instantiate(cardDrop.Cards[0], transform.position, transform.rotation);
-        }
-        else if (item >580.8f && item < 590.7f)
-        {
-            Instantiate(cardDrop.Cards[1], transform.position, transform.rotation);
-        }
-        else if(item > 930.7f)
-        {
-            Instantiate(cardDrop.Cards[2], transform.position, transform.rotation);
         }
     }
     void initializeStats() 

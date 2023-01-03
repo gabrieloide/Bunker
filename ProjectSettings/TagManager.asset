@@ -8,8 +8,9 @@ TagManager:
   - Trash
   - Bullet
   - Card
-  - Wave
   - Hand
+  - Decoration
+  - Path
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - 
   - Water
   - UI
-  - Enemy
+  - Decoration
   - 
   - 
   - 

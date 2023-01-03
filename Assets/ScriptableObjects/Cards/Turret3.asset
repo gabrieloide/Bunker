@@ -16,4 +16,4 @@ MonoBehaviour:
   Description: 
   lifeBullet: 1
   damage: 12
-  fireRate: 1
+  fireRate: 6

@@ -12,8 +12,7 @@ GameObject:
   - component: {fileID: 5942650889640731713}
   - component: {fileID: 4067271363937444886}
   - component: {fileID: -5744818967393508665}
-  - component: {fileID: 9050042876590225724}
-  - component: {fileID: -9100334722129432074}
+  - component: {fileID: 9183727632063596761}
   m_Layer: 0
   m_Name: Card1
   m_TagString: Card
@@ -126,11 +125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tower: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
-  towerSlot: {fileID: 0}
+  CardToInstantiate: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
   onDrag: 0
   handIndex: 0
---- !u!50 &9050042876590225724
+--- !u!50 &9183727632063596761
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -151,16 +149,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-9100334722129432074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6614122001415506232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05c5a7e4bef39b443868c015a8ee225b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CardToInstantiate: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
