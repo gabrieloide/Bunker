@@ -39,4 +39,11 @@ public class TowerBullet : MonoBehaviour
     {
         RB2d.velocity = dir.normalized * speed;
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            lifeBullet -= 1;
+        }
+    }
 }

@@ -132,11 +132,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towersData: {fileID: 11400000, guid: 6954ef28838737642a1ea9f023b75dc2, type: 2}
   target: {fileID: 0}
-  damage: 0
   range: 3
   fireRateCountDown: 0
   bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
-  timeToDestroy: 60
+  timeToDestroy: 90
 --- !u!61 &-3642935426638969059
 BoxCollider2D:
   m_ObjectHideFlags: 0

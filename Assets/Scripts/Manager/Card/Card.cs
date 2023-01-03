@@ -4,11 +4,10 @@ using UnityEngine;
     
 public class Card : MonoBehaviour
 {
-    public GameObject tower;
-    public GameObject towerSlot;
-
     private Vector3 scaleChange;
     private BoxCollider2D B2D;
+    bool canDrop;
+    public GameObject CardToInstantiate;
 
     public bool onDrag;
 
@@ -46,25 +45,30 @@ public class Card : MonoBehaviour
             B2D.offset -= new Vector2(0f, -0.1f);
         }
     }
-
     public virtual void OnMouseDrag()
     {
         gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.2f, 10f);
-
     }
 
     private void OnMouseDown()
     {
+        canDrop = true;
         onDrag = true;
         gameObject.transform.localScale -= scaleChange;
     }
     private void OnMouseUp()
     {
-        if (towerSlot != null && towerSlot.GetComponent<TowerSlot>().slotAvailable)
+        //Obtiene la posicion del mouse
+        Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        //Calcula la distancia entre el slot de la carta y la posicion del mouse
+        float d = Vector2.Distance(Deck.instance.cardSlots[handIndex].position, Mouseposition);
+
+        if (canDrop && d > 1.5f && CardToInstantiate != null)
         {
-            towerSlot.GetComponent<TowerSlot>().SpawnTower(tower);
-            dc.availableCardSlots[handIndex] = true;
-            Destroy(gameObject);
+             Instantiate(CardToInstantiate, Mouseposition, transform.rotation);
+             dc.availableCardSlots[handIndex] = true;
+             Destroy(gameObject);
         }
         else
         {
@@ -72,10 +76,19 @@ public class Card : MonoBehaviour
             transform.position = dc.cardSlots[handIndex].position;
             gameObject.transform.localScale += scaleChange;
         }
-
     }
-}
-public class CardOnField : Card
-{
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Decoration"))
+        {
+            canDrop = false;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Decoration"))
+        {
+            canDrop = true;
+        }
+    }
 }

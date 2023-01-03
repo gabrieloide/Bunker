@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8666346877270820703}
   - component: {fileID: 1858773259784070382}
   - component: {fileID: 4832620425749470141}
-  - component: {fileID: -2975231989502647396}
+  - component: {fileID: -4785938570693225291}
   m_Layer: 0
   m_Name: Card3
   m_TagString: Card
@@ -125,20 +125,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tower: {fileID: 8316505337117789106, guid: 6c3fef1f234744b4589449eb1283a005, type: 3}
-  towerSlot: {fileID: 0}
+  CardToInstantiate: {fileID: 8316505337117789106, guid: 6c3fef1f234744b4589449eb1283a005, type: 3}
   onDrag: 0
   handIndex: 0
---- !u!114 &-2975231989502647396
-MonoBehaviour:
+--- !u!50 &-4785938570693225291
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5892462271022858852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05c5a7e4bef39b443868c015a8ee225b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CardToInstantiate: {fileID: 0}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

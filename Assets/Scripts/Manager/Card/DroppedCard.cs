@@ -7,7 +7,11 @@ public enum CardType
     Card1,
     Card2,
     Card3,
-    Card4
+    Card4,
+    Card5,
+    Card6,
+    Card7,
+    Card8
 }
 
 public class DroppedCard : MonoBehaviour
@@ -36,6 +40,18 @@ public class DroppedCard : MonoBehaviour
                 break;
             case CardType.Card4:
                 Deck.instance.SearchAviableSlots(3);
+                break;
+            case CardType.Card5:
+                Deck.instance.SearchAviableSlots(4);
+                break;
+            case CardType.Card6:
+                Deck.instance.SearchAviableSlots(5);
+                break;
+            case CardType.Card7:
+                Deck.instance.SearchAviableSlots(6);
+                break;
+            case CardType.Card8:
+                Deck.instance.SearchAviableSlots(7);
                 break;
         }
         Destroy(gameObject);
