@@ -8,6 +8,7 @@ public class TowerD : MonoBehaviour
 
     public Transform target;
     private string enemyTag = "Enemy";
+    public int damage;
     public float range = 3f;
     public float fireRateCountDown = 0f;
 
@@ -19,6 +20,7 @@ public class TowerD : MonoBehaviour
     {
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
         Destroy(gameObject, timeToDestroy);
+        damage = towersData.damage;
     }
 
     void UpdateTarget()
@@ -62,9 +64,11 @@ public class TowerD : MonoBehaviour
 
     void Shoot()
     {
+
         GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
+        b.transform.right = -1*(transform.position - target.position);
         TowerBullet bullet = b.GetComponent<TowerBullet>();
-        bullet.GetData(target, towersData.damage, towersData.lifeBullet);
+        bullet.GetData(target, damage, towersData.lifeBullet);
     }
 
     private void OnDrawGizmosSelected()

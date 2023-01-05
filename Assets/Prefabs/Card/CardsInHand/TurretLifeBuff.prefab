@@ -49,6 +49,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffType: 2
+  attackBonus: 0
+  lifeBulletAditional: 0
+  lifeTurrentAditional: 16
+  ASBonus: 0
 --- !u!212 &4917631240309490027
 SpriteRenderer:
   m_ObjectHideFlags: 0

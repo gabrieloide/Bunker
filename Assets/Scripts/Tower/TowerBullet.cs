@@ -9,7 +9,8 @@ public class TowerBullet : MonoBehaviour
     public float damage, lifeBullet;
     [SerializeField]
     private float timeToDestroy;
-    public Transform target;
+    [SerializeField] GameObject BulletParticle;
+    [HideInInspector]public Transform target;
     private Rigidbody2D RB2d;
     private Vector2 dir;
 
@@ -31,19 +32,14 @@ public class TowerBullet : MonoBehaviour
     {
         if(lifeBullet <= 0)
         {
+            Instantiate(BulletParticle, transform.position, transform.rotation);
             Destroy(gameObject);
         }
+
     }
 
     private void FixedUpdate()
     {
         RB2d.velocity = dir.normalized * speed;
-    }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Enemy"))
-        {
-            lifeBullet -= 1;
-        }
     }
 }

@@ -109,6 +109,7 @@ MonoBehaviour:
     WwiseObjectReference: {fileID: 11400000, guid: 957abb1391e1bbd4faa0f4e488a5afed, type: 2}
   enemyData: {fileID: 11400000, guid: 97a77ca41e1495e4394426db6eccfd8e, type: 2}
   Life: 0
+  hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   nextWavePosition: 14
 --- !u!61 &-5855894389994365845
 BoxCollider2D:

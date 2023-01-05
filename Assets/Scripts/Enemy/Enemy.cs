@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
     EnemyMovement enemyMovement;
     CardDrop cardDrop;
     SpriteRenderer spriteRenderer;
+    [SerializeField] GameObject hitParticle;
     public int nextWavePosition;
 
     private void Start()
@@ -82,6 +83,7 @@ public class Enemy : MonoBehaviour
         }
         if (collision.CompareTag("Bullet"))
         {
+            Instantiate(hitParticle, transform.position, Quaternion.identity);
             Life -= collision.GetComponent<TowerBullet>().damage;
             collision.GetComponent<TowerBullet>().lifeBullet -= 1;
            // tank_destroy.Post(gameObject);
