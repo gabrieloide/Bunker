@@ -52,7 +52,7 @@ MonoBehaviour:
   attackBonus: 1
   lifeBulletAditional: 0
   lifeTurrentAditional: 0
-  ASBonus: 0
+  ASBonus: 3
 --- !u!212 &396087393167722566
 SpriteRenderer:
   m_ObjectHideFlags: 0

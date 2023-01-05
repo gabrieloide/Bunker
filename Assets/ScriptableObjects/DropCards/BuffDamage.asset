@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
   m_Name: BuffDamage
   m_EditorClassIdentifier: 
-  loots: {fileID: 0}
+  loots: {fileID: 3811215363608158634, guid: 765b4cf9003bf03479f0ff7686b9cbbf, type: 3}
   lootname: 
-  dropChance: 0
+  dropChance: 11

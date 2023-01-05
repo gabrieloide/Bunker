@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1059394280, guid: 6a37acbfd0abc9d49be215b2ec19f0dd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c71873bb1908d994f88dd1ae60c4d0f0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -122,8 +122,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 7
   damage: 2
-  lifeBullet: 66
+  lifeBullet: 1
   timeToDestroy: 9
+  BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
   target: {fileID: 0}
 --- !u!58 &-3502244454322650535
 CircleCollider2D:
@@ -140,4 +141,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.49999997
+  m_Radius: 0.14548552

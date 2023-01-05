@@ -7,7 +7,6 @@ public class Deck : MonoBehaviour
     public List<Card> deck = new List<Card>();
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
-
     public static Deck instance;
     private void Awake()
     {
@@ -16,7 +15,6 @@ public class Deck : MonoBehaviour
             instance = this;
         }
     }
-
     public void SearchAviableSlots(int card)
     {
         for(int i = 0; i < availableCardSlots.Length; i++)

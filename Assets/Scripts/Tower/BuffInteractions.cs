@@ -25,7 +25,7 @@ public class BuffInteractions : MonoBehaviour
         switch (buffType)
         {
             case BuffType.attackPlus:
-                towerd.towersData.damage *= attackBonus;
+                towerd.damage *= attackBonus;
                 break;
             case BuffType.attackSpeed:
                 towerd.fireRateCountDown *= ASBonus;
