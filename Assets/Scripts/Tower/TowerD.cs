@@ -6,14 +6,15 @@ public class TowerD : MonoBehaviour
 {
     public TowersData towersData;
 
-    public Transform target;
+    [HideInInspector]public Transform target;
+    [SerializeField] Transform nozzle;
     private string enemyTag = "Enemy";
-    public int damage;
+   [HideInInspector]public int damage;
     public float range = 3f;
     public float fireRateCountDown = 0f;
 
     public GameObject bulletPrefab;
-
+    [SerializeField] GameObject BulletParticle;
     public float timeToDestroy = 30f;
 
     void Start()
@@ -64,9 +65,10 @@ public class TowerD : MonoBehaviour
 
     void Shoot()
     {
-
-        GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
-        b.transform.right = -1*(transform.position - target.position);
+        Instantiate(BulletParticle, nozzle.position, transform.rotation);
+        Vector2 p = nozzle.position - new Vector3(0.3f,0);
+        GameObject b = Instantiate(bulletPrefab, p, transform.rotation);
+        b.transform.right = -1*(nozzle.position - target.position);
         TowerBullet bullet = b.GetComponent<TowerBullet>();
         bullet.GetData(target, damage, towersData.lifeBullet);
     }

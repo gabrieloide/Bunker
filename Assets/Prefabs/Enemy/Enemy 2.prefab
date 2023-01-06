@@ -108,6 +108,7 @@ MonoBehaviour:
   enemyData: {fileID: 11400000, guid: 2f618eeca13dcf443abe63b66b48864e, type: 2}
   Life: 0
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
+  explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
   nextWavePosition: 14
 --- !u!61 &-1524822194720085281
 BoxCollider2D:

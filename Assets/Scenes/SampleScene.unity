@@ -1767,9 +1767,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minX: 6
-  maxX: 17
-  minY: -4
-  maxY: 6
+  maxX: 19
+  minY: -6
+  maxY: 8
   speed: 8
 --- !u!222 &531508605
 CanvasRenderer:
