@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
     EnemyMovement enemyMovement;
     CardDrop cardDrop;
     SpriteRenderer spriteRenderer;
-    [SerializeField] GameObject hitParticle;
+    [SerializeField] GameObject hitParticle, explosionParticle;
     public int nextWavePosition;
 
     private void Start()
@@ -62,6 +62,7 @@ public class Enemy : MonoBehaviour
     {
         if (Life <= 0)
         {
+            Instantiate(explosionParticle, transform.position, transform.rotation);
             GetComponent<LootBag>().InstantiateLoot(transform.position);
             UIManager.instance.score += enemyData.score;
             WaveManager.instance.enemyAmount--;

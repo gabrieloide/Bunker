@@ -15,5 +15,5 @@ MonoBehaviour:
   Name: BiCannon
   Description: 
   lifeBullet: 1
-  damage: 9
-  fireRate: 4.7
+  damage: 6
+  fireRate: 4

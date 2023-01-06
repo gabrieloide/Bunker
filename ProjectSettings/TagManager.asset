@@ -57,3 +57,6 @@ TagManager:
   - name: Entity
     uniqueID: 2626497827
     locked: 0
+  - name: InHand
+    uniqueID: 3689782089
+    locked: 0
