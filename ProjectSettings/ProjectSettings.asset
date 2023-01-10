@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: Biste Games
   productName: Bunker
-  defaultCursor: {fileID: 2800000, guid: c11cf940a91029d4c9f5158895809606, type: 3}
+  defaultCursor: {fileID: 2800000, guid: bb2c519e32e49824eb95bd40469bc1b0, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
