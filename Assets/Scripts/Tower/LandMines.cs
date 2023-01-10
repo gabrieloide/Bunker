@@ -5,6 +5,7 @@ using UnityEngine;
 public class LandMines : MonoBehaviour
 {
     public TowersData LandMineData;
+    [SerializeField] GameObject ExplosionParticle;
     int damage;
 
     private void Start()
@@ -16,7 +17,8 @@ public class LandMines : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             collision.GetComponent<Enemy>().Life -= damage;
-            Destroy(gameObject, 3);
+            Instantiate(ExplosionParticle, transform.position, Quaternion.identity);
+            Destroy(gameObject);
         }
     }
 }
