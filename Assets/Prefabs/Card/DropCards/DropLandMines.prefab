@@ -100,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardType: 4
   dissapearTime: 15
+  towersData: {fileID: 11400000, guid: 8f10c15814076014687ccb3b0d305ea5, type: 2}
 --- !u!61 &4306317936773003084
 BoxCollider2D:
   m_ObjectHideFlags: 0

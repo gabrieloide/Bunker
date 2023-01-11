@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e4de928f3161f64c9e81bfd3fc0492a, type: 3}
   m_Name: LanMines
   m_EditorClassIdentifier: 
-  Name: 
+  Name: LandMines
   Description: 
   lifeBullet: 0
   damage: 15

@@ -20,11 +20,19 @@ public class DroppedCard : MonoBehaviour
     [SerializeField]
     private float dissapearTime;
 
+    [SerializeField]TowersData towersData;
     private void Start()
     {
         Destroy(gameObject, dissapearTime);
     }
-
+    private void OnMouseEnter()
+    {
+        UIManager.instance.showStatsCards(towersData.Name, transform.position);
+    }
+    private void OnMouseExit()
+    {
+        UIManager.instance.Stats.SetActive(false);
+    }
     private void OnMouseDown()
     {
         switch (cardType)
@@ -54,6 +62,7 @@ public class DroppedCard : MonoBehaviour
                 Deck.instance.SearchAviableSlots(7);
                 break;
         }
+        UIManager.instance.Stats.SetActive(false);
         Destroy(gameObject);
     }
 }
