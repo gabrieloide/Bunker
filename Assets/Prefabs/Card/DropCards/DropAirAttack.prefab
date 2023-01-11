@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2096982710665802439}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.1612883, y: -3.1427183, z: 0.64792866}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -100,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardType: 3
   dissapearTime: 15
+  towersData: {fileID: 11400000, guid: acb0ea854b75b5a41870b58be1716c70, type: 2}
 --- !u!61 &5399175614832916906
 BoxCollider2D:
   m_ObjectHideFlags: 0

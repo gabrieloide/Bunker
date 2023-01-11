@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6634125272418899067}
   m_Layer: 0
   m_Name: DamageBuff
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -129,7 +129,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3, y: 4}
+  m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
 --- !u!114 &7318967318485075846
 MonoBehaviour:
@@ -143,7 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardToInstantiate: {fileID: 0}
+  CardToInstantiate: {fileID: 7635148593725922897, guid: 960be20bf270d6449abd4b9b8845297c, type: 3}
   onDrag: 0
   handIndex: 0
 --- !u!50 &6634125272418899067

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-    
 public class Card : MonoBehaviour
 {
     private Vector3 scaleChange;
@@ -15,7 +14,6 @@ public class Card : MonoBehaviour
 
     private Deck dc;
    //[SerializeField] CursorType cursor, defaultCursor;
-
 
     private void Start()
     {
@@ -66,8 +64,8 @@ public class Card : MonoBehaviour
 
         if (canDrop && d > 1.5f && CardToInstantiate != null)
         {
-             Instantiate(CardToInstantiate, Mouseposition, transform.rotation);
              dc.availableCardSlots[handIndex] = true;
+             Instantiate(CardToInstantiate, Mouseposition, transform.rotation);
              Destroy(gameObject);
         }
         else
