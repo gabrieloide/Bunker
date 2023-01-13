@@ -8,11 +8,18 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public GameObject Stats;
     [SerializeField] Text Name;
-
+    public Texture2D cursorDefault;
+    public Texture2D cursorTexture;
+    public Vector2 cursorHotspot;
+    [Space]
     public Text waveText;
     public Text scoreText;
-    public int score;
-    public int Wave;
+    [HideInInspector]public int score;
+    [HideInInspector]public int Wave;
+    [Space]
+    public GameObject TowerSlotAnimation;
+    Vector3 mousePosition;
+    public Vector3 offset;
     private void Start()
     {
         if (!instance)
@@ -22,8 +29,28 @@ public class UIManager : MonoBehaviour
     }
     void Update()
     {
+        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         scoreText.text = $"Score: {score}";
         waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        showTowerSlotAnimation();
+    }
+
+    void showTowerSlotAnimation()
+    {
+        if (FindObjectOfType<Card>() != null)
+        {
+            if (FindObjectOfType<Card>().onDrag)
+            {
+                //Agregar offset al towerslot
+                mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                TowerSlotAnimation.SetActive(true);
+                TowerSlotAnimation.transform.position = mousePosition - offset;
+            }
+            else
+            {
+                TowerSlotAnimation.SetActive(false);
+            }
+        }
     }
     public void showStatsCards(string name, Vector2 newPosition)
     {
