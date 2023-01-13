@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardToInstantiate: {fileID: 4053484846176422300, guid: fc6a67f9128a01349abed2ff9210c337, type: 3}
+  TowerSlot: {fileID: 4052250706693292627, guid: ab254f6c9ef6ad549b0d31ecfce92049, type: 3}
   onDrag: 0
   handIndex: 0
 --- !u!61 &4572928202905161530

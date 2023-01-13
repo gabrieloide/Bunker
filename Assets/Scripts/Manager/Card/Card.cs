@@ -7,13 +7,9 @@ public class Card : MonoBehaviour
     private BoxCollider2D B2D;
     bool canDrop;
     public GameObject CardToInstantiate;
-
     public bool onDrag;
-
     public int handIndex;
-
     private Deck dc;
-   //[SerializeField] CursorType cursor, defaultCursor;
 
     private void Start()
     {
@@ -22,12 +18,10 @@ public class Card : MonoBehaviour
         B2D = gameObject.GetComponent<BoxCollider2D>();
         onDrag = false;
     }
-
     private void OnMouseEnter()
     {
         if (!onDrag)
         {
-            //Cursor.SetCursor(cursor.cursorTexture, cursor.cursorHotspot, CursorMode.Auto);
             gameObject.transform.position += new Vector3(0f, gameObject.transform.localScale.y / 5f, 0f);
             B2D.size += new Vector2(0f, 0.2f);
             B2D.offset += new Vector2(0f, -0.1f);
@@ -37,7 +31,6 @@ public class Card : MonoBehaviour
     {
         if (!onDrag)
         {
-            //Cursor.SetCursor(defaultCursor.cursorTexture, defaultCursor.cursorHotspot, CursorMode.Auto);
             transform.position = dc.cardSlots[handIndex].position;
             B2D.size -= new Vector2(0f, 0.2f);
             B2D.offset -= new Vector2(0f, -0.1f);
@@ -45,20 +38,23 @@ public class Card : MonoBehaviour
     }
     public virtual void OnMouseDrag()
     {
-        gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.2f, 10f);
+        Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
+        gameObject.transform.position = MousePosition;
     }
 
     private void OnMouseDown()
     {
+        Cursor.SetCursor(UIManager.instance.cursorTexture, UIManager.instance.cursorHotspot, CursorMode.Auto);
         canDrop = true;
         onDrag = true;
         gameObject.transform.localScale -= scaleChange;
+        
     }
     private void OnMouseUp()
     {
         //Obtiene la posicion del mouse
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
+        Cursor.SetCursor(UIManager.instance.cursorDefault, UIManager.instance.cursorHotspot, CursorMode.Auto);
         //Calcula la distancia entre el slot de la carta y la posicion del mouse
         float d = Vector2.Distance(Deck.instance.cardSlots[handIndex].position, Mouseposition);
 
@@ -77,16 +73,10 @@ public class Card : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Decoration"))
-        {
-            canDrop = false;
-        }
+        if (collision.CompareTag("Decoration")) canDrop = false;
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Decoration"))
-        {
-            canDrop = true;
-        }
+        if (collision.CompareTag("Decoration")) canDrop = true;
     }
 }
