@@ -32,12 +32,23 @@ public class UIManager : MonoBehaviour
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         scoreText.text = $"Score: {score}";
         waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        if (Input.GetMouseButtonDown(1) && returnCard() && !FindObjectOfType<Card>().onDrag)
+        {
+            
+        }
         showTowerSlotAnimation();
     }
-
-    void showTowerSlotAnimation()
+    bool returnCard()
     {
         if (FindObjectOfType<Card>() != null)
+        {
+            return true;
+        }
+        return false;
+    }
+    void showTowerSlotAnimation()
+    {
+        if (returnCard())
         {
             if (FindObjectOfType<Card>().onDrag)
             {
