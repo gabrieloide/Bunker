@@ -52,7 +52,8 @@ public class Card : MonoBehaviour
         canDrop = true;
         onDrag = true;
         gameObject.transform.localScale -= scaleChange;
-        
+        B2D.size += new Vector2(0f, 2f);
+        B2D.offset += new Vector2(0f, 1f);
     }
     void useCard()
     {
@@ -72,6 +73,8 @@ public class Card : MonoBehaviour
             onDrag = false;
             transform.position = dc.cardSlots[handIndex].position;
             gameObject.transform.localScale += scaleChange;
+            B2D.size -= new Vector2(0f, 2f);
+            B2D.offset -= new Vector2(0f, 1f);
         }
     }
     private void OnMouseUp()
@@ -80,5 +83,21 @@ public class Card : MonoBehaviour
         UIManager.instance.TowerSlotAnimation.SetActive(false);
         Cursor.SetCursor(UIManager.instance.cursorDefault, UIManager.instance.cursorHotspot, CursorMode.Auto);//Cambiar de cursor al normal
         useCard();
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+
+
+        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
+        {
+            canDrop = false;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
+        {
+            canDrop = true;
+        }
     }
 }
