@@ -14142,6 +14142,7 @@ GameObject:
   - component: {fileID: 1177402239229568523}
   - component: {fileID: 2797376125411415248}
   - component: {fileID: 2797376125411415249}
+  - component: {fileID: 2797376125411415250}
   m_Layer: 0
   m_Name: TowerSlot
   m_TagString: Untagged
@@ -14239,3 +14240,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228a33f330c5c5142bfccfb3a3e677f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &2797376125411415250
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2797376125411415245}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

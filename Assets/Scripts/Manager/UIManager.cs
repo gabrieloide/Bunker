@@ -52,6 +52,7 @@ public class UIManager : MonoBehaviour
         {
             if (FindObjectOfType<Card>().onDrag)
             {
+                Debug.Log("Towerslot");
                 //Agregar offset al towerslot
                 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 TowerSlotAnimation.SetActive(true);
