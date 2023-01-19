@@ -84,20 +84,4 @@ public class Card : MonoBehaviour
         Cursor.SetCursor(UIManager.instance.cursorDefault, UIManager.instance.cursorHotspot, CursorMode.Auto);//Cambiar de cursor al normal
         useCard();
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-
-
-        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
-        {
-            canDrop = false;
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
-        {
-            canDrop = true;
-        }
-    }
 }
