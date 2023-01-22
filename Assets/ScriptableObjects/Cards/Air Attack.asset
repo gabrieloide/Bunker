@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Air attack
   Description: 
+  CardToInstantiate: {fileID: 7506797028057159639, guid: 5e97c98feca12fb449574cef4ca6885e, type: 3}
   lifeBullet: 1
   damage: 11
   fireRate: 0

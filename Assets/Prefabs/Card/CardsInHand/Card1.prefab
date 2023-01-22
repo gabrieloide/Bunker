@@ -125,10 +125,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerSlotCollider: {fileID: 4591440399022515113, guid: 902405dfe9697f84f989742abe139036, type: 3}
-  CardToInstantiate: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
+  td: {fileID: 11400000, guid: 6954ef28838737642a1ea9f023b75dc2, type: 2}
+  canDrop: 0
   onDrag: 0
   handIndex: 0
+  CardName: {fileID: 0}
 --- !u!50 &9183727632063596761
 Rigidbody2D:
   serializedVersion: 4
