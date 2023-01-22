@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -20,25 +21,10 @@ public class UIManager : MonoBehaviour
     public GameObject TowerSlotAnimation;
     Vector3 mousePosition;
     public Vector3 offset;
-    private void Start()
-    {
-        if (!instance)
-        {
-            instance = this;
-        }
-    }
-    void Update()
-    {
-        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        scoreText.text = $"Score: {score}";
-        waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
-        if (Input.GetMouseButtonDown(1) && returnCard() && !FindObjectOfType<Card>().onDrag)
-        {
-            
-        }
-        showTowerSlotAnimation();
-    }
-    bool returnCard()
+    [Space]
+    public GameObject CardStats;
+    public GameObject asdf;
+    public bool returnCard()
     {
         if (FindObjectOfType<Card>() != null)
         {
@@ -46,13 +32,27 @@ public class UIManager : MonoBehaviour
         }
         return false;
     }
+    private void Start()
+    {
+        if (!instance)
+        {
+            instance = this;
+        }
+        
+    }
+    void Update()
+    {
+        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        scoreText.text = $"Score: {score}";
+        waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        showTowerSlotAnimation();
+    }
     void showTowerSlotAnimation()
     {
         if (returnCard())
         {
             if (FindObjectOfType<Card>().onDrag)
             {
-                Debug.Log("Towerslot");
                 //Agregar offset al towerslot
                 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 TowerSlotAnimation.SetActive(true);
@@ -60,7 +60,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                TowerSlotAnimation.SetActive(false);
+                //TowerSlotAnimation.SetActive(false);
             }
         }
     }
@@ -71,4 +71,5 @@ public class UIManager : MonoBehaviour
         Stats.SetActive(true);
         Name.text = name;
     }
+
 }

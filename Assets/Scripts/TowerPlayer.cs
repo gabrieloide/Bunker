@@ -12,6 +12,10 @@ public class TowerPlayer : MonoBehaviour
         {
             loseScreen.SetActive(true);
         }
+        if (Input.GetMouseButtonDown(1) && UIManager.instance.asdf != null)
+        {
+            Destroy(UIManager.instance.asdf);
+        }
     }
     public float life;
     private void Awake()

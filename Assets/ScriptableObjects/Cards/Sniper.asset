@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Sniper
   Description: 
+  CardToInstantiate: {fileID: 1065562097503117305, guid: 54cd5a6ddd80eaa43b2bcae8a5dfa3fe, type: 3}
   lifeBullet: 1
   damage: 21
   fireRate: 0.6
