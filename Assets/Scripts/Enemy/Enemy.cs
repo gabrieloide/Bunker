@@ -3,27 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Enemy : MonoBehaviour
 {
-    public static Enemy instance;
     public AK.Wwise.Event tank_destroy;
     //-------------------------STATS--------------------------------
     [SerializeField]EnemyData enemyData;
-    public float Life;
-    float Damage;
-    float Defense;
+    public int Life;
+    int Damage;
+    int Defense;
     float MoveSpeed;
     //--------------------------------------------------------------
     EnemyMovement enemyMovement;
-    CardDrop cardDrop;
     SpriteRenderer spriteRenderer;
     [SerializeField] GameObject hitParticle, explosionParticle;
     public int nextWavePosition;
 
     private void Start()
     {
-        if (!instance) 
-        {
-            instance = this;
-        }
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initializeStats();
@@ -69,12 +63,12 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    void initializeStats() 
+    public void initializeStats()
     {
         Life = enemyData.Life;
         Damage = enemyData.Damage;
-        Defense = enemyData.Defense;
-        MoveSpeed = enemyData.MoveSpeed;
+        Defense= enemyData.Defense;
+        MoveSpeed= enemyData.MoveSpeed;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -92,13 +86,6 @@ public class Enemy : MonoBehaviour
     }
     void flip()
     {
-        if (enemyMovement.points[nextWavePosition].x < transform.position.x)
-        {
-            spriteRenderer.flipX = true;
-        }
-        else
-        {
-            spriteRenderer.flipX = false;
-        }
+        bool n = enemyMovement.points[nextWavePosition].x < transform.position.x ? spriteRenderer.flipX = true : spriteRenderer.flipX = false;
     }
 }

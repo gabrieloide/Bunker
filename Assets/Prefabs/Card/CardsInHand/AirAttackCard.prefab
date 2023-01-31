@@ -76,8 +76,8 @@ SpriteRenderer:
   m_SortingLayerID: -605185207
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.6320754, g: 0.15205587, b: 0.15205587, a: 1}
+  m_Sprite: {fileID: 21300000, guid: b58bd0efb1bc6b64ab88e94c9284dbe3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,8 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardToInstantiate: {fileID: 7506797028057159639, guid: 5e97c98feca12fb449574cef4ca6885e, type: 3}
-  TowerSlot: {fileID: 4052250706693292627, guid: ab254f6c9ef6ad549b0d31ecfce92049, type: 3}
+  td: {fileID: 11400000, guid: acb0ea854b75b5a41870b58be1716c70, type: 2}
+  canDrop: 0
   onDrag: 0
   handIndex: 0
 --- !u!61 &-1288623802054063192
@@ -120,7 +120,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 3, y: 4}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
