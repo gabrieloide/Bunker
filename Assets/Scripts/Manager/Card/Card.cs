@@ -12,6 +12,7 @@ public class Card : MonoBehaviour
     public int handIndex;
     private Deck dc;
     SpriteRenderer spriteRenderer;
+    public bool ShowStatsCard;
     private void Start()
     {
         dc = FindObjectOfType<Deck>();
@@ -20,13 +21,14 @@ public class Card : MonoBehaviour
         B2D = gameObject.GetComponent<BoxCollider2D>();
         onDrag = false;
     }
-    private void Update()
+    private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1) && UIManager.instance.returnCard() && !FindObjectOfType<Card>().onDrag)
+        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
         {
             //instanciar recuadro de stats de cartas
-            UIManager.instance.asdf = Instantiate(UIManager.instance.CardStats, UIManager.instance.transform);
+            UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
         }
+
     }
     private void OnMouseEnter()
     {
@@ -44,10 +46,7 @@ public class Card : MonoBehaviour
             transform.position = dc.cardSlots[handIndex].position;
             B2D.size -= new Vector2(0f, 0.2f);
             B2D.offset -= new Vector2(0f, -0.1f);
-            if (UIManager.instance.asdf)
-            {
-                Destroy(UIManager.instance.asdf);
-            }
+            Destroy(UIManager.instance.c);
         }
     }
     public virtual void OnMouseDrag()
@@ -55,13 +54,13 @@ public class Card : MonoBehaviour
         Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
         gameObject.transform.position = MousePosition;
     }
-
     private void OnMouseDown()
     {
-        Cursor.SetCursor(UIManager.instance.cursorTexture, UIManager.instance.cursorHotspot, CursorMode.Auto);
+        Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
         spriteRenderer.color = new Color(255, 255, 255, 0.7f);
         canDrop = true;
         onDrag = true;
+        UIManager.instance.ShowTowerSlot = true;
         gameObject.transform.localScale -= scaleChange;
         B2D.size += new Vector2(0f, 2f);
         B2D.offset += new Vector2(0f, 1f);
@@ -70,7 +69,8 @@ public class Card : MonoBehaviour
     {
         spriteRenderer.color = new Color(255, 255, 255, 1f);
         UIManager.instance.TowerSlotAnimation.SetActive(false);
-        Cursor.SetCursor(UIManager.instance.cursorDefault, UIManager.instance.cursorHotspot, CursorMode.Auto);//Cambiar de cursor al normal
+        Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);//Cambiar de cursor al normal
+        UIManager.instance.ShowTowerSlot = false;
         useCard();
     }
     void useCard()
@@ -81,7 +81,6 @@ public class Card : MonoBehaviour
         float d = Vector2.Distance(Deck.instance.cardSlots[handIndex].position, Mouseposition);
         if (canDrop && d > 1.5f && td.CardToInstantiate != null)
         {
-            
             dc.availableCardSlots[handIndex] = true;
             Instantiate(td.CardToInstantiate, Mouseposition, transform.rotation);
             Destroy(gameObject);

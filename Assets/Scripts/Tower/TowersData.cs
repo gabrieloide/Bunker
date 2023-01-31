@@ -9,7 +9,7 @@ public class TowersData : ScriptableObject
     public string Name;
     [TextArea(4,5)]public string Description;
     public GameObject CardToInstantiate;
-    public float lifeBullet;
+    public int lifeBullet;
     public int damage;
     public float fireRate;
 }

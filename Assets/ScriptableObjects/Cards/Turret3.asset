@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Turret3
   m_EditorClassIdentifier: 
   Name: TriCannon
-  Description: 
+  Description: lorem
   CardToInstantiate: {fileID: 8316505337117789106, guid: 6c3fef1f234744b4589449eb1283a005, type: 3}
   lifeBullet: 1
   damage: 12

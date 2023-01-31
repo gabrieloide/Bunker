@@ -5,11 +5,12 @@ using TMPro;
 
 public class ChangeCardText : MonoBehaviour
 {
-    public GameObject CardStats;
     public TMP_Text CardName;
     public TMP_Text CardDescription;
-    Card card;
     public static ChangeCardText instance;
+    [SerializeField] float moveY;
+    [SerializeField] float time;
+    public LeanTweenType leanTweenType;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,16 +22,14 @@ public class ChangeCardText : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        card = FindObjectOfType<Card>();
-        instantiateStats(card.td.Name, card.td.Description);
     }
-    
-    void instantiateStats(string textName, string textDescription)
+    public void instantiateStats(string textName, string textDescription)
     {
-        ///TODO: Cambiar texto de stats
+        //TODO: Cambiar texto de stats
         CardName.text = textName;
         CardDescription.text = textDescription;
-        ///Que se elimine el stat al salir del hover
-        ///Que solo se instancie 1 statcard
+        Vector3 sc = new Vector3(0.25f, 0.25f, 0.25f);
+        LeanTween.scale(gameObject, sc, 0.2f);
+        LeanTween.moveLocalY(this.gameObject, moveY, time).setEase(leanTweenType);
     }
 }

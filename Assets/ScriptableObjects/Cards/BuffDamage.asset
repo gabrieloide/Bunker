@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BuffDamage
   m_EditorClassIdentifier: 
   Name: Buff Damage
-  Description: 
+  Description: Buff damage of a card
   CardToInstantiate: {fileID: 7635148593725922897, guid: 960be20bf270d6449abd4b9b8845297c, type: 3}
   lifeBullet: 0
   damage: 0

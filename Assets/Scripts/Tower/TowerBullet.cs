@@ -6,7 +6,7 @@ public class TowerBullet : MonoBehaviour
 {
     [SerializeField]
     private float speed;
-    public float damage, lifeBullet;
+    public int damage, lifeBullet;
     [SerializeField]
     private float timeToDestroy;
     [HideInInspector]public Transform target;
@@ -19,7 +19,7 @@ public class TowerBullet : MonoBehaviour
         Destroy(gameObject, timeToDestroy);
     }
 
-    public void GetData(Transform _target, float _damage, float _lifeBullet)
+    public void GetData(Transform _target, int _damage, int _lifeBullet)
     {
         target = _target;
         damage = _damage;
