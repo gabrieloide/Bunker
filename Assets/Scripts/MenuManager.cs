@@ -4,17 +4,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
+    void changeScene(string SceneName)
+    {
+        SceneManager.LoadScene(SceneName);
+        FindObjectOfType<Transition>().ChangeTransitionOut();
+    }
     public void PlayMainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        changeScene("MainMenu");
     }
     public void PlayGame()
     {
-        SceneManager.LoadScene("SampleScene");
+        changeScene("SceneGame");
     }
     public void PlayCredits()
     {
-        SceneManager.LoadScene("Credits");
+        changeScene("SceneGame");
     }
     public void QuitGame()
     {

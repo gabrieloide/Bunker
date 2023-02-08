@@ -25,7 +25,6 @@ public class UIManager : MonoBehaviour
     public LeanTweenType leanTweenType;
     [HideInInspector]public GameObject c;
     public GameObject Canvas2;
-    public int a, b, d;
     public bool returnCard()
     {
         if (FindObjectOfType<Card>() != null)
