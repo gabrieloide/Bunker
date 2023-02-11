@@ -6,9 +6,9 @@ public class Enemy : MonoBehaviour
     public AK.Wwise.Event tank_destroy;
     //-------------------------STATS--------------------------------
     [SerializeField]EnemyData enemyData;
-    public int Life;
-    int Damage;
-    int Defense;
+    public float Life;
+    float Damage;
+    float Defense;
     float MoveSpeed;
     //--------------------------------------------------------------
     EnemyMovement enemyMovement;
@@ -21,14 +21,6 @@ public class Enemy : MonoBehaviour
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initializeStats();
-        if (WaveManager.instance.Wave == 3 || WaveManager.instance.Wave == 4)
-        {
-            nextWavePosition = 7;
-        }
-        else if (WaveManager.instance.Wave == 5 || WaveManager.instance.Wave == 6)
-        {
-            nextWavePosition = 1;
-        }
     }
     private void Update()
     {
@@ -59,7 +51,7 @@ public class Enemy : MonoBehaviour
             Instantiate(explosionParticle, transform.position, transform.rotation);
             GetComponent<LootBag>().InstantiateLoot(transform.position);
             UIManager.instance.score += enemyData.score;
-            WaveManager.instance.enemyAmount--;
+            EnemySpawner.instance.EnemyAmount--;
             Destroy(gameObject);
         }
     }
@@ -72,10 +64,6 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            TowerPlayer.instance.life -= Damage;
-        }
         if (collision.CompareTag("Bullet"))
         {
             Instantiate(hitParticle, transform.position, Quaternion.identity);

@@ -109,7 +109,7 @@ MonoBehaviour:
   Life: 0
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
-  nextWavePosition: 14
+  nextWavePosition: 0
 --- !u!61 &2386549145774214801
 BoxCollider2D:
   m_ObjectHideFlags: 0

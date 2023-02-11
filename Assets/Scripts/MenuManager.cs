@@ -1,25 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 public class MenuManager : MonoBehaviour
 {
-    void changeScene(string SceneName)
-    {
-        SceneManager.LoadScene(SceneName);
-        FindObjectOfType<Transition>().ChangeTransitionOut();
-    }
     public void PlayMainMenu()
     {
-        changeScene("MainMenu");
+        Transition.instance.ChangeTransitionOutMainMenu();
     }
     public void PlayGame()
     {
-        changeScene("SceneGame");
-    }
-    public void PlayCredits()
-    {
-        changeScene("SceneGame");
+        Transition.instance.ChangeTransitionOutGame();
     }
     public void QuitGame()
     {

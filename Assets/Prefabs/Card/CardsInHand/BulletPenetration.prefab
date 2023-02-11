@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 660768541324699136}
   - component: {fileID: 4648122694168004474}
+  - component: {fileID: -6130996132209806072}
   m_Layer: 0
   m_Name: BulletPenetration
   m_TagString: Card
@@ -84,3 +85,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-6130996132209806072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5334616107968841354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultCard: {fileID: 21300000, guid: 4f410d0595adbc247b777ebb6ab9023a, type: 3}
+  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
+  td: {fileID: 0}
+  canDrop: 0
+  onDrag: 0
+  handIndex: 0
+  ShowStatsCard: 0

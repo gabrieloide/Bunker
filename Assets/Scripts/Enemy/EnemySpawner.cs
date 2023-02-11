@@ -5,48 +5,56 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public static EnemySpawner instance;
-    [SerializeField] GameObject[] Enemy;
+    public float StartEnemySpawn;
 
-    [SerializeField] float DelaybtwSpawn;
-    public float startBtwSpawns;
-
-    public float startDelaySpawns;
-    public float startCounter;
+    public float EnemyDelay;
+    public float WaitBetweenSpawns;
+    public float EnemyAmount;
+    float startEnemySpawn;
+    public GameObject[] Enemies;
 
     private void Start()
     {
+        startEnemySpawn = EnemyAmount;
         if (!instance)
         {
             instance = this;
         }
-    }
-    private void FixedUpdate()
-    {        
-        startDelaySpawns -= Time.deltaTime;
-        EnemyGenerator();
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     void EnemyGenerator()
     {
-        //spawn 1 enemy every this function is called
-        if (startDelaySpawns <= 0)
+
+    }
+    public void Generator(float newEnemyAmount)
+    {
+        StartEnemySpawn -= Time.fixedDeltaTime;
+        if (StartEnemySpawn <= 0)
         {
-            if (WaveManager.instance.enemyAmount > 0)
+            StartEnemySpawn = 0;
+            EnemyDelay -= Time.fixedDeltaTime;
+            if (EnemyDelay <= 0)//Timer para spawnear enemigos.
             {
-                if (WaveManager.instance.changeWave)
+                if (startEnemySpawn > 0)//Verifica si la cantidad de enemigos es mayor a cero.
                 {
-                    startDelaySpawns = startCounter;
-                    WaveManager.instance.changeWave = false;
+                    //Spawnea 1 enemigos cada vez que el contador de startEnemyspawn es menor que 0.
+                    startEnemySpawn--;
+                    int random = Random.Range(0, Enemies.Length);//Da un numero aleatorio para spawnear un enemigo
+                    Instantiate(Enemies[random], transform.position, Quaternion.identity);
+                    EnemyDelay = WaitBetweenSpawns;
                 }
-                DelaybtwSpawn -= Time.deltaTime;
-                if (DelaybtwSpawn < 0)
+                else if (startEnemySpawn <= 0)
                 {
-                    DelaybtwSpawn = startBtwSpawns;
-                    //Cada oleada spawnea agarra 1 de mas
-                    WaveManager.instance.enemyAmount--;
-                    int rnd = Random.Range(0, Enemy.Length);
-                    Instantiate(Enemy[rnd],WaveManager.instance.SpawnsPositions[WaveManager.instance.NewPositionSpawn], transform.rotation);
+                    EnemyDelay = 0; //Si no hay enemigos el tiempo se queda en 0.
+                    StartEnemySpawn = 15;
+                    EnemyAmount += newEnemyAmount;
+                    startEnemySpawn = EnemyAmount;
+                    WaveManager.instance.Wave++;
                 }
-            }
+            } 
         }
     }
 }
