@@ -6,6 +6,7 @@ public class Card : MonoBehaviour
 {
     private Vector3 scaleChange;
     private BoxCollider2D B2D;
+    [SerializeField] Sprite defaultCard, backCard;
     public TowersData td;
     public bool canDrop;
     public bool onDrag;
@@ -15,9 +16,9 @@ public class Card : MonoBehaviour
     public bool ShowStatsCard;
     private void Start()
     {
+        scaleChange = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, 0f);
         dc = FindObjectOfType<Deck>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        scaleChange = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, 0f);
         B2D = gameObject.GetComponent<BoxCollider2D>();
         onDrag = false;
     }
@@ -56,8 +57,10 @@ public class Card : MonoBehaviour
     }
     private void OnMouseDown()
     {
+
+        spriteRenderer.sprite = backCard;
         Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
-        spriteRenderer.color = new Color(255, 255, 255, 0.7f);
+        LeanTween.alpha(gameObject, 0.87f, 0.3f);
         canDrop = true;
         onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
@@ -67,10 +70,10 @@ public class Card : MonoBehaviour
     }
     private void OnMouseUp()
     {
-        spriteRenderer.color = new Color(255, 255, 255, 1f);
+        spriteRenderer.sprite = defaultCard;
+        LeanTween.alpha(gameObject, 1f, 0.3f);
         UIManager.instance.TowerSlotAnimation.SetActive(false);
         Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);//Cambiar de cursor al normal
-        UIManager.instance.ShowTowerSlot = false;
         useCard();
     }
     void useCard()

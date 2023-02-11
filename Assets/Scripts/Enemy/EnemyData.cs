@@ -6,9 +6,9 @@ using UnityEngine;
 public class EnemyData : ScriptableObject
 {
     //Escribir mas stats de enemigos
-    public int Life;
+    public float Life;
     public int score;
-    public int Damage;
-    public int Defense;
+    public float Damage;
+    public float Defense;
     public float MoveSpeed; 
 }

@@ -2,18 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BuffEnemyType
+{
+    NormalEnemy,
+    BuffAttack,
+    BuffDefense,
+    BuffVelocity,
+    BuffLife
+}
+
 public class WaveManager : MonoBehaviour
 {
+    public BuffEnemyType buffEnemyType = BuffEnemyType.NormalEnemy;
     public static WaveManager instance;
-    public int enemyAmount;
-    public int[] newEnemyAmount;
-    public Vector3[] SpawnsPositions;
-    public int NewPositionSpawn;
     public int Wave;
+    public int MinPorcent, MaxPorcent;
     public GameObject winScreen;
-    public float[] newWaitBtwSpawn;
-
-    public bool changeWave;
+    public float IncreaseEnemyAmount(float MinPorcent, float MaxPorcent)
+    {
+        float ranPorcent = Random.Range(MinPorcent, MaxPorcent);
+        float r =( (15 * 100) / ranPorcent);
+        return Mathf.Ceil(r);
+    }
+    Dictionary<int, BuffEnemyType> BuffEnemy;
     private void Awake()
     {
         if (!instance)
@@ -21,43 +32,9 @@ public class WaveManager : MonoBehaviour
             instance = this;
         }
     }
-    private void Start()
-    {
-        enemyAmount = newEnemyAmount[0];
-    }
     private void Update()
     {
-        for (int i = 0; i < 6; i++)
-        {
-            if (enemyAmount <= 0)
-            {
-                Wave++;
-                enemyAmount = newEnemyAmount[i];
-                if (Wave == 3)
-                {
-                    changeWave = true;
-                    Debug.Log("Segunda oleada");
-                    NewPositionSpawn++;
-                    EnemySpawner.instance.startBtwSpawns = newWaitBtwSpawn[0];
-                    CameraMovement.instance.maxX = 34;
-                    
-                }
-
-                if (Wave == 5)
-                {
-                    changeWave = true;
-                    Debug.Log("Tercera oleada");
-                    NewPositionSpawn++;
-                    EnemySpawner.instance.startBtwSpawns = newWaitBtwSpawn[1];
-                }
-            }
-        }
-        if (Wave >= 7)
-        {
-            Debug.Log("termino el juego");
-            enemyAmount = 0;
-            winScreen.SetActive(true);
-        }
-        //1 7 14
+        EnemySpawner.instance.Generator(IncreaseEnemyAmount(MinPorcent, MaxPorcent));
     }
+    
 }
