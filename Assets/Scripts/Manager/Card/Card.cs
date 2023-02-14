@@ -1,33 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class Card : MonoBehaviour
 {
     private Vector3 scaleChange;
     private BoxCollider2D B2D;
-    bool canDrop;
-    public GameObject CardToInstantiate;
-
+    public TowersData td;
+    public bool canDrop;
     public bool onDrag;
-
     public int handIndex;
-
     private Deck dc;
-   //[SerializeField] CursorType cursor, defaultCursor;
-
+    SpriteRenderer spriteRenderer;
+    public bool ShowStatsCard;
     private void Start()
     {
         dc = FindObjectOfType<Deck>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         scaleChange = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, 0f);
         B2D = gameObject.GetComponent<BoxCollider2D>();
         onDrag = false;
     }
+    private void OnMouseOver()
+    {
+        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
+        {
+            //instanciar recuadro de stats de cartas
+            UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
+        }
 
+    }
     private void OnMouseEnter()
     {
         if (!onDrag)
         {
-            //Cursor.SetCursor(cursor.cursorTexture, cursor.cursorHotspot, CursorMode.Auto);
             gameObject.transform.position += new Vector3(0f, gameObject.transform.localScale.y / 5f, 0f);
             B2D.size += new Vector2(0f, 0.2f);
             B2D.offset += new Vector2(0f, -0.1f);
@@ -37,56 +43,55 @@ public class Card : MonoBehaviour
     {
         if (!onDrag)
         {
-            //Cursor.SetCursor(defaultCursor.cursorTexture, defaultCursor.cursorHotspot, CursorMode.Auto);
             transform.position = dc.cardSlots[handIndex].position;
             B2D.size -= new Vector2(0f, 0.2f);
             B2D.offset -= new Vector2(0f, -0.1f);
+            Destroy(UIManager.instance.c);
         }
     }
     public virtual void OnMouseDrag()
     {
-        gameObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.2f, 10f);
+        Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
+        gameObject.transform.position = MousePosition;
     }
-
     private void OnMouseDown()
     {
+        Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
+        spriteRenderer.color = new Color(255, 255, 255, 0.7f);
         canDrop = true;
         onDrag = true;
+        UIManager.instance.ShowTowerSlot = true;
         gameObject.transform.localScale -= scaleChange;
+        B2D.size += new Vector2(0f, 2f);
+        B2D.offset += new Vector2(0f, 1f);
     }
     private void OnMouseUp()
     {
+        spriteRenderer.color = new Color(255, 255, 255, 1f);
+        UIManager.instance.TowerSlotAnimation.SetActive(false);
+        Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);//Cambiar de cursor al normal
+        UIManager.instance.ShowTowerSlot = false;
+        useCard();
+    }
+    void useCard()
+    {
         //Obtiene la posicion del mouse
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
         //Calcula la distancia entre el slot de la carta y la posicion del mouse
         float d = Vector2.Distance(Deck.instance.cardSlots[handIndex].position, Mouseposition);
-
-        if (canDrop && d > 1.5f && CardToInstantiate != null)
+        if (canDrop && d > 1.5f && td.CardToInstantiate != null)
         {
-             dc.availableCardSlots[handIndex] = true;
-             Instantiate(CardToInstantiate, Mouseposition, transform.rotation);
-             Destroy(gameObject);
+            dc.availableCardSlots[handIndex] = true;
+            Instantiate(td.CardToInstantiate, Mouseposition, transform.rotation);
+            Destroy(gameObject);
         }
         else
         {
             onDrag = false;
             transform.position = dc.cardSlots[handIndex].position;
             gameObject.transform.localScale += scaleChange;
-        }
-    }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Decoration"))
-        {
-            canDrop = false;
-        }
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Decoration"))
-        {
-            canDrop = true;
+            B2D.size -= new Vector2(0f, 2f);
+            B2D.offset -= new Vector2(0f, 1f);
         }
     }
 }

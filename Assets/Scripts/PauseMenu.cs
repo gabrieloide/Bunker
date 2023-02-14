@@ -22,11 +22,6 @@ public class PauseMenu : MonoBehaviour
                 Pause();
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            SlowTime();
-        }
     }
     public void Resume()
     {
@@ -43,10 +38,5 @@ public class PauseMenu : MonoBehaviour
         panelPauseOptions.SetActive(false);
         Time.timeScale = 0f;
         GameIsPaused = true;
-    }
-
-    public void SlowTime()
-    {
-        Time.timeScale = 0.1f;
     }
 }

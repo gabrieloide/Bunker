@@ -143,7 +143,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardToInstantiate: {fileID: 7635148593725922897, guid: 960be20bf270d6449abd4b9b8845297c, type: 3}
+  td: {fileID: 11400000, guid: dd5600b71f7698f4f95b7611ca250a53, type: 2}
+  canDrop: 0
   onDrag: 0
   handIndex: 0
 --- !u!50 &5300232387221754853

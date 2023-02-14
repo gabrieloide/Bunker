@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Turret2
   m_EditorClassIdentifier: 
   Name: BiCannon
-  Description: 
+  Description: lorem
+  CardToInstantiate: {fileID: 1355402855024040456, guid: 3d466198936322846871685be4fe8bcc, type: 3}
   lifeBullet: 1
   damage: 6
   fireRate: 4
