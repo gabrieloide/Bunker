@@ -781,6 +781,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43470a6babff5dd439ab74c83d5c2b84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buffEnemyType: 0
   Wave: 1
   MinPorcent: 86
   MaxPorcent: 101
@@ -2059,7 +2060,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &782002215
 RectTransform:
   m_ObjectHideFlags: 0
