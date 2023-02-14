@@ -6,6 +6,7 @@ public class TowerPlayer : MonoBehaviour
 {
     public static TowerPlayer instance;
     public GameObject loseScreen;
+    public float life;
     private void Update()
     {
         if (life <= 0)
@@ -13,7 +14,6 @@ public class TowerPlayer : MonoBehaviour
             loseScreen.SetActive(true);
         }
     }
-    public float life;
     private void Awake()
     {
         if (!instance)
