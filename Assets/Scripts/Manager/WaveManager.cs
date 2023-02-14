@@ -24,17 +24,45 @@ public class WaveManager : MonoBehaviour
         float r =( (15 * 100) / ranPorcent);
         return Mathf.Ceil(r);
     }
-    Dictionary<int, BuffEnemyType> BuffEnemy;
+    Dictionary<int, BuffEnemyType> BuffEnemy = new Dictionary<int, BuffEnemyType>();
     private void Awake()
     {
         if (!instance)
         {
             instance = this;
         }
+
+    }
+    private void Start()
+    {
+        int g = 55;
+        BuffEnemy.Add(g, BuffEnemyType.NormalEnemy);
+        BuffEnemy.Add(13, BuffEnemyType.BuffAttack);
+        BuffEnemy.Add(7, BuffEnemyType.BuffDefense);
+        BuffEnemy.Add(5, BuffEnemyType.BuffLife);
+        BuffEnemy.Add(6, BuffEnemyType.BuffVelocity);
+        GetEnemyBuffed();
     }
     private void Update()
     {
         EnemySpawner.instance.Generator(IncreaseEnemyAmount(MinPorcent, MaxPorcent));
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                GetEnemyBuffed();
+            }
+        }
     }
-    
+    public void GetEnemyBuffed()
+    {
+        foreach (var item in BuffEnemy)
+        {
+            int i = Random.Range(1,101);
+            if (i < item.Key)
+            {
+                buffEnemyType = item.Value;
+            }
+        }
+    }
 }
