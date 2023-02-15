@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class LootBag : MonoBehaviour
 {
+    public static LootBag instance;
     public List<Loot> lootList = new List<Loot>();
+    
+    
     Loot GetDroppedItem()
     {
-        int randomNumber = Random.Range(1, 101);
         List<Loot> possibleItems = new List<Loot>();
+        int randomNumber = Random.Range(1, 101);
         foreach (Loot item in lootList)
         {
             if (randomNumber <= item.dropChance )
@@ -23,12 +26,13 @@ public class LootBag : MonoBehaviour
         }
         return null;
     }
-    public void InstantiateLoot(Vector3 spawnPosition)
+    public void InstantiateLoot()
     {
         Loot droppItem = GetDroppedItem();
-        if (droppItem != null)
+
+        if(droppItem != null)
         {
-           Instantiate(droppItem.loots, spawnPosition, Quaternion.identity);
+            GetComponent<CardDrop>().cardsQueue.Enqueue(droppItem.indexCard);
         }
     }
 }

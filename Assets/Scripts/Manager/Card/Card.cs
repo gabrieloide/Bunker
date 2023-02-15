@@ -29,7 +29,6 @@ public class Card : MonoBehaviour
             //instanciar recuadro de stats de cartas
             UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
         }
-
     }
     private void OnMouseEnter()
     {

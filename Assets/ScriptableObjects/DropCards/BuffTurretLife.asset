@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
   m_Name: BuffTurretLife
   m_EditorClassIdentifier: 
-  loots: {fileID: 1237940215228439892, guid: 2b406aaed756e0b49821994b092cd147, type: 3}
-  lootname: 
+  loots: {fileID: 1120024884796657940, guid: 265847ad779d53f408b506d2f05baa82, type: 3}
   dropChance: 9
+  indexCard: 3

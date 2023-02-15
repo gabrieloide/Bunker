@@ -15,9 +15,11 @@ public class Enemy : MonoBehaviour
     SpriteRenderer spriteRenderer;
     [SerializeField] GameObject hitParticle, explosionParticle;
     public int nextWavePosition;
+    GameObject c;
 
     private void Start()
     {
+        c = GameObject.Find("DropCardManager");
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         initializeStats();
@@ -49,9 +51,10 @@ public class Enemy : MonoBehaviour
         if (Life <= 0)
         {
             Instantiate(explosionParticle, transform.position, transform.rotation);
-            GetComponent<LootBag>().InstantiateLoot(transform.position);
+            
             UIManager.instance.score += enemyData.score;
             EnemySpawner.instance.EnemyAmount--;
+            c.GetComponent<LootBag>().InstantiateLoot();
             Destroy(gameObject);
         }
     }
