@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
   m_Name: Turret1
   m_EditorClassIdentifier: 
-  loots: {fileID: 4963442543098525589, guid: 2de9b4a6e01574744a69e1a483bf5415, type: 3}
-  lootname: Turret1
+  loots: {fileID: 6614122001415506232, guid: 1a08555a349a415448da8ebf559bd6f6, type: 3}
   dropChance: 17
+  indexCard: 5

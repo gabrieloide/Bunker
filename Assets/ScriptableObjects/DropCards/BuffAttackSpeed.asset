@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
   m_Name: BuffAttackSpeed
   m_EditorClassIdentifier: 
-  loots: {fileID: 82504165987211160, guid: cc749357e0f1ea242a6596e8ba85111b, type: 3}
-  lootname: 
+  loots: {fileID: 6505005087614213134, guid: f70eb0f822558f6478c688f226f8bb19, type: 3}
   dropChance: 4
+  indexCard: 1

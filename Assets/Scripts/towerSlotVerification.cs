@@ -8,7 +8,6 @@ public class towerSlotVerification : MonoBehaviour
     {
         if (collision.CompareTag("Decoration")/* || collision.CompareTag("Turret")*/)
         {
-            Debug.Log("CanDrop");
             FindObjectOfType<Card>().canDrop = false;
         } 
     }

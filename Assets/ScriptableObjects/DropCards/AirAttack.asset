@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
   m_Name: AirAttack
   m_EditorClassIdentifier: 
-  loots: {fileID: 2096982710665802439, guid: 3a540bfafff40b84d9819b21c197b291, type: 3}
-  lootname: 
+  loots: {fileID: 2952522679187629482, guid: accd407f48c24194b800df1472ec5053, type: 3}
   dropChance: 3

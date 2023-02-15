@@ -7,8 +7,6 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-    public GameObject Stats;
-    [SerializeField] Text Name;
     public Texture2D cursorDefault, cursorTexture;
     [Space]
     public Text waveText;
@@ -25,6 +23,10 @@ public class UIManager : MonoBehaviour
     public LeanTweenType leanTweenType;
     [HideInInspector]public GameObject c;
     public GameObject Canvas2;
+    [Space]
+    public GameObject DeckSlot;
+    public float MoveX;
+    public float time;
     public bool returnCard()
     {
         if (FindObjectOfType<Card>() != null)
@@ -39,6 +41,7 @@ public class UIManager : MonoBehaviour
         {
             instance = this;
         }
+        LeanTween.init(800);
     }
     void Update()
     {
@@ -46,7 +49,7 @@ public class UIManager : MonoBehaviour
         scoreText.text = $"Score: {score}";
         waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
         showTowerSlotAnimation();
-
+        
     }
     void showTowerSlotAnimation()
     {
@@ -60,17 +63,6 @@ public class UIManager : MonoBehaviour
          else
             TowerSlotAnimation.SetActive(false);
     }
-    public void showStatsCards(string name, Vector3 newPosition)
-    {
-        LeanTween.cancel(Stats);
-        LeanTween.moveY(Stats.GetComponent<RectTransform>(), 1, 0.5f).setEase(leanTweenType);
-        Vector3 offset = new Vector3(0, 0.5f,0);
-        //No hace la animacion de nuevo porque se queda en la ultima posicion
-        Name.gameObject.transform.position = newPosition + offset;
-        Stats.SetActive(true);
-        Name.text = name;
-        Stats.transform.position -= new Vector3(0, 1, 0);
-    }
     public void ShowCardBox(string _name, string _description, Vector3 TC)
     {
         if (c == null)
@@ -78,6 +70,21 @@ public class UIManager : MonoBehaviour
             c = Instantiate(CardStats, Canvas2.transform);
             c.transform.position = TC;
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
+        }
+    }
+    public void ShowDeckSlot(LeanTweenType leanTweenType, LeanTweenType leanTweenArrow,int cardQueue, 
+        RectTransform rectTransform, RectTransform ArrowTS)
+    {
+        LeanTween.cancel(rectTransform);
+        if (cardQueue > 1)
+        {
+            LeanTween.moveX(rectTransform, 138, time).setEase(leanTweenType);
+            LeanTween.moveY(ArrowTS, -238, 1.2f).setEase(leanTweenArrow).setLoopClamp();
+        }
+        else
+        {
+            LeanTween.moveX(rectTransform, 270, time).setEase(leanTweenType);
+            LeanTween.moveY(ArrowTS, -268, 1.2f).setEase(leanTweenArrow).setLoopClamp();
         }
     }
 }
