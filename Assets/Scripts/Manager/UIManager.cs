@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     [Space]
     public GameObject CardStats;
     public LeanTweenType leanTweenType;
-    [HideInInspector]public GameObject c;
+    [HideInInspector]public GameObject cardInstantiate;
     public GameObject Canvas2;
     [Space]
     public GameObject DeckSlot;
@@ -41,7 +41,6 @@ public class UIManager : MonoBehaviour
         {
             instance = this;
         }
-        LeanTween.init(800);
     }
     void Update()
     {
@@ -65,26 +64,24 @@ public class UIManager : MonoBehaviour
     }
     public void ShowCardBox(string _name, string _description, Vector3 TC)
     {
-        if (c == null)
+        if (cardInstantiate == null)
         {
-            c = Instantiate(CardStats, Canvas2.transform);
-            c.transform.position = TC;
+            cardInstantiate = Instantiate(CardStats, Canvas2.transform);
+            cardInstantiate.transform.position = TC;
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowDeckSlot(LeanTweenType leanTweenType, LeanTweenType leanTweenArrow,int cardQueue, 
-        RectTransform rectTransform, RectTransform ArrowTS)
+    public void ShowDeckSlot(LeanTweenType leanTweenType,int cardQueue, 
+        RectTransform rectTransform)
     {
         LeanTween.cancel(rectTransform);
         if (cardQueue > 1)
         {
             LeanTween.moveX(rectTransform, 138, time).setEase(leanTweenType);
-            LeanTween.moveY(ArrowTS, -238, 1.2f).setEase(leanTweenArrow).setLoopClamp();
         }
         else
         {
             LeanTween.moveX(rectTransform, 270, time).setEase(leanTweenType);
-            LeanTween.moveY(ArrowTS, -268, 1.2f).setEase(leanTweenArrow).setLoopClamp();
         }
     }
 }

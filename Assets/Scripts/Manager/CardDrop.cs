@@ -13,7 +13,7 @@ public class CardDrop : MonoBehaviour
 
     private void Update()
     {
-        UIManager.instance.ShowDeckSlot(leanTweenType, leanTweenArrow, cardsQueue.Count, GetComponent<RectTransform>(),arrowTS.GetComponent<RectTransform>());
+        UIManager.instance.ShowDeckSlot(leanTweenType, cardsQueue.Count, GetComponent<RectTransform>());
     }
     private void OnMouseDown()
     {

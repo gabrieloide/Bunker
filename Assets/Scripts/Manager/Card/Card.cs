@@ -24,19 +24,15 @@ public class Card : MonoBehaviour
     }
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
-        {
-            //instanciar recuadro de stats de cartas
+        //instanciar recuadro de stats de cartas
+        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag) 
             UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
-        }
     }
     private void OnMouseEnter()
     {
         if (!onDrag)
         {
-            gameObject.transform.position += new Vector3(0f, gameObject.transform.localScale.y / 5f, 0f);
-            B2D.size += new Vector2(0f, 0.2f);
-            B2D.offset += new Vector2(0f, -0.1f);
+            gameObject.transform.position += new Vector3(0f, gameObject.transform.localScale.y / 2f, 0f);
         }
     }
     private void OnMouseExit()
@@ -44,9 +40,7 @@ public class Card : MonoBehaviour
         if (!onDrag)
         {
             transform.position = dc.cardSlots[handIndex].position;
-            B2D.size -= new Vector2(0f, 0.2f);
-            B2D.offset -= new Vector2(0f, -0.1f);
-            Destroy(UIManager.instance.c);
+            Destroy(UIManager.instance.cardInstantiate);
         }
     }
     public virtual void OnMouseDrag()
@@ -56,7 +50,7 @@ public class Card : MonoBehaviour
     }
     private void OnMouseDown()
     {
-
+        //Al hacer click
         spriteRenderer.sprite = backCard;
         Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
@@ -64,8 +58,6 @@ public class Card : MonoBehaviour
         onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
         gameObject.transform.localScale -= scaleChange;
-        B2D.size += new Vector2(0f, 2f);
-        B2D.offset += new Vector2(0f, 1f);
     }
     private void OnMouseUp()
     {
@@ -92,8 +84,6 @@ public class Card : MonoBehaviour
             onDrag = false;
             transform.position = dc.cardSlots[handIndex].position;
             gameObject.transform.localScale += scaleChange;
-            B2D.size -= new Vector2(0f, 2f);
-            B2D.offset -= new Vector2(0f, 1f);
-        }
+        }   
     }
 }
