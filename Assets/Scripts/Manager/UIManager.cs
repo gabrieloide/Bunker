@@ -9,24 +9,23 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public Texture2D cursorDefault, cursorTexture;
     [Space]
-    public Text waveText;
-    public Text scoreText;
-    [HideInInspector]public int score;
-    [HideInInspector]public int Wave;
+    public Text waveText, scoreText;
     [Space]
     public bool ShowTowerSlot;
     public GameObject TowerSlotAnimation;
-    Vector3 mousePosition;
     public Vector3 offset;
     [Space]
     public GameObject CardStats;
     public LeanTweenType leanTweenType;
-    [HideInInspector]public GameObject cardInstantiate;
+    [HideInInspector] public GameObject cardInstantiate;
     public GameObject Canvas2;
     [Space]
     public GameObject DeckSlot;
-    public float MoveX;
-    public float time;
+    public float TimeShowDeckSlot;
+
+
+    public GameObject LastPosCard;
+    public float TimeLastPosCard;
     public bool returnCard()
     {
         if (FindObjectOfType<Card>() != null)
@@ -35,7 +34,7 @@ public class UIManager : MonoBehaviour
         }
         return false;
     }
-    private void Start()
+    void Awake()
     {
         if (!instance)
         {
@@ -44,22 +43,18 @@ public class UIManager : MonoBehaviour
     }
     void Update()
     {
-        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        scoreText.text = $"Score: {score}";
+        scoreText.text = $"Score: {GameManager.instance.ActualScore}";
         waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
         showTowerSlotAnimation();
-        
     }
     void showTowerSlotAnimation()
     {
         if (returnCard() && ShowTowerSlot)
         {
-            //Agregar offset al towerslot
-            mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             TowerSlotAnimation.SetActive(true);
-            TowerSlotAnimation.transform.position = mousePosition - offset;
+            TowerSlotAnimation.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - offset;
         }
-         else
+        else
             TowerSlotAnimation.SetActive(false);
     }
     public void ShowCardBox(string _name, string _description, Vector3 TC)
@@ -71,17 +66,9 @@ public class UIManager : MonoBehaviour
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowDeckSlot(LeanTweenType leanTweenType,int cardQueue, 
-        RectTransform rectTransform)
+    public void ShowLastCardPosition(Vector3 CardPos)
     {
-        LeanTween.cancel(rectTransform);
-        if (cardQueue > 1)
-        {
-            LeanTween.moveX(rectTransform, 138, time).setEase(leanTweenType);
-        }
-        else
-        {
-            LeanTween.moveX(rectTransform, 270, time).setEase(leanTweenType);
-        }
+        LastPosCard.transform.position = CardPos;
+        LeanTween.scale(LastPosCard, Vector3.one, TimeLastPosCard);
     }
 }

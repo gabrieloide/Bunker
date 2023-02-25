@@ -6,15 +6,15 @@ public class LootBag : MonoBehaviour
 {
     public static LootBag instance;
     public List<Loot> lootList = new List<Loot>();
-    
-    
+
+
     Loot GetDroppedItem()
     {
         List<Loot> possibleItems = new List<Loot>();
         int randomNumber = Random.Range(1, 101);
         foreach (Loot item in lootList)
         {
-            if (randomNumber <= item.dropChance )
+            if (randomNumber <= item.dropChance)
             {
                 possibleItems.Add(item);
             }
@@ -30,9 +30,10 @@ public class LootBag : MonoBehaviour
     {
         Loot droppItem = GetDroppedItem();
 
-        if(droppItem != null)
+        if (droppItem != null)
         {
             GetComponent<CardDrop>().cardsQueue.Enqueue(droppItem.indexCard);
+            
         }
     }
 }

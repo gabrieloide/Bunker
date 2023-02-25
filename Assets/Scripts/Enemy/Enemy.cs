@@ -3,67 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Enemy : MonoBehaviour
 {
+    public EnemyData Data;
     public AK.Wwise.Event tank_destroy;
-    //-------------------------STATS--------------------------------
-    [SerializeField]EnemyData enemyData;
     public float Life;
-    float Damage;
-    float Defense;
-    float MoveSpeed;
-    //--------------------------------------------------------------
     EnemyMovement enemyMovement;
     SpriteRenderer spriteRenderer;
     [SerializeField] GameObject hitParticle, explosionParticle;
     public int nextWavePosition;
-    GameObject c;
+    GameObject LootBagCom;
 
     private void Start()
     {
-        c = GameObject.Find("DropCardManager");
+        LootBagCom = GameObject.Find("DropCardManager");
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        initializeStats();
+        Life = Data.Life;
     }
     private void Update()
     {
         Move();
-        LifeBehaviour();
+        if (Life < 0)
+        {
+            Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
+        }
     }
     void Move()
     {
-        float dis = Vector2.Distance(transform.position, enemyMovement.points[nextWavePosition]);
-        if (dis < 0.1f)
+        if (nextWavePosition < enemyMovement.points.Length - 1)
         {
-            nextWavePosition++;
-            if (nextWavePosition == enemyMovement.points.Length)
+            float dis = Vector2.Distance(transform.position, enemyMovement.points[nextWavePosition]);
+            if (dis < 0.1f)
             {
-                Destroy(gameObject);
+                nextWavePosition++;
+                if (nextWavePosition == enemyMovement.points.Length - 1)
+                {
+                    Debug.Log("Disparar");
+                }
             }
-        }
-        if (nextWavePosition < enemyMovement.points.Length)
-        {   
-            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed * Time.deltaTime);
             flip();
         }
+
+
     }
-    void LifeBehaviour()
+    void flip()
     {
-        if (Life <= 0)
-        {
-            Instantiate(explosionParticle, transform.position, transform.rotation);
-            
-            UIManager.instance.score += enemyData.score;
-            EnemySpawner.instance.EnemyAmount--;
-            c.GetComponent<LootBag>().InstantiateLoot();
-            Destroy(gameObject);
-        }
-    }
-    public void initializeStats()
-    {
-        Life = enemyData.Life;
-        Damage = enemyData.Damage;
-        Defense= enemyData.Defense;
-        MoveSpeed= enemyData.MoveSpeed;
+        bool n = enemyMovement.points[nextWavePosition].x < transform.position.x ? spriteRenderer.flipX = true : spriteRenderer.flipX = false;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -72,11 +57,7 @@ public class Enemy : MonoBehaviour
             Instantiate(hitParticle, transform.position, Quaternion.identity);
             Life -= collision.GetComponent<TowerBullet>().damage;
             collision.GetComponent<TowerBullet>().lifeBullet -= 1;
-           // tank_destroy.Post(gameObject);
+            tank_destroy.Post(gameObject);
         }
-    }
-    void flip()
-    {
-        bool n = enemyMovement.points[nextWavePosition].x < transform.position.x ? spriteRenderer.flipX = true : spriteRenderer.flipX = false;
     }
 }

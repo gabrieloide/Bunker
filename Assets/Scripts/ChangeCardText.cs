@@ -11,7 +11,6 @@ public class ChangeCardText : MonoBehaviour
     [SerializeField] float moveY;
     [SerializeField] float time;
     public LeanTweenType leanTweenType;
-    // Start is called before the first frame update
     void Start()
     {
         if (instance == null)
@@ -25,7 +24,6 @@ public class ChangeCardText : MonoBehaviour
     }
     public void instantiateStats(string textName, string textDescription)
     {
-        //TODO: Cambiar texto de stats
         CardName.text = textName;
         CardDescription.text = textDescription;
         Vector3 sc = new Vector3(0.25f, 0.25f, 0.25f);

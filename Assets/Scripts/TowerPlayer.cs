@@ -7,18 +7,22 @@ public class TowerPlayer : MonoBehaviour
     public static TowerPlayer instance;
     public GameObject loseScreen;
     public float life;
-    private void Update()
-    {
-        if (life <= 0)
-        {
-            loseScreen.SetActive(true);
-        }
-    }
     private void Awake()
     {
         if (!instance)
         {
             instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            life -= GetComponent<Enemy>().Data.Damage;
         }
     }
 }
