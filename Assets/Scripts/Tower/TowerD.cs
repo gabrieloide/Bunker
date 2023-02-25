@@ -6,10 +6,10 @@ public class TowerD : MonoBehaviour
 {
     public TowersData towersData;
 
-    [HideInInspector]public Transform target;
+    [HideInInspector] public Transform target;
     [SerializeField] Transform nozzle;
     private string enemyTag = "Enemy";
-   [HideInInspector]public int damage;
+    [HideInInspector] public int damage;
     public float range = 3f;
     public float fireRateCountDown = 0f;
 
@@ -32,14 +32,14 @@ public class TowerD : MonoBehaviour
         foreach (GameObject enemy in enemies)
         {
             float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
-            if(distanceToEnemy < shortestDistance)
+            if (distanceToEnemy < shortestDistance)
             {
                 shortestDistance = distanceToEnemy;
                 nearestEnemy = enemy;
             }
         }
 
-        if(nearestEnemy != null && shortestDistance <= range)
+        if (nearestEnemy != null && shortestDistance <= range)
         {
             target = nearestEnemy.transform;
         }
@@ -52,11 +52,11 @@ public class TowerD : MonoBehaviour
     void Update()
     {
         fireRateCountDown -= Time.deltaTime;
-        
+
         if (target == null)
             return;
 
-        if(fireRateCountDown <= 0f)
+        if (fireRateCountDown <= 0f)
         {
             fireRateCountDown = 1f / towersData.fireRate;
             Shoot();
@@ -66,9 +66,9 @@ public class TowerD : MonoBehaviour
     void Shoot()
     {
         Instantiate(BulletParticle, nozzle.position, transform.rotation);
-        Vector2 p = nozzle.position - new Vector3(0.3f,0);
-        GameObject b = Instantiate(bulletPrefab, p, transform.rotation);
-        b.transform.right = -1*(nozzle.position - target.position);
+        Vector2 p = nozzle.position - new Vector3(0.3f, 0);
+        Vector3 pos = (nozzle.position - target.position);
+        GameObject b = Instantiate(bulletPrefab, p, Quaternion.Euler(pos));
         TowerBullet bullet = b.GetComponent<TowerBullet>();
         bullet.GetData(target, damage, towersData.lifeBullet);
     }

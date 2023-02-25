@@ -24,8 +24,7 @@ public class Card : MonoBehaviour
     }
     private void OnMouseOver()
     {
-        //instanciar recuadro de stats de cartas
-        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag) 
+        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
             UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
     }
     private void OnMouseEnter()
@@ -50,9 +49,9 @@ public class Card : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        //Al hacer click
         spriteRenderer.sprite = backCard;
         Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
+        UIManager.instance.ShowLastCardPosition(transform.position);
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         canDrop = true;
         onDrag = true;
@@ -64,14 +63,12 @@ public class Card : MonoBehaviour
         spriteRenderer.sprite = defaultCard;
         LeanTween.alpha(gameObject, 1f, 0.3f);
         UIManager.instance.TowerSlotAnimation.SetActive(false);
-        Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);//Cambiar de cursor al normal
+        Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         useCard();
     }
     void useCard()
     {
-        //Obtiene la posicion del mouse
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //Calcula la distancia entre el slot de la carta y la posicion del mouse
         float d = Vector2.Distance(Deck.instance.cardSlots[handIndex].position, Mouseposition);
         if (canDrop && d > 1.5f && td.CardToInstantiate != null)
         {
@@ -84,6 +81,6 @@ public class Card : MonoBehaviour
             onDrag = false;
             transform.position = dc.cardSlots[handIndex].position;
             gameObject.transform.localScale += scaleChange;
-        }   
+        }
     }
 }

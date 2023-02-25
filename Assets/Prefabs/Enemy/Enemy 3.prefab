@@ -102,11 +102,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ac652a1a52e7648aed4fcd006205dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Data: {fileID: 11400000, guid: 97a77ca41e1495e4394426db6eccfd8e, type: 2}
   tank_destroy:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 11400000, guid: 957abb1391e1bbd4faa0f4e488a5afed, type: 2}
-  enemyData: {fileID: 11400000, guid: 97a77ca41e1495e4394426db6eccfd8e, type: 2}
   Life: 0
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}

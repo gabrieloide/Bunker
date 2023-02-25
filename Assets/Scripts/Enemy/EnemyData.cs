@@ -10,5 +10,13 @@ public class EnemyData : ScriptableObject
     public int score;
     public float Damage;
     public float Defense;
-    public float MoveSpeed; 
+    public float MoveSpeed;
+    public void LifeBehaviour(GameObject explosionParticle, Vector3 posExplosion, GameObject lootBagComp, GameObject enemyDestroy)
+    {
+        Instantiate(explosionParticle, posExplosion, Quaternion.identity);
+        GameManager.instance.ActualScore += score;
+        EnemySpawner.instance.EnemyAmount--;
+        lootBagComp.GetComponent<LootBag>().InstantiateLoot();
+        Destroy(enemyDestroy);
+    }
 }

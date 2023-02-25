@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public static GameManager instance;
+    public int ActualScore;
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else Destroy(gameObject);
+    }
     void Start()
     {
         Transition.instance.ChangeTransitionIn();
         FindObjectOfType<CardDrop>().cardsQueue.Enqueue(0);
         FindObjectOfType<CardDrop>().cardsQueue.Enqueue(0);
         FindObjectOfType<CardDrop>().cardsQueue.Enqueue(0);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
