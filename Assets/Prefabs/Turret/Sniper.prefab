@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1065562097503117310}
   - component: {fileID: 3143730593999500468}
   - component: {fileID: -7444204333654813125}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sniper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,9 +48,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towersData: {fileID: 11400000, guid: 56a3675fdbc88954b9d8b10e6b131421, type: 2}
   target: {fileID: 0}
-  range: 10
+  nozzle: {fileID: 0}
+  damage: 0
+  range: 13
   fireRateCountDown: 0
   bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
+  BulletParticle: {fileID: 0}
   timeToDestroy: 90
 --- !u!212 &3143730593999500468
 SpriteRenderer:
@@ -93,8 +96,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
-  m_Color: {r: 0.17515129, g: 0.21520725, b: 0.9056604, a: 1}
+  m_Sprite: {fileID: -328223381, guid: 54ba3ffff3b57234b99def96f271e4b5, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

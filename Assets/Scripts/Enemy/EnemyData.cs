@@ -9,6 +9,7 @@ public class EnemyData : ScriptableObject
     public float Life;
     public int score;
     public float Damage;
+    public float fireRate;
     public float Defense;
     public float MoveSpeed;
     public void LifeBehaviour(GameObject explosionParticle, Vector3 posExplosion, GameObject lootBagComp, GameObject enemyDestroy)
@@ -19,4 +20,9 @@ public class EnemyData : ScriptableObject
         lootBagComp.GetComponent<LootBag>().InstantiateLoot();
         Destroy(enemyDestroy);
     }
+    public void flip(float PosX, float thisPosX, SpriteRenderer sprite)
+    {
+        bool n = PosX < thisPosX ? sprite.flipX = true : sprite.flipX = false;
+    }
+
 }
