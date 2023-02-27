@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3485226732905079918}
   - component: {fileID: 1281018255891291857}
   - component: {fileID: 8855439075975462340}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: landMines
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2386549145774214801}
   - component: {fileID: 3517993003040260948}
   - component: {fileID: 5756093519430645775}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Enemy 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -108,7 +108,10 @@ MonoBehaviour:
   Life: 0
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
-  nextWavePosition: 0
+  view: 5.02
+  ally:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!61 &2386549145774214801
 BoxCollider2D:
   m_ObjectHideFlags: 0

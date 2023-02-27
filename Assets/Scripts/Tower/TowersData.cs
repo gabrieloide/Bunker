@@ -8,8 +8,16 @@ public class TowersData : ScriptableObject
     //Definir propiedades de las torres
     public string Name;
     [TextArea(4,5)]public string Description;
+
+    [Space]
+    [Header("Tower")]
     public GameObject CardToInstantiate;
     public int lifeBullet;
     public int damage;
     public float fireRate;
+    [Space]
+    [Header("Ally")]
+    public float Life;
+    public float MoveSpeed;
+    public float View;
 }

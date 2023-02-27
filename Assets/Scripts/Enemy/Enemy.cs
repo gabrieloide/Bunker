@@ -9,8 +9,11 @@ public class Enemy : MonoBehaviour
     EnemyMovement enemyMovement;
     SpriteRenderer spriteRenderer;
     [SerializeField] GameObject hitParticle, explosionParticle;
-    public int nextWavePosition;
+    [SerializeField] float view;
+    [SerializeField] LayerMask ally;
+    int nextWavePosition;
     GameObject LootBagCom;
+    private float fireRate;
 
     private void Start()
     {
@@ -18,13 +21,23 @@ public class Enemy : MonoBehaviour
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         Life = Data.Life;
+        fireRate = Data.fireRate;
     }
     private void Update()
     {
-        Move();
+
         if (Life < 0)
         {
             Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
+        }
+        RaycastHit2D contact = Physics2D.Raycast(transform.position, Vector2.left, view, ally);
+        if(!contact)
+        {
+            Move();
+        }
+        else
+        {
+            attackAlly(contact);
         }
     }
     void Move()
@@ -35,20 +48,20 @@ public class Enemy : MonoBehaviour
             if (dis < 0.1f)
             {
                 nextWavePosition++;
-                if (nextWavePosition == enemyMovement.points.Length - 1)
-                {
-                    Debug.Log("Disparar");
-                }
+
             }
             transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed * Time.deltaTime);
-            flip();
+            Data.flip(enemyMovement.points[nextWavePosition].x, transform.position.x, spriteRenderer);
         }
-
-
     }
-    void flip()
+    void attackAlly(RaycastHit2D contact)
     {
-        bool n = enemyMovement.points[nextWavePosition].x < transform.position.x ? spriteRenderer.flipX = true : spriteRenderer.flipX = false;
+        fireRate -= Time.deltaTime;
+        if (fireRate < 0)
+        {
+            contact.collider.GetComponent<EventAllyCreation>().life -= Data.Damage;
+            fireRate = Data.fireRate;
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

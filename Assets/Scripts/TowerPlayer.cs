@@ -5,7 +5,6 @@ using UnityEngine;
 public class TowerPlayer : MonoBehaviour
 {
     public static TowerPlayer instance;
-    public GameObject loseScreen;
     public float life;
     private void Awake()
     {
@@ -22,7 +21,7 @@ public class TowerPlayer : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            life -= GetComponent<Enemy>().Data.Damage;
+            life -= 2;
         }
     }
 }

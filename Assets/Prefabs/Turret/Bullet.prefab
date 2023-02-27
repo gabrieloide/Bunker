@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -5996474710664539818}
   - component: {fileID: -8195425941459398246}
   - component: {fileID: -3502244454322650535}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1252816798152504587}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -124,7 +124,6 @@ MonoBehaviour:
   damage: 2
   lifeBullet: 1
   timeToDestroy: 9
-  BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
   target: {fileID: 0}
 --- !u!58 &-3502244454322650535
 CircleCollider2D:

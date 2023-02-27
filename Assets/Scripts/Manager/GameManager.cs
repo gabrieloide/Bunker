@@ -17,8 +17,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Transition.instance.ChangeTransitionIn();
-        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(0);
-        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(0);
-        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(0);
+        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(8);
+        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(8);
+        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(8);
     }
 }
