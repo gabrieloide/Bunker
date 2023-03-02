@@ -30,7 +30,7 @@ public class EnemyMovement : MonoBehaviour
         {
             Gizmos.color = Color.black;
             Gizmos.DrawWireSphere(points[i] + _currentPosition, 0.5f);
-            if (i < points.Length -1)
+            if (i < points.Length - 1)
             {
                 Gizmos.color = Color.gray;
                 Gizmos.DrawLine(points[i] + _currentPosition, points[i + 1] + _currentPosition);

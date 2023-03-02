@@ -26,6 +26,8 @@ public class Card : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
             UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
+        
+
     }
     private void OnMouseEnter()
     {
@@ -50,8 +52,7 @@ public class Card : MonoBehaviour
     private void OnMouseDown()
     {
         spriteRenderer.sprite = backCard;
-        Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
-        UIManager.instance.ShowLastCardPosition(transform.position);
+        UIManager.instance.ShowLastCardPosition(transform.position, true);
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         canDrop = true;
         onDrag = true;
@@ -61,9 +62,9 @@ public class Card : MonoBehaviour
     private void OnMouseUp()
     {
         spriteRenderer.sprite = defaultCard;
+        UIManager.instance.ShowLastCardPosition(transform.position, false);
         LeanTween.alpha(gameObject, 1f, 0.3f);
         UIManager.instance.TowerSlotAnimation.SetActive(false);
-        Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         useCard();
     }
     void useCard()

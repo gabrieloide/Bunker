@@ -22,8 +22,8 @@ public class UIManager : MonoBehaviour
     [Space]
     public GameObject DeckSlot;
     public float TimeShowDeckSlot;
-
-
+    [Space]
+    [Header("Last Card")]
     public GameObject LastPosCard;
     public float TimeLastPosCard;
     public bool returnCard()
@@ -66,9 +66,19 @@ public class UIManager : MonoBehaviour
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowLastCardPosition(Vector3 CardPos)
+    public void ShowLastCardPosition(Vector3 CardPos, bool show)
     {
-        LastPosCard.transform.position = CardPos;
-        LeanTween.scale(LastPosCard, Vector3.one, TimeLastPosCard);
+        if (show)
+        {
+            LastPosCard.SetActive(show);
+            Vector3 offset = new Vector3(0, 0.01f,0);
+            LastPosCard.transform.position = CardPos - offset;
+            LeanTween.scale(LastPosCard, Vector3.one * 15, TimeLastPosCard).setEaseOutBack();
+        }
+        else
+        {
+            LastPosCard.SetActive(show);
+            LastPosCard.transform.localScale = Vector3.zero;
+        }
     }
 }
