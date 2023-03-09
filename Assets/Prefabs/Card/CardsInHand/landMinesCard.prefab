@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1461684082307142355}
   - component: {fileID: 4572928202905161530}
   - component: {fileID: 1050265595731252725}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: landMinesCard
   m_TagString: Card
   m_Icon: {fileID: 0}

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2607700782867712522}
   - component: {fileID: -1288623802054063192}
   - component: {fileID: -227800279104044871}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AirAttackCard
   m_TagString: Card
   m_Icon: {fileID: 0}

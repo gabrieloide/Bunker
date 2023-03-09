@@ -25,19 +25,15 @@ public class GameManager : MonoBehaviour
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         }
     }
-    private void OnMouseDown()
-    {
-        
-    }
-    private void OnMouseUp()
-    {
-        Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
-    }
     void Start()
     {
         Transition.instance.ChangeTransitionIn();
-        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(8);
-        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(8);
-        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(8);
+        AddCardToHand(10);
+        AddCardToHand(11);
+        AddCardToHand(12);
+    }
+    public void AddCardToHand(int  cardNumber)
+    {
+        FindObjectOfType<CardDrop>().cardsQueue.Enqueue(cardNumber);
     }
 }

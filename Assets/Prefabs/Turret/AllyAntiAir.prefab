@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2090860561385730728}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Nozzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 8901062727858554811}
   - component: {fileID: 2625707607779579790}
   - component: {fileID: -2872759070879836144}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: AllyAntiAir
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -199,12 +199,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6575c39bc16f8a54683aec03dd6c4567, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towersData: {fileID: 11400000, guid: acb0ea854b75b5a41870b58be1716c70, type: 2}
+  towersData: {fileID: 11400000, guid: d39eb89c7b2f2474eb181b6e91963446, type: 2}
   target: {fileID: 0}
   nozzle: {fileID: 2090860561385730728}
   damage: 0
   range: 3
-  fireRateCountDown: 1.5
+  fireRateCountDown: 0
   bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
   BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
   timeToDestroy: 30

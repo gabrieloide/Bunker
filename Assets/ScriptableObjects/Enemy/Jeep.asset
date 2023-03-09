@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Life: 0
   score: 0
-  Damage: 0
+  Damage: 5
+  fireRate: 0
   Defense: 0
   MoveSpeed: 6

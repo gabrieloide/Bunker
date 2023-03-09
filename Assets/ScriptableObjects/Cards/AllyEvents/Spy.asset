@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e4de928f3161f64c9e81bfd3fc0492a, type: 3}
   m_Name: Spy
   m_EditorClassIdentifier: 
-  Name: 
+  Name: Spy de pana
   Description: 
-  CardToInstantiate: {fileID: 0}
+  CardToInstantiate: {fileID: 7430028440710403059, guid: 3b530b73b0cd8e0439aa4f0ff7f3e0b6, type: 3}
   lifeBullet: 0
   damage: 0
-  fireRate: 0
+  fireRate: 2.5
+  Life: 5
+  MoveSpeed: 5
+  View: 5

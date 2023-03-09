@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 4576137731466820345}
   - component: {fileID: 6086027747877281124}
   - component: {fileID: 8856159100960003139}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Spy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

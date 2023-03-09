@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 3256214810825587404}
   - component: {fileID: 3256214810825587405}
   - component: {fileID: 3256214810825587410}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SniperCard
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

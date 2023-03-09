@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 660768541324699136}
   - component: {fileID: 4648122694168004474}
   - component: {fileID: -6130996132209806072}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BulletPenetration
   m_TagString: Card
   m_Icon: {fileID: 0}

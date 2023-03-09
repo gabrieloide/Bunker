@@ -7,16 +7,16 @@ public class TowerBullet : MonoBehaviour
     [SerializeField]
     private float speed;
     public int damage, lifeBullet;
-    [SerializeField]
     private float timeToDestroy;
+    public float TimeToDestroy;
     [HideInInspector] public Transform target;
     private Rigidbody2D RB2d;
     private Vector2 dir;
 
     private void Start()
     {
+        TimeToDestroy=timeToDestroy;
         RB2d = gameObject.GetComponent<Rigidbody2D>();
-        Destroy(gameObject, timeToDestroy);
     }
 
     public void GetData(Transform _target, int _damage, int _lifeBullet)
@@ -29,9 +29,12 @@ public class TowerBullet : MonoBehaviour
 
     private void Update()
     {
-        if (lifeBullet <= 0)
+        timeToDestroy -= Time.deltaTime;
+        if (lifeBullet <= 0 || timeToDestroy < 0)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            lifeBullet = 1;
+            timeToDestroy = TimeToDestroy;
         }
     }
     private void FixedUpdate()

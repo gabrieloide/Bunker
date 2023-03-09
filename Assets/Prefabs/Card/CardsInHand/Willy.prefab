@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 8717237667980497478}
   - component: {fileID: 5179136984020590154}
   - component: {fileID: 4118168945088100950}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Willy
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

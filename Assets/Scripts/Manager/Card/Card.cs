@@ -26,8 +26,6 @@ public class Card : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
             UIManager.instance.ShowCardBox(td.Name, td.Description, transform.position);
-        
-
     }
     private void OnMouseEnter()
     {
@@ -61,17 +59,25 @@ public class Card : MonoBehaviour
     }
     private void OnMouseUp()
     {
-        spriteRenderer.sprite = defaultCard;
-        UIManager.instance.ShowLastCardPosition(transform.position, false);
-        LeanTween.alpha(gameObject, 1f, 0.3f);
-        UIManager.instance.TowerSlotAnimation.SetActive(false);
-        useCard();
+
+        if (!FindObjectOfType<Trash>().hit2D)
+        {
+            spriteRenderer.sprite = defaultCard;
+            UIManager.instance.ShowLastCardPosition(transform.position, false);
+            LeanTween.alpha(gameObject, 1f, 0.3f);
+            UIManager.instance.TowerSlotAnimation.SetActive(false);
+            useCard();
+        }
+        else
+        {
+            dc.availableCardSlots[handIndex] = true;
+            Destroy(gameObject);
+        }
     }
     void useCard()
     {
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        float d = Vector2.Distance(Deck.instance.cardSlots[handIndex].position, Mouseposition);
-        if (canDrop && d > 1.5f && td.CardToInstantiate != null)
+        if (canDrop && td.CardToInstantiate != null)
         {
             dc.availableCardSlots[handIndex] = true;
             Instantiate(td.CardToInstantiate, Mouseposition, transform.rotation);

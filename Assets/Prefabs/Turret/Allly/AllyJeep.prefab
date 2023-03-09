@@ -170,5 +170,4 @@ MonoBehaviour:
   Data: {fileID: 11400000, guid: 39f3f4e7350877c47990fe797859909e, type: 2}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 256
-  life: 0
+    m_Bits: 512

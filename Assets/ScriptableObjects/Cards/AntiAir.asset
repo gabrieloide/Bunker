@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e4de928f3161f64c9e81bfd3fc0492a, type: 3}
   m_Name: AntiAir
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
+  Name: Anti Air
+  Description: Un tanque que dispara
   CardToInstantiate: {fileID: 7641813852637443972, guid: 5e568991481ad3041a278e7f92a0e371, type: 3}
-  lifeBullet: 0
-  damage: 3
-  fireRate: 0
-  MoveSpeed: 4
-  View: 5
+  lifeBullet: 1
+  damage: 20
+  fireRate: 6
+  Life: 0
+  MoveSpeed: 0
+  View: 0
