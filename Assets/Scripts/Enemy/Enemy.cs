@@ -25,19 +25,21 @@ public class Enemy : MonoBehaviour
     }
     private void Update()
     {
-
-        if (Life < 0)
+        if (Life >= 0)
         {
-            Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
-        }
-        RaycastHit2D contact = Physics2D.Raycast(transform.position, Vector2.left, view, ally);
-        if(!contact)
-        {
-            Move();
+            RaycastHit2D contact = Physics2D.Raycast(transform.position, Vector2.left, view, ally);
+            if (!contact)
+            {
+                Move();
+            }
+            else
+            {
+                attackAlly(contact);
+            }
         }
         else
         {
-            attackAlly(contact);
+            Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
         }
     }
     void Move()
@@ -48,10 +50,14 @@ public class Enemy : MonoBehaviour
             if (dis < 0.1f)
             {
                 nextWavePosition++;
-
             }
             transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed * Time.deltaTime);
             Data.flip(enemyMovement.points[nextWavePosition].x, transform.position.x, spriteRenderer);
+        }
+        else if(nextWavePosition == enemyMovement.points.Length-1)
+        {
+            Debug.Log("Llegada");
+            TowerPlayer.instance.DealDamage(Data.Damage);
         }
     }
     void attackAlly(RaycastHit2D contact)
@@ -59,7 +65,7 @@ public class Enemy : MonoBehaviour
         fireRate -= Time.deltaTime;
         if (fireRate < 0)
         {
-            contact.collider.GetComponent<EventAllyCreation>().life -= Data.Damage;
+            contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage;
             fireRate = Data.fireRate;
         }
     }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9025912985281096718}
   - component: {fileID: 6787536753558464387}
   - component: {fileID: 5300232387221754853}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TurretLifeBuff
   m_TagString: Card
   m_Icon: {fileID: 0}

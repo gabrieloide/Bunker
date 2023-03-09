@@ -6,6 +6,9 @@ public class TowerPlayer : MonoBehaviour
 {
     public static TowerPlayer instance;
     public float life;
+    float dealTime;
+    public float DealTime;
+    [SerializeField] LayerMask EnemyLayer;
     private void Awake()
     {
         if (!instance)
@@ -17,11 +20,14 @@ public class TowerPlayer : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Start() => dealTime = DealTime;
+    public void DealDamage(float enemyDamage)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        dealTime -= Time.deltaTime;
+        if (dealTime < 0)
         {
-            life -= 2;
+            life -= enemyDamage;
+            dealTime = DealTime;
         }
     }
 }

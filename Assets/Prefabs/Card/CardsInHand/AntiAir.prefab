@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 5407731400470316139}
   - component: {fileID: 8711694081731708935}
   - component: {fileID: 8512463867228240762}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AntiAir
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

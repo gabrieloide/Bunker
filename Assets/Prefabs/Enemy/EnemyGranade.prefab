@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 5295365285141736910}
   - component: {fileID: -39654308716901411}
   - component: {fileID: -2466134690097179292}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: EnemyGranade
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

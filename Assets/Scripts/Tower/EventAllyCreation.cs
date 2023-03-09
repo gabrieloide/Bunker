@@ -8,24 +8,42 @@ public class EventAllyCreation : MonoBehaviour
     EnemyMovement enemyMovement;
     int nextWavePosition;
     [SerializeField] LayerMask enemyLayer;
-    public float life;
-    float fireRate;
+    float life;
+    [HideInInspector] public float LifeAlly { get => life; set => life = value; }
+    float fireRate
+    {
+        get => Data.fireRate;
+        set
+        {
+            if (fireRate != Data.fireRate)
+            {
+                fireRate = Data.fireRate;
+            }
+        }
+    }
 
     private void Start()
     {
-        life = Data.Life;
-        fireRate = Data.fireRate;
         enemyMovement = FindObjectOfType<EnemyMovement>();
         nextWavePosition = enemyMovement.points.Length - 1;
         transform.position = new Vector3(4, -0.5f, 0);
     }
     private void Update()
     {
-
+        Debug.Log(Data.MoveSpeed);
         RaycastHit2D contact = Physics2D.Raycast(transform.position, Vector2.right, Data.View, enemyLayer);
         if (!contact)
         {
             Move();
+            //allyData.flip(enemyMovement.points[nextWavePosition].x, transform.position.x, spriteRenderer);
+            if (enemyMovement.points[nextWavePosition].x < transform.position.x)
+            {
+                transform.localScale = new Vector2(-1, 1);
+            }
+            else
+            {
+                transform.localScale = new Vector2(1,1);
+            }
         }
         else
         {
@@ -38,17 +56,13 @@ public class EventAllyCreation : MonoBehaviour
     }
     void Move()
     {
-        if (life > 0)
+        float dis = Vector2.Distance(transform.position, enemyMovement.points[nextWavePosition]);
+        if (dis < 0.1f)
         {
-            float dis = Vector2.Distance(transform.position, enemyMovement.points[nextWavePosition]);
-            if (dis < 0.1f)
-            {
-                nextWavePosition--;
+            nextWavePosition--;
 
-            }
-            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed * Time.deltaTime);
         }
-        //allyData.flip(enemyMovement.points[nextWavePosition].x, transform.position.x, spriteRenderer);
+        transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed * Time.deltaTime);
     }
     void attackEnemy(RaycastHit2D contact)
     {

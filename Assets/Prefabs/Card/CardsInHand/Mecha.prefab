@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 3740360725888658753}
   - component: {fileID: 7507866222183329116}
   - component: {fileID: 724760840935553600}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mecha
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

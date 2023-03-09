@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8435700530063441598}
   - component: {fileID: 7318967318485075846}
   - component: {fileID: 6634125272418899067}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: DamageBuff
   m_TagString: Card
   m_Icon: {fileID: 0}

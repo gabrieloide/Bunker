@@ -14,7 +14,7 @@ public class OptionSettings : MonoBehaviour
     {
         sliderBrightness.value = PlayerPrefs.GetFloat("brillo", 0.8f);
 
-        imageBrightness.color = new Color(0f, 0f, 0f, sliderBrightness.value);
+        //imageBrightness.color = new Color(0f, 0f, 0f, sliderBrightness.value);
     }
 
     public void ChangeSliderBrightness(float value)

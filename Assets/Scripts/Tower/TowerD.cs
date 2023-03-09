@@ -7,7 +7,7 @@ public class TowerD : MonoBehaviour
     public TowersData towersData;
 
     [HideInInspector] public Transform target;
-    [SerializeField] Transform nozzle;
+    public Transform nozzle;
     private string enemyTag = "Enemy";
     [HideInInspector] public int damage;
     public float range = 3f;
@@ -66,10 +66,10 @@ public class TowerD : MonoBehaviour
     void Shoot()
     {
         Instantiate(BulletParticle, nozzle.position, transform.rotation);
-        Vector2 p = nozzle.position - new Vector3(0.3f, 0);
-        Vector3 pos = (nozzle.position - target.position);
-        GameObject b = Instantiate(bulletPrefab, p, Quaternion.Euler(pos));
-        TowerBullet bullet = b.GetComponent<TowerBullet>();
+        TowerBullet bullet = ObjectPooling.instance.Shoot().GetComponent<TowerBullet>();
+        Vector3 rot = target.position - bullet.transform.position;
+        bullet.transform.rotation = Quaternion.Euler(transform.rotation.x,transform.rotation.y,Mathf.Cos(rot.magnitude));
+        bullet.transform.position = nozzle.position;
         bullet.GetData(target, damage, towersData.lifeBullet);
     }
 

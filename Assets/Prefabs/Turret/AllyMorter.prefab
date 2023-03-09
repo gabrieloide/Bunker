@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8035042434763619599}
   - component: {fileID: 1311362386998153186}
   - component: {fileID: 4250644893722308130}
-  - component: {fileID: 4484950429822078879}
   m_Layer: 7
   m_Name: AllyMorter
   m_TagString: Untagged
@@ -155,20 +154,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4484950429822078879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4918984512011459238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a3ad095fcdc1ef4ca9f8985a865d3d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Data: {fileID: 11400000, guid: 57602c0dd8973fd4499b85b0337e2244, type: 2}
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  life: 0

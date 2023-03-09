@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e4de928f3161f64c9e81bfd3fc0492a, type: 3}
   m_Name: Mecha
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
-  CardToInstantiate: {fileID: 0}
+  Name: Mecha
+  Description: El pana mata todo
+  CardToInstantiate: {fileID: 8913244447289184042, guid: 8eb4eb4b63be8044e95f6cf65bca66c5, type: 3}
   lifeBullet: 0
   damage: 0
-  fireRate: 0
+  fireRate: 2.5
+  Life: 5
+  MoveSpeed: 5
+  View: 5

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7547727395907670405}
   - component: {fileID: 5401993026336709353}
   - component: {fileID: 5340790000786603850}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AttackSpeedBuff
   m_TagString: Card
   m_Icon: {fileID: 0}
