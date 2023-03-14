@@ -7,6 +7,7 @@ public class TowerPlayer : MonoBehaviour
     public static TowerPlayer instance;
     public float life;
     float dealTime;
+    [SerializeField] GameObject hitParticle;
     public float DealTime;
     [SerializeField] LayerMask EnemyLayer;
     private void Awake()
@@ -27,6 +28,7 @@ public class TowerPlayer : MonoBehaviour
         if (dealTime < 0)
         {
             life -= enemyDamage;
+            //Instantiate(hitParticle, transform, true);
             dealTime = DealTime;
         }
     }

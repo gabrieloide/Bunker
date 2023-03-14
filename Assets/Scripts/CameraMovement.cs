@@ -20,7 +20,8 @@ public class CameraMovement : MonoBehaviour
     {
         float X = Input.GetAxis("Horizontal");
         float Y = Input.GetAxis("Vertical");
-        Vector3 move = new Vector3(X * speed * Time.deltaTime, Y * speed * Time.deltaTime); 
+        Vector3 move = new Vector3(X * speed * Time.deltaTime, Y * speed * Time.deltaTime);
+        Debug.Log(move);
         transform.Translate(move);   
     }
 }
