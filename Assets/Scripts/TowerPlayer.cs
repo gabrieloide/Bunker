@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TowerPlayer : MonoBehaviour
@@ -28,7 +26,7 @@ public class TowerPlayer : MonoBehaviour
         if (dealTime < 0)
         {
             life -= enemyDamage;
-            //Instantiate(hitParticle, transform, true);
+            Instantiate(hitParticle, transform.position + new Vector3(1,0), Quaternion.identity, transform);
             dealTime = DealTime;
         }
     }
