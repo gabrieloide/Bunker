@@ -62,7 +62,6 @@ public class TowerD : MonoBehaviour
             Shoot();
         }
     }
-
     void Shoot()
     {
         Instantiate(BulletParticle, nozzle.position, transform.rotation);

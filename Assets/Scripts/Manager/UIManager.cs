@@ -26,6 +26,14 @@ public class UIManager : MonoBehaviour
     [Header("Last Card")]
     public GameObject LastPosCard;
     public float TimeLastPosCard;
+    [Space]
+    [Header("Life Turret")]
+    [SerializeField] Slider LifeSlider;
+    float currentLife()
+    {
+        float ActualLife = TowerPlayer.instance.life/100;
+        return ActualLife;
+    }
     public bool returnCard()
     {
         if (FindObjectOfType<Card>() != null)
@@ -45,6 +53,7 @@ public class UIManager : MonoBehaviour
     {
         scoreText.text = $"Score: {GameManager.instance.ActualScore}";
         waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        LifeSlider.value = currentLife();
         showTowerSlotAnimation();
     }
     void showTowerSlotAnimation()
