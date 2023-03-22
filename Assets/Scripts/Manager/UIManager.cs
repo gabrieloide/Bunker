@@ -51,8 +51,8 @@ public class UIManager : MonoBehaviour
     }
     void Update()
     {
-        scoreText.text = $"Score: {GameManager.instance.ActualScore}";
-        waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        //scoreText.text = $"Score: {GameManager.instance.ActualScore}";
+        //waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
         LifeSlider.value = currentLife();
         showTowerSlotAnimation();
     }

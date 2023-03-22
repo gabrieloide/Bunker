@@ -23,7 +23,6 @@ public class TowerD : MonoBehaviour
         Destroy(gameObject, timeToDestroy);
         damage = towersData.damage;
     }
-
     void UpdateTarget()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
@@ -38,7 +37,6 @@ public class TowerD : MonoBehaviour
                 nearestEnemy = enemy;
             }
         }
-
         if (nearestEnemy != null && shortestDistance <= range)
         {
             target = nearestEnemy.transform;
@@ -48,7 +46,6 @@ public class TowerD : MonoBehaviour
             target = null;
         }
     }
-
     void Update()
     {
         fireRateCountDown -= Time.deltaTime;
@@ -66,9 +63,18 @@ public class TowerD : MonoBehaviour
     {
         Instantiate(BulletParticle, nozzle.position, transform.rotation);
         TowerBullet bullet = ObjectPooling.instance.Shoot().GetComponent<TowerBullet>();
-        Vector3 rot = target.position - bullet.transform.position;
-        bullet.transform.rotation = Quaternion.Euler(transform.rotation.x,transform.rotation.y,Mathf.Cos(rot.magnitude));
+
+
         bullet.transform.position = nozzle.position;
+        Vector3 newBulletDirection = target.position - nozzle.transform.position;
+
+        //float angle = Mathf.Atan(newRot.y / newRot.x);
+
+        //float RotationDegree = Mathf.Acos(Vector2.Dot(nozzle.transform.position, target.transform.position)
+        //    / (nozzle.transform.position.magnitude * target.transform.position.magnitude));
+
+       Vector3 newZ = bullet.transform.up = target.position - nozzle.position;
+        bullet.transform.rotation = Quaternion.Euler(0, 0, newZ.z);
         bullet.GetData(target, damage, towersData.lifeBullet);
     }
 

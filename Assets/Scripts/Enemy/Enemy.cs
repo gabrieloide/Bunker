@@ -5,7 +5,6 @@ public class Enemy : MonoBehaviour
 {
     public EnemyData Data;
     public AK.Wwise.Event tank_destroy;
-    public float Life;
     EnemyMovement enemyMovement;
     SpriteRenderer spriteRenderer;
     [SerializeField] GameObject hitParticle, explosionParticle;
@@ -14,18 +13,19 @@ public class Enemy : MonoBehaviour
     int nextWavePosition;
     GameObject LootBagCom;
     private float fireRate;
+    [HideInInspector]public float Life;
 
     private void Start()
     {
         LootBagCom = GameObject.Find("DropCardManager");
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        Life = Data.Life;
-        fireRate = Data.fireRate;
+        fireRate = Data.FireRate();
+        Life = Data.Life();
     }
-    private void Update()
+    private void LateUpdate()
     {
-        if (Life >= 0)
+        if (Life > 0)
         {
             RaycastHit2D contact = Physics2D.Raycast(transform.position, Vector2.left, view, ally);
             if (!contact)
@@ -51,13 +51,12 @@ public class Enemy : MonoBehaviour
             {
                 nextWavePosition++;
             }
-            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, enemyMovement.points[nextWavePosition], Data.MoveSpeed() * Time.deltaTime);
             Data.flip(enemyMovement.points[nextWavePosition].x, transform.position.x, spriteRenderer);
         }
-        else if(nextWavePosition == enemyMovement.points.Length-1)
+        else if (nextWavePosition == enemyMovement.points.Length - 1)
         {
-            Debug.Log("Llegada");
-            TowerPlayer.instance.DealDamage(Data.Damage);
+            TowerPlayer.instance.DealDamage(Data.Damage());
         }
     }
     void attackAlly(RaycastHit2D contact)
@@ -65,14 +64,15 @@ public class Enemy : MonoBehaviour
         fireRate -= Time.deltaTime;
         if (fireRate < 0)
         {
-            contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage;
-            fireRate = Data.fireRate;
+            contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage();
+            fireRate = Data.FireRate();
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Bullet"))
         {
+            Debug.Log("aaa");
             Instantiate(hitParticle, transform.position, Quaternion.identity);
             Life -= collision.GetComponent<TowerBullet>().damage;
             collision.GetComponent<TowerBullet>().lifeBullet -= 1;

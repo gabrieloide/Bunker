@@ -132,6 +132,7 @@ MonoBehaviour:
   ally:
     serializedVersion: 2
     m_Bits: 128
+  PrivateMoveSpeed: 2
 --- !u!61 &6086027747877281124
 BoxCollider2D:
   m_ObjectHideFlags: 0

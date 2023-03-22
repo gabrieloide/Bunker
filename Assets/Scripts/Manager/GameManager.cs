@@ -28,11 +28,11 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Transition.instance.ChangeTransitionIn();
-        AddCardToHand(10);
-        AddCardToHand(11);
-        AddCardToHand(12);
+        AddCardToHand(8);
+        AddCardToHand(8);
+        AddCardToHand(8);
     }
-    public void AddCardToHand(int  cardNumber)
+    public void AddCardToHand(int cardNumber)
     {
         FindObjectOfType<CardDrop>().cardsQueue.Enqueue(cardNumber);
     }
