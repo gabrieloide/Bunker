@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9056f0116739e542949ccd07de5d797, type: 3}
   m_Name: Enemy2
   m_EditorClassIdentifier: 
-  Life: 9
-  score: 125
-  Damage: 7
-  Defense: 0
-  MoveSpeed: 3.3
+  _life: 50
+  _damage: 0
+  _fireRate: 0
+  _defense: 0
+  _moveSpeed: 2
+  Score: 0

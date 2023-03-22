@@ -8,7 +8,8 @@ public enum BuffEnemyType
     BuffAttack,
     BuffDefense,
     BuffVelocity,
-    BuffLife
+    BuffLife,
+    BuffFireRate
 }
 
 public class WaveManager : MonoBehaviour
@@ -21,7 +22,7 @@ public class WaveManager : MonoBehaviour
     public float IncreaseEnemyAmount(float MinPorcent, float MaxPorcent)
     {
         float ranPorcent = Random.Range(MinPorcent, MaxPorcent);
-        float r =( (15 * 100) / ranPorcent);
+        float r = ((15 * 100) / ranPorcent);
         return Mathf.Ceil(r);
     }
     Dictionary<int, BuffEnemyType> BuffEnemy = new Dictionary<int, BuffEnemyType>();
@@ -31,16 +32,20 @@ public class WaveManager : MonoBehaviour
         {
             instance = this;
         }
+        else
+        {
+            Destroy(gameObject);
+        }
 
     }
     private void Start()
     {
-        int g = 55;
-        BuffEnemy.Add(g, BuffEnemyType.NormalEnemy);
+        BuffEnemy.Add(60, BuffEnemyType.NormalEnemy);
         BuffEnemy.Add(13, BuffEnemyType.BuffAttack);
         BuffEnemy.Add(7, BuffEnemyType.BuffDefense);
         BuffEnemy.Add(5, BuffEnemyType.BuffLife);
         BuffEnemy.Add(6, BuffEnemyType.BuffVelocity);
+        BuffEnemy.Add(8, BuffEnemyType.BuffFireRate);
         GetEnemyBuffed();
     }
     private void Update()
@@ -58,11 +63,22 @@ public class WaveManager : MonoBehaviour
     {
         foreach (var item in BuffEnemy)
         {
-            int i = Random.Range(1,101);
+            int i = Random.Range(1, 101);
             if (i < item.Key)
             {
                 buffEnemyType = item.Value;
             }
+        }
+    }
+    public void IncreaseEnemyStats(int IDefense)
+    {
+        switch (buffEnemyType)
+        {
+            case BuffEnemyType.NormalEnemy:
+                break;
+            case BuffEnemyType.BuffDefense:
+                break;
+
         }
     }
 }

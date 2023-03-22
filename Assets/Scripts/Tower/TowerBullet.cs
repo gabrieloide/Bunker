@@ -15,7 +15,7 @@ public class TowerBullet : MonoBehaviour
 
     private void Start()
     {
-        TimeToDestroy=timeToDestroy;
+        timeToDestroy = TimeToDestroy;
         RB2d = gameObject.GetComponent<Rigidbody2D>();
     }
 
@@ -35,6 +35,9 @@ public class TowerBullet : MonoBehaviour
             gameObject.SetActive(false);
             lifeBullet = 1;
             timeToDestroy = TimeToDestroy;
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+            GameObject PoolingPos = GameObject.Find("Pooling");
+            transform.position = PoolingPos.transform.position;
         }
     }
     private void FixedUpdate()

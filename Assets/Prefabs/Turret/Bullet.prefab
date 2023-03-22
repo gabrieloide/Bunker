@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3884507113012481272}
   - component: {fileID: -5996474710664539818}
   - component: {fileID: -8195425941459398246}
-  - component: {fileID: -3502244454322650535}
+  - component: {fileID: 1629162196531502118}
   m_Layer: 7
   m_Name: Bullet
   m_TagString: Bullet
@@ -123,10 +123,10 @@ MonoBehaviour:
   speed: 10.18
   damage: 2
   lifeBullet: 1
-  timeToDestroy: 9
+  TimeToDestroy: 3
   target: {fileID: 0}
---- !u!58 &-3502244454322650535
-CircleCollider2D:
+--- !u!61 &1629162196531502118
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -138,6 +138,16 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.005310923, y: -0.0015960038}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.375, y: 0.25}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.14548552
+  m_Size: {x: 0.29293406, y: 0.22547689}
+  m_EdgeRadius: 0

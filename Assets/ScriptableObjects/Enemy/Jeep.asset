@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9056f0116739e542949ccd07de5d797, type: 3}
   m_Name: Jeep
   m_EditorClassIdentifier: 
-  Life: 0
-  score: 0
-  Damage: 5
-  fireRate: 0
-  Defense: 0
-  MoveSpeed: 6
+  _life: 50
+  _damage: 0
+  _fireRate: 0
+  _defense: 0
+  _moveSpeed: 2
+  Score: 0

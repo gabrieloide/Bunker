@@ -132,6 +132,7 @@ MonoBehaviour:
   ally:
     serializedVersion: 2
     m_Bits: 128
+  PrivateMoveSpeed: 2
 --- !u!50 &-8360864770463255104
 Rigidbody2D:
   serializedVersion: 4

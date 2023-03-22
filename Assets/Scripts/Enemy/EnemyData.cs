@@ -5,24 +5,54 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Enemy Data", menuName = "Enemy Data")]
 public class EnemyData : ScriptableObject
 {
-    //Escribir mas stats de enemigos
-    public float Life;
-    public int score;
-    public float Damage;
-    public float fireRate;
-    public float Defense;
-    public float MoveSpeed;
+    [SerializeField] float _life;
+    public float Life() => ReturnNewStats(_life, 2, BuffEnemyType.BuffLife);
+
+    [SerializeField] float _damage;
+    public float Damage() => ReturnNewStats(_damage, 1.5f, BuffEnemyType.BuffAttack);
+
+
+    [SerializeField] float _fireRate;
+    public float FireRate() => ReturnNewStats(_fireRate, 1.7f, BuffEnemyType.BuffFireRate);
+
+
+    [SerializeField] float _defense;
+    public float Defense() => ReturnNewStats(_defense, 1.3f, BuffEnemyType.BuffDefense);
+
+
+    [SerializeField] float _moveSpeed = 2;
+    public float MoveSpeed() => ReturnNewStats(_moveSpeed, 1.5f, BuffEnemyType.BuffVelocity);
+    public int Score;
+    float ReturnNewStats(float stat, float StatMultipier, BuffEnemyType buffType)
+    {
+        float currentStat = stat;
+        if (WaveManager.instance.buffEnemyType == buffType)
+        {
+            float IncreaseNewStat = stat * StatMultipier;
+            return IncreaseNewStat;
+        }
+        else
+        {
+            return currentStat;
+        }
+    }
     public void LifeBehaviour(GameObject explosionParticle, Vector3 posExplosion, GameObject lootBagComp, GameObject enemyDestroy)
     {
         Instantiate(explosionParticle, posExplosion, Quaternion.identity);
-        GameManager.instance.ActualScore += score;
+        GameManager.instance.ActualScore += Score;
         EnemySpawner.instance.EnemyAmount--;
         lootBagComp.GetComponent<LootBag>().InstantiateLoot();
         Destroy(enemyDestroy);
     }
     public void flip(float PosX, float thisPosX, SpriteRenderer sprite)
     {
-        bool n = PosX < thisPosX ? sprite.flipX = true : sprite.flipX = false;
+        if (PosX < thisPosX)
+        {
+            sprite.flipX = true;
+        }
+        else
+        {
+            sprite.flipX = false;
+        }
     }
-
 }
