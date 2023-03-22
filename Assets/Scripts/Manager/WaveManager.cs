@@ -70,15 +70,4 @@ public class WaveManager : MonoBehaviour
             }
         }
     }
-    public void IncreaseEnemyStats(int IDefense)
-    {
-        switch (buffEnemyType)
-        {
-            case BuffEnemyType.NormalEnemy:
-                break;
-            case BuffEnemyType.BuffDefense:
-                break;
-
-        }
-    }
 }
