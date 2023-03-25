@@ -25,10 +25,6 @@ public class EnemySpawner : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    void EnemyGenerator()
-    {
-
-    }
     public void Generator(float newEnemyAmount)
     {
         StartEnemySpawn -= Time.fixedDeltaTime;
@@ -36,22 +32,24 @@ public class EnemySpawner : MonoBehaviour
         {
             StartEnemySpawn = 0;
             EnemyDelay -= Time.fixedDeltaTime;
-            if (EnemyDelay <= 0)//Timer para spawnear enemigos.
+            if (EnemyDelay <= 0)
             {
-                if (startEnemySpawn > 0)//Verifica si la cantidad de enemigos es mayor a cero.
+                if (startEnemySpawn > 0)
                 {
-                    //Spawnea 1 enemigos cada vez que el contador de startEnemyspawn es menor que 0.
                     startEnemySpawn--;
-                    int random = Random.Range(0, Enemies.Length);//Da un numero aleatorio para spawnear un enemigo
+                    //Spawnear enemigo
+                    int random = Random.Range(0, Enemies.Length);
                     Instantiate(Enemies[random], transform.position, Quaternion.identity);
                     EnemyDelay = WaitBetweenSpawns;
                 }
                 else if (startEnemySpawn <= 0)
                 {
-                    EnemyDelay = 0; //Si no hay enemigos el tiempo se queda en 0.
+                    //Aumentar oleada
+                    EnemyDelay = 0;
                     StartEnemySpawn = 15;
                     EnemyAmount += newEnemyAmount;
                     startEnemySpawn = EnemyAmount;
+                    WaveManager.instance.GetEnemyBuffed();
                     WaveManager.instance.Wave++;
                 }
             } 

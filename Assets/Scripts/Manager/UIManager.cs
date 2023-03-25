@@ -70,6 +70,8 @@ public class UIManager : MonoBehaviour
     {
         if (cardInstantiate == null)
         {
+            //Al hacer click derecho mostrar descripcion y nombre de la carta
+
             cardInstantiate = Instantiate(CardStats, Canvas2.transform);
             cardInstantiate.transform.position = TC;
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
@@ -80,6 +82,8 @@ public class UIManager : MonoBehaviour
         if (show)
         {
             LastPosCard.SetActive(show);
+            //Mostrar Ultima posicion de la carta al agarrarla
+
             Vector3 offset = new Vector3(0, 0.01f,0);
             LastPosCard.transform.position = CardPos - offset;
             LeanTween.scale(LastPosCard, Vector3.one * 15, TimeLastPosCard).setEaseOutBack();
@@ -87,6 +91,7 @@ public class UIManager : MonoBehaviour
         else
         {
             LastPosCard.SetActive(show);
+            //No mostrar ultima posicion de la carta al agarrarla
             LastPosCard.transform.localScale = Vector3.zero;
         }
     }

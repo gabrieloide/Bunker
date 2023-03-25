@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class CardDrop : MonoBehaviour
 {
     public static CardDrop instance;
@@ -30,10 +29,13 @@ public class CardDrop : MonoBehaviour
     {
         if (cardsQueue.Count != 0)
         {
+            //Mostrar deck para tomar carta
+            
             LeanTween.moveX(rectTransform, InitialMoveX, 0.7f).setEase(leanTweenType);
         }
         else
         {
+            //No mostrar deck para tomar carta
             LeanTween.moveX(rectTransform, ReturnMoveX, 0.7f).setEase(leanTweenType);
         }
     }
@@ -41,6 +43,7 @@ public class CardDrop : MonoBehaviour
     {
         if (cardsQueue.Count >= 1)
         {
+            //Tomar carta del deck
             Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
         }
     }

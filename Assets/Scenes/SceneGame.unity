@@ -1596,7 +1596,7 @@ GameObject:
   - component: {fileID: 514304071}
   - component: {fileID: 514304070}
   m_Layer: 0
-  m_Name: image 506
+  m_Name: EnemyPT
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39423,6 +39423,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228a33f330c5c5142bfccfb3a3e677f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  card:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!50 &2797376125411415250
 Rigidbody2D:
   serializedVersion: 4

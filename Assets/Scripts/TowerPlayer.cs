@@ -25,6 +25,7 @@ public class TowerPlayer : MonoBehaviour
         dealTime -= Time.deltaTime;
         if (dealTime < 0)
         {
+            //Recibir da;o a la torre
             life -= enemyDamage;
             Instantiate(hitParticle, transform.position + new Vector3(1,0), Quaternion.identity, transform);
             dealTime = DealTime;

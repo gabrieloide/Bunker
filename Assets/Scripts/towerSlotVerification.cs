@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class towerSlotVerification : MonoBehaviour
 {
-    private void OnTriggerEnter2D(Collider2D collision)
+    public Card[] card = new Card[7];
+    private void Update()
     {
-        if (collision.CompareTag("Decoration")/* || collision.CompareTag("Turret")*/)
+        for (int i = 0; i < card.Length; i++)
         {
-            FindObjectOfType<Card>().canDrop = false;
-        } 
+
+        }
+    }
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
+        {
+            //card.canDrop = false;
+        }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Decoration")/* || collision.CompareTag("Turret")*/)
+        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
         {
-            FindObjectOfType<Card>().canDrop = true;
+            //card.canDrop = true;
         }
     }
 }
+

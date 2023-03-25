@@ -24,6 +24,8 @@ public class Deck : MonoBehaviour
                 Card newCard = Instantiate(deck[card], cardSlots[i].position, transform.rotation);
                 newCard.handIndex = i;
                 newCard.transform.SetParent(CameraMovement.instance.transform);
+                //Agregar carta a la mano
+
                 availableCardSlots[i] = false;
                 return;
             }

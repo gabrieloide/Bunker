@@ -13,10 +13,8 @@ public class bulletMovement : MonoBehaviour
         canMove = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //Al instanciar 2 veces se van a la misma direccion
         float d = Vector2.Distance(transform.position, FindObjectOfType<AirAttack>().target);
         if (d > 0.1)
         {
