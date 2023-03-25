@@ -15,10 +15,8 @@ public class PlaneMovement : MonoBehaviour
     }
     void Update()
     {
-        transform.position = new Vector2(transform.position.x + speed * Time.deltaTime, transform.position.y);
+        PMovement();
         float d = Vector2.Distance(transform.position, FindObjectOfType<AirAttack>().target);
-        Debug.Log(d);
-
         if (d < 9)
         {
             if (spawned)
@@ -27,5 +25,10 @@ public class PlaneMovement : MonoBehaviour
                 spawned = false;
             }
         }
+    }
+    void PMovement()
+    {
+        //Avion moviendose
+        transform.position = new Vector2(transform.position.x + speed * Time.deltaTime, transform.position.y);
     }
 }
