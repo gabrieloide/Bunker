@@ -36,7 +36,11 @@ public class UIManager : MonoBehaviour
     }
     public bool returnCard()
     {
-        if (FindObjectOfType<Card>() != null)
+        for (int i = 0; i < 5; i++)
+        {
+
+        }
+        if (FindObjectsOfType<Card>() != null)
         {
             return true;
         }

@@ -40,7 +40,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            //敵の死
+
             Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
         }
     }

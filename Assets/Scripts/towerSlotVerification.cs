@@ -4,26 +4,41 @@ using UnityEngine;
 
 public class towerSlotVerification : MonoBehaviour
 {
-    public Card[] card = new Card[7];
+    public List<Card> card = new List<Card>();
+    [SerializeField] LayerMask DecorationLayer;
+    public float widthBox;
+    public float heightBox;
     private void Update()
     {
-        for (int i = 0; i < card.Length; i++)
+        if (card.Count > 1)
         {
-
+            CheckTouchDecoration();
+            RemoveCardFromList();
         }
     }
-    public void OnTriggerEnter2D(Collider2D collision)
+    public void CheckTouchDecoration()
     {
-        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
+        foreach (var item in card)
         {
-            //card.canDrop = false;
+            RaycastHit2D raycastHit2d = Physics2D.BoxCast(transform.position, new Vector2(widthBox, heightBox), 0, Vector2.one, 0.7f, DecorationLayer);
+            if (!raycastHit2d)
+            {
+                item.canDrop = true;
+            }
+            else
+            {
+                item.canDrop = false;
+            }
         }
     }
-    private void OnTriggerExit2D(Collider2D collision)
+    public void RemoveCardFromList()
     {
-        if (collision.CompareTag("Decoration") || collision.CompareTag("Turret"))
+        for (int i = 0; i < card.Count; i++)
         {
-            //card.canDrop = true;
+            if (card[i]==null)
+            {
+                card.RemoveAt(i);
+            }
         }
     }
 }

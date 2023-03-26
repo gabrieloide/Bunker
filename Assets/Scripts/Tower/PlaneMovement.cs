@@ -7,7 +7,6 @@ public class PlaneMovement : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] GameObject bullet;
     bool spawned;
-    // Update is called once per frame
     private void Start()
     {
         Destroy(gameObject, 15);
