@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
+    [SerializeField]towerSlotVerification TowerSlotVerification;
     public List<Card> deck = new List<Card>();
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
@@ -23,6 +24,7 @@ public class Deck : MonoBehaviour
             {
                 Card newCard = Instantiate(deck[card], cardSlots[i].position, transform.rotation);
                 newCard.handIndex = i;
+                TowerSlotVerification.card.Add(newCard);
                 newCard.transform.SetParent(CameraMovement.instance.transform);
                 //Agregar carta a la mano
 
