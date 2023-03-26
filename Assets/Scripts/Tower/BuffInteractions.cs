@@ -22,6 +22,7 @@ public class BuffInteractions : MonoBehaviour
 
     public void buff()
     {
+        //Buff a las torretas
         switch (buffType)
         {
             case BuffType.attackPlus:

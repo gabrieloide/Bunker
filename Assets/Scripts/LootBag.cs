@@ -7,7 +7,6 @@ public class LootBag : MonoBehaviour
     public static LootBag instance;
     public List<Loot> lootList = new List<Loot>();
 
-
     Loot GetDroppedItem()
     {
         List<Loot> possibleItems = new List<Loot>();
@@ -33,7 +32,6 @@ public class LootBag : MonoBehaviour
         if (droppItem != null)
         {
             GetComponent<CardDrop>().cardsQueue.Enqueue(droppItem.indexCard);
-            
         }
     }
 }

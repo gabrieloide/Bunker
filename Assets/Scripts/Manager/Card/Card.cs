@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class Card : MonoBehaviour
 {
     private Vector3 scaleChange;
@@ -31,6 +30,8 @@ public class Card : MonoBehaviour
     {
         if (!onDrag)
         {
+            //MOUSE ENCIMA DE LA CARTA
+
             gameObject.transform.position += new Vector3(0f, gameObject.transform.localScale.y / 2f, 0f);
         }
     }
@@ -38,17 +39,22 @@ public class Card : MonoBehaviour
     {
         if (!onDrag)
         {
+            // MOUSE CUANDO SALE DE LA CARTA    
             transform.position = dc.cardSlots[handIndex].position;
             Destroy(UIManager.instance.cardInstantiate);
         }
     }
-    public virtual void OnMouseDrag()
+    public void OnMouseDrag()
     {
+        //ARRASTRAR CARTA
+
         Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
         gameObject.transform.position = MousePosition;
     }
     private void OnMouseDown()
     {
+        //TOMAR CARTA
+
         spriteRenderer.sprite = backCard;
         UIManager.instance.ShowLastCardPosition(transform.position, true);
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
@@ -70,6 +76,8 @@ public class Card : MonoBehaviour
         }
         else
         {
+            //Metti la lettera nel cestino
+
             dc.availableCardSlots[handIndex] = true;
             Destroy(gameObject);
         }
@@ -77,6 +85,7 @@ public class Card : MonoBehaviour
     void useCard()
     {
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Usar carta
         if (canDrop && td.CardToInstantiate != null)
         {
             dc.availableCardSlots[handIndex] = true;

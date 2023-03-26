@@ -62,14 +62,13 @@ public class TowerD : MonoBehaviour
     void Shoot()
     {
         Instantiate(BulletParticle, nozzle.position, transform.rotation);
+        //SFX PARA CADA VEZ QUE LA TORRETA DISPARA
+
         TowerBullet bullet = ObjectPooling.instance.Shoot().GetComponent<TowerBullet>();
-
-
         bullet.transform.position = nozzle.position;
-        Vector3 newBulletDirection = target.position - nozzle.transform.position;
 
+        //Vector3 newBulletDirection = target.position - nozzle.transform.position;
         //float angle = Mathf.Atan(newRot.y / newRot.x);
-
         //float RotationDegree = Mathf.Acos(Vector2.Dot(nozzle.transform.position, target.transform.position)
         //    / (nozzle.transform.position.magnitude * target.transform.position.magnitude));
 

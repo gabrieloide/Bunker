@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class Enemy : MonoBehaviour
@@ -34,16 +34,19 @@ public class Enemy : MonoBehaviour
             }
             else
             {
+                
                 attackAlly(contact);
             }
         }
         else
         {
+
             Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
         }
     }
     void Move()
     {
+        //Movimiento del enemigo
         if (nextWavePosition < enemyMovement.points.Length - 1)
         {
             float dis = Vector2.Distance(transform.position, enemyMovement.points[nextWavePosition]);
@@ -64,6 +67,7 @@ public class Enemy : MonoBehaviour
         fireRate -= Time.deltaTime;
         if (fireRate < 0)
         {
+            //Atacar aliados del camino
             contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage();
             fireRate = Data.FireRate();
         }
@@ -72,7 +76,7 @@ public class Enemy : MonoBehaviour
     {
         if (collision.CompareTag("Bullet"))
         {
-            Debug.Log("aaa");
+            //Rebre mal
             Instantiate(hitParticle, transform.position, Quaternion.identity);
             Life -= collision.GetComponent<TowerBullet>().damage;
             collision.GetComponent<TowerBullet>().lifeBullet -= 1;
