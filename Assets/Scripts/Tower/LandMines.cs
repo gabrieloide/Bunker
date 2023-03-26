@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LandMines : MonoBehaviour
@@ -16,6 +14,7 @@ public class LandMines : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
+            //Explosion de mina de tierra
             collision.GetComponent<Enemy>().Life -= damage;
             Instantiate(ExplosionParticle, transform.position, Quaternion.identity);
             Destroy(gameObject);

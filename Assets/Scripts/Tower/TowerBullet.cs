@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TowerBullet : MonoBehaviour
@@ -18,7 +16,6 @@ public class TowerBullet : MonoBehaviour
         timeToDestroy = TimeToDestroy;
         RB2d = gameObject.GetComponent<Rigidbody2D>();
     }
-
     public void GetData(Transform _target, int _damage, int _lifeBullet)
     {
         target = _target;
