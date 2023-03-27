@@ -4,7 +4,6 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private Vector3 scaleChange;
-    private BoxCollider2D B2D;
     [SerializeField] Sprite defaultCard, backCard;
     public TowersData td;
     public bool canDrop;
@@ -12,14 +11,17 @@ public class Card : MonoBehaviour
     public int handIndex;
     private Deck dc;
     SpriteRenderer spriteRenderer;
-    public bool ShowStatsCard;
+
     private void Start()
     {
-        scaleChange = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, 0f);
+        scaleChange = new Vector3(transform.localScale.x / 2f
+                                , transform.localScale.y / 2f, 
+                                    0f);
+
         dc = FindObjectOfType<Deck>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        B2D = gameObject.GetComponent<BoxCollider2D>();
         onDrag = false;
+        showCard();
     }
     private void OnMouseOver()
     {
@@ -69,6 +71,7 @@ public class Card : MonoBehaviour
         if (!FindObjectOfType<Trash>().hit2D)
         {
             spriteRenderer.sprite = defaultCard;
+            UIManager.instance.ShowTowerSlot = false;
             UIManager.instance.ShowLastCardPosition(transform.position, false);
             LeanTween.alpha(gameObject, 1f, 0.3f);
             UIManager.instance.TowerSlotAnimation.SetActive(false);
@@ -85,9 +88,10 @@ public class Card : MonoBehaviour
     void useCard()
     {
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //Usar carta
         if (canDrop && td.CardToInstantiate != null)
         {
+            //Usar carta
+
             dc.availableCardSlots[handIndex] = true;
             Instantiate(td.CardToInstantiate, Mouseposition, transform.rotation);
             Destroy(gameObject);
@@ -99,4 +103,6 @@ public class Card : MonoBehaviour
             gameObject.transform.localScale += scaleChange;
         }
     }
+    public void showCard() => LeanTween.moveY(gameObject, UIManager.instance.posInCamera, 0.7f).
+                              setEase(UIManager.instance.TweenDeckIn);
 }
