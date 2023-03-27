@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,19 +7,15 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public Texture2D cursorDefault, cursorTexture;
     [Space]
-    public Text waveText, scoreText;
+    public TMP_Text waveText, scoreText;
     [Space]
     public bool ShowTowerSlot;
     public GameObject TowerSlotAnimation;
     public Vector3 offset;
     [Space]
     public GameObject CardStats;
-    public LeanTweenType leanTweenType;
     [HideInInspector] public GameObject cardInstantiate;
     public GameObject Canvas2;
-    [Space]
-    public GameObject DeckSlot;
-    public float TimeShowDeckSlot;
     [Space]
     [Header("Last Card")]
     public GameObject LastPosCard;
@@ -29,22 +23,16 @@ public class UIManager : MonoBehaviour
     [Space]
     [Header("Life Turret")]
     [SerializeField] Slider LifeSlider;
+    [Space]
+    [Header("Deck")]
+    public LeanTweenType TweenDeckIn;
+    public LeanTweenType TweenDeckOut;
+    public GameObject Deck;
+    public float posInCamera;
     float currentLife()
     {
         float ActualLife = TowerPlayer.instance.life/100;
         return ActualLife;
-    }
-    public bool returnCard()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-
-        }
-        if (FindObjectsOfType<Card>() != null)
-        {
-            return true;
-        }
-        return false;
     }
     void Awake()
     {
@@ -52,17 +40,26 @@ public class UIManager : MonoBehaviour
         {
             instance = this;
         }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    private void Start()
+    {
+        LeanTween.init(100);
     }
     void Update()
     {
-        //scoreText.text = $"Score: {GameManager.instance.ActualScore}";
-        //waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        scoreText.text = $"Score: {GameManager.instance.ActualScore}";
+        waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
         LifeSlider.value = currentLife();
         showTowerSlotAnimation();
+        ShowDeck();
     }
     void showTowerSlotAnimation()
     {
-        if (returnCard() && ShowTowerSlot)
+        if (ShowTowerSlot)
         {
             TowerSlotAnimation.SetActive(true);
             TowerSlotAnimation.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - offset;
@@ -97,6 +94,15 @@ public class UIManager : MonoBehaviour
             LastPosCard.SetActive(show);
             //No mostrar ultima posicion de la carta al agarrarla
             LastPosCard.transform.localScale = Vector3.zero;
+        }
+    }
+    public void ShowDeck()
+    {
+        if (CardDrop.instance.cardsQueue.Count > 0)
+        {
+            //Mostrar deck para tomar carta
+            this.Deck.SetActive(true);
+            
         }
     }
 }

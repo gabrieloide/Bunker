@@ -22,7 +22,7 @@ public class Deck : MonoBehaviour
         {
             if(availableCardSlots[i] == true)
             {
-                Card newCard = Instantiate(deck[card], cardSlots[i].position, transform.rotation);
+                Card newCard = Instantiate(deck[card], cardSlots[i].position - new Vector3(default, 9,default), transform.rotation);
                 newCard.handIndex = i;
                 TowerSlotVerification.card.Add(newCard);
                 newCard.transform.SetParent(CameraMovement.instance.transform);
