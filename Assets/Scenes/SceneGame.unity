@@ -537,7 +537,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7096330679601391951, guid: 7d4e75016afabec41805b7d9b512856d, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7096330679601391951, guid: 7d4e75016afabec41805b7d9b512856d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -827,12 +827,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee19d815e9715e4db0063365da39e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrowTS: {fileID: 0}
-  moveX: 8
-  leanTweenType: 27
-  rectTransform: {fileID: 233230915}
-  InitialMoveX: 293
-  ReturnMoveX: 615
+  posInCamera: 0
+  posOutCamera: 0
+  deckSliceAnimation: {fileID: 0}
+  TweenDeck: 0
 --- !u!224 &233230915
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1420,14 +1418,15 @@ MonoBehaviour:
   TowerSlotAnimation: {fileID: 2797376125411415245}
   offset: {x: 0, y: 0, z: -20}
   CardStats: {fileID: 7203736628344785874, guid: 068e46fd1058df747b3e4f202908b60a, type: 3}
-  leanTweenType: 23
   cardInstantiate: {fileID: 0}
   Canvas2: {fileID: 1903381789}
-  DeckSlot: {fileID: 233230909}
-  TimeShowDeckSlot: 0.7
   LastPosCard: {fileID: 1111529914}
   TimeLastPosCard: 0.3
   LifeSlider: {fileID: 1877850885}
+  TweenDeckIn: 0
+  TweenDeckOut: 0
+  Deck: {fileID: 0}
+  posInCamera: 0
 --- !u!114 &460095361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1662,7 +1661,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -1677,6 +1676,7 @@ GameObject:
   - component: {fileID: 519420034}
   - component: {fileID: 519420033}
   - component: {fileID: 519420035}
+  - component: {fileID: 519420036}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1739,12 +1739,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1903381790}
   - {fileID: 1539723106}
+  - {fileID: 1903381790}
   - {fileID: 1406238570}
   - {fileID: 1190943400}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &519420033
 MonoBehaviour:
@@ -1799,6 +1799,23 @@ MonoBehaviour:
   minY: -7.51
   maxY: 17.5
   speed: 8
+--- !u!114 &519420036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07e77aeb6fb51424e84e4d3274d7864f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SCShader: {fileID: 4800000, guid: a90d280a2b3f84d478f9c261b30836e8, type: 3}
+  Interferance_Size: 4.39
+  Interferance_Speed: 0.35
+  Contrast: 7.65
+  Fade: 0.158
 --- !u!4 &566457639 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3534583901276341094, guid: 451419a110933c34b9268ac6a337a2e6, type: 3}
@@ -34405,7 +34422,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1270013530
 GameObject:
@@ -34437,7 +34454,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1270013532
 MonoBehaviour:
@@ -34758,7 +34775,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1361886823
 GameObject:
@@ -38629,7 +38646,7 @@ RectTransform:
   m_Children:
   - {fileID: 1111529916}
   m_Father: {fileID: 519420032}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.217}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
