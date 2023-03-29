@@ -19,13 +19,9 @@ public class CardDrop : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void Update()
-    {
-        deckSliceAnimation.position = new Vector3(transform.position.x, posInCamera, transform.position.y);
-    }
     private void OnEnable()
     {
-        LeanTween.moveY(gameObject, posInCamera, 0.7f).setEase(TweenDeck);
+        LeanTween.move(GetComponent<RectTransform>(), new Vector3(transform.position.x, posInCamera,default), 0.7f).setEase(TweenDeck);
     }
     public void TakeCard()
     {
@@ -33,7 +29,7 @@ public class CardDrop : MonoBehaviour
         {
             //Tomar carta del deck
             Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
-            LeanTween.moveY(deckSliceAnimation, -50, 0.7f).setEase(UIManager.instance.TweenDeckOut).setOnComplete(ResetTweenAnim);
+            LeanTween.moveY(deckSliceAnimation, -300, 0.7f).setEase(UIManager.instance.TweenDeckOut).setOnComplete(ResetTweenAnim);
             
         }
         if (cardsQueue.Count <= 0)
