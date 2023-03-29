@@ -45,10 +45,6 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void Start()
-    {
-        LeanTween.init(100);
-    }
     void Update()
     {
         scoreText.text = $"Score: {GameManager.instance.ActualScore}";
@@ -102,7 +98,6 @@ public class UIManager : MonoBehaviour
         {
             //Mostrar deck para tomar carta
             this.Deck.SetActive(true);
-            
         }
     }
 }
