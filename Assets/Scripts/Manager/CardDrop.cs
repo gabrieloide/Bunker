@@ -19,10 +19,6 @@ public class CardDrop : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void Start()
-    {
-        
-    }
     private void Update()
     {
         deckSliceAnimation.position = new Vector3(transform.position.x, posInCamera, transform.position.y);
