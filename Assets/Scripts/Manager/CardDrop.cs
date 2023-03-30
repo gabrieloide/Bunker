@@ -20,7 +20,7 @@ public class CardDrop : MonoBehaviour
     }
     private void OnEnable()
     {
-        LeanTween.move(GetComponent<RectTransform>(), new Vector3(transform.position.x, posInCamera,default), 0.7f).setEase(TweenDeck);
+        LeanTween.moveY(gameObject.GetComponent<RectTransform>(), posInCamera, 0.7f).setEase(TweenDeck);
     }
     public void TakeCard()
     {
@@ -28,7 +28,7 @@ public class CardDrop : MonoBehaviour
         {
             //Tomar carta del deck
             Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
-            LeanTween.moveY(deckSliceAnimation, -300, 0.7f).setEase(UIManager.instance.TweenDeckOut).setOnComplete(ResetTweenAnim);
+            LeanTween.moveY(deckSliceAnimation, posOutCamera, 0.7f).setEase(UIManager.instance.TweenDeckOut).setOnComplete(ResetTweenAnim);
             
         }
         if (cardsQueue.Count <= 0)
