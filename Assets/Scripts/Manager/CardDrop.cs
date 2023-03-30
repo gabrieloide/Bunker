@@ -7,7 +7,6 @@ public class CardDrop : MonoBehaviour
     public float posInCamera, posOutCamera;
     [SerializeField] RectTransform deckSliceAnimation;
     public LeanTweenType TweenDeck;
-
     private void Awake()
     {
         if (instance == null)
