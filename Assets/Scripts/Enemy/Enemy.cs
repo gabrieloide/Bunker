@@ -17,13 +17,13 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        LootBagCom = GameObject.Find("DropCardManager");
+        LootBagCom = GameObject.Find("Deck");
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         fireRate = Data.FireRate();
         Life = Data.Life();
     }
-    private void LateUpdate()
+    private void Update()
     {
         if (Life > 0)
         {
@@ -34,7 +34,6 @@ public class Enemy : MonoBehaviour
             }
             else
             {
-                
                 attackAlly(contact);
             }
         }
@@ -78,9 +77,14 @@ public class Enemy : MonoBehaviour
         {
             //Rebre mal
             Instantiate(hitParticle, transform.position, Quaternion.identity);
-            Life -= collision.GetComponent<TowerBullet>().damage;
+            TakeDamage(collision);
             collision.GetComponent<TowerBullet>().lifeBullet -= 1;
             tank_destroy.Post(gameObject);
         }
+    }
+    void TakeDamage(Collider2D collision)
+    {
+        float realDamage = collision.GetComponent<TowerBullet>().damage - Data.Defense();
+        Life -= realDamage;
     }
 }

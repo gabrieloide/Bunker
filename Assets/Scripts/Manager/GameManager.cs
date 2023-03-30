@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
         AddCardToHand(8);
         AddCardToHand(8);
         AddCardToHand(8);
+        AddCardToHand(8);
+        AddCardToHand(8);
     }
     public void AddCardToHand(int cardNumber)
     {

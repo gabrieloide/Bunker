@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
-    [SerializeField]towerSlotVerification TowerSlotVerification;
+    [SerializeField] towerSlotVerification TowerSlotVerification;
     public List<Card> deck = new List<Card>();
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
@@ -18,11 +18,14 @@ public class Deck : MonoBehaviour
     }
     public void SearchAviableSlots(int card)
     {
-        for(int i = 0; i < availableCardSlots.Length; i++)
+        for (int i = 0; i < availableCardSlots.Length; i++)
         {
-            if(availableCardSlots[i] == true)
+            if (availableCardSlots[i] == true)
             {
-                Card newCard = Instantiate(deck[card], cardSlots[i].position - new Vector3(default, 9,default), transform.rotation);
+                Card newCard = Instantiate(deck[card], cardSlots[i].position - 
+                                                                            new Vector3(default,
+                                                                            5.5f,
+                                                                            transform.position.z), transform.rotation);
                 newCard.handIndex = i;
                 TowerSlotVerification.card.Add(newCard);
                 newCard.transform.SetParent(CameraMovement.instance.transform);
