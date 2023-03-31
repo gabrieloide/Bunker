@@ -16,10 +16,12 @@ public class TowerD : MonoBehaviour
     public GameObject bulletPrefab;
     [SerializeField] GameObject BulletParticle;
     public float timeToDestroy = 30f;
+    [SerializeField] GameObject TurretLifeSlider;
 
     void Start()
     {
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
+        Instantiate(TurretLifeSlider, transform.position + new Vector3(default, 3,default), Quaternion.identity, transform);
         Destroy(gameObject, timeToDestroy);
         damage = towersData.damage;
     }
