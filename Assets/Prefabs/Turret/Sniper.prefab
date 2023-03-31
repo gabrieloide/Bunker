@@ -55,6 +55,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
   BulletParticle: {fileID: 0}
   timeToDestroy: 90
+  TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
 --- !u!212 &3143730593999500468
 SpriteRenderer:
   m_ObjectHideFlags: 0
