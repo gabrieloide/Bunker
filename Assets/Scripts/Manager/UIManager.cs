@@ -29,6 +29,7 @@ public class UIManager : MonoBehaviour
     public LeanTweenType TweenDeckOut;
     public GameObject Deck;
     public float posInCamera;
+    public float TimeMovement;
     float currentLife()
     {
         float ActualLife = TowerPlayer.instance.life/100;

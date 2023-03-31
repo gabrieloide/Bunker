@@ -7,6 +7,10 @@ public class CardDrop : MonoBehaviour
     public float posInCamera, posOutCamera;
     [SerializeField] RectTransform deckSliceAnimation;
     public LeanTweenType TweenDeck;
+    public float TimeMove()
+    {
+        return UIManager.instance.TimeMovement;
+    }
     private void Awake()
     {
         if (instance == null)
@@ -20,7 +24,7 @@ public class CardDrop : MonoBehaviour
     }
     private void OnEnable()
     {
-        LeanTween.moveY(gameObject.GetComponent<RectTransform>(), posInCamera, 0.7f).setEase(TweenDeck);
+        LeanTween.moveY(gameObject.GetComponent<RectTransform>(), posInCamera, TimeMove()).setEase(TweenDeck);
     }
     public void TakeCard()
     {
@@ -28,12 +32,12 @@ public class CardDrop : MonoBehaviour
         {
             //Tomar carta del deck
             Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
-            LeanTween.moveY(deckSliceAnimation, posOutCamera, 0.7f).setEase(UIManager.instance.TweenDeckOut).setOnComplete(ResetTweenAnim);
+            LeanTween.moveY(deckSliceAnimation, -82, TimeMove()).setEase(UIManager.instance.TweenDeckOut).setOnComplete(ResetTweenAnim);
             
         }
         if (cardsQueue.Count <= 0)
         {
-            LeanTween.moveY(gameObject, posOutCamera, 0.7f).setOnComplete(DeactivateDeck)
+            LeanTween.moveY(gameObject, posOutCamera, TimeMove()).setOnComplete(DeactivateDeck)
                     .setEase(UIManager.instance.TweenDeckOut);
         }
     }
@@ -43,6 +47,6 @@ public class CardDrop : MonoBehaviour
     }
     void ResetTweenAnim()
     {
-        deckSliceAnimation.transform.position = transform.position + new Vector3(default, 4.7f, default);
+        LeanTween.moveY(deckSliceAnimation, 1.7895f, 0);
     }
 }
