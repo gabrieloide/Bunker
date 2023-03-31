@@ -67,7 +67,6 @@ public class Card : MonoBehaviour
     }
     private void OnMouseUp()
     {
-
         if (!FindObjectOfType<Trash>().hit2D)
         {
             spriteRenderer.sprite = defaultCard;

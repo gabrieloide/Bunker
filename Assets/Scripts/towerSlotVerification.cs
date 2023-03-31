@@ -6,8 +6,13 @@ public class towerSlotVerification : MonoBehaviour
 {
     public List<Card> card = new List<Card>();
     [SerializeField] LayerMask DecorationLayer;
+    [SerializeField] SpriteRenderer spriteRenderer;
     public float widthBox;
     public float heightBox;
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
     private void Update()
     {
         if (card.Count > 1)
@@ -24,10 +29,12 @@ public class towerSlotVerification : MonoBehaviour
             if (!raycastHit2d)
             {
                 item.canDrop = true;
+                spriteRenderer.color = Color.black;
             }
             else
             {
                 item.canDrop = false;
+                spriteRenderer.color = Color.clear;
             }
         }
     }
