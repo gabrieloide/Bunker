@@ -102,6 +102,6 @@ public class Card : MonoBehaviour
             gameObject.transform.localScale += scaleChange;
         }
     }
-    public void showCard() => LeanTween.moveY(gameObject, UIManager.instance.posInCamera, 0.7f).
+    public void showCard() => LeanTween.moveY(gameObject, UIManager.instance.posInCamera, UIManager.instance.TimeMovement).
                               setEase(UIManager.instance.TweenDeckIn);
 }
