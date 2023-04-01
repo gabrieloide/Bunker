@@ -17,7 +17,7 @@
 						</Reference>
 					</ReferenceList>
 				</ActorMixer>
-				<ActorMixer Name="Gun" ID="{235BF9FD-39F4-4CBC-9E7A-396942CC2F7E}" ShortID="51083588">
+				<ActorMixer Name="Turrets" ID="{235BF9FD-39F4-4CBC-9E7A-396942CC2F7E}" ShortID="51083588">
 					<PropertyList>
 						<Property Name="Color" Type="int16" Value="2"/>
 						<Property Name="OverrideColor" Type="bool" Value="True"/>
@@ -30,6 +30,58 @@
 							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
 						</Reference>
 					</ReferenceList>
+					<ChildrenList>
+						<ActorMixer Name="Turret" ID="{22101EF8-94D1-4160-A110-0AEBF271AACB}" ShortID="731080745">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+						</ActorMixer>
+						<ActorMixer Name="Sniper" ID="{A4E2B5E0-CA03-4AC1-8EF3-6BFBD0521CF0}" ShortID="57901734">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+						</ActorMixer>
+						<ActorMixer Name="Mortar" ID="{F5EEEB85-8803-43DE-86D3-893A57C81200}" ShortID="936162429">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+						</ActorMixer>
+						<ActorMixer Name="AntiAir" ID="{A8D54637-5395-49DE-92E9-9D92ABAD2900}" ShortID="250489171">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+						</ActorMixer>
+						<ActorMixer Name="Plane" ID="{BE0001CA-EA19-4C6D-8C13-8622B9C7B8A3}" ShortID="18465637">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+						</ActorMixer>
+					</ChildrenList>
 				</ActorMixer>
 				<ActorMixer Name="NPCCharacters" ID="{9549BF15-4F81-43C9-B11A-80E2AA40D4A7}" ShortID="410358280">
 					<PropertyList>
@@ -45,7 +97,7 @@
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
-						<ActorMixer Name="Tank" ID="{2E68D8D2-5A55-4313-A61F-50E5E8AC23DA}" ShortID="1015219176">
+						<ActorMixer Name="TankEnemy" ID="{2E68D8D2-5A55-4313-A61F-50E5E8AC23DA}" ShortID="1015219176">
 							<ReferenceList>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
@@ -111,21 +163,469 @@
 								</RandomSequenceContainer>
 							</ChildrenList>
 						</ActorMixer>
+						<ActorMixer Name="SoldierRifleEnemy" ID="{CE345D85-2BB3-4555-98AA-1D657C0B6CEE}" ShortID="979863637">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{48D3B439-D494-4BFF-94A9-22B3A31CF176}" ShortID="315840265">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{76E3B6C5-013D-41E1-93D8-0F0303965C74}" ShortID="610989151">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{49D4FD55-8A10-4916-9B56-8CD39ABA5D93}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{C8B879B9-12D3-45D9-ABD2-B259FDC9390C}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{C8B879B9-12D3-45D9-ABD2-B259FDC9390C}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="JeepEnemy" ID="{32A1C994-54FC-4EC0-99E7-521E219C8E15}" ShortID="1045038005">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{1CA4DEBE-FC2A-4D18-9A96-569DD7CCD664}" ShortID="990512775">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{DAB1DE1B-7110-4DF8-BC9A-472042B16A1C}" ShortID="686046297">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{CD339E23-8B84-4466-8135-DA8D96307473}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{4BF2FF36-D9C5-4A1A-982B-252FB2F6F808}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{4BF2FF36-D9C5-4A1A-982B-252FB2F6F808}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="SoldierBazookaEnemy" ID="{DDFA42A8-858D-4A79-99AB-D09430C0C33F}" ShortID="1065892106">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{9753E649-96E2-41F2-BC47-1613C69425A3}" ShortID="661948479">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{2DA00B84-B344-4623-86FD-E3180EE992A8}" ShortID="437959397">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{CF9643DD-A4AC-4A0B-99A8-708E36993FEE}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{F2EBD7EC-843B-4F57-A933-03A6EA84AAB6}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{F2EBD7EC-843B-4F57-A933-03A6EA84AAB6}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="MortarEnemy" ID="{548476A0-231F-4F9D-B2F1-47D9637BB15D}" ShortID="343848588">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{2D6AE13E-73B6-4869-ACC0-2617B699B60D}" ShortID="769067033">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{AC167156-2AC9-40B2-9244-60355FB34355}" ShortID="412772218">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{61B6B62D-65B1-43EA-ACE8-352DF8FFCF99}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{1F8F2FE6-101D-426C-850F-CA27DA9E4785}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{1F8F2FE6-101D-426C-850F-CA27DA9E4785}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="MechaEnemy" ID="{A1ADDFFE-5E26-4716-BC58-87BE129B2FB8}" ShortID="606365392">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{D58E03B9-0C11-4C39-AC18-38BB29C79F8F}" ShortID="844061028">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{AADDB2D8-EB54-4EA8-85F3-BA04EBB89980}" ShortID="462439968">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{087175EF-1CC2-48A4-B9A4-1BC76C25BD7F}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{3BCD0EE2-24A4-46D5-80DC-384678551074}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{3BCD0EE2-24A4-46D5-80DC-384678551074}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="PlaneEnemy" ID="{0D9BED8F-6922-483D-807C-DA22F3B8D2DD}" ShortID="5428621">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{6DAC1D32-CAEF-485E-96D0-174EE6216CF0}" ShortID="383916064">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{69B66D30-CA10-4FD4-B0D7-4237B8B4198C}" ShortID="347628474">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{CC0733BF-3974-49D8-A1DA-BDFF8CE92C40}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{64FBD087-892E-48B9-9834-406F23E6DAFE}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{64FBD087-892E-48B9-9834-406F23E6DAFE}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
+						<ActorMixer Name="SpyEnemy" ID="{EF822AC4-C286-4998-973D-6EFC905B202C}" ShortID="867901349">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<RandomSequenceContainer Name="npc_tank_destroy" ID="{0CFB208C-F603-4A4B-8A71-C0526464AE30}" ShortID="52296884">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_npx_tank_destroy" ID="{600D49B5-068C-4D36-8C31-B66C60BE7E58}" ShortID="863951962">
+											<PropertyList>
+												<Property Name="Pitch" Type="int32">
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{1CC4F326-9BF3-40AF-AF51-D38F583D5062}">
+																<PropertyList>
+																	<Property Name="Enabled" Type="bool" Value="True"/>
+																	<Property Name="Max" Type="Real64" Value="100"/>
+																	<Property Name="Min" Type="Real64" Value="-100"/>
+																</PropertyList>
+															</Modifier>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-13</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{6C4582AB-07B3-435A-936A-FE623C1315F1}">
+													<Language>SFX</Language>
+													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1063858601"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{6C4582AB-07B3-435A-936A-FE623C1315F1}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
+							</ChildrenList>
+						</ActorMixer>
 					</ChildrenList>
-				</ActorMixer>
-				<ActorMixer Name="PlayerCharacter" ID="{90AF259A-A7A5-481C-8C9B-33CDB4BE97AE}" ShortID="121246993">
-					<PropertyList>
-						<Property Name="Color" Type="int16" Value="23"/>
-						<Property Name="OverrideColor" Type="bool" Value="True"/>
-					</PropertyList>
-					<ReferenceList>
-						<Reference Name="Conversion">
-							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
-						</Reference>
-						<Reference Name="OutputBus">
-							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
-						</Reference>
-					</ReferenceList>
 				</ActorMixer>
 				<ActorMixer Name="Test" ID="{20FAF5AF-86E8-4B1E-B67D-6053E5F78FEA}" ShortID="182007653">
 					<ReferenceList>
@@ -163,6 +663,16 @@
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>
+				</ActorMixer>
+				<ActorMixer Name="Cards" ID="{A3802D9C-3C2A-4EFB-A29A-CD9D475BC5D2}" ShortID="41905504">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+						</Reference>
+					</ReferenceList>
 				</ActorMixer>
 			</ChildrenList>
 		</WorkUnit>
