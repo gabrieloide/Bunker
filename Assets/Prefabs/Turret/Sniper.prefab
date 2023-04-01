@@ -56,6 +56,7 @@ MonoBehaviour:
   BulletParticle: {fileID: 0}
   timeToDestroy: 90
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
+  TurretLifeSliderOffset: 0.7
 --- !u!212 &3143730593999500468
 SpriteRenderer:
   m_ObjectHideFlags: 0

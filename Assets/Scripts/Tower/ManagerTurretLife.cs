@@ -7,21 +7,19 @@ public class ManagerTurretLife : MonoBehaviour
     Camera camera;
     public Slider LifeSlider;
     public TowerD towerD;
+    public float life;
     private void Start()
     {
         camera = GetComponent<Camera>();
         canvas = GetComponent<Canvas>();
+        towerD = GetComponentInParent<TowerD>();
         canvas.worldCamera = camera;
-    }
-    float currentLife()
-    {
-        var tD = GetComponentInParent<TowerD>();
-        return tD.timeToDestroy;
-
+        life = towerD.timeToDestroy;
     }
     
     void Update()
     {
-        LifeSlider.value = currentLife();
+        life -= Time.deltaTime;
+        LifeSlider.value = life - Time.deltaTime;
     }
 }
