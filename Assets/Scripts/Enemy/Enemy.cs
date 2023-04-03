@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public EnemyData Data;
@@ -14,7 +12,9 @@ public class Enemy : MonoBehaviour
     GameObject LootBagCom;
     private float fireRate;
     [HideInInspector]public float Life;
-
+    [SerializeField] GameObject DamageText;
+    [SerializeField] LeanTweenType DamageTextAnimTween;
+    [SerializeField] float DamageTime;
     private void Start()
     {
         LootBagCom = GameObject.Find("Deck");
@@ -85,6 +85,9 @@ public class Enemy : MonoBehaviour
     void TakeDamage(Collider2D collision)
     {
         float realDamage = collision.GetComponent<TowerBullet>().damage - Data.Defense();
+        GameObject DamageTxt = Instantiate(DamageText, transform.position, Quaternion.identity);
+        Destroy(DamageTxt, DamageTime);
+        LeanTween.moveLocalY(DamageTxt, 3, DamageTime).setEase(DamageTextAnimTween);
         Life -= realDamage;
     }
 }
