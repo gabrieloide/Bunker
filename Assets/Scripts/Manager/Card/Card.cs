@@ -11,7 +11,6 @@ public class Card : MonoBehaviour
     public int handIndex;
     private Deck dc;
     SpriteRenderer spriteRenderer;
-
     private void Start()
     {
         scaleChange = new Vector3(transform.localScale.x / 2f
@@ -102,6 +101,6 @@ public class Card : MonoBehaviour
             gameObject.transform.localScale += scaleChange;
         }
     }
-    public void showCard() => LeanTween.moveY(gameObject, UIManager.instance.posInCamera, UIManager.instance.TimeMovement).
+    public void showCard() => LeanTween.moveLocalY(gameObject, UIManager.instance.posInCamera, UIManager.instance.TimeMovement).
                               setEase(UIManager.instance.TweenDeckIn);
 }
