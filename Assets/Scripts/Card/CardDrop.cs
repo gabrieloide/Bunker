@@ -37,7 +37,7 @@ public class CardDrop : MonoBehaviour
         }
         if (cardsQueue.Count <= 0)
         {
-            LeanTween.moveY(gameObject, posOutCamera, TimeMove()).setOnComplete(DeactivateDeck)
+            LeanTween.moveY(gameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove()).setOnComplete(DeactivateDeck)
                     .setEase(UIManager.instance.TweenDeckOut);
         }
     }
