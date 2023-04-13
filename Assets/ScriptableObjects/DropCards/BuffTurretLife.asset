@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: BuffTurretLife
   m_EditorClassIdentifier: 
   loots: {fileID: 1120024884796657940, guid: 265847ad779d53f408b506d2f05baa82, type: 3}
-  dropChance: 9
+  dropChance: 33
   indexCard: 3
