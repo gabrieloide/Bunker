@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: AntiAir
   m_EditorClassIdentifier: 
   loots: {fileID: 7641813852637443972, guid: 5e568991481ad3041a278e7f92a0e371, type: 3}
-  dropChance: 4
+  dropChance: 33
   indexCard: 8

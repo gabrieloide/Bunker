@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "LootTable", menuName = "Loot Table")]
@@ -14,4 +12,9 @@ public class Loot : ScriptableObject
         dropChance = _dropChance;
         indexCard = _indexCard;
     }
+    public Loot()
+    {
+
+    }
+
 }
