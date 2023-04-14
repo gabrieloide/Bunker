@@ -27,32 +27,33 @@
 				<AuxBus Id="3545700988" Name="Reverbs"/>
 			</AuxBusses>
 		</SoundBank>
-		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{B485A2F6-3711-C522-2042-242308077665}">
+		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{E306D7E2-491C-5962-7174-1A319BC89399}">
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
 			<Media>
-				<File Id="860640938" Language="SFX" Streaming="false" Location="Memory">
-					<ShortName>Main 1.wav</ShortName>
-					<CachePath>SFX/Main 1_D79FB2B7.wem</CachePath>
+				<File Id="363013805" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>Tom Base 1.wav</ShortName>
+					<CachePath>SFX/Tom Base 1_D79FB2B7.wem</CachePath>
 				</File>
-				<File Id="1063858601" Language="SFX" Streaming="false" Location="Memory">
-					<ShortName>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</ShortName>
-					<CachePath>SFX/TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT_10C4C929.wem</CachePath>
+				<File Id="792537456" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>Cymbal Base 1.wav</ShortName>
+					<CachePath>SFX/Cymbal Base 1_D79FB2B7.wem</CachePath>
+				</File>
+				<File Id="850952708" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>Snare Base 1.wav</ShortName>
+					<CachePath>SFX/Snare Base 1_D79FB2B7.wem</CachePath>
 				</File>
 			</Media>
 			<Events>
 				<Event Id="3633238891" Name="Music_InGame_Play" DurationType="Infinite">
 					<MediaRefs>
-						<MediaRef Id="860640938"/>
-					</MediaRefs>
-				</Event>
-				<Event Id="1096303618" Name="tank_destroy" DurationType="OneShot" DurationMin="0.87697715" DurationMax="0.9843737">
-					<MediaRefs>
-						<MediaRef Id="1063858601"/>
+						<MediaRef Id="363013805"/>
+						<MediaRef Id="792537456"/>
+						<MediaRef Id="850952708"/>
 					</MediaRefs>
 				</Event>
 			</Events>
 		</SoundBank>
 	</SoundBanks>
-	<FileHash>{768B765F-29F6-4D0D-675F-EB7C054766A8}</FileHash>
+	<FileHash>{CEBFB384-01B4-72BC-2073-38F7A95513F4}</FileHash>
 </SoundBanksInfo>
