@@ -46,6 +46,11 @@
 												<Property Name="Color" Type="int16" Value="10"/>
 												<Property Name="EndPosition" Type="Real64" Value="175853.93258427"/>
 												<Property Name="OverrideColor" Type="bool" Value="True"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-10</Value>
+													</ValueList>
+												</Property>
 											</PropertyList>
 											<ReferenceList>
 												<Reference Name="Conversion">
@@ -56,23 +61,23 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<MusicTrack Name="Level 1 Track" ID="{8E7E7A87-D514-457B-A470-703D074C87B1}" ShortID="270275744">
+												<MusicTrack Name="Snare Base 1" ID="{793B9E03-A434-4B53-A8BA-E33CCBE1A85F}" ShortID="708104130">
 													<ReferenceList>
 														<Reference Name="OutputBus">
 															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
 														</Reference>
 													</ReferenceList>
 													<ChildrenList>
-														<AudioFileSource Name="Main 1" ID="{12A6E8D2-87C3-40E4-B5CD-34451E55ABA7}">
+														<AudioFileSource Name="Snare Base 1" ID="{8C495F7D-490D-41C4-958F-27E2116EB9B2}">
 															<Language>SFX</Language>
-															<AudioFile>Main 1.wav</AudioFile>
+															<AudioFile>Snare Base 1.wav</AudioFile>
 															<MediaIDList>
-																<MediaID ID="860640938"/>
+																<MediaID ID="850952708"/>
 															</MediaIDList>
 														</AudioFileSource>
 													</ChildrenList>
 													<TransitionList>
-														<MusicTransition Name="Root" ID="{C5BD5259-3367-42B7-A91E-CAB1E056FE03}">
+														<MusicTransition Name="Root" ID="{78A3D433-C9D4-4875-B5D4-BCDB81A5D567}">
 															<PropertyList>
 																<Property Name="IsFolder" Type="bool" Value="True"/>
 															</PropertyList>
@@ -83,18 +88,118 @@
 														<ObjectList Name="Sequences">
 															<Reference>
 																<Local>
-																	<MusicTrackSequence Name="" ID="{ED266673-7D7E-4DFA-8183-5A71D365CCA3}">
+																	<MusicTrackSequence Name="" ID="{25B9D46B-A162-4E78-AF02-F5F1E8C9DCA7}">
 																		<ObjectLists>
 																			<ObjectList Name="Clips">
 																				<Reference>
 																					<Local>
-																						<MusicClip Name="Main 1" ID="{7EDA0A5D-3DD3-41E5-8721-03955F720E46}">
+																						<MusicClip Name="Snare Base 1" ID="{25E3941F-EA04-4029-93D9-90D47EDA98FF}">
 																							<PropertyList>
-																								<Property Name="EndTrimOffset" Type="Real64" Value="169669.750566893"/>
+																								<Property Name="EndTrimOffset" Type="Real64" Value="7999.97916666667"/>
 																								<Property Name="FadeInMode" Type="int16" Value="0"/>
 																								<Property Name="FadeOutMode" Type="int16" Value="0"/>
 																							</PropertyList>
-																							<AudioSourceRef Name="Main 1" ID="{12A6E8D2-87C3-40E4-B5CD-34451E55ABA7}"/>
+																							<AudioSourceRef Name="Snare Base 1" ID="{8C495F7D-490D-41C4-958F-27E2116EB9B2}"/>
+																						</MusicClip>
+																					</Local>
+																				</Reference>
+																			</ObjectList>
+																		</ObjectLists>
+																	</MusicTrackSequence>
+																</Local>
+															</Reference>
+														</ObjectList>
+													</ObjectLists>
+												</MusicTrack>
+												<MusicTrack Name="Cymbal Base 1" ID="{4DC6780C-2B10-413D-AE31-94D1537A8974}" ShortID="226014714">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Cymbal Base 1" ID="{6D17F8CD-6CA5-450B-ACCF-3216AD8A9A39}">
+															<Language>SFX</Language>
+															<AudioFile>Cymbal Base 1.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="792537456"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<TransitionList>
+														<MusicTransition Name="Root" ID="{6B360318-7901-4711-B0B6-197318F7279D}">
+															<PropertyList>
+																<Property Name="IsFolder" Type="bool" Value="True"/>
+															</PropertyList>
+															<TransitionInfo/>
+														</MusicTransition>
+													</TransitionList>
+													<ObjectLists>
+														<ObjectList Name="Sequences">
+															<Reference>
+																<Local>
+																	<MusicTrackSequence Name="" ID="{C29504D8-E61B-4B4B-B4BC-8A1CDF4E7722}">
+																		<ObjectLists>
+																			<ObjectList Name="Clips">
+																				<Reference>
+																					<Local>
+																						<MusicClip Name="Cymbal Base 1" ID="{C0EEDE25-14D6-460D-A33D-EBB5D584639D}">
+																							<PropertyList>
+																								<Property Name="EndTrimOffset" Type="Real64" Value="7999.97916666667"/>
+																								<Property Name="FadeInMode" Type="int16" Value="0"/>
+																								<Property Name="FadeOutMode" Type="int16" Value="0"/>
+																							</PropertyList>
+																							<AudioSourceRef Name="Cymbal Base 1" ID="{6D17F8CD-6CA5-450B-ACCF-3216AD8A9A39}"/>
+																						</MusicClip>
+																					</Local>
+																				</Reference>
+																			</ObjectList>
+																		</ObjectLists>
+																	</MusicTrackSequence>
+																</Local>
+															</Reference>
+														</ObjectList>
+													</ObjectLists>
+												</MusicTrack>
+												<MusicTrack Name="Tom Base 1" ID="{EFEBC598-0C7B-46B0-881F-050FE3327A15}" ShortID="708322464">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{F400DEC1-73A0-40AB-8C19-F59BF0F7C78C}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Tom Base 1" ID="{54E3F63F-E543-43E6-B1FF-FB645554E09D}">
+															<Language>SFX</Language>
+															<AudioFile>Tom Base 1.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="363013805"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<TransitionList>
+														<MusicTransition Name="Root" ID="{3B69CBCD-A1C9-4B78-9338-1F388E433B24}">
+															<PropertyList>
+																<Property Name="IsFolder" Type="bool" Value="True"/>
+															</PropertyList>
+															<TransitionInfo/>
+														</MusicTransition>
+													</TransitionList>
+													<ObjectLists>
+														<ObjectList Name="Sequences">
+															<Reference>
+																<Local>
+																	<MusicTrackSequence Name="" ID="{9107FA21-296C-4912-97B0-48F5A5A11110}">
+																		<ObjectLists>
+																			<ObjectList Name="Clips">
+																				<Reference>
+																					<Local>
+																						<MusicClip Name="Tom Base 1" ID="{AE58D513-542A-40A3-A0D9-3C706CCF05FE}">
+																							<PropertyList>
+																								<Property Name="EndTrimOffset" Type="Real64" Value="7999.97916666667"/>
+																								<Property Name="FadeInMode" Type="int16" Value="0"/>
+																								<Property Name="FadeOutMode" Type="int16" Value="0"/>
+																							</PropertyList>
+																							<AudioSourceRef Name="Tom Base 1" ID="{54E3F63F-E543-43E6-B1FF-FB645554E09D}"/>
 																						</MusicClip>
 																					</Local>
 																				</Reference>
