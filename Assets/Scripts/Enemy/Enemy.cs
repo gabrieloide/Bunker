@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float view;
     [SerializeField] LayerMask ally;
     int nextWavePosition;
-    GameObject LootBagCom;
+    [SerializeField] LootBag LootBagCom;
     private float fireRate;
     [HideInInspector]public float Life;
     [SerializeField] GameObject DamageText;
@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float DamageTime;
     private void Start()
     {
-        LootBagCom = GameObject.Find("Deck");
+        LootBagCom = FindObjectOfType<LootBag>();
         enemyMovement = FindObjectOfType<EnemyMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         fireRate = Data.FireRate();

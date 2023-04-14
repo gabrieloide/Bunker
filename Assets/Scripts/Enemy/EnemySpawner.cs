@@ -5,17 +5,20 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public static EnemySpawner instance;
-    public float StartEnemySpawn;
+    public float StartEnemySpawner;
 
     public float EnemyDelay;
-    public float WaitBetweenSpawns;
-    public float EnemyAmount;
+    float waitBetweenSpawns;
+
+
+    public float EnemyAmount = 15;
     float startEnemySpawn;
+    int newEnemy = 2;
     public GameObject[] Enemies;
+    public int enemiesAlive;
 
     private void Start()
     {
-        startEnemySpawn = EnemyAmount;
         if (!instance)
         {
             instance = this;
@@ -24,35 +27,49 @@ public class EnemySpawner : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        waitBetweenSpawns = EnemyDelay;
     }
-    public void Generator(float newEnemyAmount)
+    public void Generator(int currentWave)
     {
-        StartEnemySpawn -= Time.fixedDeltaTime;
-        if (StartEnemySpawn <= 0)
+        StartEnemySpawner -= Time.deltaTime;
+        if (StartEnemySpawner <= 0)
         {
-            StartEnemySpawn = 0;
-            EnemyDelay -= Time.fixedDeltaTime;
+            StartEnemySpawner = 0;
+            EnemyDelay -= Time.deltaTime;
             if (EnemyDelay <= 0)
             {
-                if (startEnemySpawn > 0)
+                Debug.Log("aaaaaa");
+                if (EnemyAmount > 0)
                 {
-                    startEnemySpawn--;
-                    //Spawnear enemigo
-                    int random = Random.Range(0, Enemies.Length);
-                    Instantiate(Enemies[random], transform.position, Quaternion.identity);
-                    EnemyDelay = WaitBetweenSpawns;
+                    EnemyAmount--;
+                    Debug.Log("asdf");
+                    instantiateEnemy();
+                    EnemyDelay = waitBetweenSpawns;
                 }
-                else if (startEnemySpawn <= 0)
+                else if (EnemyAmount <= 0)
                 {
-                    //Aumentar oleada
                     EnemyDelay = 0;
-                    StartEnemySpawn = 15;
-                    EnemyAmount += newEnemyAmount;
-                    startEnemySpawn = EnemyAmount;
+                    waveChanger(currentWave);
                     WaveManager.instance.GetEnemyBuffed();
                     WaveManager.instance.Wave++;
                 }
             } 
+        }
+    }
+    public void instantiateEnemy()
+    {
+        int random = Random.Range(0, newEnemy); 
+
+        Debug.Log("Crear enemigo");
+        Instantiate(Enemies[random], transform.position, Quaternion.identity);
+        enemiesAlive++;
+    }
+    void waveChanger(int currentWave)
+    {
+        if (currentWave % 10 == 0 && newEnemy < 9)
+        {
+            EnemyAmount += 5;
+            newEnemy++;
         }
     }
 }

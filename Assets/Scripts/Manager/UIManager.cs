@@ -48,7 +48,11 @@ public class UIManager : MonoBehaviour
     }
     void Update()
     {
-        scoreText.text = $"Score: {GameManager.instance.ActualScore}";
+        int score = GameManager.instance.ActualScore;
+        string scoreString = score.ToString();
+        scoreString = scoreString.Substring(Mathf.Max(0, scoreString.Length - 6)).PadLeft(6, '0');
+
+        scoreText.text = $"Score: {scoreString}";
         waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
         LifeSlider.value = currentLife();
         showTowerSlotAnimation();
