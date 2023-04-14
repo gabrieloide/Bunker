@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Spy
   m_EditorClassIdentifier: 
   loots: {fileID: 7430028440710403059, guid: 3b530b73b0cd8e0439aa4f0ff7f3e0b6, type: 3}
-  dropChance: 10
+  dropChance: 33
   indexCard: 12

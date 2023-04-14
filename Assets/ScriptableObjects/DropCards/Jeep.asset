@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Jeep
   m_EditorClassIdentifier: 
   loots: {fileID: 4415735582386484268, guid: 833be1c1b5676374781fa630009eb821, type: 3}
-  dropChance: 8
+  dropChance: 33
   indexCard: 13

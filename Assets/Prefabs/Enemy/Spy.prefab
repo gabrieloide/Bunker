@@ -125,14 +125,16 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  Life: 0
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
   view: 0
   ally:
     serializedVersion: 2
     m_Bits: 128
-  PrivateMoveSpeed: 2
+  Life: 0
+  DamageText: {fileID: 563626671048280399, guid: ab0645bee825d314e93d621efeb58f6f, type: 3}
+  DamageTextAnimTween: 27
+  DamageTime: 0.7
 --- !u!61 &6086027747877281124
 BoxCollider2D:
   m_ObjectHideFlags: 0

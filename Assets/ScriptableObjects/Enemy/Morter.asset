@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Morter
   m_EditorClassIdentifier: 
   _life: 50
-  _damage: 0
-  _fireRate: 0
+  _damage: 2
+  _fireRate: 2
   _defense: 0
   _moveSpeed: 2
   Score: 0

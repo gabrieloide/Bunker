@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -27,7 +25,6 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        Transition.instance.ChangeTransitionIn();
         AddCardToHand(8);
         AddCardToHand(8);
         AddCardToHand(8);
