@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TowerD : MonoBehaviour
@@ -16,10 +14,15 @@ public class TowerD : MonoBehaviour
     public GameObject bulletPrefab;
     [SerializeField] GameObject BulletParticle;
     public float timeToDestroy = 30f;
+    [SerializeField] GameObject TurretLifeSlider;
+    [SerializeField] float TurretLifeSliderOffset;
 
     void Start()
     {
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
+        Instantiate(TurretLifeSlider, transform.position + new Vector3(default
+                                                                , TurretLifeSliderOffset,
+                                                                  default), Quaternion.identity, transform);
         Destroy(gameObject, timeToDestroy);
         damage = towersData.damage;
     }
@@ -72,7 +75,7 @@ public class TowerD : MonoBehaviour
         //float RotationDegree = Mathf.Acos(Vector2.Dot(nozzle.transform.position, target.transform.position)
         //    / (nozzle.transform.position.magnitude * target.transform.position.magnitude));
 
-       Vector3 newZ = bullet.transform.up = target.position - nozzle.position;
+        Vector3 newZ = bullet.transform.up = target.position - nozzle.position;
         bullet.transform.rotation = Quaternion.Euler(0, 0, newZ.z);
         bullet.GetData(target, damage, towersData.lifeBullet);
     }
