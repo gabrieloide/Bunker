@@ -48,7 +48,7 @@
 												<Property Name="OverrideColor" Type="bool" Value="True"/>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>-10</Value>
+														<Value>-14</Value>
 													</ValueList>
 												</Property>
 											</PropertyList>
@@ -224,7 +224,7 @@
 															<MusicCue Name="Exit Cue" ID="{E8741389-971D-4928-8369-8F455E02428D}">
 																<PropertyList>
 																	<Property Name="CueType" Type="int16" Value="1"/>
-																	<Property Name="TimeMs" Type="Real64" Value="169636.70411985"/>
+																	<Property Name="TimeMs" Type="Real64" Value="7999.97916666667"/>
 																</PropertyList>
 															</MusicCue>
 														</Local>
