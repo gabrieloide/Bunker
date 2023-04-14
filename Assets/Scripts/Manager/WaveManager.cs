@@ -49,7 +49,7 @@ public class WaveManager : MonoBehaviour
     }
     private void Update()
     {
-        EnemySpawner.instance.Generator(IncreaseEnemyAmount(MinPorcent, MaxPorcent));
+        EnemySpawner.instance.Generator(Wave);
     }
     public void GetEnemyBuffed()
     {
@@ -58,7 +58,6 @@ public class WaveManager : MonoBehaviour
             int i = Random.Range(1, 101);
             if (i < item.Key)
             {
-                //Dar buff aleatorio dependiendo de la oleada
                 buffEnemyType = item.Value;
             }
         }

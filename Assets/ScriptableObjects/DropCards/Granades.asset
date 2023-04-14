@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loots: {fileID: 7829735943029863506, guid: 86abcc0af6385f245af608c7abe85180, type: 3}
   dropChance: 33
-  indexCard: 9
+  indexCard: 5

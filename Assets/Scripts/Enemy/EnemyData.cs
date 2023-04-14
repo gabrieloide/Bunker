@@ -36,13 +36,16 @@ public class EnemyData : ScriptableObject
             return currentStat;
         }
     }
-    public void LifeBehaviour(GameObject explosionParticle, Vector3 posExplosion, GameObject lootBagComp, GameObject enemyDestroy)
+    public void LifeBehaviour(GameObject explosionParticle, Vector3 posExplosion, LootBag lootBagComp, GameObject enemyDestroy)
     {
         //敵の死
         Instantiate(explosionParticle, posExplosion, Quaternion.identity);
         GameManager.instance.ActualScore += Score;
         EnemySpawner.instance.EnemyAmount--;
+        EnemySpawner.instance.enemiesAlive--;
+        Debug.Log("poner carta en el mazo");
         lootBagComp.GetComponent<LootBag>().InstantiateLoot();
+        Debug.Log("Destruir");
         Destroy(enemyDestroy);
     }
     public void flip(float PosX, float thisPosX, SpriteRenderer sprite)
