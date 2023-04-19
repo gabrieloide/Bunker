@@ -39,6 +39,36 @@
 								</Action>
 							</ChildrenList>
 						</Event>
+						<Folder Name="Enemy_jeep" ID="{056BCFD5-D2B7-437D-9C45-4F1D5B8B899B}" ShortID="813797444">
+							<ChildrenList>
+								<Event Name="jeep_motor" ID="{07A9041D-F3F7-4FEF-A25F-CF4DCCE8FFAA}">
+									<ChildrenList>
+										<Action Name="" ID="{C81C9F58-3C23-4509-AF8F-5E43E582CF23}" ShortID="569693351">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Jeep_1" ID="{332A9651-6EC7-441E-86C7-599C6A7F4308}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+						<Folder Name="Enemy_rifle_soldier" ID="{AE0FC462-8B30-45FB-B6B9-B58E651CEB7D}" ShortID="194913764">
+							<ChildrenList>
+								<Event Name="soldier_shot" ID="{0D519871-A906-4BA5-B814-E59B2764BE2B}">
+									<ChildrenList>
+										<Action Name="" ID="{7B99CDB8-62A2-4F91-A149-BE3970ED0660}" ShortID="437623271">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="soldier_shot" ID="{AEA4FC61-D1ED-4F30-9901-D74B70D89152}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 			</ChildrenList>

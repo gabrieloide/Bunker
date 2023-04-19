@@ -145,7 +145,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: d5ed0b368b64444698455db8feef2eee
     GuidInternal: 
-    m_lastTime: -8585250879343386807
+    m_lastTime: -8585201569122412134
     List:
     - name: Enemy
       guid: ac5bd9c1b818e04b8f91470c1a258cdf
@@ -161,6 +161,69 @@ MonoBehaviour:
         ObjectType: 4
         guid: ac5bd9c1b818e04b8f91470c1a258cdf
       Path: Events\Default Work Unit\Enemy
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Enemy_jeep
+      guid: d5cf6b05b7d27d439c454f1d5b8b899b
+      id: 446039090
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_jeep
+        ObjectType: 4
+        guid: d5cf6b05b7d27d439c454f1d5b8b899b
+      Path: Events\Default Work Unit\Enemy\Enemy_jeep
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Enemy_rifle_soldier
+      guid: 62c40fae308bfb45b6b9b58e651ceb7d
+      id: 2662935375
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_rifle_soldier
+        ObjectType: 4
+        guid: 62c40fae308bfb45b6b9b58e651ceb7d
+      Path: Events\Default Work Unit\Enemy\Enemy_rifle_soldier
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: jeep_motor
+      guid: 1d04a907f7f3ef4fa25fcf4dcce8ffaa
+      id: 2126374471
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_jeep
+        ObjectType: 4
+        guid: d5cf6b05b7d27d439c454f1d5b8b899b
+      - ElementName: jeep_motor
+        ObjectType: 3
+        guid: 1d04a907f7f3ef4fa25fcf4dcce8ffaa
+      Path: Events\Default Work Unit\Enemy\Enemy_jeep\jeep_motor
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -198,6 +261,29 @@ MonoBehaviour:
         ObjectType: 3
         guid: 80444ef03f02f549971a5f8c091aab1e
       Path: Events\Default Work Unit\Music\Music_InGame_Play
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: soldier_shot
+      guid: 7198510d06a9a54bb814e59b2764be2b
+      id: 1636137400
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_rifle_soldier
+        ObjectType: 4
+        guid: 62c40fae308bfb45b6b9b58e651ceb7d
+      - ElementName: soldier_shot
+        ObjectType: 3
+        guid: 7198510d06a9a54bb814e59b2764be2b
+      Path: Events\Default Work Unit\Enemy\Enemy_rifle_soldier\soldier_shot
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
