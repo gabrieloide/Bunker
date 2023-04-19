@@ -41,11 +41,8 @@ public class EnemyData : ScriptableObject
         //敵の死
         Instantiate(explosionParticle, posExplosion, Quaternion.identity);
         GameManager.instance.ActualScore += Score;
-        EnemySpawner.instance.EnemyAmount--;
         EnemySpawner.instance.enemiesAlive--;
-        Debug.Log("poner carta en el mazo");
-        lootBagComp.GetComponent<LootBag>().InstantiateLoot();
-        Debug.Log("Destruir");
+        lootBagComp.InstantiateLoot();
         Destroy(enemyDestroy);
     }
     public void flip(float PosX, float thisPosX, SpriteRenderer sprite)

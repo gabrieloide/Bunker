@@ -6,6 +6,7 @@ public class CardDrop : MonoBehaviour
     public Queue<int> cardsQueue = new Queue<int>();
     public float posInCamera, posOutCamera;
     [SerializeField] RectTransform deckSliceAnimation;
+    [SerializeField] GameObject DeckGameObject;
     public LeanTweenType TweenDeck;
     public float TimeMove()
     {
@@ -22,10 +23,6 @@ public class CardDrop : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void OnEnable()
-    {
-        LeanTween.moveY(gameObject.GetComponent<RectTransform>(), posInCamera, TimeMove()).setEase(TweenDeck);
-    }
     public void TakeCard()
     {
         if (cardsQueue.Count > 0)
@@ -37,16 +34,17 @@ public class CardDrop : MonoBehaviour
         }
         if (cardsQueue.Count <= 0)
         {
-            LeanTween.moveY(gameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove()).setOnComplete(DeactivateDeck)
+            LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove()).setOnComplete(DeactivateDeck)
                     .setEase(UIManager.instance.TweenDeckOut);
         }
     }
     void DeactivateDeck()
     {
-        gameObject.SetActive(false);
+        DeckGameObject.SetActive(false);
     }
     void ResetTweenAnim()
     {
         LeanTween.moveY(deckSliceAnimation, 1.7895f, 0);
     }
+
 }

@@ -11,8 +11,7 @@ public class EnemySpawner : MonoBehaviour
     float waitBetweenSpawns;
 
 
-    public float EnemyAmount = 15;
-    float startEnemySpawn;
+    public int EnemyAmount = 15;
     int newEnemy = 2;
     public GameObject[] Enemies;
     public int enemiesAlive;
@@ -27,40 +26,31 @@ public class EnemySpawner : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        StartCoroutine(SpawnEnemies());
         waitBetweenSpawns = EnemyDelay;
     }
-    public void Generator(int currentWave)
+    IEnumerator SpawnEnemies()
     {
-        StartEnemySpawner -= Time.deltaTime;
-        if (StartEnemySpawner <= 0)
+        while (true)
         {
-            StartEnemySpawner = 0;
-            EnemyDelay -= Time.deltaTime;
-            if (EnemyDelay <= 0)
+            yield return new WaitForSeconds(StartEnemySpawner);
+            for (int i = 0; i < EnemyAmount; i++)
             {
-                Debug.Log("aaaaaa");
-                if (EnemyAmount > 0)
-                {
-                    EnemyAmount--;
-                    Debug.Log("asdf");
-                    instantiateEnemy();
-                    EnemyDelay = waitBetweenSpawns;
-                }
-                else if (EnemyAmount <= 0)
-                {
-                    EnemyDelay = 0;
-                    waveChanger(currentWave);
-                    WaveManager.instance.GetEnemyBuffed();
-                    WaveManager.instance.Wave++;
-                }
-            } 
+                instantiateEnemy();
+                yield return new WaitForSeconds(waitBetweenSpawns);
+            }
+            while (enemiesAlive > 0)
+            {
+                yield return null;
+            }
+            waveChanger(WaveManager.instance.Wave);
+            WaveManager.instance.GetEnemyBuffed();
+            WaveManager.instance.Wave++;
         }
     }
     public void instantiateEnemy()
     {
         int random = Random.Range(0, newEnemy); 
-
-        Debug.Log("Crear enemigo");
         Instantiate(Enemies[random], transform.position, Quaternion.identity);
         enemiesAlive++;
     }
@@ -68,8 +58,8 @@ public class EnemySpawner : MonoBehaviour
     {
         if (currentWave % 10 == 0 && newEnemy < 9)
         {
-            EnemyAmount += 5;
             newEnemy++;
+            EnemyAmount += 5;
         }
     }
 }
