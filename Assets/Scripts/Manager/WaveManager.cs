@@ -47,10 +47,6 @@ public class WaveManager : MonoBehaviour
         BuffEnemy.Add(8, BuffEnemyType.BuffFireRate);
         GetEnemyBuffed();
     }
-    private void Update()
-    {
-        EnemySpawner.instance.Generator(Wave);
-    }
     public void GetEnemyBuffed()
     {
         foreach (var item in BuffEnemy)

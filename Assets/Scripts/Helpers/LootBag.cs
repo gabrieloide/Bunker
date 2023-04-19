@@ -31,7 +31,7 @@ public class LootBag : MonoBehaviour
 
         if (droppItem != null)
         {
-            GetComponent<CardDrop>().cardsQueue.Enqueue(droppItem.indexCard);
+            GetComponentInChildren<CardDrop>().cardsQueue.Enqueue(droppItem.indexCard);
         }
     }
 }
