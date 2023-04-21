@@ -5,6 +5,7 @@ public class Card : MonoBehaviour
 {
     private Vector3 scaleChange;
     [SerializeField] Sprite defaultCard, backCard;
+    TypeOfCard typeOfCard = TypeOfCard.TurretCard;
     public TowersData td;
     public bool canDrop;
     public bool onDrag;
@@ -14,7 +15,7 @@ public class Card : MonoBehaviour
     private void Start()
     {
         scaleChange = new Vector3(transform.localScale.x / 2f
-                                , transform.localScale.y / 2f, 
+                                , transform.localScale.y / 2f,
                                     0f);
 
         dc = FindObjectOfType<Deck>();
@@ -78,7 +79,7 @@ public class Card : MonoBehaviour
         else
         {
             //Metti la lettera nel cestino
-
+            Deck.instance.CardsInHand--;
             dc.availableCardSlots[handIndex] = true;
             Destroy(gameObject);
         }

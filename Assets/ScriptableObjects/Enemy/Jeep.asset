@@ -17,4 +17,4 @@ MonoBehaviour:
   _fireRate: 2
   _defense: 0
   _moveSpeed: 2
-  Score: 0
+  Score: 15

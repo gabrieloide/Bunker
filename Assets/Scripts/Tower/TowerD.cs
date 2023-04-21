@@ -70,13 +70,10 @@ public class TowerD : MonoBehaviour
         TowerBullet bullet = ObjectPooling.instance.Shoot().GetComponent<TowerBullet>();
         bullet.transform.position = nozzle.position;
 
-        //Vector3 newBulletDirection = target.position - nozzle.transform.position;
-        //float angle = Mathf.Atan(newRot.y / newRot.x);
-        //float RotationDegree = Mathf.Acos(Vector2.Dot(nozzle.transform.position, target.transform.position)
-        //    / (nozzle.transform.position.magnitude * target.transform.position.magnitude));
+        Vector3 relativePos = target.position - nozzle.position;
+        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+        bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        Vector3 newZ = bullet.transform.up = target.position - nozzle.position;
-        bullet.transform.rotation = Quaternion.Euler(0, 0, newZ.z);
         bullet.GetData(target, damage, towersData.lifeBullet);
     }
 
