@@ -32,7 +32,7 @@ public class UIManager : MonoBehaviour
     public float TimeMovement;
     float currentLife()
     {
-        float ActualLife = TowerPlayer.instance.life/100;
+        float ActualLife = TowerPlayer.instance.life / 100;
         return ActualLife;
     }
     void Awake()
@@ -49,11 +49,10 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         int score = GameManager.instance.ActualScore;
-        string scoreString = score.ToString();
-        scoreString = scoreString.Substring(Mathf.Max(0, scoreString.Length - 6)).PadLeft(6, '0');
+        string scoreString = score.ToString("D6");
 
         scoreText.text = $"Score: {scoreString}";
-        waveText.text = $"Wave: {WaveManager.instance.Wave.ToString()}";
+        waveText.text = $"Wave: {WaveManager.instance.Wave.ToString("D6")}";
         LifeSlider.value = currentLife();
         showTowerSlotAnimation();
         ShowDeck();
@@ -79,22 +78,20 @@ public class UIManager : MonoBehaviour
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowLastCardPosition(Vector3 CardPos, bool show)
+    public void ShowLastCardPosition(Vector3 CardPos, bool showLastCardPos)
     {
-        if (show)
+        if (showLastCardPos)
         {
-            LastPosCard.SetActive(show);
+            LastPosCard.SetActive(showLastCardPos);
             //Mostrar Ultima posicion de la carta al agarrarla
-
-            Vector3 offset = new Vector3(0, 0.01f,0);
-            LastPosCard.transform.position = CardPos - offset;
-            LeanTween.scale(LastPosCard, Vector3.one * 15, TimeLastPosCard).setEaseOutBack();
+            LastPosCard.transform.position = CardPos + new Vector3(default, -0.52f);
+            LeanTween.size(LastPosCard.GetComponent<RectTransform>(), new Vector2(40,60), TimeLastPosCard).setEaseInBack();
         }
         else
         {
-            LastPosCard.SetActive(show);
+            LastPosCard.SetActive(showLastCardPos);
             //No mostrar ultima posicion de la carta al agarrarla
-            LastPosCard.transform.localScale = Vector3.zero;
+            LeanTween.size(LastPosCard.GetComponent<RectTransform>(), Vector2.zero, TimeLastPosCard).setEaseOutBack();
         }
     }
     public void ShowDeck()
