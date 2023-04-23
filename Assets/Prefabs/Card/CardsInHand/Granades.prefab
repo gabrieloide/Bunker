@@ -99,13 +99,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCard: {fileID: 21300000, guid: b97cafe1086e2d14e868cca63041cbe0, type: 3}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 11400000, guid: c4d6af88cad8065438526db294a89fd5, type: 2}
-  canDrop: 0
+  towerData: {fileID: 11400000, guid: c4d6af88cad8065438526db294a89fd5, type: 2}
+  handIndex: 8
   onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
+  canDrop: 0
 --- !u!61 &1634788056474617328
 BoxCollider2D:
   m_ObjectHideFlags: 0

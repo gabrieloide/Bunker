@@ -97,10 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCard: {fileID: 21300000, guid: 4f410d0595adbc247b777ebb6ab9023a, type: 3}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 0}
-  canDrop: 0
+  towerData: {fileID: 11400000, guid: c4ade0279fe4086458d2d409326576a7, type: 2}
+  handIndex: 3
   onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
+  canDrop: 0

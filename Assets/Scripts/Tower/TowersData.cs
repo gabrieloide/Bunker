@@ -7,8 +7,7 @@ public class TowersData : ScriptableObject
 {
     //Definir propiedades de las torres
     public string Name;
-    [TextArea(4,5)]public string Description;
-
+    [TextArea(4, 5)] public string Description;
     [Space]
     [Header("Tower")]
     public GameObject CardToInstantiate;

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1065562097503117311}
-  - component: {fileID: 1065562097503117310}
   - component: {fileID: 3143730593999500468}
   - component: {fileID: -7444204333654813125}
+  - component: {fileID: 2136259454314804926}
   m_Layer: 7
   m_Name: Sniper
   m_TagString: Untagged
@@ -30,33 +30,11 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 292404135990671343}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1065562097503117310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1065562097503117305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6575c39bc16f8a54683aec03dd6c4567, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towersData: {fileID: 11400000, guid: 56a3675fdbc88954b9d8b10e6b131421, type: 2}
-  target: {fileID: 0}
-  nozzle: {fileID: 0}
-  damage: 0
-  range: 13
-  fireRateCountDown: 0
-  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
-  BulletParticle: {fileID: 0}
-  timeToDestroy: 90
-  TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
-  TurretLifeSliderOffset: 0.7
 --- !u!212 &3143730593999500468
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -135,3 +113,56 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &2136259454314804926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065562097503117305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 797b86f7844e8774baabae9b79ae88c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towersData: {fileID: 11400000, guid: 56a3675fdbc88954b9d8b10e6b131421, type: 2}
+  target: {fileID: 0}
+  nozzle: {fileID: 292404135990671343}
+  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
+  range: 3
+  fireRateCountDown: 1.5
+  BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
+  timeToDestroy: 30
+  TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
+  TurretLifeSliderOffset: 0.7
+--- !u!1 &4469010154809976602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 292404135990671343}
+  m_Layer: 7
+  m_Name: Nozzle
+  m_TagString: Untagged
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &292404135990671343
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4469010154809976602}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.46, y: -0.041, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1065562097503117311}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

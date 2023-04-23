@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7097642582240312306}
   - component: {fileID: 5942650889640731713}
   - component: {fileID: 4067271363937444886}
-  - component: {fileID: -5744818967393508665}
   - component: {fileID: 9183727632063596761}
+  - component: {fileID: 2305871259179592431}
   m_Layer: 8
   m_Name: Card1
   m_TagString: Card
@@ -113,25 +113,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
---- !u!114 &-5744818967393508665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6614122001415506232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultCard: {fileID: 21300000, guid: edcc12cec5144f14f8430254424ed5ed, type: 3}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 11400000, guid: 6954ef28838737642a1ea9f023b75dc2, type: 2}
-  canDrop: 0
-  onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
 --- !u!50 &9183727632063596761
 Rigidbody2D:
   serializedVersion: 4
@@ -153,3 +134,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2305871259179592431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6614122001415506232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerData: {fileID: 11400000, guid: 6954ef28838737642a1ea9f023b75dc2, type: 2}
+  handIndex: 4
+  onDrag: 0
+  canDrop: 0

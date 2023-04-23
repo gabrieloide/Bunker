@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5179136984020590154}
   - component: {fileID: 4118168945088100950}
   m_Layer: 8
-  m_Name: Willy
+  m_Name: Jeep
   m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,13 +99,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCard: {fileID: 21300000, guid: 6084c3a2f1df41046a809ae0c700f8b5, type: 3}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 11400000, guid: 39f3f4e7350877c47990fe797859909e, type: 2}
-  canDrop: 0
+  towerData: {fileID: 11400000, guid: 39f3f4e7350877c47990fe797859909e, type: 2}
+  handIndex: 9
   onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
+  canDrop: 0
 --- !u!61 &5179136984020590154
 BoxCollider2D:
   m_ObjectHideFlags: 0

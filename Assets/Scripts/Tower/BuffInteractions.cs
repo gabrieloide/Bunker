@@ -10,15 +10,15 @@ enum BuffType
 }
 public class BuffInteractions : MonoBehaviour
 {
-    [SerializeField]BuffType buffType = BuffType.attackPlus;
-    [SerializeField]int attackBonus;
-    [SerializeField]int lifeBulletAditional;
-    [SerializeField]int lifeTurrentAditional;
-    [SerializeField]float ASBonus;
+    [SerializeField] BuffType buffType = BuffType.attackPlus;
+    [SerializeField] int attackBonus;
+    [SerializeField] int lifeBulletAditional;
+    [SerializeField] int lifeTurrentAditional;
+    [SerializeField] float ASBonus;
 
     private bool overTower = false;
     private GameObject tower;
-    private TowerD towerd;
+    private TurretCard towerd;
 
     public void buff()
     {
@@ -26,13 +26,13 @@ public class BuffInteractions : MonoBehaviour
         switch (buffType)
         {
             case BuffType.attackPlus:
-                towerd.damage *= attackBonus;
+                //towerd.damage *= attackBonus;
                 break;
             case BuffType.attackSpeed:
-                towerd.fireRateCountDown *= ASBonus;
+                //towerd.fireRateCountDown *= ASBonus;
                 break;
             case BuffType.turretLifeBonus:
-                towerd.timeToDestroy += lifeTurrentAditional;
+                //towerd.timeToDestroy += lifeTurrentAditional;
                 break;
         }
         Destroy(gameObject);
@@ -40,7 +40,7 @@ public class BuffInteractions : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<TowerD>() != null)
+        if (collision.GetComponent<TurretCard>() != null)
         {
             tower = collision.gameObject;
             overTower = true;
@@ -49,7 +49,7 @@ public class BuffInteractions : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.GetComponent<TowerD>() != null)
+        if (collision.GetComponent<TurretCard>() != null)
         {
             tower = null;
             overTower = false;
@@ -59,7 +59,7 @@ public class BuffInteractions : MonoBehaviour
     {
         if (overTower)
         {
-            towerd = tower.GetComponent<TowerD>();
+            towerd = tower.GetComponent<TurretCard>();
             buff();
         }
     }

@@ -8,10 +8,8 @@ public enum TypeOfCard
     AllyCard,
     FieldCard
 }
-
 public class Deck : MonoBehaviour
 {
-
     [SerializeField] towerSlotVerification TowerSlotVerification;
     public List<Card> deck = new List<Card>();
     public Transform[] cardSlots;
@@ -35,7 +33,7 @@ public class Deck : MonoBehaviour
         {
             if (availableCardSlots[i] == true)
             {
-                Card newCard = Instantiate(deck[card], cardSlots[i].position -
+                Card newCard = Instantiate(deck[i], cardSlots[i].position -
                                                                             new Vector3(default,
                                                                             5.5f,
                                                                             transform.position.z),

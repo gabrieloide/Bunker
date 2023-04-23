@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6505005087614213128}
-  - component: {fileID: 6505005087614213129}
   - component: {fileID: 396087393167722566}
   - component: {fileID: 7547727395907670405}
   - component: {fileID: 5401993026336709353}
@@ -36,23 +35,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6505005087614213129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6505005087614213134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11c13dea1c25e8c4fbef7dc28c221086, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buffType: 1
-  attackBonus: 1
-  lifeBulletAditional: 0
-  lifeTurrentAditional: 0
-  ASBonus: 3
 --- !u!212 &396087393167722566
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -143,13 +125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultCard: {fileID: 21300000, guid: f7d62bc5cb6bfcf4cb4a7aef2ef080f1, type: 3}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 11400000, guid: 18851507d67fa8142b9a12bdd38ada03, type: 2}
-  canDrop: 0
+  towerData: {fileID: 11400000, guid: 18851507d67fa8142b9a12bdd38ada03, type: 2}
+  handIndex: 2
   onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
+  canDrop: 0
 --- !u!50 &5340790000786603850
 Rigidbody2D:
   serializedVersion: 4

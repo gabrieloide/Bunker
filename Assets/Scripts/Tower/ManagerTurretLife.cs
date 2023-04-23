@@ -6,13 +6,13 @@ public class ManagerTurretLife : MonoBehaviour
     Canvas canvas;
     Camera camera;
     public Slider LifeSlider;
-    public TowerD towerD;
+    public TurretCard towerD;
     public float life;
     private void Start()
     {
         camera = GetComponent<Camera>();
         canvas = GetComponent<Canvas>();
-        towerD = GetComponentInParent<TowerD>();
+        towerD = GetComponentInParent<TurretCard>();
         canvas.worldCamera = camera;
         life = towerD.timeToDestroy;
     }
