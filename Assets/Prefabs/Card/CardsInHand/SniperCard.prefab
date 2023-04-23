@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3256214810825587406}
-  - component: {fileID: 3256214810825587411}
   - component: {fileID: 3256214810825587404}
   - component: {fileID: 3256214810825587405}
   - component: {fileID: 3256214810825587410}
+  - component: {fileID: -7021482427025183226}
   m_Layer: 8
   m_Name: SniperCard
   m_TagString: Card
@@ -35,25 +35,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3256214810825587411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3256214810825587407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultCard: {fileID: 0}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 11400000, guid: 56a3675fdbc88954b9d8b10e6b131421, type: 2}
-  canDrop: 0
-  onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
 --- !u!61 &3256214810825587404
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,3 +134,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-7021482427025183226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3256214810825587407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerData: {fileID: 11400000, guid: 56a3675fdbc88954b9d8b10e6b131421, type: 2}
+  handIndex: 13
+  onDrag: 0
+  canDrop: 0

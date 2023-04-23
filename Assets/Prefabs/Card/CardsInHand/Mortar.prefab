@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1758907775003343283}
   - component: {fileID: 6503737357209789152}
-  - component: {fileID: 6300725258019825089}
   - component: {fileID: 1899333958089458146}
-  - component: {fileID: 3134799611268024191}
+  - component: {fileID: 3822371338041222100}
   m_Layer: 8
   m_Name: Mortar
   m_TagString: Card
@@ -87,25 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6300725258019825089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4237943003912707566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultCard: {fileID: 21300000, guid: d5c4302605fc9cf44b914410016bb4c0, type: 3}
-  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
-  td: {fileID: 11400000, guid: 57602c0dd8973fd4499b85b0337e2244, type: 2}
-  canDrop: 0
-  onDrag: 0
-  handIndex: 0
-  ShowStatsCard: 0
 --- !u!61 &1899333958089458146
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -132,24 +112,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
---- !u!50 &3134799611268024191
-Rigidbody2D:
-  serializedVersion: 4
+--- !u!114 &3822371338041222100
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4237943003912707566}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerData: {fileID: 11400000, guid: 57602c0dd8973fd4499b85b0337e2244, type: 2}
+  handIndex: 12
+  onDrag: 0
+  canDrop: 0

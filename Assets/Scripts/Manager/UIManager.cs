@@ -85,7 +85,7 @@ public class UIManager : MonoBehaviour
             LastPosCard.SetActive(showLastCardPos);
             //Mostrar Ultima posicion de la carta al agarrarla
             LastPosCard.transform.position = CardPos + new Vector3(default, -0.52f);
-            LeanTween.size(LastPosCard.GetComponent<RectTransform>(), new Vector2(40,60), TimeLastPosCard).setEaseInBack();
+            LeanTween.size(LastPosCard.GetComponent<RectTransform>(), new Vector2(40, 60), TimeLastPosCard).setEaseInBack();
         }
         else
         {

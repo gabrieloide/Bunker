@@ -42,7 +42,7 @@ public class towerSlotVerification : MonoBehaviour
     {
         for (int i = 0; i < card.Count; i++)
         {
-            if (card[i]==null)
+            if (card[i] == null)
             {
                 card.RemoveAt(i);
             }
