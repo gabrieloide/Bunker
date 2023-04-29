@@ -25,11 +25,11 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        AddCardToHand(8);
-        AddCardToHand(8);
-        AddCardToHand(8);
-        AddCardToHand(8);
-        AddCardToHand(8);
+        AddCardToHand(1);
+        AddCardToHand(1);
+        AddCardToHand(1);
+        AddCardToHand(1);
+        AddCardToHand(1);
     }
     public void AddCardToHand(int cardNumber)
     {

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1049369960356276032}
   - component: {fileID: 3313041152498607934}
   - component: {fileID: 8811169103735159696}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: TurretSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -114,7 +114,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 123912010792275623}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Nozzle
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: -3642935426638969059}
   - component: {fileID: 9003751329095040356}
   - component: {fileID: 6976744339270010954}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Turret1
   m_TagString: Turret
   m_Icon: {fileID: 0}
@@ -231,12 +231,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towersData: {fileID: 11400000, guid: 6954ef28838737642a1ea9f023b75dc2, type: 2}
-  target: {fileID: 0}
   nozzle: {fileID: 123912010792275623}
   bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
   range: 3
   fireRateCountDown: 1.5
   BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
-  timeToDestroy: 30
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 0
+  timeToDestroy: 30

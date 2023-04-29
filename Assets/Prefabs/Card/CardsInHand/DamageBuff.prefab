@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 803975000618855309}
   - component: {fileID: 803975000618855311}
   - component: {fileID: 8435700530063441598}
-  - component: {fileID: 7318967318485075846}
   - component: {fileID: 6634125272418899067}
+  - component: {fileID: -6185769710421162538}
+  - component: {fileID: 6960230889883029535}
   m_Layer: 8
   m_Name: DamageBuff
   m_TagString: Card
@@ -113,22 +114,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
---- !u!114 &7318967318485075846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 803975000618855310}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: b35bdb491f25c794a8b65d99b6104a5e, type: 2}
-  handIndex: 7
-  onDrag: 0
-  canDrop: 0
 --- !u!50 &6634125272418899067
 Rigidbody2D:
   serializedVersion: 4
@@ -150,3 +135,36 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-6185769710421162538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803975000618855310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffe1e7eee19567f4a992ee08a63b9bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerData: {fileID: 0}
+  turretLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  defaultCard: {fileID: 0}
+  backCard: {fileID: 0}
+  onDrag: 0
+--- !u!114 &6960230889883029535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803975000618855310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
+  canDrop: 0

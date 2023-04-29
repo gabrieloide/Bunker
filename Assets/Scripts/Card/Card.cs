@@ -1,25 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class Card : MonoBehaviour
-{
-    [SerializeField] TowersData towerData;
-    protected Sprite defaultCard, backCard;
-    private Vector3 scaleChange;
-    public int handIndex;
-    private Deck dc;
-    [HideInInspector] public bool onDrag;
-    [HideInInspector] public bool canDrop;
 
-    SpriteRenderer spriteRenderer;
-    TypeOfCard typeOfCard = TypeOfCard.TurretCard;
+public abstract class Card : MonoBehaviour
+{
+    [SerializeField] protected LayerMask objectLayerMask;
+    [SerializeField] protected TowersData towerData;
+    [SerializeField] Sprite defaultCard, backCard;
+    private Vector3 scaleChange;
+    private Deck dc;
+    protected bool onDrag;
+    private int index() => GetComponent<CardIndex>().HandIndex;
+    protected abstract bool ReturnToHand();
     private void Start()
     {
         scaleChange = new Vector3(transform.localScale.x / 2f
                                 , transform.localScale.y / 2f,
                                     0f);
         dc = FindObjectOfType<Deck>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        //spriteRenderer = GetComponent<SpriteRenderer>();
         onDrag = false;
         showCard();
     }
@@ -43,7 +42,7 @@ public class Card : MonoBehaviour
         if (!onDrag)
         {
             // MOUSE CUANDO SALE DE LA CARTA    
-            transform.position = dc.cardSlots[handIndex].position;
+            transform.position = dc.cardSlots[index()].position;
             Destroy(UIManager.instance.cardInstantiate);
         }
     }
@@ -57,8 +56,7 @@ public class Card : MonoBehaviour
     private void OnMouseDown()
     {
         //TOMAR CARTA
-
-        UIManager.instance.ShowLastCardPosition(transform.position, true);
+        UIManager.instance.ShowLastCardPosition(transform.position, !ReturnToHand());
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
@@ -69,40 +67,36 @@ public class Card : MonoBehaviour
         if (!FindObjectOfType<Trash>().hit2D)
         {
             UIManager.instance.ShowTowerSlot = false;
-            UIManager.instance.ShowLastCardPosition(transform.position, false);
             LeanTween.alpha(gameObject, 1f, 0.3f);
             UIManager.instance.TowerSlotAnimation.SetActive(false);
-            useCard();
+            spawnCard();
         }
         else
         {
             //Metti la lettera nel cestino
+            UIManager.instance.ShowTowerSlot = false;
             Deck.instance.CardsInHand--;
-            dc.availableCardSlots[handIndex] = true;
+            dc.availableCardSlots[index()] = true;
             Destroy(gameObject);
         }
     }
-    void useCard()
+    void spawnCard()
     {
-        if (towerData.CardToInstantiate != null)
+        if (!ReturnToHand())
         {
             //Usar carta
-            dc.availableCardSlots[handIndex] = true;
+            dc.availableCardSlots[index()] = true;
             CardBehaviour();
             Destroy(gameObject);
         }
         else
         {
             onDrag = false;
-            transform.position = dc.cardSlots[handIndex].position;
+            transform.position = dc.cardSlots[index()].position;
             gameObject.transform.localScale += scaleChange;
         }
     }
-    void CardBehaviour()
-    {
-        Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Instantiate(towerData.CardToInstantiate, Mouseposition, transform.rotation);
-    }
+    protected abstract void CardBehaviour();
     public void showCard() => LeanTween.moveLocalY(gameObject, UIManager.instance.posInCamera, UIManager.instance.TimeMovement).
                               setEase(UIManager.instance.TweenDeckIn);
 }

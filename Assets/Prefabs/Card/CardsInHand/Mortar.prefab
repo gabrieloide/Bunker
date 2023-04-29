@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 1758907775003343283}
   - component: {fileID: 6503737357209789152}
   - component: {fileID: 1899333958089458146}
-  - component: {fileID: 3822371338041222100}
+  - component: {fileID: 848982150134892168}
+  - component: {fileID: -652577218635365887}
   m_Layer: 8
   m_Name: Mortar
   m_TagString: Card
@@ -112,7 +113,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
---- !u!114 &3822371338041222100
+--- !u!114 &848982150134892168
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,10 +122,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 4237943003912707566}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d6d98686d94bd5428705ddde105894a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: 57602c0dd8973fd4499b85b0337e2244, type: 2}
-  handIndex: 12
+  towerData: {fileID: 0}
+  turretLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  defaultCard: {fileID: 0}
+  backCard: {fileID: 0}
   onDrag: 0
+--- !u!114 &-652577218635365887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4237943003912707566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
   canDrop: 0

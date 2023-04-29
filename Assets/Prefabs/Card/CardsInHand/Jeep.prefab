@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7370523351811287578}
   - component: {fileID: 3350373819310378698}
-  - component: {fileID: 8717237667980497478}
   - component: {fileID: 5179136984020590154}
   - component: {fileID: 4118168945088100950}
+  - component: {fileID: -1695547044442638377}
   m_Layer: 8
   m_Name: Jeep
   m_TagString: Card
@@ -87,22 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8717237667980497478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7713140759573809038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: 39f3f4e7350877c47990fe797859909e, type: 2}
-  handIndex: 9
-  onDrag: 0
-  canDrop: 0
 --- !u!61 &5179136984020590154
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -150,3 +134,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-1695547044442638377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7713140759573809038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
+  canDrop: 0
