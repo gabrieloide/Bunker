@@ -1,17 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public enum TypeOfCard
-{
-    TurretCard,
-    AllyCard,
-    FieldCard
-}
 public class Deck : MonoBehaviour
 {
     [SerializeField] towerSlotVerification TowerSlotVerification;
-    public List<Card> deck = new List<Card>();
+    public List<CardIndex> deck = new List<CardIndex>();
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
     public static Deck instance;
@@ -33,14 +26,13 @@ public class Deck : MonoBehaviour
         {
             if (availableCardSlots[i] == true)
             {
-                Card newCard = Instantiate(deck[i], cardSlots[i].position -
+                CardIndex newCard = Instantiate(deck[i], cardSlots[i].position -
                                                                             new Vector3(default,
                                                                             5.5f,
                                                                             transform.position.z),
                                                                             transform.rotation);
                 CardsInHand++;
-                newCard.handIndex = i;
-                TowerSlotVerification.card.Add(newCard);
+                newCard.HandIndex = i;
                 newCard.transform.SetParent(CameraMovement.instance.transform);
                 //Agregar carta a la mano
 

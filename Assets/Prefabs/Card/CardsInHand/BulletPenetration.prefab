@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 660768541324699136}
   - component: {fileID: 4648122694168004474}
-  - component: {fileID: -6130996132209806072}
+  - component: {fileID: 978674215972344956}
+  - component: {fileID: -4628754941117444515}
   m_Layer: 8
   m_Name: BulletPenetration
   m_TagString: Card
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-6130996132209806072
+--- !u!114 &978674215972344956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,10 +95,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 5334616107968841354}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Script: {fileID: 11500000, guid: ffe1e7eee19567f4a992ee08a63b9bcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: c4ade0279fe4086458d2d409326576a7, type: 2}
-  handIndex: 3
+  towerData: {fileID: 0}
+  turretLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  defaultCard: {fileID: 0}
+  backCard: {fileID: 0}
   onDrag: 0
+--- !u!114 &-4628754941117444515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5334616107968841354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
   canDrop: 0

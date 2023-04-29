@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1280488470268546617}
   - component: {fileID: 2537182054854985338}
-  - component: {fileID: 1461684082307142355}
   - component: {fileID: 4572928202905161530}
   - component: {fileID: 1050265595731252725}
+  - component: {fileID: -8057555976105955795}
   m_Layer: 8
   m_Name: landMinesCard
   m_TagString: Card
@@ -87,22 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1461684082307142355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1280488470268546616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: 8f10c15814076014687ccb3b0d305ea5, type: 2}
-  handIndex: 10
-  onDrag: 0
-  canDrop: 0
 --- !u!61 &4572928202905161530
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -150,3 +134,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-8057555976105955795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280488470268546616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
+  canDrop: 0

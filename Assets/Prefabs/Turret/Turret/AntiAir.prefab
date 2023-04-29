@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2090860561385730728}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Nozzle
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -43,9 +43,9 @@ GameObject:
   - component: {fileID: 5126730560999645898}
   - component: {fileID: 2625707607779579790}
   - component: {fileID: 8799117196047048677}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: AntiAir
-  m_TagString: Untagged
+  m_TagString: Turret
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

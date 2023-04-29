@@ -24,9 +24,9 @@ TagManager:
   - Card
   - Enemy
   - POST
-  - 
-  - 
-  - 
+  - Turret
+  - Path
+  - Limits
   - 
   - 
   - 

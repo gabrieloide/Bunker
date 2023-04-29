@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1120024884796657942}
   - component: {fileID: 4917631240309490027}
   - component: {fileID: 9025912985281096718}
-  - component: {fileID: 6787536753558464387}
   - component: {fileID: 5300232387221754853}
+  - component: {fileID: 4142053560354010480}
   m_Layer: 8
   m_Name: TurretLifeBuff
   m_TagString: Card
@@ -113,22 +113,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
---- !u!114 &6787536753558464387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1120024884796657940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: dd5600b71f7698f4f95b7611ca250a53, type: 2}
-  handIndex: 15
-  onDrag: 0
-  canDrop: 0
 --- !u!50 &5300232387221754853
 Rigidbody2D:
   serializedVersion: 4
@@ -150,3 +134,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &4142053560354010480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120024884796657940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
+  canDrop: 0

@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 3256214810825587404}
   - component: {fileID: 3256214810825587405}
   - component: {fileID: 3256214810825587410}
-  - component: {fileID: -7021482427025183226}
+  - component: {fileID: -6770735668250857765}
+  - component: {fileID: 3708226502008462382}
   m_Layer: 8
   m_Name: SniperCard
   m_TagString: Card
@@ -134,7 +135,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-7021482427025183226
+--- !u!114 &-6770735668250857765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -143,10 +144,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 3256214810825587407}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d6d98686d94bd5428705ddde105894a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: 56a3675fdbc88954b9d8b10e6b131421, type: 2}
-  handIndex: 13
+  towerData: {fileID: 0}
+  turretLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  defaultCard: {fileID: 0}
+  backCard: {fileID: 0}
   onDrag: 0
+--- !u!114 &3708226502008462382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3256214810825587407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
   canDrop: 0

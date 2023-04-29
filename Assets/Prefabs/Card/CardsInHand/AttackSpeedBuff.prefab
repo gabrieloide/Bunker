@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 6505005087614213128}
   - component: {fileID: 396087393167722566}
   - component: {fileID: 7547727395907670405}
-  - component: {fileID: 5401993026336709353}
   - component: {fileID: 5340790000786603850}
+  - component: {fileID: 8228177794842152278}
+  - component: {fileID: -4759238867510822675}
   m_Layer: 8
   m_Name: AttackSpeedBuff
   m_TagString: Card
@@ -113,22 +114,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.7, y: 3.7}
   m_EdgeRadius: 0
---- !u!114 &5401993026336709353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6505005087614213134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a51bca1eea79f743aedd35e214e9124, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: 18851507d67fa8142b9a12bdd38ada03, type: 2}
-  handIndex: 2
-  onDrag: 0
-  canDrop: 0
 --- !u!50 &5340790000786603850
 Rigidbody2D:
   serializedVersion: 4
@@ -150,3 +135,41 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &8228177794842152278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6505005087614213134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffe1e7eee19567f4a992ee08a63b9bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerData: {fileID: 11400000, guid: 18851507d67fa8142b9a12bdd38ada03, type: 2}
+  turretLayerMask:
+    serializedVersion: 2
+    m_Bits: 2048
+  defaultCard: {fileID: 0}
+  backCard: {fileID: 0}
+  onDrag: 0
+  width: 2.36
+  height: 3.23
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 2048
+--- !u!114 &-4759238867510822675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6505005087614213134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handIndex: 0
+  canDrop: 0
