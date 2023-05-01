@@ -7,25 +7,23 @@ public abstract class Card : MonoBehaviour
     [SerializeField] protected LayerMask objectLayerMask;
     [SerializeField] protected TowersData towerData;
     [SerializeField] Sprite defaultCard, backCard;
-    private Vector3 scaleChange;
+    private Vector3 scaleChange() => new Vector3(transform.localScale.x / 2f
+                                , transform.localScale.y / 2f,
+                                    0f);
     private Deck dc;
-    protected bool onDrag;
+    protected bool onDrag = false;
     private int index() => GetComponent<CardIndex>().HandIndex;
     protected abstract bool ReturnToHand();
     private void Start()
     {
-        scaleChange = new Vector3(transform.localScale.x / 2f
-                                , transform.localScale.y / 2f,
-                                    0f);
         dc = FindObjectOfType<Deck>();
         //spriteRenderer = GetComponent<SpriteRenderer>();
-        onDrag = false;
         showCard();
     }
-
+    private void Update() => UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position, onDrag);
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1) && !FindObjectOfType<Card>().onDrag)
+        if (Input.GetMouseButtonDown(1) && !onDrag)
             UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position);
     }
     private void OnMouseEnter()
@@ -34,7 +32,7 @@ public abstract class Card : MonoBehaviour
         {
             //MOUSE ENCIMA DE LA CARTA
 
-            gameObject.transform.position += new Vector3(0f, gameObject.transform.localScale.y / 2f, 0f);
+            transform.position += new Vector3(0f, transform.localScale.y / 2f, 0f);
         }
     }
     private void OnMouseExit()
@@ -51,16 +49,16 @@ public abstract class Card : MonoBehaviour
         //ARRASTRAR CARTA
 
         Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
-        gameObject.transform.position = MousePosition;
+        transform.position = MousePosition;
     }
     private void OnMouseDown()
     {
         //TOMAR CARTA
-        UIManager.instance.ShowLastCardPosition(transform.position, !ReturnToHand());
+
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
-        gameObject.transform.localScale -= scaleChange;
+        transform.localScale -= scaleChange();
     }
     private void OnMouseUp()
     {
@@ -93,7 +91,7 @@ public abstract class Card : MonoBehaviour
         {
             onDrag = false;
             transform.position = dc.cardSlots[index()].position;
-            gameObject.transform.localScale += scaleChange;
+            transform.localScale = Vector3.one;
         }
     }
     protected abstract void CardBehaviour();

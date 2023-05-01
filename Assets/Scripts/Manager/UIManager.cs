@@ -78,19 +78,21 @@ public class UIManager : MonoBehaviour
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowLastCardPosition(Vector3 CardPos, bool showLastCardPos)
+    public void ShowLastCardPosition(Vector3 cardPos, bool onDrag)
     {
-        if (showLastCardPos)
+        Debug.Log("Timpano");
+        if (onDrag)
         {
-            LastPosCard.SetActive(showLastCardPos);
-            //Mostrar Ultima posicion de la carta al agarrarla
-            LastPosCard.transform.position = CardPos + new Vector3(default, -0.52f);
+            Vector3 worldPosition = LastPosCard.GetComponent<RectTransform>()
+                .TransformPoint(LastPosCard.GetComponent<RectTransform>().localPosition);
+            LastPosCard.transform.position = worldPosition;
+            LastPosCard.SetActive(true);
             LeanTween.size(LastPosCard.GetComponent<RectTransform>(), new Vector2(40, 60), TimeLastPosCard).setEaseInBack();
         }
         else
         {
-            LastPosCard.SetActive(showLastCardPos);
             //No mostrar ultima posicion de la carta al agarrarla
+            LastPosCard.SetActive(false);
             LeanTween.size(LastPosCard.GetComponent<RectTransform>(), Vector2.zero, TimeLastPosCard).setEaseOutBack();
         }
     }
