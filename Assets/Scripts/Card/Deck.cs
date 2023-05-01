@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Deck : MonoBehaviour
 {
-    [SerializeField] towerSlotVerification TowerSlotVerification;
     public List<CardIndex> deck = new List<CardIndex>();
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
