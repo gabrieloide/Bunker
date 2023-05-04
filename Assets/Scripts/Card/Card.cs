@@ -11,8 +11,7 @@ public abstract class Card : MonoBehaviour
                                 , transform.localScale.y / 2f,
                                     0f);
     private Deck dc;
-    protected bool onDrag = false;
-    private int index() => GetComponent<CardIndex>().HandIndex;
+    [HideInInspector]public int index() => GetComponent<CardIndex>().HandIndex;
     protected abstract bool ReturnToHand();
     private void Start()
     {
@@ -20,15 +19,14 @@ public abstract class Card : MonoBehaviour
         //spriteRenderer = GetComponent<SpriteRenderer>();
         showCard();
     }
-    private void Update() => UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position, onDrag);
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1) && !onDrag)
+        if (Input.GetMouseButtonDown(1) && !GameManager.instance.onDrag)
             UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position);
     }
     private void OnMouseEnter()
     {
-        if (!onDrag)
+        if (!GameManager.instance.onDrag)
         {
             //MOUSE ENCIMA DE LA CARTA
 
@@ -37,7 +35,7 @@ public abstract class Card : MonoBehaviour
     }
     private void OnMouseExit()
     {
-        if (!onDrag)
+        if (!GameManager.instance.onDrag)
         {
             // MOUSE CUANDO SALE DE LA CARTA    
             transform.position = dc.cardSlots[index()].position;
@@ -56,18 +54,22 @@ public abstract class Card : MonoBehaviour
         //TOMAR CARTA
 
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
-        onDrag = true;
+        GameManager.instance.onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
         transform.localScale -= scaleChange();
+        UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
     }
     private void OnMouseUp()
     {
         if (!FindObjectOfType<Trash>().hit2D)
         {
-            UIManager.instance.ShowTowerSlot = false;
             LeanTween.alpha(gameObject, 1f, 0.3f);
+            UIManager.instance.ShowTowerSlot = false;
             UIManager.instance.TowerSlotAnimation.SetActive(false);
+            GameManager.instance.onDrag = false;
+            UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
             spawnCard();
+
         }
         else
         {
@@ -89,7 +91,6 @@ public abstract class Card : MonoBehaviour
         }
         else
         {
-            onDrag = false;
             transform.position = dc.cardSlots[index()].position;
             transform.localScale = Vector3.one;
         }

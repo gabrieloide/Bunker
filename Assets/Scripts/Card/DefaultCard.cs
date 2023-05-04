@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class DefaultCard : MonoBehaviour
 {
-    private void OnEnable()
+    [SerializeField]Vector3 cardPos;
+    Deck deck;
+    private void OnEnable() 
     {
-        //Mostrar Ultima posicion de la carta al agarrarla
-
+        LeanTween.scale(gameObject, Vector2.one, 0.3f).setEaseInBack();
     }
 }

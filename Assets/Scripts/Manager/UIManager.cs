@@ -78,22 +78,17 @@ public class UIManager : MonoBehaviour
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowLastCardPosition(Vector3 cardPos, bool onDrag)
+    public void ShowLastCardPosition(Vector3 cardPos)
     {
-        Debug.Log("Timpano");
-        if (onDrag)
+        if (GameManager.instance.onDrag)
         {
-            Vector3 worldPosition = LastPosCard.GetComponent<RectTransform>()
-                .TransformPoint(LastPosCard.GetComponent<RectTransform>().localPosition);
-            LastPosCard.transform.position = worldPosition;
             LastPosCard.SetActive(true);
-            LeanTween.size(LastPosCard.GetComponent<RectTransform>(), new Vector2(40, 60), TimeLastPosCard).setEaseInBack();
+            LastPosCard.transform.position = cardPos;
         }
         else
         {
             //No mostrar ultima posicion de la carta al agarrarla
             LastPosCard.SetActive(false);
-            LeanTween.size(LastPosCard.GetComponent<RectTransform>(), Vector2.zero, TimeLastPosCard).setEaseOutBack();
         }
     }
     public void ShowDeck()
