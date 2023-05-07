@@ -25,14 +25,13 @@ public class Deck : MonoBehaviour
         {
             if (availableCardSlots[i] == true)
             {
-                CardIndex newCard = Instantiate(deck[card], cardSlots[i].position -
-                                                                                new Vector3(default,
+                CardIndex newCard = Instantiate(deck[card], cardSlots[i].position - new Vector3(default,
                                                                                 5.5f,
                                                                                 transform.position.z),
                                                                                 transform.rotation);
                 CardsInHand++;
                 newCard.HandIndex = i;
-                LeanTween.moveY(newCard.gameObject, -5.5f, 0.3f);
+                LeanTween.moveY(newCard.gameObject, -5.57f, 0.3f);
                 newCard.transform.SetParent(CameraMovement.instance.transform);
                 //Agregar carta a la mano
 

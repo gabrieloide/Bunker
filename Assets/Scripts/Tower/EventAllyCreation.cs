@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EventAllyCreation : MonoBehaviour
 {
-    [SerializeField] TowersData Data;
+    [SerializeField] AllyStats Data;
     EnemyMovement enemyMovement;
     int nextWavePosition;
     [SerializeField] LayerMask enemyLayer;

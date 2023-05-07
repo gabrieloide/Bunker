@@ -5,14 +5,22 @@ using UnityEngine;
 public abstract class Card : MonoBehaviour
 {
     [SerializeField] protected LayerMask objectLayerMask;
-    [SerializeField] protected TowersData towerData;
+    public TowersData towerData;
     [SerializeField] Sprite defaultCard, backCard;
     private Vector3 scaleChange() => new Vector3(transform.localScale.x / 2f
                                 , transform.localScale.y / 2f,
                                     0f);
-    private Deck dc;
-    [HideInInspector]public int index() => GetComponent<CardIndex>().HandIndex;
-    protected abstract bool ReturnToHand();
+    protected Deck dc;
+    [SerializeField] protected Vector3 offset = new Vector3(0, -0.5f, 0);
+    [SerializeField]protected float width = 1.2f;
+    [SerializeField]protected float height = 1;
+    protected virtual RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, objectLayerMask);
+    [HideInInspector] public int index() => GetComponent<CardIndex>().HandIndex;
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position + offset, new Vector2(width, height));
+    }
     private void Start()
     {
         dc = FindObjectOfType<Deck>();
@@ -80,9 +88,9 @@ public abstract class Card : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    void spawnCard()
+    protected virtual void spawnCard()
     {
-        if (!ReturnToHand())
+        if (!DetectObjectsBelow())
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;
