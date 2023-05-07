@@ -78,16 +78,16 @@ public class Enemy : MonoBehaviour
             //Rebre mal
             Instantiate(hitParticle, transform.position, Quaternion.identity);
             TakeDamage(collision);
-            collision.GetComponent<TowerBullet>().lifeBullet -= 1;
             tank_destroy.Post(gameObject);
         }
     }
     void TakeDamage(Collider2D collision)
     {
-        float realDamage = collision.GetComponent<TowerBullet>().damage - Data.Defense();
+        var bullet = collision.GetComponent<TowerBullet>();
+        float realDamage = bullet.Damage - (bullet.BulletPen - Data.Defense());
         GameObject DamageTxt = Instantiate(DamageText, transform.position, Quaternion.identity);
-        Destroy(DamageTxt, DamageTime);
-        LeanTween.moveLocalY(DamageTxt, 3, DamageTime).setEase(DamageTextAnimTween);
         Life -= realDamage;
+        LeanTween.moveLocalY(DamageTxt, 3, DamageTime).setEase(DamageTextAnimTween);
+        Destroy(DamageTxt, DamageTime);
     }
 }

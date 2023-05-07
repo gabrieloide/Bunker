@@ -4,7 +4,7 @@ public class AirAttack : MonoBehaviour
 {
     public GameObject Plane;
     public TowersData AirAttackData;
-    [SerializeField]public int damage;
+    [SerializeField]public float damage;
     public Vector3 offset;
     public Vector2 target;
     int planeAmount;

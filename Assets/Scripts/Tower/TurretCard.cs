@@ -5,18 +5,27 @@ public abstract class TurretCard : MonoBehaviour
 {
     private const string ENEMY_TAG = "Enemy";
     [SerializeField] protected TowersData towersData;
+    public float BulletPen
+    {
+        get { return towersData.bulletPen; }
+        set { towersData.bulletPen = value; }
+    }
+    public float Damage
+    {
+        get { return towersData.damage; }
+        set { towersData.damage = value; }
+    }
+    [SerializeField] public float fireRateCountDown = 0f;
 
-    [HideInInspector] public int damage() => towersData.damage;
     [HideInInspector] protected Transform target;
 
     [SerializeField] protected Transform nozzle;
     [SerializeField] protected GameObject bulletPrefab;
     [SerializeField] protected float range = 3f;
-    [SerializeField] protected float fireRateCountDown = 0f;
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
     [SerializeField] float TurretLifeSliderOffset;
-
+    LayerMask NormalCardLM() => LayerMask.GetMask("Path");
     public float timeToDestroy = 30f;
 
     protected void Start()
@@ -27,6 +36,7 @@ public abstract class TurretCard : MonoBehaviour
                                                                   default),
                                                                   Quaternion.identity, transform);
         Destroy(gameObject, timeToDestroy);
+        ChangeTurretDirection();
     }
     IEnumerator UpdateTargets()
     {
@@ -66,6 +76,11 @@ public abstract class TurretCard : MonoBehaviour
             fireRateCountDown = 1f / towersData.fireRate;
             TurretShoot();
         }
+    }
+    void ChangeTurretDirection()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, range, NormalCardLM());
+        transform.localScale = hit ? Vector2.one : new Vector2(-1, 1);
     }
     public abstract void TurretShoot();
 

@@ -88,6 +88,7 @@ public class UIManager : MonoBehaviour
         else
         {
             //No mostrar ultima posicion de la carta al agarrarla
+            LastPosCard.transform.localScale = Vector2.zero;
             LastPosCard.SetActive(false);
         }
     }

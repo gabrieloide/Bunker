@@ -4,7 +4,7 @@ public class LandMines : MonoBehaviour
 {
     public TowersData LandMineData;
     [SerializeField] GameObject ExplosionParticle;
-    int damage;
+    float damage;
 
     private void Start()
     {
