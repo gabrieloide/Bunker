@@ -16,6 +16,7 @@ public abstract class Card : MonoBehaviour
     [SerializeField]protected float height = 1;
     protected virtual RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, objectLayerMask);
     [HideInInspector] public int index() => GetComponent<CardIndex>().HandIndex;
+    protected Vector3 MousePosition;
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -54,7 +55,7 @@ public abstract class Card : MonoBehaviour
     {
         //ARRASTRAR CARTA
 
-        Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
+        MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
         transform.position = MousePosition;
     }
     private void OnMouseDown()

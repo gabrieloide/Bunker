@@ -101,7 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectLayerMask:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 0
   towerData: {fileID: 11400000, guid: b35bdb491f25c794a8b65d99b6104a5e, type: 2}
   defaultCard: {fileID: 0}
   backCard: {fileID: 0}
@@ -109,7 +109,7 @@ MonoBehaviour:
   width: 1.2
   height: 1
   buffType: 0
-  multiplierStat: 1.42
+  multiplierStat: 2.06
 --- !u!114 &6960230889883029535
 MonoBehaviour:
   m_ObjectHideFlags: 0

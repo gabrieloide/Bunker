@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1288623802054063192}
   - component: {fileID: -227800279104044871}
   - component: {fileID: -213461620801725421}
+  - component: {fileID: -6242378143259881193}
   m_Layer: 8
   m_Name: AirAttackCard
   m_TagString: Card
@@ -148,3 +149,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HandIndex: 0
   CanDrop: 0
+--- !u!114 &-6242378143259881193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2952522679187629482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ec172b9ea40a74a9080e7f461177ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  towerData: {fileID: 11400000, guid: acb0ea854b75b5a41870b58be1716c70, type: 2}
+  defaultCard: {fileID: 0}
+  backCard: {fileID: 0}
+  offset: {x: 0, y: -0.5, z: 0}
+  width: 1.2
+  height: 1
+  airAttackManager: {fileID: 6397520152180845838, guid: 767b7a347acb9b74f9f9dc8f41ae8460, type: 3}
