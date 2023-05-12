@@ -16,10 +16,9 @@ public class TowerBullet : MonoBehaviour
         timeToDestroy = TimeToDestroy;
         RB2d = gameObject.GetComponent<Rigidbody2D>();
     }
-    public void GetData(Transform _target, float _damage, float _lifeBullet)
+    public void GetData(Transform _target, float _lifeBullet)
     {
         target = _target;
-        Damage = _damage;
         BulletPen = _lifeBullet;
         dir = target.position - transform.position;
     }
@@ -27,10 +26,9 @@ public class TowerBullet : MonoBehaviour
     private void Update()
     {
         timeToDestroy -= Time.deltaTime;
-        if (BulletPen <= 0 || timeToDestroy < 0)
+        if (timeToDestroy < 0)
         {
             gameObject.SetActive(false);
-            BulletPen = 1;
             timeToDestroy = TimeToDestroy;
             transform.rotation = Quaternion.Euler(Vector3.zero);
             GameObject PoolingPos = GameObject.Find("Pooling");

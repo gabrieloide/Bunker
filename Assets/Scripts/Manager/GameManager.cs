@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        AddCardToHand(16);
-        AddCardToHand(16);
+        AddCardToHand(0);
+        AddCardToHand(0);
         AddCardToHand(1);
         AddCardToHand(1);
         AddCardToHand(1);

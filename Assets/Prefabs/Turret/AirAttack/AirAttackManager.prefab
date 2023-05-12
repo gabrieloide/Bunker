@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7506797028057159639
+--- !u!1 &6397520152180845838
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,44 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7506797028057159625}
-  - component: {fileID: 7506797028057159638}
-  m_Layer: 7
-  m_Name: AirAttack
+  - component: {fileID: 8285972474346648225}
+  - component: {fileID: 2033905140217721702}
+  m_Layer: 0
+  m_Name: AirAttackManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7506797028057159625
+--- !u!4 &8285972474346648225
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7506797028057159639}
+  m_GameObject: {fileID: 6397520152180845838}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.29, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7506797028057159638
+--- !u!114 &2033905140217721702
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7506797028057159639}
+  m_GameObject: {fileID: 6397520152180845838}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54ec172b9ea40a74a9080e7f461177ea, type: 3}
+  m_Script: {fileID: 11500000, guid: a0a824ebbabebd8438d84e549a5b7229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Plane: {fileID: 5176247802354414616, guid: e7e184e5f7a395e468abebf35a8ef1d8, type: 3}
-  AirAttackData: {fileID: 11400000, guid: acb0ea854b75b5a41870b58be1716c70, type: 2}
-  damage: 0
-  offset: {x: -20, y: 8, z: 0}
-  target: {x: 0, y: 0}
+  BulletAA: {fileID: 2443380422897682370, guid: c74cb67914af0d44ea03776bf77535a3, type: 3}
+  PlaneGO: {fileID: 6392071966231352157, guid: 69186aa2e0519644bbce4439f8e85732, type: 3}
+  ShadowPlaneGO: {fileID: 770955836953395613, guid: fae3b39ee3b824e479f07f71bfe27f09, type: 3}
+  offsetPlaneY: 5
+  airPlaneSpeed: 5
+  distance: -2
+  bulletSpeed: 6.3
+  delayBtwBullets: 0.37
+  threshold: 12

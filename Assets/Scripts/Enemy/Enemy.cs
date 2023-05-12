@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
     public EnemyData Data;
     public AK.Wwise.Event tank_destroy;
@@ -12,9 +12,6 @@ public class Enemy : MonoBehaviour
     [SerializeField] LootBag LootBagCom;
     private float fireRate;
     [HideInInspector]public float Life;
-    [SerializeField] GameObject DamageText;
-    [SerializeField] LeanTweenType DamageTextAnimTween;
-    [SerializeField] float DamageTime;
     private void Start()
     {
         LootBagCom = FindObjectOfType<LootBag>();
@@ -77,17 +74,12 @@ public class Enemy : MonoBehaviour
         {
             //Rebre mal
             Instantiate(hitParticle, transform.position, Quaternion.identity);
-            TakeDamage(collision);
             tank_destroy.Post(gameObject);
         }
     }
-    void TakeDamage(Collider2D collision)
+    public void Damage(float damage, float bulletPen)
     {
-        var bullet = collision.GetComponent<TowerBullet>();
-        float realDamage = bullet.Damage - (bullet.BulletPen - Data.Defense());
-        GameObject DamageTxt = Instantiate(DamageText, transform.position, Quaternion.identity);
+        float realDamage = damage - (bulletPen - Data.Defense());
         Life -= realDamage;
-        LeanTween.moveLocalY(DamageTxt, 3, DamageTime).setEase(DamageTextAnimTween);
-        Destroy(DamageTxt, DamageTime);
     }
 }
