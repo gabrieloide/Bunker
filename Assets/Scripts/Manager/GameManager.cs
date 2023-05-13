@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public bool onDrag;
     public int ActualScore;
     private void Awake()
     {
@@ -25,8 +26,8 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        AddCardToHand(1);
-        AddCardToHand(1);
+        AddCardToHand(0);
+        AddCardToHand(0);
         AddCardToHand(1);
         AddCardToHand(1);
         AddCardToHand(1);

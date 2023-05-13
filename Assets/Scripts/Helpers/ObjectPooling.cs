@@ -39,6 +39,9 @@ public class ObjectPooling : MonoBehaviour
                 return bulletsPooling[i];
             }
         }
-        return null;
+        GameObject newBullet = new GameObject();
+        newBullet.SetActive(true);
+        bulletsPooling.Add(newBullet);
+        return newBullet;
     }
 }
