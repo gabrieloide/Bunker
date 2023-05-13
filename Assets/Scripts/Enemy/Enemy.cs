@@ -36,7 +36,6 @@ public class Enemy : MonoBehaviour, IDamageable
         }
         else
         {
-
             Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
         }
     }
@@ -68,18 +67,12 @@ public class Enemy : MonoBehaviour, IDamageable
             fireRate = Data.FireRate();
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Bullet"))
-        {
-            //Rebre mal
-            Instantiate(hitParticle, transform.position, Quaternion.identity);
-            tank_destroy.Post(gameObject);
-        }
-    }
     public void Damage(float damage, float bulletPen)
     {
+        //Rebre mal
         float realDamage = damage - (bulletPen - Data.Defense());
+        Instantiate(hitParticle, transform.position, Quaternion.identity);
+        tank_destroy.Post(gameObject);
         Life -= realDamage;
     }
 }

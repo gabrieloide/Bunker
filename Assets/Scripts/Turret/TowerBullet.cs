@@ -16,9 +16,10 @@ public class TowerBullet : MonoBehaviour
         timeToDestroy = TimeToDestroy;
         RB2d = gameObject.GetComponent<Rigidbody2D>();
     }
-    public void GetData(Transform _target, float _lifeBullet)
+    public void GetData(Transform _target, float _Damage, float _lifeBullet)
     {
         target = _target;
+        Damage = _Damage;
         BulletPen = _lifeBullet;
         dir = target.position - transform.position;
     }
@@ -33,6 +34,14 @@ public class TowerBullet : MonoBehaviour
             transform.rotation = Quaternion.Euler(Vector3.zero);
             GameObject PoolingPos = GameObject.Find("Pooling");
             transform.position = PoolingPos.transform.position;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.Damage(Damage, BulletPen);
         }
     }
     private void FixedUpdate()
