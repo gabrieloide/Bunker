@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    void Damage(float damage, float bulletPen);
+    void Damage(float damage, float bulletPen, GameObject deactivateBullet);
 }
