@@ -6,6 +6,7 @@
 				<SoundBank Name="Main" ID="{44322493-A480-46D8-A9B8-4D3DA21E6D7E}">
 					<ObjectInclusionList>
 						<ObjectRef Name="Music" ID="{C9414075-5FD7-4676-AB30-619EBD403EBA}" WorkUnitID="{360BEDD5-648B-4644-9845-5DB8FEEF2EEE}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Enemy" ID="{C1D95BAC-18B8-4BE0-8F91-470C1A258CDF}" WorkUnitID="{360BEDD5-648B-4644-9845-5DB8FEEF2EEE}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

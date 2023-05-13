@@ -117,7 +117,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: b92fad8426132548be3eee3fcd91a249
     GuidInternal: 
-    m_lastTime: -8585250879338478737
+    m_lastTime: -8585176624521738654
     List:
     - name: Main
       guid: 9324324480a4d846a9b84d3da21e6d7e
@@ -145,8 +145,31 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: d5ed0b368b64444698455db8feef2eee
     GuidInternal: 
-    m_lastTime: -8585201569122412134
+    m_lastTime: -8585176632409498147
     List:
+    - name: bazooka_destroy
+      guid: 66b748fc64803d43b13a84e9240733f9
+      id: 1546703957
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_bazooka
+        ObjectType: 4
+        guid: 7e9698f3f2dd3340b0f211fa3c563c59
+      - ElementName: bazooka_destroy
+        ObjectType: 3
+        guid: 66b748fc64803d43b13a84e9240733f9
+      Path: Events\Default Work Unit\Enemy\Enemy_bazooka\bazooka_destroy
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Enemy
       guid: ac5bd9c1b818e04b8f91470c1a258cdf
       id: 2299321487
@@ -161,6 +184,26 @@ MonoBehaviour:
         ObjectType: 4
         guid: ac5bd9c1b818e04b8f91470c1a258cdf
       Path: Events\Default Work Unit\Enemy
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Enemy_bazooka
+      guid: 7e9698f3f2dd3340b0f211fa3c563c59
+      id: 485945611
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_bazooka
+        ObjectType: 4
+        guid: 7e9698f3f2dd3340b0f211fa3c563c59
+      Path: Events\Default Work Unit\Enemy\Enemy_bazooka
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -184,9 +227,9 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
-    - name: Enemy_rifle_soldier
+    - name: Enemy_rifle
       guid: 62c40fae308bfb45b6b9b58e651ceb7d
-      id: 2662935375
+      id: 668555392
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -197,10 +240,30 @@ MonoBehaviour:
       - ElementName: Enemy
         ObjectType: 4
         guid: ac5bd9c1b818e04b8f91470c1a258cdf
-      - ElementName: Enemy_rifle_soldier
+      - ElementName: Enemy_rifle
         ObjectType: 4
         guid: 62c40fae308bfb45b6b9b58e651ceb7d
-      Path: Events\Default Work Unit\Enemy\Enemy_rifle_soldier
+      Path: Events\Default Work Unit\Enemy\Enemy_rifle
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Enemy_tank
+      guid: f2f8f0ca6b17004abf3c5e8fed7ddd4b
+      id: 2946941130
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_tank
+        ObjectType: 4
+        guid: f2f8f0ca6b17004abf3c5e8fed7ddd4b
+      Path: Events\Default Work Unit\Enemy\Enemy_tank
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -264,6 +327,29 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: rifle_destroy
+      guid: 3cdd5f84efc70d49ac5ea636ccb5ad1b
+      id: 3079911926
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: d5ed0b368b64444698455db8feef2eee
+      - ElementName: Enemy
+        ObjectType: 4
+        guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_rifle
+        ObjectType: 4
+        guid: 62c40fae308bfb45b6b9b58e651ceb7d
+      - ElementName: rifle_destroy
+        ObjectType: 3
+        guid: 3cdd5f84efc70d49ac5ea636ccb5ad1b
+      Path: Events\Default Work Unit\Enemy\Enemy_rifle\rifle_destroy
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: soldier_shot
       guid: 7198510d06a9a54bb814e59b2764be2b
       id: 1636137400
@@ -277,13 +363,13 @@ MonoBehaviour:
       - ElementName: Enemy
         ObjectType: 4
         guid: ac5bd9c1b818e04b8f91470c1a258cdf
-      - ElementName: Enemy_rifle_soldier
+      - ElementName: Enemy_rifle
         ObjectType: 4
         guid: 62c40fae308bfb45b6b9b58e651ceb7d
       - ElementName: soldier_shot
         ObjectType: 3
         guid: 7198510d06a9a54bb814e59b2764be2b
-      Path: Events\Default Work Unit\Enemy\Enemy_rifle_soldier\soldier_shot
+      Path: Events\Default Work Unit\Enemy\Enemy_rifle\soldier_shot
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -300,10 +386,13 @@ MonoBehaviour:
       - ElementName: Enemy
         ObjectType: 4
         guid: ac5bd9c1b818e04b8f91470c1a258cdf
+      - ElementName: Enemy_tank
+        ObjectType: 4
+        guid: f2f8f0ca6b17004abf3c5e8fed7ddd4b
       - ElementName: tank_destroy
         ObjectType: 3
         guid: afb31622b6835647a9254b86399b2c82
-      Path: Events\Default Work Unit\Enemy\tank_destroy
+      Path: Events\Default Work Unit\Enemy\Enemy_tank\tank_destroy
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -364,7 +453,7 @@ MonoBehaviour:
     m_lastTime: -8585250879338462313
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 
+  ExpandedWaapiItemIds: 05000000060000000700000008000000150000001900000022000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0
