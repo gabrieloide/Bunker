@@ -117,7 +117,7 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<Sound Name="sfx_npx_tank_destroy" ID="{F4450EFA-CDA5-402D-94A0-3562143CF2C4}" ShortID="204808468">
+										<Sound Name="sfx_npc_tank_destroy" ID="{F4450EFA-CDA5-402D-94A0-3562143CF2C4}" ShortID="204808468">
 											<PropertyList>
 												<Property Name="Pitch" Type="int32">
 													<ModifierList>
@@ -173,7 +173,7 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<RandomSequenceContainer Name="npc_tank_destroy" ID="{48D3B439-D494-4BFF-94A9-22B3A31CF176}" ShortID="315840265">
+								<RandomSequenceContainer Name="npc_rifle_destroy" ID="{48D3B439-D494-4BFF-94A9-22B3A31CF176}" ShortID="315840265">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
@@ -183,27 +183,7 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<Sound Name="sfx_npx_tank_destroy" ID="{76E3B6C5-013D-41E1-93D8-0F0303965C74}" ShortID="610989151">
-											<PropertyList>
-												<Property Name="Pitch" Type="int32">
-													<ModifierList>
-														<ModifierInfo>
-															<Modifier Name="" ID="{49D4FD55-8A10-4916-9B56-8CD39ABA5D93}">
-																<PropertyList>
-																	<Property Name="Enabled" Type="bool" Value="True"/>
-																	<Property Name="Max" Type="Real64" Value="100"/>
-																	<Property Name="Min" Type="Real64" Value="-100"/>
-																</PropertyList>
-															</Modifier>
-														</ModifierInfo>
-													</ModifierList>
-												</Property>
-												<Property Name="Volume" Type="Real64">
-													<ValueList>
-														<Value>-13</Value>
-													</ValueList>
-												</Property>
-											</PropertyList>
+										<Sound Name="sfx_npc_rifle_destroy" ID="{46807336-F767-4058-949C-63968E43D8DA}" ShortID="750991552">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
@@ -213,16 +193,21 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{C8B879B9-12D3-45D9-ABD2-B259FDC9390C}">
+												<AudioFileSource Name="roblox-oof-gamespecifications_com_" ID="{8C6A7A00-725C-4454-8AB8-C07A63581A6D}">
+													<PropertyList>
+														<Property Name="LoopBegin" Type="Real64" Value="0.520313613684961"/>
+														<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+														<Property Name="TrimBegin" Type="Real64" Value="0.520313613684961"/>
+													</PropertyList>
 													<Language>SFX</Language>
-													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<AudioFile>roblox-oof-gamespecifications.com_.wav</AudioFile>
 													<MediaIDList>
-														<MediaID ID="1063858601"/>
+														<MediaID ID="35483994"/>
 													</MediaIDList>
 												</AudioFileSource>
 											</ChildrenList>
 											<ActiveSourceList>
-												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{C8B879B9-12D3-45D9-ABD2-B259FDC9390C}" Platform="Linked"/>
+												<ActiveSource Name="roblox-oof-gamespecifications_com_" ID="{8C6A7A00-725C-4454-8AB8-C07A63581A6D}" Platform="Linked"/>
 											</ActiveSourceList>
 										</Sound>
 									</ChildrenList>
@@ -390,7 +375,7 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<RandomSequenceContainer Name="npc_tank_destroy" ID="{9753E649-96E2-41F2-BC47-1613C69425A3}" ShortID="661948479">
+								<RandomSequenceContainer Name="npc_bazooka_destroy" ID="{9753E649-96E2-41F2-BC47-1613C69425A3}" ShortID="661948479">
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
@@ -400,27 +385,7 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<Sound Name="sfx_npx_tank_destroy" ID="{2DA00B84-B344-4623-86FD-E3180EE992A8}" ShortID="437959397">
-											<PropertyList>
-												<Property Name="Pitch" Type="int32">
-													<ModifierList>
-														<ModifierInfo>
-															<Modifier Name="" ID="{CF9643DD-A4AC-4A0B-99A8-708E36993FEE}">
-																<PropertyList>
-																	<Property Name="Enabled" Type="bool" Value="True"/>
-																	<Property Name="Max" Type="Real64" Value="100"/>
-																	<Property Name="Min" Type="Real64" Value="-100"/>
-																</PropertyList>
-															</Modifier>
-														</ModifierInfo>
-													</ModifierList>
-												</Property>
-												<Property Name="Volume" Type="Real64">
-													<ValueList>
-														<Value>-13</Value>
-													</ValueList>
-												</Property>
-											</PropertyList>
+										<Sound Name="sfx_npc_bazooka_destroy" ID="{9EA29FF3-D7FB-4896-B605-211419A01084}" ShortID="757704979">
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{CDCF9304-0C57-4A2F-88AA-30BA9224BD36}"/>
@@ -430,16 +395,16 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<AudioFileSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{F2EBD7EC-843B-4F57-A933-03A6EA84AAB6}">
+												<AudioFileSource Name="VOXScrm_Wilhelm scream (ID 0477)_BSB" ID="{EEEBE44D-877B-4A5E-B933-8A52DD15A7FD}">
 													<Language>SFX</Language>
-													<AudioFile>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</AudioFile>
+													<AudioFile>VOXScrm_Wilhelm scream (ID 0477)_BSB.wav</AudioFile>
 													<MediaIDList>
-														<MediaID ID="1063858601"/>
+														<MediaID ID="888402153"/>
 													</MediaIDList>
 												</AudioFileSource>
 											</ChildrenList>
 											<ActiveSourceList>
-												<ActiveSource Name="TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT" ID="{F2EBD7EC-843B-4F57-A933-03A6EA84AAB6}" Platform="Linked"/>
+												<ActiveSource Name="VOXScrm_Wilhelm scream (ID 0477)_BSB" ID="{EEEBE44D-877B-4A5E-B933-8A52DD15A7FD}" Platform="Linked"/>
 											</ActiveSourceList>
 										</Sound>
 									</ChildrenList>

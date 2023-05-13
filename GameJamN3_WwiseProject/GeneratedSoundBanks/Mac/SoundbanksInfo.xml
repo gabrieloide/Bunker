@@ -27,7 +27,7 @@
 				<AuxBus Id="3545700988" Name="Reverbs"/>
 			</AuxBusses>
 		</SoundBank>
-		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{9B111DB5-78E2-4D23-7FC3-28AC159DAAF0}">
+		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{27FDD6D5-06F2-5B1B-4E69-1FEB4094D057}">
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
 			<Media>
@@ -55,5 +55,5 @@
 			</Events>
 		</SoundBank>
 	</SoundBanks>
-	<FileHash>{19788380-66B6-1D2E-46AB-A7299E4AE805}</FileHash>
+	<FileHash>{1604CA30-26B4-D467-F5A4-F1B4E09373BA}</FileHash>
 </SoundBanksInfo>
