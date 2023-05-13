@@ -70,12 +70,13 @@ public class Enemy : MonoBehaviour, IDamageable
             
         }
     }
-    public void Damage(float damage, float bulletPen)
+    public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
     {
         //Rebre mal
         float realDamage = damage - (bulletPen - Data.Defense());
         Instantiate(hitParticle, transform.position, Quaternion.identity);
         destroy.Post(gameObject);
         Life -= realDamage;
+        deactivateBullet.SetActive(false);
     }
 }

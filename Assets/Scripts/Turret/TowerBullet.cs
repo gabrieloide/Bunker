@@ -41,7 +41,7 @@ public class TowerBullet : MonoBehaviour
         IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
         if (damageable != null)
         {
-            damageable.Damage(Damage, BulletPen);
+            damageable.Damage(Damage, BulletPen, gameObject);
         }
     }
     private void FixedUpdate()
