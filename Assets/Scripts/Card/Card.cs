@@ -5,30 +5,37 @@ using UnityEngine;
 public abstract class Card : MonoBehaviour
 {
     [SerializeField] protected LayerMask objectLayerMask;
-    [SerializeField] protected TowersData towerData;
+    public TowersData towerData;
     [SerializeField] Sprite defaultCard, backCard;
     private Vector3 scaleChange() => new Vector3(transform.localScale.x / 2f
                                 , transform.localScale.y / 2f,
                                     0f);
-    private Deck dc;
-    protected bool onDrag = false;
-    private int index() => GetComponent<CardIndex>().HandIndex;
-    protected abstract bool ReturnToHand();
+    protected Deck dc;
+    [SerializeField] protected Vector3 offset = new Vector3(0, -0.5f, 0);
+    [SerializeField]protected float width = 1.2f;
+    [SerializeField]protected float height = 1;
+    protected virtual RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, objectLayerMask);
+    [HideInInspector] public int index() => GetComponent<CardIndex>().HandIndex;
+    protected Vector3 MousePosition;
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position + offset, new Vector2(width, height));
+    }
     private void Start()
     {
         dc = FindObjectOfType<Deck>();
         //spriteRenderer = GetComponent<SpriteRenderer>();
         showCard();
     }
-    private void Update() => UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position, onDrag);
     private void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1) && !onDrag)
+        if (Input.GetMouseButtonDown(1) && !GameManager.instance.onDrag)
             UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position);
     }
     private void OnMouseEnter()
     {
-        if (!onDrag)
+        if (!GameManager.instance.onDrag)
         {
             //MOUSE ENCIMA DE LA CARTA
 
@@ -37,7 +44,7 @@ public abstract class Card : MonoBehaviour
     }
     private void OnMouseExit()
     {
-        if (!onDrag)
+        if (!GameManager.instance.onDrag)
         {
             // MOUSE CUANDO SALE DE LA CARTA    
             transform.position = dc.cardSlots[index()].position;
@@ -48,7 +55,7 @@ public abstract class Card : MonoBehaviour
     {
         //ARRASTRAR CARTA
 
-        Vector3 MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
+        MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
         transform.position = MousePosition;
     }
     private void OnMouseDown()
@@ -56,18 +63,22 @@ public abstract class Card : MonoBehaviour
         //TOMAR CARTA
 
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
-        onDrag = true;
+        GameManager.instance.onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
         transform.localScale -= scaleChange();
+        UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
     }
     private void OnMouseUp()
     {
         if (!FindObjectOfType<Trash>().hit2D)
         {
-            UIManager.instance.ShowTowerSlot = false;
             LeanTween.alpha(gameObject, 1f, 0.3f);
+            UIManager.instance.ShowTowerSlot = false;
             UIManager.instance.TowerSlotAnimation.SetActive(false);
+            GameManager.instance.onDrag = false;
+            UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
             spawnCard();
+
         }
         else
         {
@@ -78,9 +89,9 @@ public abstract class Card : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    void spawnCard()
+    protected virtual void spawnCard()
     {
-        if (!ReturnToHand())
+        if (!DetectObjectsBelow())
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;
@@ -89,7 +100,6 @@ public abstract class Card : MonoBehaviour
         }
         else
         {
-            onDrag = false;
             transform.position = dc.cardSlots[index()].position;
             transform.localScale = Vector3.one;
         }
