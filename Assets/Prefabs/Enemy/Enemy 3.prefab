@@ -113,10 +113,8 @@ MonoBehaviour:
   ally:
     serializedVersion: 2
     m_Bits: 128
+  LootBagCom: {fileID: 0}
   Life: 0
-  DamageText: {fileID: 563626671048280399, guid: ab0645bee825d314e93d621efeb58f6f, type: 3}
-  DamageTextAnimTween: 27
-  DamageTime: 0.7
 --- !u!61 &-5855894389994365845
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -218,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec7ab32c5e53a442af87a2b51b98ac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggerList: 
+  triggerList: 958ca0ea
   useOtherObject: 0
   actionOnEventType: 0
   curveInterpolation: 4

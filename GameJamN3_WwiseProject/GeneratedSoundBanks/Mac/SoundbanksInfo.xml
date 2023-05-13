@@ -27,13 +27,25 @@
 				<AuxBus Id="3545700988" Name="Reverbs"/>
 			</AuxBusses>
 		</SoundBank>
-		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{9B111DB5-78E2-4D23-7FC3-28AC159DAAF0}">
+		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{D69817E7-A6BF-A641-A166-7349324943A7}">
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
 			<Media>
+				<File Id="35483994" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>roblox-oof-gamespecifications.com_.wav</ShortName>
+					<CachePath>SFX/roblox-oof-gamespecifications.com__90C9E93A.wem</CachePath>
+				</File>
+				<File Id="171526240" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>Jeep_1.wav</ShortName>
+					<CachePath>SFX/Jeep_1_D79FB2B7.wem</CachePath>
+				</File>
 				<File Id="363013805" Language="SFX" Streaming="false" Location="Memory">
 					<ShortName>Tom Base 1.wav</ShortName>
 					<CachePath>SFX/Tom Base 1_D79FB2B7.wem</CachePath>
+				</File>
+				<File Id="515133472" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>Gun_Shoot.wav</ShortName>
+					<CachePath>SFX/Gun_Shoot_10C4C929.wem</CachePath>
 				</File>
 				<File Id="792537456" Language="SFX" Streaming="false" Location="Memory">
 					<ShortName>Cymbal Base 1.wav</ShortName>
@@ -43,8 +55,26 @@
 					<ShortName>Snare Base 1.wav</ShortName>
 					<CachePath>SFX/Snare Base 1_D79FB2B7.wem</CachePath>
 				</File>
+				<File Id="888402153" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>VOXScrm_Wilhelm scream (ID 0477)_BSB.wav</ShortName>
+					<CachePath>SFX/VOXScrm_Wilhelm scream (ID 0477)_BSB_10C4C929.wem</CachePath>
+				</File>
+				<File Id="1063858601" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT.wav</ShortName>
+					<CachePath>SFX/TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT_10C4C929.wem</CachePath>
+				</File>
 			</Media>
 			<Events>
+				<Event Id="1546703957" Name="bazooka_destroy" DurationType="OneShot" DurationMin="1.1168481" DurationMax="1.1168481">
+					<MediaRefs>
+						<MediaRef Id="888402153"/>
+					</MediaRefs>
+				</Event>
+				<Event Id="2126374471" Name="jeep_motor" DurationType="Infinite">
+					<MediaRefs>
+						<MediaRef Id="171526240"/>
+					</MediaRefs>
+				</Event>
 				<Event Id="3633238891" Name="Music_InGame_Play" DurationType="Infinite">
 					<MediaRefs>
 						<MediaRef Id="363013805"/>
@@ -52,8 +82,23 @@
 						<MediaRef Id="850952708"/>
 					</MediaRefs>
 				</Event>
+				<Event Id="3079911926" Name="rifle_destroy" DurationType="OneShot" DurationMin="0.47968638" DurationMax="0.47968638">
+					<MediaRefs>
+						<MediaRef Id="35483994"/>
+					</MediaRefs>
+				</Event>
+				<Event Id="1636137400" Name="soldier_shot" DurationType="OneShot" DurationMin="0.625" DurationMax="0.625">
+					<MediaRefs>
+						<MediaRef Id="515133472"/>
+					</MediaRefs>
+				</Event>
+				<Event Id="1096303618" Name="tank_destroy" DurationType="OneShot" DurationMin="0.87697715" DurationMax="0.9843737">
+					<MediaRefs>
+						<MediaRef Id="1063858601"/>
+					</MediaRefs>
+				</Event>
 			</Events>
 		</SoundBank>
 	</SoundBanks>
-	<FileHash>{19788380-66B6-1D2E-46AB-A7299E4AE805}</FileHash>
+	<FileHash>{C4CC8CA5-2B0C-E8C1-9CB6-D4EE140DAAB7}</FileHash>
 </SoundBanksInfo>

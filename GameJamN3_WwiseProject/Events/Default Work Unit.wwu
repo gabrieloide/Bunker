@@ -27,18 +27,11 @@
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Enemy" ID="{C1D95BAC-18B8-4BE0-8F91-470C1A258CDF}" ShortID="449915376">
+					<PropertyList>
+						<Property Name="Color" Type="int16" Value="13"/>
+						<Property Name="OverrideColor" Type="bool" Value="True"/>
+					</PropertyList>
 					<ChildrenList>
-						<Event Name="tank_destroy" ID="{2216B3AF-83B6-4756-A925-4B86399B2C82}">
-							<ChildrenList>
-								<Action Name="" ID="{4AEEDDBE-860C-4E99-9915-CE28579A249B}" ShortID="767568134">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="npc_tank_destroy" ID="{B08C53A1-89EB-4D0B-9932-D50891C5FA13}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Folder Name="Enemy_jeep" ID="{056BCFD5-D2B7-437D-9C45-4F1D5B8B899B}" ShortID="813797444">
 							<ChildrenList>
 								<Event Name="jeep_motor" ID="{07A9041D-F3F7-4FEF-A25F-CF4DCCE8FFAA}">
@@ -54,7 +47,7 @@
 								</Event>
 							</ChildrenList>
 						</Folder>
-						<Folder Name="Enemy_rifle_soldier" ID="{AE0FC462-8B30-45FB-B6B9-B58E651CEB7D}" ShortID="194913764">
+						<Folder Name="Enemy_rifle" ID="{AE0FC462-8B30-45FB-B6B9-B58E651CEB7D}" ShortID="194913764">
 							<ChildrenList>
 								<Event Name="soldier_shot" ID="{0D519871-A906-4BA5-B814-E59B2764BE2B}">
 									<ChildrenList>
@@ -62,6 +55,47 @@
 											<ReferenceList>
 												<Reference Name="Target">
 													<ObjectRef Name="soldier_shot" ID="{AEA4FC61-D1ED-4F30-9901-D74B70D89152}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="rifle_destroy" ID="{845FDD3C-C7EF-490D-AC5E-A636CCB5AD1B}">
+									<ChildrenList>
+										<Action Name="" ID="{5E9E985E-3452-486F-8333-C5D774AF7458}" ShortID="594477496">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="npc_rifle_destroy" ID="{48D3B439-D494-4BFF-94A9-22B3A31CF176}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+						<Folder Name="Enemy_bazooka" ID="{F398967E-DDF2-4033-B0F2-11FA3C563C59}" ShortID="932331127">
+							<ChildrenList>
+								<Event Name="bazooka_destroy" ID="{FC48B766-8064-433D-B13A-84E9240733F9}">
+									<ChildrenList>
+										<Action Name="" ID="{7AB429AC-7F95-47C3-9E59-E6B2543DBB97}" ShortID="564024205">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="npc_bazooka_destroy" ID="{9753E649-96E2-41F2-BC47-1613C69425A3}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+						<Folder Name="Enemy_tank" ID="{CAF0F8F2-176B-4A00-BF3C-5E8FED7DDD4B}" ShortID="82416340">
+							<ChildrenList>
+								<Event Name="tank_destroy" ID="{2216B3AF-83B6-4756-A925-4B86399B2C82}">
+									<ChildrenList>
+										<Action Name="" ID="{4AEEDDBE-860C-4E99-9915-CE28579A249B}" ShortID="767568134">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="npc_tank_destroy" ID="{B08C53A1-89EB-4D0B-9932-D50891C5FA13}" WorkUnitID="{3037AFEC-6A96-4150-8512-089BD1853D09}"/>
 												</Reference>
 											</ReferenceList>
 										</Action>
