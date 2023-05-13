@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class NormalTurret : TurretCard
 {
+    public AK.Wwise.Event shoot;
     public override void TurretShoot()
     {
         Instantiate(BulletParticle, nozzle.position, transform.rotation);
@@ -17,5 +18,6 @@ public class NormalTurret : TurretCard
         bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         bullet.GetData(target, towersData.bulletPen);
+        shoot.Post(gameObject);
     }
 }

@@ -13,7 +13,12 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID BAZOOKA_DESTROY = 1546703957U;
+        static const AkUniqueID JEEP_MOTOR = 2126374471U;
         static const AkUniqueID MUSIC_INGAME_PLAY = 3633238891U;
+        static const AkUniqueID RIFLE_DESTROY = 3079911926U;
+        static const AkUniqueID SOLDIER_SHOT = 1636137400U;
+        static const AkUniqueID TANK_DESTROY = 1096303618U;
     } // namespace EVENTS
 
     namespace BANKS

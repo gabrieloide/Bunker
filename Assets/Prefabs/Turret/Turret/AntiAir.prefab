@@ -165,3 +165,7 @@ MonoBehaviour:
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 0.7
   timeToDestroy: 90
+  shoot:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 3ba53491ec2768e4788b941c1dbee145, type: 2}

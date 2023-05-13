@@ -2,7 +2,8 @@
 public class Enemy : MonoBehaviour, IDamageable
 {
     public EnemyData Data;
-    public AK.Wwise.Event tank_destroy;
+    public AK.Wwise.Event shoot;
+    public AK.Wwise.Event destroy;
     EnemyMovement enemyMovement;
     SpriteRenderer spriteRenderer;
     [SerializeField] GameObject hitParticle, explosionParticle;
@@ -65,7 +66,9 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             //Atacar aliados del camino
             contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage();
+            shoot.Post(gameObject);
             fireRate = Data.FireRate();
+            
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -74,7 +77,7 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             //Rebre mal
             Instantiate(hitParticle, transform.position, Quaternion.identity);
-            tank_destroy.Post(gameObject);
+            destroy.Post(gameObject);
         }
     }
     public void Damage(float damage, float bulletPen)

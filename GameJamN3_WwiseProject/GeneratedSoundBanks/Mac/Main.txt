@@ -1,8 +1,18 @@
 Event	ID	Name			Wwise Object Path	Notes
+	1096303618	tank_destroy			\Default Work Unit\Enemy\Enemy_tank\tank_destroy	
+	1546703957	bazooka_destroy			\Default Work Unit\Enemy\Enemy_bazooka\bazooka_destroy	
+	1636137400	soldier_shot			\Default Work Unit\Enemy\Enemy_rifle\soldier_shot	
+	2126374471	jeep_motor			\Default Work Unit\Enemy\Enemy_jeep\jeep_motor	
+	3079911926	rifle_destroy			\Default Work Unit\Enemy\Enemy_rifle\rifle_destroy	
 	3633238891	Music_InGame_Play			\Default Work Unit\Music\Music_InGame_Play	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	35483994	sfx_npc_rifle_destroy	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\roblox-oof-gamespecifications.com__90C9E93A.wem		\Actor-Mixer Hierarchy\Default Work Unit\NPCCharacters\SoldierRifleEnemy\npc_rifle_destroy\sfx_npc_rifle_destroy		84712
+	171526240	Jeep_1	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\Jeep_1_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\NPCCharacters\JeepEnemy\Jeep_Motor\Jeep_1		482824
 	363013805	Tom Base 1	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\Tom Base 1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\MasterMXSwitch\InGameMx\InGame\Main\Tom Base 1		1536156
+	515133472	Gun_Shot	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\Gun_Shoot_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\NPCCharacters\SoldierRifleEnemy\soldier_shot\Gun_Shot		120160
 	792537456	Cymbal Base 1	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\Cymbal Base 1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\MasterMXSwitch\InGameMx\InGame\Main\Cymbal Base 1		1536156
 	850952708	Snare Base 1	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\Snare Base 1_D79FB2B7.wem		\Interactive Music Hierarchy\Default Work Unit\MasterMXSwitch\InGameMx\InGame\Main\Snare Base 1		1536156
+	888402153	sfx_npc_bazooka_destroy	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\VOXScrm_Wilhelm scream (ID 0477)_BSB_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\NPCCharacters\SoldierBazookaEnemy\npc_bazooka_destroy\sfx_npc_bazooka_destroy		197108
+	1063858601	sfx_npc_tank_destroy	C:\Users\Carlos\GameJamN3\GameJamN3_WwiseProject\.cache\Mac\SFX\TOONImpt_Retro Sizzle Boom_PSE_ANI_gEziT_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\NPCCharacters\TankEnemy\npc_tank_destroy\sfx_npc_tank_destroy		178488
 
