@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -1524822194720085281}
   - component: {fileID: -4728367256939236119}
   - component: {fileID: 403009745182335219}
+  - component: {fileID: 2211082027663037845}
   m_Layer: 9
   m_Name: Enemy 2
   m_TagString: Enemy
@@ -104,17 +105,15 @@ MonoBehaviour:
   tank_destroy:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 0}
+    WwiseObjectReference: {fileID: 11400000, guid: 8611688ce3d323c4c89eee9b7c467bc4, type: 2}
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
   view: 5.02
   ally:
     serializedVersion: 2
     m_Bits: 128
+  LootBagCom: {fileID: 0}
   Life: 0
-  DamageText: {fileID: 563626671048280399, guid: ab0645bee825d314e93d621efeb58f6f, type: 3}
-  DamageTextAnimTween: 27
-  DamageTime: 0.7
 --- !u!61 &-1524822194720085281
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -182,3 +181,25 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2211082027663037845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452678203366704559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0c904f237c4c874b999ff6111257a78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_listeners:
+    initialListenerList: []
+    useDefaultListeners: 1
+  isEnvironmentAware: 1
+  isStaticObject: 0
+  m_positionOffsetData:
+    KeepMe: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+  m_posOffsetData: {fileID: 0}
+  listenerMask: 1
