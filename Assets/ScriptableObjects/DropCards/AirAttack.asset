@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: AirAttack
   m_EditorClassIdentifier: 
   loots: {fileID: 2952522679187629482, guid: accd407f48c24194b800df1472ec5053, type: 3}
-  dropChance: 33
+  dropChance: 3
   indexCard: 0

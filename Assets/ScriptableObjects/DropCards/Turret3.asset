@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Turret3
   m_EditorClassIdentifier: 
   loots: {fileID: 5892462271022858852, guid: 0460eca159e425c4e97257c31fa754fd, type: 3}
-  dropChance: 33
+  dropChance: 21
   indexCard: 14

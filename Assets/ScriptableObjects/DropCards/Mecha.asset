@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Mecha
   m_EditorClassIdentifier: 
   loots: {fileID: 8913244447289184042, guid: 8eb4eb4b63be8044e95f6cf65bca66c5, type: 3}
-  dropChance: 33
+  dropChance: 11
   indexCard: 8
