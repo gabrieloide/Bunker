@@ -5,7 +5,7 @@ public class TowerBullet : MonoBehaviour
     [SerializeField] private float speed;
     [HideInInspector] public Transform target;
     [SerializeField] GameObject damageText;
-    public float Damage, BulletPen;
+    float Damage, BulletPen;
     public float TimeToDestroy;
     private float timeToDestroy;
     private Rigidbody2D RB2d;
