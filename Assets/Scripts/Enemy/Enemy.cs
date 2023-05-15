@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour, IDamageable
     int nextWavePosition;
     [SerializeField] LootBag LootBagCom;
     private float fireRate;
-    [HideInInspector]public float Life;
+    [HideInInspector] public float Life;
     private void Start()
     {
         LootBagCom = FindObjectOfType<LootBag>();
@@ -67,7 +67,7 @@ public class Enemy : MonoBehaviour, IDamageable
             contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage();
             shoot.Post(gameObject);
             fireRate = Data.FireRate();
-            
+
         }
     }
     public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
