@@ -14,10 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Air attack
   Description: lorem
-  CardToInstantiate: {fileID: 7506797028057159639, guid: 5e97c98feca12fb449574cef4ca6885e, type: 3}
-  lifeBullet: 1
+  CardToInstantiate: {fileID: 6397520152180845838, guid: 767b7a347acb9b74f9f9dc8f41ae8460, type: 3}
+  bulletPen: 0
   damage: 11
   fireRate: 2.5
-  Life: 0
-  MoveSpeed: 0
-  View: 0
