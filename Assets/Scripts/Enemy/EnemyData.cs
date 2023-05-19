@@ -45,15 +45,5 @@ public class EnemyData : ScriptableObject
         lootBagComp.InstantiateLoot();
         Destroy(enemyDestroy);
     }
-    public void flip(float PosX, float thisPosX, SpriteRenderer sprite)
-    {
-        if (PosX < thisPosX)
-        {
-            sprite.flipX = true;
-        }
-        else
-        {
-            sprite.flipX = false;
-        }
-    }
+
 }

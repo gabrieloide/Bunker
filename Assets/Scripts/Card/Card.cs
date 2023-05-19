@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Card : MonoBehaviour
@@ -12,8 +10,9 @@ public abstract class Card : MonoBehaviour
                                     0f);
     protected Deck dc;
     [SerializeField] protected Vector3 offset = new Vector3(0, -0.5f, 0);
-    [SerializeField]protected float width = 1.2f;
-    [SerializeField]protected float height = 1;
+    [SerializeField] protected float width = 1.2f;
+    [SerializeField] protected float height = 1;
+    [SerializeField] GameObject CardFlipAnim;
     protected virtual RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, objectLayerMask);
     [HideInInspector] public int index() => GetComponent<CardIndex>().HandIndex;
     protected Vector3 MousePosition;
@@ -95,7 +94,9 @@ public abstract class Card : MonoBehaviour
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;
+            GameObject c =Instantiate(CardFlipAnim, transform.position, Quaternion.identity);
             CardBehaviour();
+            Destroy(c, 0.46f);
             Destroy(gameObject);
         }
         else

@@ -28,9 +28,9 @@ public class GameManager : MonoBehaviour
     {
         AddCardToHand(0);
         AddCardToHand(0);
-        AddCardToHand(1);
-        AddCardToHand(1);
-        AddCardToHand(1);
+        AddCardToHand(11);
+        AddCardToHand(11);
+        AddCardToHand(11);
     }
     public void AddCardToHand(int cardNumber)
     {

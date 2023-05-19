@@ -29,6 +29,16 @@ public class ObjectPooling : MonoBehaviour
             bulletsPooling.Add(newBullet);
         }
     }
+    void AddLasersToPool(int amount)
+    {
+        for (int i = 0; i < amountToPool; i++)
+        {
+            GameObject bullet = Instantiate(turretBullet);
+            bullet.SetActive(false);
+            bulletsPooling.Add(bullet);
+            bullet.transform.parent = transform;
+        }
+    }
     public GameObject Shoot()
     {
         for (int i = 0; i < bulletsPooling.Count; i++)
@@ -39,9 +49,8 @@ public class ObjectPooling : MonoBehaviour
                 return bulletsPooling[i];
             }
         }
-        GameObject newBullet = new GameObject();
-        newBullet.SetActive(true);
-        bulletsPooling.Add(newBullet);
-        return newBullet;
+        AddLasersToPool(1);
+        bulletsPooling[bulletsPooling.Count - 1].SetActive(true);
+        return bulletsPooling[bulletsPooling.Count - 1];
     }
 }
