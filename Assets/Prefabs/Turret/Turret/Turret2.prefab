@@ -45,7 +45,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.5}
@@ -82,6 +82,10 @@ MonoBehaviour:
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 0
   timeToDestroy: 90
+  shoot:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
 --- !u!1 &2829473383604270144
 GameObject:
   m_ObjectHideFlags: 0

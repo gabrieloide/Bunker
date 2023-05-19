@@ -101,11 +101,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ac652a1a52e7648aed4fcd006205dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius: 14
+  FireRate: 2
+  damage: 5
+  Hitable:
+    serializedVersion: 2
+    m_Bits: 2048
   Data: {fileID: 11400000, guid: 2f618eeca13dcf443abe63b66b48864e, type: 2}
-  tank_destroy:
+  shoot:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 8611688ce3d323c4c89eee9b7c467bc4, type: 2}
+    WwiseObjectReference: {fileID: 0}
+  destroy:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
   view: 5.02

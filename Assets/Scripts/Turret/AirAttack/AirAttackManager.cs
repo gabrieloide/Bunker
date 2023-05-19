@@ -61,7 +61,7 @@ public class AirAttackManager : MonoBehaviour
         Vector3 relativePos = MousePosition - airPlanePos.transform.position;
         float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 5; i++)
         {
             GameObject newBullet = Instantiate(BulletAA, airPlanePos.transform.position, Quaternion.AngleAxis(angle, Vector3.forward));
             newBullet.GetComponent<Rigidbody2D>().velocity = new Vector3(1, -1.4f, 0).normalized * bulletSpeed;

@@ -134,6 +134,7 @@ MonoBehaviour:
   offset: {x: 0, y: -0.5, z: 0}
   width: 1.2
   height: 1
+  CardFlipAnim: {fileID: 546763863824955450, guid: 3b92ffc65c6fa9f489d039d89530410a, type: 3}
 --- !u!114 &82753302256148822
 MonoBehaviour:
   m_ObjectHideFlags: 0

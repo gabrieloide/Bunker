@@ -102,6 +102,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ac652a1a52e7648aed4fcd006205dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius: 14
+  FireRate: 2
+  damage: 5
+  Hitable:
+    serializedVersion: 2
+    m_Bits: 2048
   Data: {fileID: 11400000, guid: ab8e046a89009b844a574aa5901d6438, type: 2}
   shoot:
     idInternal: 0
