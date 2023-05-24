@@ -40,7 +40,7 @@ public class BuffCard : Card
         switch (buffType)
         {
             case BuffType.AttackBuff:
-                Turret.Damage *= multiplierStat; 
+                Turret.TDamage *= multiplierStat; 
                 break;
 
             case BuffType.SpeedBuff:

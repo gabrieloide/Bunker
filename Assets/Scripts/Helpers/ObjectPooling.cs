@@ -5,8 +5,10 @@ using UnityEngine;
 public class ObjectPooling : MonoBehaviour
 {
     public static ObjectPooling instance;
-    public List<GameObject> bulletsPooling = new List<GameObject>();
+    [SerializeField] List<GameObject> bulletsPooling = new List<GameObject>();
+    [SerializeField] List<GameObject> enemyBulletsPooling = new List<GameObject>();
     [SerializeField] GameObject turretBullet;
+    [SerializeField] GameObject EnemyBullet;
     [SerializeField] int amountToPool;
 
     void Awake()
@@ -24,22 +26,34 @@ public class ObjectPooling : MonoBehaviour
     {
         for (int i = 0; i < amountToPool; i++)
         {
-            GameObject newBullet= Instantiate(turretBullet, transform.position, transform.rotation, transform);
+            GameObject newBullet = Instantiate(turretBullet, transform.position, transform.rotation, transform);
             newBullet.SetActive(false);
             bulletsPooling.Add(newBullet);
+
+            GameObject bulletEnemy = Instantiate(EnemyBullet, transform.position, Quaternion.identity, transform);
+            bulletEnemy.SetActive(false);
+            enemyBulletsPooling.Add(bulletEnemy);
         }
     }
-    void AddLasersToPool(int amount)
+    void AddLasersToPool(int amount, GameObject _bullet, List<GameObject> pool)
     {
-        for (int i = 0; i < amountToPool; i++)
+        for (int i = 0; i < amount; i++)
         {
-            GameObject bullet = Instantiate(turretBullet);
+            GameObject bullet = Instantiate(_bullet);
             bullet.SetActive(false);
-            bulletsPooling.Add(bullet);
+            pool.Add(bullet);
             bullet.transform.parent = transform;
         }
     }
-    public GameObject Shoot()
+    public GameObject EnemyShoot()
+    {
+        return Shoot(enemyBulletsPooling, EnemyBullet);
+    }
+    public GameObject TurretShoot()
+    {
+        return Shoot(bulletsPooling, turretBullet);
+    }
+    public GameObject Shoot(List<GameObject> bulletsPooling, GameObject _bullet)
     {
         for (int i = 0; i < bulletsPooling.Count; i++)
         {
@@ -49,7 +63,7 @@ public class ObjectPooling : MonoBehaviour
                 return bulletsPooling[i];
             }
         }
-        AddLasersToPool(1);
+        AddLasersToPool(1, _bullet, bulletsPooling);
         bulletsPooling[bulletsPooling.Count - 1].SetActive(true);
         return bulletsPooling[bulletsPooling.Count - 1];
     }

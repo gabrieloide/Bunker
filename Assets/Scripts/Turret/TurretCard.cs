@@ -1,16 +1,21 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class TurretCard : MonoBehaviour
+public abstract class TurretCard : MonoBehaviour, IDamageable
 {
     private const string ENEMY_TAG = "Enemy";
     [SerializeField] protected TowersData towersData;
+    public float Life
+    {
+        get { return towersData.Life; }
+        set { towersData.Life = value; }
+    }
     public float BulletPen
     {
         get { return towersData.bulletPen; }
         set { towersData.bulletPen = value; }
     }
-    public float Damage
+    public float TDamage
     {
         get { return towersData.damage; }
         set { towersData.damage = value; }
@@ -21,12 +26,11 @@ public abstract class TurretCard : MonoBehaviour
 
     [SerializeField] protected Transform nozzle;
     [SerializeField] protected GameObject bulletPrefab;
-    [SerializeField] protected float range = 3f;
+    [Range(3, 20)] [SerializeField] protected float range = 3f;
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
     [SerializeField] float TurretLifeSliderOffset;
     LayerMask NormalCardLM() => LayerMask.GetMask("Path");
-    public float timeToDestroy = 30f;
 
     protected void Start()
     {
@@ -35,7 +39,6 @@ public abstract class TurretCard : MonoBehaviour
                                                                 , TurretLifeSliderOffset,
                                                                   default),
                                                                   Quaternion.identity, transform);
-        Destroy(gameObject, timeToDestroy);
         ChangeTurretDirection();
     }
     IEnumerator UpdateTargets()
@@ -88,5 +91,10 @@ public abstract class TurretCard : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);
+    }
+    public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
+    {
+        Life -= damage;
+        deactivateBullet.SetActive(false);
     }
 }

@@ -11,6 +11,8 @@ public class TowersData : ScriptableObject
     [Space]
     [Header("Tower")]
     public GameObject CardToInstantiate;
+    public float Life;
+    public float Defense;
     public float bulletPen;
     public float damage;
     public float fireRate;

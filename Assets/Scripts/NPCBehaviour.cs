@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class NPCBehaviour : MonoBehaviour
 {
-    [SerializeField] float radius;
+    [Range(3, 20)] [SerializeField] float radius;
     [SerializeField] float FireRate;
     [SerializeField] float damage = 5;
-    [SerializeField] LayerMask Hitable;
+    protected LayerMask Hitable;
     protected IEnumerator MoveAlongPath(Vector3[] path, bool reverse, GameObject obj, float speed, Transform transform)
     {
         int direction = reverse ? -1 : 1;
@@ -16,11 +16,11 @@ public class NPCBehaviour : MonoBehaviour
         {
             Vector3 targetPosition = path[index];
 
-            RaycastHit2D hit = Physics2D.CircleCast(transform.position, radius, Vector2.zero, 5, Hitable);
+            RaycastHit2D hit = Physics2D.CircleCast(transform.position, radius, Vector2.zero, 3, Hitable);
             while (hit)
             {
                 NPCAttack(hit);
-                yield return FireRate;
+                yield return new WaitForSeconds(FireRate);
             }
             Flip(targetPosition.x, obj.transform.position.x, transform);
 
@@ -36,14 +36,13 @@ public class NPCBehaviour : MonoBehaviour
     {
         GameObject t = hit.collider.gameObject;
 
-        TowerBullet bullet = ObjectPooling.instance.Shoot().GetComponent<TowerBullet>();
+        EnemyBullet bullet = ObjectPooling.instance.EnemyShoot().GetComponent<EnemyBullet>();
         bullet.transform.position = transform.position;
 
         Vector3 relativePos = t.transform.position - transform.position;
         float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
         bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-        bullet.GetData(t.transform, damage, 0);
+        bullet.GetData(t.transform.position, damage, 0);
     }
     protected void Flip(float PosX, float thisPosX, Transform transform)
     {

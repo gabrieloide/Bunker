@@ -7,7 +7,8 @@ public class AirAttackManager : MonoBehaviour
     [SerializeField] GameObject BulletAA;
     [SerializeField] GameObject PlaneGO;
     [SerializeField] GameObject ShadowPlaneGO;
-
+    [SerializeField] TowersData data;
+    
     [SerializeField] float offsetPlaneY;
     [SerializeField] float airPlaneSpeed;
     [SerializeField] private float distance;
@@ -58,15 +59,28 @@ public class AirAttackManager : MonoBehaviour
     }
     IEnumerator bulletMovement(GameObject airPlanePos)
     {
-        Vector3 relativePos = MousePosition - airPlanePos.transform.position;
-        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+
 
         for (int i = 0; i < 5; i++)
         {
-            GameObject newBullet = Instantiate(BulletAA, airPlanePos.transform.position, Quaternion.AngleAxis(angle, Vector3.forward));
-            newBullet.GetComponent<Rigidbody2D>().velocity = new Vector3(1, -1.4f, 0).normalized * bulletSpeed;
-            Destroy(newBullet, 0.88f);
+            //GameObject newBullet = Instantiate(BulletAA, airPlanePos.transform.position, Quaternion.AngleAxis(5, Vector3.forward));
+            //newBullet.GetComponent<Rigidbody2D>().velocity = new Vector3(1, -1.4f, 0).normalized * bulletSpeed;
+            //Destroy(newBullet, 0.88f);
+            Shoot(airPlanePos);
             yield return new WaitForSeconds(delayBtwBullets);
         }
+    }
+    void Shoot(GameObject airPlanePos)
+    {
+
+        TowerBullet bullet = ObjectPooling.instance.TurretShoot().GetComponent<TowerBullet>();
+        bullet.transform.position = transform.position;
+
+        Vector3 relativePos = MousePosition - airPlanePos.transform.position;
+        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+
+        bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        bullet.GetData(MousePosition, data.damage, data.bulletPen);
     }
 }

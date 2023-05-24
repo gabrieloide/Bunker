@@ -14,7 +14,7 @@ public class ManagerTurretLife : MonoBehaviour
         canvas = GetComponent<Canvas>();
         towerD = GetComponentInParent<TurretCard>();
         canvas.worldCamera = camera;
-        life = towerD.timeToDestroy;
+        life = towerD.Life;
     }
     
     void Update()
