@@ -6,16 +6,16 @@ public class Enemy : NPCBehaviour, IDamageable
     public AK.Wwise.Event destroy;
     EnemyMovement enemyMovement;
     [SerializeField] GameObject hitParticle, explosionParticle;
-    [SerializeField] float view;
-    [SerializeField] LayerMask ally;
     [SerializeField] LootBag LootBagCom;
     [HideInInspector] public float Life;
-    private float fireRate;
+    private void Awake()
+    {
+        Hitable = LayerMask.GetMask("Turret");
+    }
     private void Start()
     {
         LootBagCom = FindObjectOfType<LootBag>();
         enemyMovement = FindObjectOfType<EnemyMovement>();
-        fireRate = Data.FireRate();
         StartCoroutine(MoveAlongPath(enemyMovement.points, false, gameObject, Data.MoveSpeed(), transform));
         Life = Data.Life();
     }
@@ -31,8 +31,8 @@ public class Enemy : NPCBehaviour, IDamageable
         //Rebre mal
         float realDamage = damage - (bulletPen - Data.Defense());
         Instantiate(hitParticle, transform.position, Quaternion.identity);
-        destroy.Post(gameObject);
         Life -= realDamage;
+        destroy.Post(gameObject);
         deactivateBullet.SetActive(false);
     }
 }
