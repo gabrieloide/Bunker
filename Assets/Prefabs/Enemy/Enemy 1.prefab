@@ -105,9 +105,6 @@ MonoBehaviour:
   radius: 3
   FireRate: 2
   damage: 5
-  Hitable:
-    serializedVersion: 2
-    m_Bits: 2048
   Data: {fileID: 11400000, guid: ab8e046a89009b844a574aa5901d6438, type: 2}
   shoot:
     idInternal: 0
@@ -119,10 +116,6 @@ MonoBehaviour:
     WwiseObjectReference: {fileID: 0}
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
-  view: 5.02
-  ally:
-    serializedVersion: 2
-    m_Bits: 128
   LootBagCom: {fileID: 0}
   Life: 0
 --- !u!61 &2386549145774214801
@@ -149,7 +142,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.8, y: 0.8}
   m_EdgeRadius: 0
 --- !u!50 &3517993003040260948
 Rigidbody2D:

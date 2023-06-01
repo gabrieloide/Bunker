@@ -30,7 +30,7 @@ public class Enemy : NPCBehaviour, IDamageable
     {
         //Rebre mal
         float realDamage = damage - (bulletPen - Data.Defense());
-        Instantiate(hitParticle, transform.position, Quaternion.identity);
+        //Instantiate(hitParticle, transform.position, Quaternion.identity);
         Life -= realDamage;
         destroy.Post(gameObject);
         deactivateBullet.SetActive(false);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NPCBehaviour : MonoBehaviour
 {
-    [Range(3, 20)] [SerializeField] float radius;
+    [Range(3, 20)][SerializeField] float radius;
     [SerializeField] float FireRate;
     [SerializeField] float damage = 5;
     protected LayerMask Hitable;
@@ -16,7 +16,7 @@ public class NPCBehaviour : MonoBehaviour
         {
             Vector3 targetPosition = path[index];
 
-            RaycastHit2D hit = Physics2D.CircleCast(transform.position, radius, Vector2.zero, 3, Hitable);
+            RaycastHit2D hit = Physics2D.CircleCast(transform.position, radius, Vector2.right, 0, Hitable);
             while (hit)
             {
                 NPCAttack(hit);
@@ -39,9 +39,8 @@ public class NPCBehaviour : MonoBehaviour
         EnemyBullet bullet = ObjectPooling.instance.EnemyShoot().GetComponent<EnemyBullet>();
         bullet.transform.position = transform.position;
 
-        Vector3 relativePos = t.transform.position - transform.position;
-        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
-        bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        RotateObjectTo.Rotation(bullet.gameObject, t.transform, transform);
+
         bullet.GetData(t.transform.position, damage, 0);
     }
     protected void Flip(float PosX, float thisPosX, Transform transform)

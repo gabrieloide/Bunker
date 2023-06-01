@@ -73,19 +73,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797b86f7844e8774baabae9b79ae88c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towersData: {fileID: 11400000, guid: 08ea08372fea822489ce467fe97976ed, type: 2}
-  fireRateCountDown: 1.5
-  nozzle: {fileID: 1234024216693180274}
-  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
-  range: 3
-  BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
-  TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
-  TurretLifeSliderOffset: 0
-  timeToDestroy: 90
   shoot:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
+  towersData: {fileID: 11400000, guid: 08ea08372fea822489ce467fe97976ed, type: 2}
+  fireRateCountDown: 1.5
+  target: {fileID: 0}
+  nozzle: {fileID: 1234024216693180274}
+  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
+  range: 4
+  BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
+  TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
+  TurretLifeSliderOffset: 0
+  rotate: 1
+  headRotation: {fileID: 0}
 --- !u!1 &2829473383604270144
 GameObject:
   m_ObjectHideFlags: 0

@@ -102,17 +102,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ac652a1a52e7648aed4fcd006205dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius: 4
+  FireRate: 0
+  damage: 5
   Data: {fileID: 11400000, guid: 97a77ca41e1495e4394426db6eccfd8e, type: 2}
-  tank_destroy:
+  shoot:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 957abb1391e1bbd4faa0f4e488a5afed, type: 2}
+    WwiseObjectReference: {fileID: 0}
+  destroy:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
-  view: 5.02
-  ally:
-    serializedVersion: 2
-    m_Bits: 128
   LootBagCom: {fileID: 0}
   Life: 0
 --- !u!61 &-5855894389994365845
@@ -139,7 +142,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.8, y: 0.8}
   m_EdgeRadius: 0
 --- !u!50 &-6814947460453990528
 Rigidbody2D:

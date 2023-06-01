@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class TurretCard : MonoBehaviour, IDamageable
 {
     private const string ENEMY_TAG = "Enemy";
+    [SerializeField] protected AK.Wwise.Event shoot;
     [SerializeField] protected TowersData towersData;
     public float Life
     {
@@ -22,7 +23,7 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     }
     [SerializeField] public float fireRateCountDown = 0f;
 
-    [HideInInspector] protected Transform target;
+    [HideInInspector] public Transform target;
 
     [SerializeField] protected Transform nozzle;
     [SerializeField] protected GameObject bulletPrefab;
@@ -39,7 +40,7 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
                                                                 , TurretLifeSliderOffset,
                                                                   default),
                                                                   Quaternion.identity, transform);
-        ChangeTurretDirection();
+        //ChangeTurretDirection();
     }
     IEnumerator UpdateTargets()
     {
