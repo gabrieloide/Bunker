@@ -1,21 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NormalTurret : TurretCard
 {
-    public AK.Wwise.Event shoot;
+    [SerializeField] bool rotate;
+    [SerializeField] GameObject headRotation;
+
     public override void TurretShoot()
     {
-        Instantiate(BulletParticle, nozzle.position, transform.rotation);
-        //SFX PARA CADA VEZ QUE LA TORRETA DISPARA
-        Debug.Log("Dispara");
-        TowerBullet bullet = ObjectPooling.instance.TurretShoot().GetComponent<TowerBullet>();
-        bullet.transform.position = nozzle.position;
+        Vector3 relativePos = (target.position - transform.position).normalized;
 
-        Vector3 relativePos = target.position - nozzle.position;
-        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
-        bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        float dot = Vector2.Dot(transform.right, relativePos);
+        Instantiate(BulletParticle, nozzle.position, transform.rotation);
+        TowerBullet bullet = ObjectPooling.instance.TurretShoot().GetComponent<TowerBullet>();
+        bullet.transform.position = headRotation.transform.position;
+        
+        if (rotate)
+        {
+            RotateObjectTo.Rotation(headRotation, target, headRotation.transform);
+            Vector3 scale = dot > 0 ? new Vector3(1, 1, 1) : new Vector3(1, -1, 1);
+            headRotation.transform.localScale = scale;
+        }
+
+        RotateObjectTo.Rotation(bullet.gameObject, target, headRotation.transform);
 
         bullet.GetData(target.position, towersData.damage, towersData.bulletPen);
         shoot.Post(gameObject);

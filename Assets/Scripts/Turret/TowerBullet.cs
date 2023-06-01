@@ -13,7 +13,7 @@ public class TowerBullet : Bullet
     {
         base.OnTriggerEnter2D(collision);
 
-        DamageTextMovement();
+       // DamageTextMovement();
     }
     void DamageTextMovement()
     {
