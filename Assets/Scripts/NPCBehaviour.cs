@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NPCBehaviour : MonoBehaviour
@@ -31,6 +30,11 @@ public class NPCBehaviour : MonoBehaviour
             }
             index += direction;
         }
+        BehaviourFinalPath();
+    }
+    protected virtual void BehaviourFinalPath()
+    {
+
     }
     protected void NPCAttack(RaycastHit2D hit)
     {

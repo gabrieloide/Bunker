@@ -24,8 +24,6 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     [SerializeField] public float fireRateCountDown = 0f;
 
     [HideInInspector] public Transform target;
-
-    [SerializeField] protected Transform nozzle;
     [SerializeField] protected GameObject bulletPrefab;
     [Range(3, 20)] [SerializeField] protected float range = 3f;
     [SerializeField] protected GameObject BulletParticle;

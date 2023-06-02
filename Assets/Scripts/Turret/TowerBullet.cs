@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class TowerBullet : Bullet
 {
@@ -11,14 +12,18 @@ public class TowerBullet : Bullet
     }
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            DamageTextMovement();
+        }
         base.OnTriggerEnter2D(collision);
 
-       // DamageTextMovement();
     }
     void DamageTextMovement()
     {
-        GameObject dt = Instantiate(damageText, transform.position, Quaternion.identity);
+        GameObject dt = ObjectPooling.instance.TextDamage();
+        dt.transform.position = transform.position;
+        dt.SetActive(true);
         LeanTween.move(dt, transform.position + new Vector3(default, offsetDamageTextY, 0), damageTextTime).setEaseOutQuad();
-        Destroy(dt, damageTextTime);
     }
 }
