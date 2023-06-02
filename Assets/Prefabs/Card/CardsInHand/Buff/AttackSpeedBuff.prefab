@@ -109,6 +109,7 @@ MonoBehaviour:
   width: 1.5
   height: 1.5
   CardFlipAnim: {fileID: 546763863824955450, guid: 3b92ffc65c6fa9f489d039d89530410a, type: 3}
+  BuffSprite: {fileID: 715794629563247394, guid: 050e6b00469ad4b4abaadf8cc5a44dad, type: 3}
   buffType: 1
   multiplierStat: 1.65
 --- !u!114 &-4759238867510822675
