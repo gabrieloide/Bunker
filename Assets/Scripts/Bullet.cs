@@ -44,7 +44,9 @@ public class Bullet : MonoBehaviour
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
-        if (damageable != null && collision.CompareTag(hitName)) damageable.Damage(Damage, BulletPen, gameObject);
-
+        if (damageable != null && collision.CompareTag(hitName))
+        {
+            damageable.Damage(Damage, BulletPen, gameObject);
+        }
     }
 }

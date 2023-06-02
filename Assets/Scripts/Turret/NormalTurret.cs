@@ -10,7 +10,7 @@ public class NormalTurret : TurretCard
         Vector3 relativePos = (target.position - transform.position).normalized;
 
         float dot = Vector2.Dot(transform.right, relativePos);
-        Instantiate(BulletParticle, nozzle.position, transform.rotation);
+        BulletParticle.SetActive(true);
         TowerBullet bullet = ObjectPooling.instance.TurretShoot().GetComponent<TowerBullet>();
         bullet.transform.position = headRotation.transform.position;
         

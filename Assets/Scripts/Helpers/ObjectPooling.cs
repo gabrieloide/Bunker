@@ -5,10 +5,14 @@ using UnityEngine;
 public class ObjectPooling : MonoBehaviour
 {
     public static ObjectPooling instance;
-    [SerializeField] List<GameObject> bulletsPooling = new List<GameObject>();
-    [SerializeField] List<GameObject> enemyBulletsPooling = new List<GameObject>();
+    List<GameObject> bulletsPooling = new List<GameObject>();
+    List<GameObject> enemyBulletsPooling = new List<GameObject>();
+    List<GameObject> textDamagePooling = new List<GameObject>();
+
+    
     [SerializeField] GameObject turretBullet;
     [SerializeField] GameObject EnemyBullet;
+    [SerializeField] GameObject textDamage;
     [SerializeField] int amountToPool;
 
     void Awake()
@@ -33,6 +37,10 @@ public class ObjectPooling : MonoBehaviour
             GameObject bulletEnemy = Instantiate(EnemyBullet, transform.position, Quaternion.identity, transform);
             bulletEnemy.SetActive(false);
             enemyBulletsPooling.Add(bulletEnemy);
+
+            GameObject newTextDamage = Instantiate(textDamage, transform.position, Quaternion.identity, transform);
+            newTextDamage.SetActive(false);
+            textDamagePooling.Add(newTextDamage);
         }
     }
     void AddLasersToPool(int amount, GameObject _bullet, List<GameObject> pool)
@@ -44,6 +52,10 @@ public class ObjectPooling : MonoBehaviour
             pool.Add(bullet);
             bullet.transform.parent = transform;
         }
+    }
+    public GameObject TextDamage()
+    {
+        return Shoot(textDamagePooling, textDamage);
     }
     public GameObject EnemyShoot()
     {

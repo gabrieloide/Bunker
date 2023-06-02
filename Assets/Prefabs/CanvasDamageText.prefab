@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5035323512752977740}
   - component: {fileID: 3007579761036061514}
   - component: {fileID: 6312209817436442250}
+  - component: {fileID: 8962955361787346733}
   m_Layer: 5
   m_Name: CanvasDamageText
   m_TagString: Untagged
@@ -83,7 +84,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &6312209817436442250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,6 +102,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8962955361787346733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563626671048280399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 868445f4c78e7e241bc315af34e8d4ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialPos: {x: 0, y: 0, z: 0}
+  offsetDamageTextY: 2.7
+  damageTextTime: 0.5
 --- !u!1 &7924823624612378839
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,8 +210,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 1.2
-  m_fontSizeBase: 1.2
+  m_fontSize: 0.8
+  m_fontSizeBase: 0.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

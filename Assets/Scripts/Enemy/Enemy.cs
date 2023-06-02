@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 public class Enemy : NPCBehaviour, IDamageable
 {
     public EnemyData Data;
@@ -6,11 +7,15 @@ public class Enemy : NPCBehaviour, IDamageable
     public AK.Wwise.Event destroy;
     EnemyMovement enemyMovement;
     [SerializeField] GameObject hitParticle, explosionParticle;
-    [SerializeField] LootBag LootBagCom;
+    LootBag LootBagCom;
     [HideInInspector] public float Life;
     private void Awake()
     {
         Hitable = LayerMask.GetMask("Turret");
+    }
+    protected override void BehaviourFinalPath()
+    {
+        GetComponent<Animator>().enabled = false;
     }
     private void Start()
     {
@@ -30,9 +35,18 @@ public class Enemy : NPCBehaviour, IDamageable
     {
         //Rebre mal
         float realDamage = damage - (bulletPen - Data.Defense());
-        //Instantiate(hitParticle, transform.position, Quaternion.identity);
+        hitParticle.SetActive(true);
         Life -= realDamage;
         destroy.Post(gameObject);
         deactivateBullet.SetActive(false);
+    }
+    public IEnumerator DamageTextMovement(float offsetDamageTextY, float damageTextTime)
+    {
+        GameObject dt = ObjectPooling.instance.TextDamage();
+        dt.SetActive(true);
+        dt.transform.position = transform.position;
+        LeanTween.move(dt, transform.position + new Vector3(default, offsetDamageTextY, 0), damageTextTime).setEaseOutQuad();
+        yield return new WaitForSeconds(0.5f);
+        dt.SetActive(false);
     }
 }
