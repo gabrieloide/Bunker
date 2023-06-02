@@ -6,18 +6,19 @@ public enum BuffType
 {
     AttackBuff,
     SpeedBuff,
-    BulletPenBuff,
+    BulletPenBuff
 
 }
 public class BuffCard : Card
 {
-    [SerializeField]BuffType buffType = BuffType.AttackBuff;
+    [SerializeField] GameObject BuffSprite;
+    [SerializeField] BuffType buffType = BuffType.AttackBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Turret");
     [Range(1.1f, 3f)][SerializeField] float multiplierStat;
     protected override RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, NormalCardLM());
     protected override void spawnCard()
     {
-        if (DetectObjectsBelow())
+        if (DetectObjectsBelow() && !DetectObjectsBelow().collider.gameObject.GetComponent<TurretCard>().HaveBuff)
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;
@@ -37,21 +38,25 @@ public class BuffCard : Card
     void TypeOfBuff()
     {
         var Turret = DetectObjectsBelow().collider.gameObject.GetComponent<TurretCard>();
-        switch (buffType)
+        Turret.ShowBuffSprite(BuffSprite);
+        if (Turret.HaveBuff == false)
         {
-            case BuffType.AttackBuff:
-                Turret.TDamage *= multiplierStat; 
-                break;
+            switch (buffType)
+            {
+                case BuffType.AttackBuff:
+                    Turret.TDamage *= multiplierStat;
+                    break;
 
-            case BuffType.SpeedBuff:
-                Turret.fireRateCountDown *= multiplierStat;
-                break;
+                case BuffType.SpeedBuff:
+                    Turret.fireRateCountDown *= multiplierStat;
+                    break;
 
-            case BuffType.BulletPenBuff:
-                Turret.BulletPen *= multiplierStat;
-                break;
-            default:
-                break;
+                case BuffType.BulletPenBuff:
+                    Turret.BulletPen *= multiplierStat;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

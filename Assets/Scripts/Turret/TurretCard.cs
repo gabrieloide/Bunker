@@ -25,10 +25,13 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
 
     [HideInInspector] public Transform target;
     [SerializeField] protected GameObject bulletPrefab;
-    [Range(3, 20)] [SerializeField] protected float range = 3f;
+    [Range(3, 20)][SerializeField] protected float range = 3f;
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
     [SerializeField] float TurretLifeSliderOffset;
+    [SerializeField] Transform BuffSpritePosition;
+    [HideInInspector] public GameObject _BuffSpritePosition;
+    [HideInInspector] public bool HaveBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Path");
 
     protected void Start()
@@ -69,6 +72,7 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     }
     protected void Update()
     {
+        Debug.Log(HaveBuff);
         fireRateCountDown -= Time.deltaTime;
         if (target == null)
             return;
@@ -95,5 +99,10 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     {
         Life -= damage;
         deactivateBullet.SetActive(false);
+    }
+    public void ShowBuffSprite(GameObject BuffSprite)
+    {
+        _BuffSpritePosition = Instantiate(BuffSprite, BuffSpritePosition.position, Quaternion.identity, BuffSpritePosition);
+        HaveBuff = true;
     }
 }
