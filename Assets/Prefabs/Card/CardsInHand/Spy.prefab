@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6933193392882544788}
   - component: {fileID: 7857637282751952587}
   - component: {fileID: 5628543498946694951}
+  - component: {fileID: -5173118566701170439}
   m_Layer: 8
   m_Name: Spy
   m_TagString: Card
@@ -148,3 +149,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HandIndex: 0
   CanDrop: 0
+--- !u!114 &-5173118566701170439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2190534741241388652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b91972d3586cce243bec178cf81b581d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  towerData: {fileID: 0}
+  defaultCard: {fileID: 21300000, guid: 48618746c84e5b441880da1b65d6215c, type: 3}
+  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
+  offset: {x: 0, y: -0.5, z: 0}
+  width: 1.2
+  height: 1
+  CardFlipAnim: {fileID: 0}
+  allyStats: {fileID: 0}

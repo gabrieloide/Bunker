@@ -16,6 +16,7 @@ public abstract class Card : MonoBehaviour
     protected virtual RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, objectLayerMask);
     [HideInInspector] public int index() => GetComponent<CardIndex>().HandIndex;
     protected Vector3 MousePosition;
+    protected SpriteRenderer spriteRenderer;
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -24,7 +25,7 @@ public abstract class Card : MonoBehaviour
     private void Start()
     {
         dc = FindObjectOfType<Deck>();
-        //spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         showCard();
     }
     private void OnMouseOver()
@@ -61,6 +62,7 @@ public abstract class Card : MonoBehaviour
     {
         //TOMAR CARTA
 
+        spriteRenderer.sprite = backCard;
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         GameManager.instance.onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
@@ -69,6 +71,7 @@ public abstract class Card : MonoBehaviour
     }
     private void OnMouseUp()
     {
+        spriteRenderer.sprite = defaultCard;
         if (!FindObjectOfType<Trash>().hit2D)
         {
             LeanTween.alpha(gameObject, 1f, 0.3f);
@@ -77,7 +80,6 @@ public abstract class Card : MonoBehaviour
             GameManager.instance.onDrag = false;
             UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
             spawnCard();
-
         }
         else
         {
