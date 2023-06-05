@@ -103,8 +103,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   towerData: {fileID: 11400000, guid: b35bdb491f25c794a8b65d99b6104a5e, type: 2}
-  defaultCard: {fileID: 0}
-  backCard: {fileID: 0}
+  defaultCard: {fileID: 21300000, guid: 65f842397f8da6546b59e22b47f4048a, type: 3}
+  backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
   offset: {x: 0, y: -0.5, z: 0}
   width: 1.2
   height: 1
