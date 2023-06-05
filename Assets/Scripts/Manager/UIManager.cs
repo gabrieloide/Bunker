@@ -78,19 +78,22 @@ public class UIManager : MonoBehaviour
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
         }
     }
-    public void ShowLastCardPosition(Vector3 cardPos)
+    public void ShowLastCardPosition(Vector3 CardPosition)
     {
-        if (GameManager.instance.onDrag)
+        bool isNotDragging = !GameManager.instance.onDrag;
+
+        LastPosCard.SetActive(!isNotDragging);
+
+        if (isNotDragging)
         {
-            LastPosCard.SetActive(true);
-            LastPosCard.transform.position = cardPos;
+            LastPosCard.transform.localScale = Vector2.zero;
         }
         else
         {
-            //No mostrar ultima posicion de la carta al agarrarla
-            LastPosCard.transform.localScale = Vector2.zero;
-            LastPosCard.SetActive(false);
+            LastPosCard.transform.position = CardPosition;
         }
+
+        //No mostrar ultima posicion de la carta al agarrarla
     }
     public void ShowDeck()
     {
