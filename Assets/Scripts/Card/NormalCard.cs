@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class NormalCard : Card
 {
-    LayerMask NormalCardLM() => LayerMask.GetMask("Decoration", "Path");
+    LayerMask NormalCardLM() => LayerMask.GetMask("Decoration", "Path", "Limits");
     protected override RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, NormalCardLM());
 
     protected override void CardBehaviour()

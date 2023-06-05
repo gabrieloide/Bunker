@@ -28,6 +28,7 @@ public abstract class Card : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         showCard();
     }
+       
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1) && !GameManager.instance.onDrag)
@@ -66,19 +67,19 @@ public abstract class Card : MonoBehaviour
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         GameManager.instance.onDrag = true;
         UIManager.instance.ShowTowerSlot = true;
-        transform.localScale -= scaleChange();
         UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
+        transform.localScale -= scaleChange();
     }
     private void OnMouseUp()
     {
         spriteRenderer.sprite = defaultCard;
+        
         if (!FindObjectOfType<Trash>().hit2D)
         {
             LeanTween.alpha(gameObject, 1f, 0.3f);
             UIManager.instance.ShowTowerSlot = false;
             UIManager.instance.TowerSlotAnimation.SetActive(false);
             GameManager.instance.onDrag = false;
-            UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
             spawnCard();
         }
         else
@@ -86,17 +87,20 @@ public abstract class Card : MonoBehaviour
             //Metti la lettera nel cestino
             UIManager.instance.ShowTowerSlot = false;
             Deck.instance.CardsInHand--;
+            GameManager.instance.onDrag = false;
             dc.availableCardSlots[index()] = true;
             Destroy(gameObject);
         }
+        UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
     }
     protected virtual void spawnCard()
     {
-        if (!DetectObjectsBelow())
+        float d = Vector2.Distance(transform.position, dc.cardSlots[index()].position);
+        if (!DetectObjectsBelow() && d > 3)
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;
-            GameObject c =Instantiate(CardFlipAnim, transform.position, Quaternion.identity);
+            GameObject c = Instantiate(CardFlipAnim, transform.position, Quaternion.identity);
             CardBehaviour();
             Destroy(c, 0.46f);
             Destroy(gameObject);
