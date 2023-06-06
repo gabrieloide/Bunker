@@ -3,7 +3,6 @@ using System.Collections;
 
 public class TowerBullet : Bullet
 {
-    [SerializeField] GameObject damageText;
     [SerializeField] float offsetDamageTextY = -4f;
     [SerializeField] float damageTextTime;
     public TowerBullet()
@@ -22,6 +21,7 @@ public class TowerBullet : Bullet
     void DamageTextMovement()
     {
         GameObject dt = ObjectPooling.instance.TextDamage();
+        dt.GetComponent<DisableTextDamage>().DamageTxt = Damage;
         dt.transform.position = transform.position;
         dt.SetActive(true);
         LeanTween.move(dt, transform.position + new Vector3(default, offsetDamageTextY, 0), damageTextTime).setEaseOutQuad();

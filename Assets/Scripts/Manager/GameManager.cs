@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public bool onDrag;
     public int ActualScore;
+    [HideInInspector]public int CurrentCardAmount;
     private void Awake()
     {
         if (instance == null)
@@ -26,11 +27,12 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        AddCardToHand(3);
-        AddCardToHand(3);
-        AddCardToHand(11);
-        AddCardToHand(11);
-        AddCardToHand(11);
+        AddCardToHand(9);
+        AddCardToHand(9);
+        AddCardToHand(9);
+        AddCardToHand(9);
+        AddCardToHand(9);
+        AddCardToHand(9);
     }
     public void AddCardToHand(int cardNumber)
     {

@@ -8,7 +8,7 @@ public class AirAttackManager : MonoBehaviour
     [SerializeField] GameObject PlaneGO;
     [SerializeField] GameObject ShadowPlaneGO;
     [SerializeField] TowersData data;
-    
+
     [SerializeField] float offsetPlaneY;
     [SerializeField] float airPlaneSpeed;
     [SerializeField] private float distance;
@@ -75,6 +75,6 @@ public class AirAttackManager : MonoBehaviour
         float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
         bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        bullet.GetData(MousePosition, data.damage, data.bulletPen);
+        bullet.GetData(new Vector3(-1, 1).normalized, data.damage, data.bulletPen);
     }
 }

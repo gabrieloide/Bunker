@@ -25,20 +25,24 @@ public class CardDrop : MonoBehaviour
     }
     public void TakeCard()
     {
-        if (cardsQueue.Count > 0)
+        int cardsInHand = GameManager.instance.CurrentCardAmount;
+        if (cardsInHand != 5)
         {
-            //Tomar carta del deck
-            Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
-            LeanTween.moveY(deckSliceAnimation, -82, TimeMove())
-                .setEase(UIManager.instance.TweenDeckOut)
-                .setOnComplete(ResetTweenAnim);
+            if (cardsQueue.Count > 0)
+            {
+                //Tomar carta del deck
+                Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
+                LeanTween.moveY(deckSliceAnimation, -82, TimeMove())
+                    .setEase(UIManager.instance.TweenDeckOut)
+                    .setOnComplete(ResetTweenAnim);
 
-        }
-        if (cardsQueue.Count <= 0)
-        {
-            LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove())
-                .setOnComplete(DeactivateDeck)
-                    .setEase(UIManager.instance.TweenDeckOut);
+            }
+            if (cardsQueue.Count <= 0)
+            {
+                LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove())
+                    .setOnComplete(DeactivateDeck)
+                        .setEase(UIManager.instance.TweenDeckOut);
+            }
         }
     }
     void DeactivateDeck()

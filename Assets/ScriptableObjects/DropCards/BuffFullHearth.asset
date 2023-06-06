@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
-  m_Name: AntiAir
+  m_Name: BuffFullHearth
   m_EditorClassIdentifier: 
-  loots: {fileID: 7641813852637443972, guid: 5e568991481ad3041a278e7f92a0e371, type: 3}
-  dropChance: 5
-  indexCard: 1
+  loots: {fileID: 5892462271022858852, guid: 0460eca159e425c4e97257c31fa754fd, type: 3}
+  dropChance: 21
+  indexCard: 14

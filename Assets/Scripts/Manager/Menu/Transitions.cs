@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Transitions
+public static class Transitions
 {
-    public IEnumerator FadeInTran(float timeToFade, RectTransform objectToFade,
+    public static IEnumerator FadeInTran(float timeToFade, RectTransform objectToFade,
         string SceneName, Vector3 sizeWidthHeight,LeanTweenType EaseTransition, bool changeScene)
     {
         LeanTween.size(objectToFade, sizeWidthHeight, timeToFade).setEase(EaseTransition);

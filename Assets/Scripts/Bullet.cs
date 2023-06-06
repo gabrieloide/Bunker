@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float speed;
     [HideInInspector] public Vector3 target;
     protected string hitName;
-    float Damage, BulletPen;
+    protected float Damage, BulletPen;
     [SerializeField] protected float timeToDestroy = 5;
     private Rigidbody2D RB2d;
     private Vector2 dir;
