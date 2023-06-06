@@ -67,7 +67,7 @@ public class UIManager : MonoBehaviour
         else
             TowerSlotAnimation.SetActive(false);
     }
-    public void ShowCardBox(string _name, string _description, Vector3 TC)
+    public void ShowCardBox(string _name, string _description, Vector3 TC, bool onDrag)
     {
         if (cardInstantiate == null)
         {

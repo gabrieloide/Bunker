@@ -15,8 +15,8 @@ MonoBehaviour:
   Name: Cannon
   Description: asfdasfasfasfsafasfasfasfasf
   CardToInstantiate: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
-  Life: -974
+  Life: 60
   Defense: 0
   bulletPen: 0
-  damage: 0
+  damage: 3
   fireRate: 3

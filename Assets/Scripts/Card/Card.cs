@@ -28,11 +28,11 @@ public abstract class Card : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         showCard();
     }
-       
+
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1) && !GameManager.instance.onDrag)
-            UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position);
+            UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position, GameManager.instance.onDrag);
     }
     private void OnMouseEnter()
     {
@@ -61,38 +61,43 @@ public abstract class Card : MonoBehaviour
     }
     private void OnMouseDown()
     {
+        var uimanager = UIManager.instance;
         //TOMAR CARTA
 
         spriteRenderer.sprite = backCard;
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
         GameManager.instance.onDrag = true;
-        UIManager.instance.ShowTowerSlot = true;
-        UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
+        uimanager.ShowTowerSlot = true;
+
+        if (uimanager.cardInstantiate)
+        {
+            Destroy(uimanager.cardInstantiate);
+        }
+
+        uimanager.ShowLastCardPosition(dc.cardSlots[index()].position);
         transform.localScale -= scaleChange();
     }
     private void OnMouseUp()
     {
         spriteRenderer.sprite = defaultCard;
-        
+        UIManager.instance.ShowTowerSlot = false;
+        GameManager.instance.onDrag = false;
+
         if (!FindObjectOfType<Trash>().hit2D)
         {
             LeanTween.alpha(gameObject, 1f, 0.3f);
-            UIManager.instance.ShowTowerSlot = false;
             UIManager.instance.TowerSlotAnimation.SetActive(false);
-            GameManager.instance.onDrag = false;
             spawnCard();
         }
         else
         {
-            //Metti la lettera nel cestino
-            UIManager.instance.ShowTowerSlot = false;
             Deck.instance.CardsInHand--;
-            GameManager.instance.onDrag = false;
             dc.availableCardSlots[index()] = true;
             Destroy(gameObject);
         }
         UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
     }
+
     protected virtual void spawnCard()
     {
         float d = Vector2.Distance(transform.position, dc.cardSlots[index()].position);
@@ -100,6 +105,7 @@ public abstract class Card : MonoBehaviour
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;
+            GameManager.instance.CurrentCardAmount--;
             GameObject c = Instantiate(CardFlipAnim, transform.position, Quaternion.identity);
             CardBehaviour();
             Destroy(c, 0.46f);

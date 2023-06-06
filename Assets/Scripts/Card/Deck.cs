@@ -31,6 +31,7 @@ public class Deck : MonoBehaviour
                                                                                 transform.rotation);
                 CardsInHand++;
                 newCard.HandIndex = i;
+                GameManager.instance.CurrentCardAmount++;
                 LeanTween.moveY(newCard.gameObject, -5.57f, 0.3f);
                 newCard.transform.SetParent(CameraMovement.instance.transform);
                 //Agregar carta a la mano

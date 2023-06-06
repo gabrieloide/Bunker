@@ -2,26 +2,34 @@ using UnityEngine;
 
 public class MenuManager : MonoBehaviour
 {
-    Transitions transitions;
+    public static MenuManager instance;
     [SerializeField] RectTransform objectToFade;
     [SerializeField] float timeTofade;
     [SerializeField] string SceneName;
     [SerializeField] LeanTweenType easeTransitionOut;
     [SerializeField] LeanTweenType easeTransitionIn;
+    [SerializeField] Vector3 WitdhHeight;
 
     private void Awake()
     {
-        transitions = new Transitions();
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     private void Start()
     {
-        StartCoroutine(transitions.FadeInTran(timeTofade, objectToFade, SceneName,
-    Vector3.zero, easeTransitionIn,false));
+        StartCoroutine(Transitions.FadeInTran(timeTofade, objectToFade, SceneName,
+    Vector3.zero, easeTransitionIn, false));
 
     }
     public void PlayButton()
     {
-        StartCoroutine(transitions.FadeInTran(timeTofade, objectToFade, SceneName,
-            new Vector2(1024f, 768), easeTransitionOut,true));
+        StartCoroutine(Transitions.FadeInTran(timeTofade, objectToFade, SceneName,
+            WitdhHeight, easeTransitionOut, true));
     }
 }

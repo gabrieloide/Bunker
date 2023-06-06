@@ -15,6 +15,8 @@ MonoBehaviour:
   Name: BiCannon
   Description: lorem
   CardToInstantiate: {fileID: 1355402855024040456, guid: 3d466198936322846871685be4fe8bcc, type: 3}
-  lifeBullet: 1
+  Life: 60
+  Defense: 0
+  bulletPen: 0
   damage: 6
   fireRate: 4

@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Buff Attack Speed
   Description: Buff the attack speed of a card
-  CardToInstantiate: {fileID: 7635148593725922897, guid: 960be20bf270d6449abd4b9b8845297c, type: 3}
-  lifeBullet: 0
+  CardToInstantiate: {fileID: 0}
+  Life: 0
+  Defense: 0
+  bulletPen: 0
   damage: 0
   fireRate: 0

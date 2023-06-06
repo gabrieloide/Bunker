@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
-  m_Name: Spy
+  m_Name: BuffBulletPenetration
   m_EditorClassIdentifier: 
-  loots: {fileID: 7430028440710403059, guid: 3b530b73b0cd8e0439aa4f0ff7f3e0b6, type: 3}
-  dropChance: 14
-  indexCard: 11
+  loots: {fileID: 6505005087614213134, guid: f70eb0f822558f6478c688f226f8bb19, type: 3}
+  dropChance: 12
+  indexCard: 2

@@ -6,11 +6,7 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     private const string ENEMY_TAG = "Enemy";
     [SerializeField] protected AK.Wwise.Event shoot;
     [SerializeField] protected TowersData towersData;
-    public float Life
-    {
-        get { return towersData.Life; }
-        set { towersData.Life = value; }
-    }
+    public float Life;
     public float BulletPen
     {
         get { return towersData.bulletPen; }
@@ -41,7 +37,8 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
                                                                 , TurretLifeSliderOffset,
                                                                   default),
                                                                   Quaternion.identity, transform);
-        //ChangeTurretDirection();
+
+        Life = towersData.Life;
     }
     IEnumerator UpdateTargets()
     {
@@ -72,7 +69,9 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     }
     protected void Update()
     {
-        Debug.Log(HaveBuff);
+        if (Life < 0)
+            Destroy(gameObject);
+
         fireRateCountDown -= Time.deltaTime;
         if (target == null)
             return;
@@ -82,11 +81,7 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
             fireRateCountDown = 1f / towersData.fireRate;
             TurretShoot();
         }
-    }
-    void ChangeTurretDirection()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, range, NormalCardLM());
-        transform.localScale = hit ? Vector2.one : new Vector2(-1, 1);
+
     }
     public abstract void TurretShoot();
 
