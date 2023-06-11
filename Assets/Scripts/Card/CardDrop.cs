@@ -26,7 +26,7 @@ public class CardDrop : MonoBehaviour
     public void TakeCard()
     {
         int cardsInHand = GameManager.instance.CurrentCardAmount;
-        if (cardsInHand < 6)
+        if (cardsInHand < 5)
         {
             if (cardsQueue.Count > 0)
             {

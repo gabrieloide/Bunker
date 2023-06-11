@@ -44,10 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a824ebbabebd8438d84e549a5b7229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shoot:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
+  damage: 15
+  bulletPen: 8
   BulletAA: {fileID: 2443380422897682370, guid: c74cb67914af0d44ea03776bf77535a3, type: 3}
   PlaneGO: {fileID: 6392071966231352157, guid: 69186aa2e0519644bbce4439f8e85732, type: 3}
   ShadowPlaneGO: {fileID: 770955836953395613, guid: fae3b39ee3b824e479f07f71bfe27f09, type: 3}
-  data: {fileID: 11400000, guid: acb0ea854b75b5a41870b58be1716c70, type: 2}
   offsetPlaneY: 5
   airPlaneSpeed: 5
   distance: -2
