@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4572928202905161530}
   - component: {fileID: 1050265595731252725}
   - component: {fileID: -8057555976105955795}
-  - component: {fileID: -697383772772648069}
+  - component: {fileID: -6075478669504603602}
   m_Layer: 8
   m_Name: landMinesCard
   m_TagString: Card
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HandIndex: 0
   CanDrop: 0
---- !u!114 &-697383772772648069
+--- !u!114 &-6075478669504603602
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,17 +158,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1280488470268546616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b91972d3586cce243bec178cf81b581d, type: 3}
+  m_Script: {fileID: 11500000, guid: 84babb3e85c32fb46a698744d62cb8c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   objectLayerMask:
     serializedVersion: 2
     m_Bits: 0
-  towerData: {fileID: 0}
+  towerData: {fileID: 11400000, guid: 8f10c15814076014687ccb3b0d305ea5, type: 2}
   defaultCard: {fileID: 21300000, guid: 9b9080da30165f84b900f5b8815099a7, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
   offset: {x: 0, y: -0.5, z: 0}
   width: 1.2
   height: 1
-  CardFlipAnim: {fileID: 0}
-  allyStats: {fileID: 0}
+  CardFlipAnim: {fileID: 546763863824955450, guid: 3b92ffc65c6fa9f489d039d89530410a, type: 3}
