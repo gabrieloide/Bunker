@@ -34,7 +34,8 @@ public class Enemy : NPCBehaviour, IDamageable
     public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
     {
         //Rebre mal
-        float realDamage = damage - (bulletPen - Data.Defense());
+        float realDamage = Mathf.Max(0, damage - (bulletPen - Data.Defense()));
+
         hitParticle.SetActive(true);
         Life -= realDamage;
         destroy.Post(gameObject);

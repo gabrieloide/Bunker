@@ -4,12 +4,8 @@ public class LandMines : MonoBehaviour
 {
     public TowersData LandMineData;
     [SerializeField] GameObject ExplosionParticle;
-    float damage;
+    [SerializeField] float damage;
 
-    private void Start()
-    {
-        damage = LandMineData.damage;
-    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))

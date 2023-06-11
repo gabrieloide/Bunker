@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Ally Data", menuName = "Ally Data")]
+//[CreateAssetMenu(fileName = "New Ally Data", menuName = "Ally Data")]
 public class AllyData : ScriptableObject
 {
     public GameObject CardType;

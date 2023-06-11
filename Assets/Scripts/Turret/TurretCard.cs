@@ -1,32 +1,22 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class TurretCard : MonoBehaviour, IDamageable
+public abstract class TurretCard : TurretStats, IDamageable
 {
     private const string ENEMY_TAG = "Enemy";
-    [SerializeField] protected AK.Wwise.Event shoot;
-    [SerializeField] protected TowersData towersData;
     public float Life;
-    public float BulletPen
-    {
-        get { return towersData.bulletPen; }
-        set { towersData.bulletPen = value; }
-    }
-    public float TDamage
-    {
-        get { return towersData.damage; }
-        set { towersData.damage = value; }
-    }
-    [SerializeField] public float fireRateCountDown = 0f;
 
-    [HideInInspector] public Transform target;
-    [SerializeField] protected GameObject bulletPrefab;
+    [Space]
+    [SerializeField] public float fireRateCountDown = 0f;
+    [SerializeField] float fireRate = 0;
+
     [Range(3, 20)][SerializeField] protected float range = 3f;
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
     [SerializeField] float TurretLifeSliderOffset;
     [SerializeField] Transform BuffSpritePosition;
     [HideInInspector] public GameObject _BuffSpritePosition;
+    protected Transform target;
     [HideInInspector] public bool HaveBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Path");
 
@@ -38,7 +28,6 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
                                                                   default),
                                                                   Quaternion.identity, transform);
 
-        Life = towersData.Life;
     }
     IEnumerator UpdateTargets()
     {
@@ -78,7 +67,7 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
 
         if (fireRateCountDown <= 0f)
         {
-            fireRateCountDown = 1f / towersData.fireRate;
+            fireRateCountDown = 1f / fireRate;
             TurretShoot();
         }
 
@@ -98,6 +87,5 @@ public abstract class TurretCard : MonoBehaviour, IDamageable
     public void ShowBuffSprite(GameObject BuffSprite)
     {
         _BuffSpritePosition = Instantiate(BuffSprite, BuffSpritePosition.position, Quaternion.identity, BuffSpritePosition);
-        HaveBuff = true;
     }
 }

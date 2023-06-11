@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7054c5f6e3670804f9a7dc73c4c2d36d, type: 3}
-  m_Name: BuffTurretLife
+  m_Script: {fileID: 11500000, guid: 8e4de928f3161f64c9e81bfd3fc0492a, type: 3}
+  m_Name: Morter
   m_EditorClassIdentifier: 
-  loots: {fileID: 1120024884796657940, guid: 265847ad779d53f408b506d2f05baa82, type: 3}
-  dropChance: 0
-  indexCard: 4
+  Name: Morter
+  Description: 
+  CardToInstantiate: {fileID: 4918984512011459238, guid: 741ef0040776d6541a47680d8fc98763, type: 3}

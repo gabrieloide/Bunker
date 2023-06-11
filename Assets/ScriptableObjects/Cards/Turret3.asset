@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: TriCannon
   Description: lorem
   CardToInstantiate: {fileID: 8316505337117789106, guid: 6c3fef1f234744b4589449eb1283a005, type: 3}
-  Life: 60
+  Life: 87
   Defense: 0
   bulletPen: 0
   damage: 12

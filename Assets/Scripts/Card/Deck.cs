@@ -7,7 +7,6 @@ public class Deck : MonoBehaviour
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
     public static Deck instance;
-    [HideInInspector] public int CardsInHand;
     private void Awake()
     {
         if (instance == null)
@@ -19,6 +18,10 @@ public class Deck : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void Update()
+    {
+        Debug.Log("El numero de cartas es: " + GameManager.instance.CurrentCardAmount);
+    }
     public void SearchAviableSlots(int card)
     {
         for (int i = 0; i < availableCardSlots.Length; i++)
@@ -29,7 +32,6 @@ public class Deck : MonoBehaviour
                                                                                 5.5f,
                                                                                 transform.position.z),
                                                                                 transform.rotation);
-                CardsInHand++;
                 newCard.HandIndex = i;
                 GameManager.instance.CurrentCardAmount++;
                 LeanTween.moveY(newCard.gameObject, -5.57f, 0.3f);

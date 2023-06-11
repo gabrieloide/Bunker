@@ -85,13 +85,13 @@ public abstract class Card : MonoBehaviour
 
         if (!FindObjectOfType<Trash>().hit2D)
         {
+
             LeanTween.alpha(gameObject, 1f, 0.3f);
             UIManager.instance.TowerSlotAnimation.SetActive(false);
             spawnCard();
         }
         else
         {
-            Deck.instance.CardsInHand--;
             dc.availableCardSlots[index()] = true;
             Destroy(gameObject);
         }

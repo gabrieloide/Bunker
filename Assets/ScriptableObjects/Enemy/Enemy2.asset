@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Enemy2
   m_EditorClassIdentifier: 
   _life: 50
-  _damage: 2
+  _damage: 3
   _fireRate: 2
-  _defense: 0
-  _moveSpeed: 3
+  _defense: 3
+  _moveSpeed: 2
   Score: 5

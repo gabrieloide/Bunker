@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AirAttackManager : MonoBehaviour
+public class AirAttackManager : TurretStats
 {
     [SerializeField] GameObject BulletAA;
     [SerializeField] GameObject PlaneGO;
     [SerializeField] GameObject ShadowPlaneGO;
-    [SerializeField] TowersData data;
 
     [SerializeField] float offsetPlaneY;
     [SerializeField] float airPlaneSpeed;
@@ -75,6 +74,6 @@ public class AirAttackManager : MonoBehaviour
         float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
         bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        bullet.GetData(new Vector3(-1, 1).normalized, data.damage, data.bulletPen);
+        bullet.GetData(new Vector3(1, -1).normalized, damage, bulletPen);
     }
 }

@@ -130,19 +130,20 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  towersData: {fileID: 11400000, guid: 57602c0dd8973fd4499b85b0337e2244, type: 2}
+  damage: 5
+  bulletPen: 10
+  Life: 55
   fireRateCountDown: 1.5
-  target: {fileID: 0}
-  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
-  range: 3
+  fireRate: 1.2
+  range: 8
   BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 0.7
-  BuffSpritePosition: {fileID: 0}
+  BuffSpritePosition: {fileID: 7661245423652634299}
   _BuffSpritePosition: {fileID: 0}
   HaveBuff: 0
   rotate: 0
-  headRotation: {fileID: 0}
+  headRotation: {fileID: 4918984512011459238}
 --- !u!1 &8469315529565124797
 GameObject:
   m_ObjectHideFlags: 0
