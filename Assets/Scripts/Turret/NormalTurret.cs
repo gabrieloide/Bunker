@@ -22,8 +22,8 @@ public class NormalTurret : TurretCard
         }
 
         RotateObjectTo.Rotation(bullet.gameObject, target, headRotation.transform);
-
-        bullet.GetData(target.position, towersData.damage, towersData.bulletPen);
+        Debug.Log(damage);
+        bullet.GetData(target.position, damage, bulletPen);
         shoot.Post(gameObject);
     }
 }

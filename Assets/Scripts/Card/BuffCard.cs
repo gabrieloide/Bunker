@@ -21,6 +21,7 @@ public class BuffCard : Card
         if (DetectObjectsBelow() && !DetectObjectsBelow().collider.gameObject.GetComponent<TurretCard>().HaveBuff)
         {
             //Usar carta
+            GameManager.instance.CurrentCardAmount--;
             dc.availableCardSlots[index()] = true;
             CardBehaviour();
             Destroy(gameObject);
@@ -37,26 +38,25 @@ public class BuffCard : Card
     }
     void TypeOfBuff()
     {
-        var Turret = DetectObjectsBelow().collider.gameObject.GetComponent<TurretCard>();
+        var Turret = DetectObjectsBelow().collider.gameObject.GetComponent<NormalTurret>();
         Turret.ShowBuffSprite(BuffSprite);
-        if (Turret.HaveBuff == false)
+        if (!Turret.HaveBuff)
         {
             switch (buffType)
             {
                 case BuffType.AttackBuff:
-                    Turret.TDamage *= multiplierStat;
+                    Turret.damage = Mathf.Floor(Turret.damage * multiplierStat);
                     break;
 
                 case BuffType.SpeedBuff:
-                    Turret.fireRateCountDown *= multiplierStat;
+                    Turret.fireRateCountDown = Mathf.Floor(Turret.fireRateCountDown * multiplierStat);
                     break;
 
                 case BuffType.BulletPenBuff:
-                    Turret.BulletPen *= multiplierStat;
-                    break;
-                default:
+                    Turret.bulletPen = Mathf.Floor(Turret.bulletPen * multiplierStat);
                     break;
             }
+            Turret.HaveBuff = false;
         }
     }
 }

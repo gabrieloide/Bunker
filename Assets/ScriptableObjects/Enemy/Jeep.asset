@@ -15,6 +15,6 @@ MonoBehaviour:
   _life: 50
   _damage: 2
   _fireRate: 2
-  _defense: 0
-  _moveSpeed: 3
+  _defense: 5
+  _moveSpeed: 3.6
   Score: 5

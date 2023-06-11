@@ -209,7 +209,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: d5b3b32d562b270458bb915dc5392b64, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -320,14 +320,15 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  towersData: {fileID: 11400000, guid: 6954ef28838737642a1ea9f023b75dc2, type: 2}
+  damage: 6
+  bulletPen: 3
+  Life: 80
   fireRateCountDown: 1.5
-  target: {fileID: 0}
-  bulletPrefab: {fileID: 1252816798152504587, guid: 30288f73052b86e4ca54608fa5c093ce, type: 3}
+  fireRate: 1.7
   range: 4
   BulletParticle: {fileID: 3736455750595150955}
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
-  TurretLifeSliderOffset: 0
+  TurretLifeSliderOffset: 1.39
   BuffSpritePosition: {fileID: 1108370904252193097}
   _BuffSpritePosition: {fileID: 0}
   HaveBuff: 0

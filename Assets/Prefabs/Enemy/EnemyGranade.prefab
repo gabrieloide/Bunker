@@ -121,8 +121,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1ac652a1a52e7648aed4fcd006205dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 4
+  radius: 6
   FireRate: 2
+  fireRateCountDown: 0
   damage: 5
   Data: {fileID: 11400000, guid: ed39bebc9f5e22e499b15f85e2c2093c, type: 2}
   shoot:
