@@ -42,8 +42,10 @@ public class BuffCard : Card
         Turret.ShowBuffSprite(BuffSprite);
         if (!Turret.HaveBuff)
         {
+            Turret.HaveBuff = false;
             switch (buffType)
             {
+
                 case BuffType.AttackBuff:
                     Turret.damage = Mathf.Floor(Turret.damage * multiplierStat);
                     break;
@@ -56,7 +58,7 @@ public class BuffCard : Card
                     Turret.bulletPen = Mathf.Floor(Turret.bulletPen * multiplierStat);
                     break;
             }
-            Turret.HaveBuff = false;
+
         }
     }
 }

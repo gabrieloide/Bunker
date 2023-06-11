@@ -148,3 +148,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LandMineData: {fileID: 11400000, guid: 8f10c15814076014687ccb3b0d305ea5, type: 2}
   ExplosionParticle: {fileID: 914968857072033425, guid: e39eeb6128cb4fc4fb5b9040fa253753, type: 3}
+  damage: 20
