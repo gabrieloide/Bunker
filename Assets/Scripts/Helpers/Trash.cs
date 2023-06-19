@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class Trash : MonoBehaviour
 {
+    [Header("Sounds")]
+    [SerializeField] AK.Wwise.Event openTrashSound;
+    [SerializeField] AK.Wwise.Event closeTrashSound;
+    [Space]
+    
     [SerializeField] float widthBox, heightBox;
     [SerializeField] LayerMask CardLayer;
     [HideInInspector]public RaycastHit2D hit2D;

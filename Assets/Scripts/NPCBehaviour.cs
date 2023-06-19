@@ -3,12 +3,16 @@ using UnityEngine;
 
 public class NPCBehaviour : MonoBehaviour
 {
+    [Header("Sound")]
+    [SerializeField] protected AK.Wwise.Event shoot;
+    [SerializeField] protected AK.Wwise.Event destroy;
+    [Space]
+
     [Range(3, 20)][SerializeField] float radius;
     [SerializeField] protected float FireRate;
     public float fireRateCountDown;
     protected float damage = 5;
     protected LayerMask Hitable;
-
 
     protected IEnumerator MoveAlongPath(Vector3[] path, bool reverse, GameObject obj, float speed, Transform transform)
     {
@@ -47,7 +51,7 @@ public class NPCBehaviour : MonoBehaviour
         if (fireRateCountDown < 0)
         {
             GameObject t = hit.collider.gameObject;
-
+            shoot.Post(gameObject);
             EnemyBullet bullet = ObjectPooling.instance.EnemyShoot().GetComponent<EnemyBullet>();
             bullet.transform.position = transform.position;
 

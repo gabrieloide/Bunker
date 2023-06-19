@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class AirAttackManager : TurretStats
 {
+    [SerializeField] AK.Wwise.Event PlaneSound;
+    [SerializeField] AK.Wwise.Event PlaneShoot;
+
     [SerializeField] GameObject BulletAA;
     [SerializeField] GameObject PlaneGO;
     [SerializeField] GameObject ShadowPlaneGO;
@@ -23,6 +26,7 @@ public class AirAttackManager : TurretStats
     }
     void LaunchPlane()
     {
+        PlaneSound.Post(gameObject);
         camera = FindObjectOfType<Camera>();
         Vector3 position = GetPointLeftOfCamera(camera, distance, diametroGO);
         MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -66,7 +70,7 @@ public class AirAttackManager : TurretStats
     }
     void Shoot(GameObject airPlanePos)
     {
-
+        PlaneShoot.Post(gameObject);
         TowerBullet bullet = ObjectPooling.instance.TurretShoot().GetComponent<TowerBullet>();
         bullet.transform.position = airPlanePos.transform.position;
 

@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class TowerPlayer : MonoBehaviour
 {
+    [Header("Sound")]
+    [SerializeField] AK.Wwise.Event HitSound;
+    [Space]
     public static TowerPlayer instance;
     public Loot[] loot;
     [Range(0, 100)] public float life;
@@ -28,8 +31,8 @@ public class TowerPlayer : MonoBehaviour
     {
         while (true)
         {
-            // Recibir daño a la torre
             life -= enemyDamage;
+            HitSound.Post(gameObject);
             Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform);
             dealTime = DealTime;
 

@@ -3,13 +3,12 @@ using UnityEngine;
 public class Enemy : NPCBehaviour, IDamageable
 {
     public EnemyData Data;
-    public AK.Wwise.Event shoot;
-    public AK.Wwise.Event destroy;
+    
     EnemyMovement enemyMovement;
     [SerializeField] GameObject hitParticle, explosionParticle;
     LootBag LootBagCom;
     [HideInInspector] public float Life;
-    
+
     private void Awake()
     {
         damage = Data.Damage();
@@ -32,6 +31,7 @@ public class Enemy : NPCBehaviour, IDamageable
         if (Life < 0)
         {
             Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
+            destroy.Post(gameObject);
         }
     }
     public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
