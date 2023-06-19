@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyBullet : Bullet
 {
-public EnemyBullet()
+    public EnemyBullet()
     {
         hitName = "Turret";
     }

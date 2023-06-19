@@ -11,6 +11,9 @@ public enum BuffType
 }
 public class BuffCard : Card
 {
+    [Header("Sound")]
+    [SerializeField] AK.Wwise.Event buffSound;
+    [Space]
     [SerializeField] GameObject BuffSprite;
     [SerializeField] BuffType buffType = BuffType.AttackBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Turret");

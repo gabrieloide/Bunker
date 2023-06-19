@@ -4,6 +4,10 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Sounds")]
+    [SerializeField] AK.Wwise.Event ShowBoxText;
+    [Space]
+    
     public static UIManager instance;
     public Texture2D cursorDefault, cursorTexture;
     [Space]
@@ -71,8 +75,7 @@ public class UIManager : MonoBehaviour
     {
         if (cardInstantiate == null)
         {
-            //Al hacer click derecho mostrar descripcion y nombre de la carta
-
+            ShowBoxText.Post(gameObject);
             cardInstantiate = Instantiate(CardStats, Canvas2.transform);
             cardInstantiate.transform.position = TC;
             FindObjectOfType<ChangeCardText>().instantiateStats(_name, _description);
@@ -92,14 +95,11 @@ public class UIManager : MonoBehaviour
         {
             LastPosCard.transform.position = CardPosition;
         }
-
-        //No mostrar ultima posicion de la carta al agarrarla
     }
     public void ShowDeck()
     {
         if (CardDrop.instance.cardsQueue.Count > 0)
         {
-            //Mostrar deck para tomar carta
             this.Deck.SetActive(true);
         }
     }

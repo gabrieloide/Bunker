@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    [Header("Sound")]
+    [SerializeField] AK.Wwise.Event HitSound;
+    [Space]
+
     [SerializeField] private float speed;
     [HideInInspector] public Vector3 target;
     protected string hitName;
@@ -46,6 +50,7 @@ public class Bullet : MonoBehaviour
         IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
         if (damageable != null && collision.CompareTag(hitName))
         {
+            HitSound.Post(gameObject);
             damageable.Damage(Damage, BulletPen, gameObject);
         }
     }
