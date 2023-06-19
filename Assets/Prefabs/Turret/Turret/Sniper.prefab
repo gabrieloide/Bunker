@@ -132,10 +132,10 @@ MonoBehaviour:
     WwiseObjectReference: {fileID: 0}
   damage: 15
   bulletPen: 6
-  Life: 30
+  Life: 60
   fireRateCountDown: 1.5
   fireRate: 0.7
-  range: 10.9
+  range: 4.8
   BulletParticle: {fileID: 4724371747985318160}
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 0.7

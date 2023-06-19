@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: BuffAttackSpeed
   m_EditorClassIdentifier: 
   loots: {fileID: 6505005087614213134, guid: f70eb0f822558f6478c688f226f8bb19, type: 3}
-  dropChance: 12
+  dropChance: 10
   indexCard: 1

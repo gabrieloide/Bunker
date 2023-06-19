@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Sniper
   m_EditorClassIdentifier: 
   loots: {fileID: 1065562097503117305, guid: 54cd5a6ddd80eaa43b2bcae8a5dfa3fe, type: 3}
-  dropChance: 21
+  dropChance: 17
   indexCard: 8

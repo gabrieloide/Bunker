@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: BuffFullHearth
   m_EditorClassIdentifier: 
   loots: {fileID: 159710727526833096, guid: 8830a52488ff7024ea875b3cfd946168, type: 3}
-  dropChance: 21
+  dropChance: 7
   indexCard: 4

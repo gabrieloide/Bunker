@@ -9,13 +9,16 @@ public class Enemy : NPCBehaviour, IDamageable
     [SerializeField] GameObject hitParticle, explosionParticle;
     LootBag LootBagCom;
     [HideInInspector] public float Life;
+    
     private void Awake()
     {
+        damage = Data.Damage();
         Hitable = LayerMask.GetMask("Turret");
     }
     protected override void BehaviourFinalPath()
     {
         GetComponent<Animator>().enabled = false;
+        StartCoroutine(TowerPlayer.instance.DealDamage(Data.Damage()));
     }
     private void Start()
     {

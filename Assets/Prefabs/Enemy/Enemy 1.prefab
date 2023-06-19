@@ -104,8 +104,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 3
-  FireRate: 2
-  damage: 5
+  FireRate: 1.5
+  fireRateCountDown: 0
+  damage: 5.5
   Data: {fileID: 11400000, guid: ab8e046a89009b844a574aa5901d6438, type: 2}
   shoot:
     idInternal: 0
