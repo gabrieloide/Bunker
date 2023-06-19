@@ -17,11 +17,9 @@ public abstract class Card : MonoBehaviour
     [HideInInspector] public int index() => GetComponent<CardIndex>().HandIndex;
     protected Vector3 MousePosition;
     protected SpriteRenderer spriteRenderer;
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position + offset, new Vector2(width, height));
-    }
+    [SerializeField] float radious = 1.36f;
+
+
     private void Start()
     {
         dc = FindObjectOfType<Deck>();
@@ -85,7 +83,6 @@ public abstract class Card : MonoBehaviour
 
         if (!FindObjectOfType<Trash>().hit2D)
         {
-
             LeanTween.alpha(gameObject, 1f, 0.3f);
             UIManager.instance.TowerSlotAnimation.SetActive(false);
             spawnCard();
@@ -97,11 +94,15 @@ public abstract class Card : MonoBehaviour
         }
         UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
     }
-
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, radious);
+    }
     protected virtual void spawnCard()
     {
         float d = Vector2.Distance(transform.position, dc.cardSlots[index()].position);
-        if (!DetectObjectsBelow() && d > 3)
+        if (!DetectObjectsBelow() && d > radious)
         {
             //Usar carta
             dc.availableCardSlots[index()] = true;

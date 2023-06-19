@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: LandMine
   m_EditorClassIdentifier: 
   loots: {fileID: 1280488470268546616, guid: 4b67ed70786e6494aab744314bd092ee, type: 3}
-  dropChance: 10
+  dropChance: 12
   indexCard: 6

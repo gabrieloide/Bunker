@@ -6,7 +6,7 @@ public class NPCBehaviour : MonoBehaviour
     [Range(3, 20)][SerializeField] float radius;
     [SerializeField] protected float FireRate;
     public float fireRateCountDown;
-    [SerializeField] float damage = 5;
+    protected float damage = 5;
     protected LayerMask Hitable;
 
 
