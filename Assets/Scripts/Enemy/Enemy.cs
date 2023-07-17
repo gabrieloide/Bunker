@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour, IDamageable
     int nextWavePosition;
     [SerializeField] LootBag LootBagCom;
     private float fireRate;
-    [HideInInspector]public float Life;
+    [HideInInspector] public float Life;
     private void Start()
     {
         LootBagCom = FindObjectOfType<LootBag>();
@@ -37,7 +37,6 @@ public class Enemy : MonoBehaviour, IDamageable
         }
         else
         {
-
             Data.LifeBehaviour(explosionParticle, transform.position, LootBagCom, gameObject);
         }
     }
@@ -68,21 +67,16 @@ public class Enemy : MonoBehaviour, IDamageable
             contact.collider.GetComponent<EventAllyCreation>().LifeAlly -= Data.Damage();
             shoot.Post(gameObject);
             fireRate = Data.FireRate();
-            
+
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
     {
-        if (collision.CompareTag("Bullet"))
-        {
-            //Rebre mal
-            Instantiate(hitParticle, transform.position, Quaternion.identity);
-            destroy.Post(gameObject);
-        }
-    }
-    public void Damage(float damage, float bulletPen)
-    {
+        //Rebre mal
         float realDamage = damage - (bulletPen - Data.Defense());
+        Instantiate(hitParticle, transform.position, Quaternion.identity);
+        destroy.Post(gameObject);
         Life -= realDamage;
+        deactivateBullet.SetActive(false);
     }
 }

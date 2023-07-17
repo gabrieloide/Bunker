@@ -17,7 +17,7 @@ public class NormalTurret : TurretCard
         float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
         bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        bullet.GetData(target, towersData.bulletPen);
+        bullet.GetData(target, towersData.damage, towersData.bulletPen);
         shoot.Post(gameObject);
     }
 }

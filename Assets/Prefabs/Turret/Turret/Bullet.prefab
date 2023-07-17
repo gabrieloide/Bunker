@@ -121,10 +121,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10.18
-  damage: 2
-  lifeBullet: 1
-  TimeToDestroy: 3
   target: {fileID: 0}
+  damageText: {fileID: 563626671048280399, guid: ab0645bee825d314e93d621efeb58f6f, type: 3}
+  Damage: 0
+  BulletPen: 0
+  TimeToDestroy: 3
+  damageTextTime: 0.5
+  offsetDamageTextY: -4
 --- !u!61 &1629162196531502118
 BoxCollider2D:
   m_ObjectHideFlags: 0
