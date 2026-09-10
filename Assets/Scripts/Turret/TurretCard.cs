@@ -1,9 +1,10 @@
-using System.Collections;
+using Unity.Entities;
 using UnityEngine;
 
+// Authoring + presentation for a tower. Stats are read once by SimulationBridge when the
+// entity is created; combat logic lives in Bunker.Simulation.
 public abstract class TurretCard : TurretStats, IDamageable
 {
-    private const string ENEMY_TAG = "Enemy";
     public float Life;
 
     [Space]
@@ -16,74 +17,35 @@ public abstract class TurretCard : TurretStats, IDamageable
     [SerializeField] float TurretLifeSliderOffset;
     [SerializeField] Transform BuffSpritePosition;
     [HideInInspector] public GameObject _BuffSpritePosition;
-    protected Transform target;
     [HideInInspector] public bool HaveBuff;
-    LayerMask NormalCardLM() => LayerMask.GetMask("Path");
+
+    public Entity Entity { get; set; }
+    public float FireRate => fireRate;
+    public float Range => range;
+    public virtual Vector3 MuzzlePosition => transform.position;
 
     protected void Start()
     {
-        StartCoroutine(UpdateTargets());
-        Instantiate(TurretLifeSlider, transform.position + new Vector3(default
-                                                                , TurretLifeSliderOffset,
-                                                                  default),
-                                                                  Quaternion.identity, transform);
-
+        if (TurretLifeSlider != null)
+            Instantiate(TurretLifeSlider, transform.position + new Vector3(0f, TurretLifeSliderOffset, 0f), Quaternion.identity, transform);
     }
-    IEnumerator UpdateTargets()
-    {
-        while (true)
-        {
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag(ENEMY_TAG);
-            float shortestDistance = Mathf.Infinity;
-            GameObject nearestEnemy = null;
-            foreach (GameObject enemy in enemies)
-            {
-                float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distanceToEnemy < shortestDistance)
-                {
-                    shortestDistance = distanceToEnemy;
-                    nearestEnemy = enemy;
-                }
-            }
-            if (nearestEnemy != null && shortestDistance <= range)
-            {
-                target = nearestEnemy.transform;
-            }
-            else
-            {
-                target = null;
-            }
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
-    protected void Update()
-    {
-        if (Life < 0)
-            Destroy(gameObject);
 
-        fireRateCountDown -= Time.deltaTime;
-        if (target == null)
-            return;
-
-        if (fireRateCountDown <= 0f)
-        {
-            fireRateCountDown = 1f / fireRate;
-            TurretShoot();
-        }
-
-    }
-    public abstract void TurretShoot();
+    public abstract void OnFired(Vector3 targetPosition);
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);
     }
+
     public void Damage(float damage, float bulletPen, GameObject deactivateBullet)
     {
-        Life -= damage;
-        deactivateBullet.SetActive(false);
+        if (SimulationBridge.Instance != null)
+            SimulationBridge.Instance.RequestDamage(Entity, damage, bulletPen);
+        if (deactivateBullet != null)
+            deactivateBullet.SetActive(false);
     }
+
     public void ShowBuffSprite(GameObject BuffSprite)
     {
         _BuffSpritePosition = Instantiate(BuffSprite, BuffSpritePosition.position, Quaternion.identity, BuffSpritePosition);

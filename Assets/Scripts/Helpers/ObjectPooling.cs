@@ -15,6 +15,9 @@ public class ObjectPooling : MonoBehaviour
     [SerializeField] GameObject textDamage;
     [SerializeField] int amountToPool;
 
+    public GameObject TurretBulletPrefab => turretBullet;
+    public GameObject EnemyBulletPrefab => EnemyBullet;
+
     void Awake()
     {
         if (instance == null)
