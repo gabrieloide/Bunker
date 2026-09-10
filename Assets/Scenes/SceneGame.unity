@@ -1841,8 +1841,8 @@ GameObject:
   - component: {fileID: 519420034}
   - component: {fileID: 519420033}
   - component: {fileID: 519420035}
-  - component: {fileID: 519420036}
   - component: {fileID: 519420037}
+  - component: {fileID: 519420038}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1974,23 +1974,6 @@ MonoBehaviour:
   minY: -7.51
   maxY: 17.5
   speed: 8
---- !u!114 &519420036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07e77aeb6fb51424e84e4d3274d7864f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SCShader: {fileID: 4800000, guid: a90d280a2b3f84d478f9c261b30836e8, type: 3}
-  Interferance_Size: 9.3
-  Interferance_Speed: 0.35
-  Contrast: 2.49
-  Fade: 0.168
 --- !u!114 &519420037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2003,6 +1986,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9115283d25a7ad9499501556d35022f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraShake
+--- !u!114 &519420038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 687fac09c5e4f3441a6b86f2f62d7c34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RetroCRTFilter
+  crtShader: {fileID: 4800000, guid: 808c0cf1b4816f148a479fab97c78797, type: 3}
+  curvature: 0.05
+  bezelSmoothness: 0.015
+  scanlineIntensity: 0.32
+  scanlineCount: 270
+  phosphorGlow: 0.12
+  shadowMaskIntensity: 0.1
+  chromaticAberration: 0.0015
+  brightness: 1.05
+  contrast: 1.05
+  vignetteIntensity: 0.35
+  vignetteRoundness: 0.5
 --- !u!1 &551564135 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3534583902172783224, guid: 451419a110933c34b9268ac6a337a2e6, type: 3}
