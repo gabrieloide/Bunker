@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,16 +27,19 @@ public class Deck : MonoBehaviour
         {
             if (availableCardSlots[i] == true)
             {
-                CardIndex newCard = Instantiate(deck[card], cardSlots[i].position - new Vector3(default,
-                                                                                5.5f,
-                                                                                transform.position.z),
-                                                                                transform.rotation);
+                Transform slot = cardSlots[i];
+                if (slot == null) continue;
+
+                CardIndex newCard = Instantiate(deck[card], slot);
                 TakeCard.Post(gameObject);
                 newCard.HandIndex = i;
-                GameManager.instance.CurrentCardAmount++;
-                LeanTween.moveY(newCard.gameObject, -5.57f, 0.3f);
-                newCard.transform.SetParent(CameraMovement.instance.transform);
-                //Agregar carta a la mano
+                if (GameManager.instance != null)
+                    GameManager.instance.CurrentCardAmount++;
+
+                // Reset local transform under slot
+                newCard.transform.localPosition = Vector3.zero;
+                newCard.transform.localRotation = Quaternion.identity;
+                newCard.transform.localScale = Vector3.one;
 
                 availableCardSlots[i] = false;
                 return;

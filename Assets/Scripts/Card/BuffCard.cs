@@ -19,7 +19,7 @@ public class BuffCard : Card
 
     TurretCard pendingTurret;
 
-    protected override RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(transform.position + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, NormalCardLM());
+    protected override RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(GetRaycastOrigin() + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, NormalCardLM());
 
     protected override void spawnCard()
     {
@@ -28,15 +28,16 @@ public class BuffCard : Card
 
         if (pendingTurret != null && !pendingTurret.HaveBuff)
         {
-            GameManager.instance.CurrentCardAmount--;
-            dc.availableCardSlots[index()] = true;
+            if (GameManager.instance != null)
+                GameManager.instance.CurrentCardAmount--;
+            if (dc != null && index() < dc.availableCardSlots.Length)
+                dc.availableCardSlots[index()] = true;
             CardBehaviour();
             Destroy(gameObject);
         }
         else
         {
-            transform.position = dc.cardSlots[index()].position;
-            transform.localScale = Vector3.one;
+            ReturnToSlot();
         }
     }
 
