@@ -8,6 +8,6 @@ public class NormalCard : Card
     protected override void CardBehaviour()
     {
         Vector2 Mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Instantiate(towerData.CardToInstantiate, Mouseposition, Quaternion.identity);
+        SimulationBridge.SpawnFromCard(towerData.CardToInstantiate, Mouseposition);
     }
 }

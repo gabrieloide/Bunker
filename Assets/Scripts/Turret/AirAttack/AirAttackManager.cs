@@ -47,7 +47,7 @@ public class AirAttackManager : TurretStats
             new Vector3(position.x, MousePosition.y + offsetPlaneY, transform.position.z),
             Quaternion.identity);
 
-        newPlane.GetComponent<Rigidbody2D>().velocity = new Vector2(airPlaneSpeed, 0);
+        newPlane.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(airPlaneSpeed, 0);
 
         Instantiate(ShadowPlaneGO, new Vector3(newPlane.transform.position.x, MousePosition.y, 0),
             Quaternion.identity, newPlane.transform);
@@ -71,13 +71,11 @@ public class AirAttackManager : TurretStats
     void Shoot(GameObject airPlanePos)
     {
         PlaneShoot.Post(gameObject);
-        TowerBullet bullet = ObjectPooling.instance.TurretShoot().GetComponent<TowerBullet>();
-        bullet.transform.position = airPlanePos.transform.position;
+        if (SimulationBridge.Instance == null)
+            return;
 
-        Vector3 relativePos = MousePosition - airPlanePos.transform.position;
-        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
-        bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-        bullet.GetData(new Vector3(1, -1).normalized, damage, bulletPen);
+        // Aim point kept from the original implementation, which passed a direction as the target position.
+        Vector3 aimPoint = new Vector3(1, -1).normalized;
+        SimulationBridge.Instance.SpawnTowerProjectile(airPlanePos.transform.position, aimPoint, damage, bulletPen);
     }
 }
