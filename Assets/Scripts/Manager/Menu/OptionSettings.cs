@@ -12,15 +12,15 @@ public class OptionSettings : MonoBehaviour
 
     void Start()
     {
-        sliderBrightness.value = PlayerPrefs.GetFloat("brillo", 0.8f);
-
-        //imageBrightness.color = new Color(0f, 0f, 0f, sliderBrightness.value);
+        if (sliderBrightness != null)
+            sliderBrightness.value = PlayerPrefs.GetFloat("brillo", 0.8f);
     }
 
     public void ChangeSliderBrightness(float value)
     {
         PlayerPrefs.SetFloat("brillo", value);
-        imageBrightness.color = new Color(0f, 0f, 0f, sliderBrightness.value);
+        if (imageBrightness != null && sliderBrightness != null)
+            imageBrightness.color = new Color(0f, 0f, 0f, sliderBrightness.value);
     }
 
 }

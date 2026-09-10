@@ -31,8 +31,19 @@ public class SimulationBridge : MonoBehaviour
     BlobAssetReference<EnemyRosterBlob> rosterBlob;
     BlobAssetReference<EnemyBuffTableBlob> buffBlob;
 
-    readonly Dictionary<Entity, GameObject> views = new Dictionary<Entity, GameObject>();
-    readonly Dictionary<Entity, ViewKind> viewKinds = new Dictionary<Entity, ViewKind>();
+    public struct EntityView
+    {
+        public GameObject GameObject;
+        public Transform Transform;
+        public ViewKind Kind;
+        public int PrefabId;
+        public Enemy Enemy;
+        public TurretCard TurretCard;
+        public Bullet Bullet;
+    }
+
+    readonly Dictionary<Entity, EntityView> views = new Dictionary<Entity, EntityView>();
+    Queue<GameObject>[] enemyPools;
     readonly List<Entity> removals = new List<Entity>();
     readonly List<SimEvent> pendingEvents = new List<SimEvent>();
 
@@ -73,6 +84,9 @@ public class SimulationBridge : MonoBehaviour
         }
 
         enemyPrefabs = spawner.Enemies;
+        enemyPools = new Queue<GameObject>[enemyPrefabs.Length];
+        for (int i = 0; i < enemyPools.Length; i++)
+            enemyPools[i] = new Queue<GameObject>();
         ReadBulletPrefabs();
         rosterBlob = BuildRoster();
         buffBlob = BuildBuffTable();
@@ -116,10 +130,31 @@ public class SimulationBridge : MonoBehaviour
         em.AddComponent<SimulationTag>(simEntity);
         em.AddComponentData(simEntity, config);
         em.AddComponentData(simEntity, state);
+        em.AddComponentData(simEntity, new GameSession
+        {
+            Score = GameManager.instance != null ? GameManager.instance.ActualScore : 0,
+            IsGameOver = false
+        });
         em.AddBuffer<SimEvent>(simEntity);
         var pathBuffer = em.AddBuffer<PathPoint>(simEntity);
         foreach (var point in path.points)
             pathBuffer.Add(new PathPoint { Value = point });
+
+        // Initialize Player Bunker Entity in ECS
+        var bunkerEntity = em.CreateEntity();
+        em.AddComponent<SimulationTag>(bunkerEntity);
+        em.AddComponent<BunkerTag>(bunkerEntity);
+        Vector3 playerPos = player != null ? player.transform.position : Vector3.zero;
+        em.AddComponentData(bunkerEntity, LocalTransform.FromPosition(playerPos));
+        float playerStartLife = player != null ? player.life : 100f;
+        em.AddComponentData(bunkerEntity, new Health { Value = playerStartLife, Max = 100f });
+        em.AddBuffer<DamageRequest>(bunkerEntity);
+        if (player != null)
+        {
+            player.Entity = bunkerEntity;
+            ColliderBox(player.gameObject, out var bunkerHalf, out var bunkerOffset);
+            em.AddComponentData(bunkerEntity, new HitBox { HalfExtents = bunkerHalf, Offset = bunkerOffset });
+        }
 
         needsViewQuery = em.CreateEntityQuery(typeof(NeedsView), typeof(LocalTransform));
         MirrorWaveState(state.Wave, state.Buff);
@@ -280,6 +315,18 @@ public class SimulationBridge : MonoBehaviour
         em.GetBuffer<TowerBuffRequest>(entity).Add(new TowerBuffRequest { Kind = (TowerBuffKind)type, Multiplier = multiplier });
     }
 
+    public void RequestBunkerHeal(float amount)
+    {
+        if (!ready || player == null || !em.Exists(player.Entity) || !em.HasBuffer<DamageRequest>(player.Entity)) return;
+        em.GetBuffer<DamageRequest>(player.Entity).Add(new DamageRequest { Damage = -amount, BulletPen = 0f });
+    }
+
+    public void RequestBunkerDamage(float amount)
+    {
+        if (!ready || player == null || !em.Exists(player.Entity) || !em.HasBuffer<DamageRequest>(player.Entity)) return;
+        em.GetBuffer<DamageRequest>(player.Entity).Add(new DamageRequest { Damage = amount, BulletPen = 0f });
+    }
+
     // ---------------------------------------------------------------- presentation sync
 
     void LateUpdate()
@@ -307,44 +354,95 @@ public class SimulationBridge : MonoBehaviour
                 case SimEventKind.Fired:
                     if (views.TryGetValue(ev.Source, out var shooter))
                     {
-                        if (shooter.TryGetComponent<TurretCard>(out var tower)) tower.OnFired(ev.Position);
-                        else if (shooter.TryGetComponent<Enemy>(out var enemy)) enemy.OnFired();
+                        if (shooter.TurretCard != null) shooter.TurretCard.OnFired(ev.Position);
+                        else if (shooter.Enemy != null) shooter.Enemy.OnFired();
                     }
                     break;
 
                 case SimEventKind.ProjectileHit:
-                    if (views.TryGetValue(ev.Source, out var bulletView) && bulletView.TryGetComponent<Bullet>(out var bullet))
-                        bullet.PlayHitSound();
-                    if (views.TryGetValue(ev.Target, out var hitView) && hitView.TryGetComponent<Enemy>(out var hitEnemy))
-                        hitEnemy.OnHit();
+                    if (views.TryGetValue(ev.Source, out var bulletView) && bulletView.Bullet != null)
+                        bulletView.Bullet.PlayHitSound();
+                    if (views.TryGetValue(ev.Target, out var hitView) && hitView.Enemy != null)
+                        hitView.Enemy.OnHit();
                     if ((Faction)ev.IntValue == Faction.Enemy)
+                    {
                         ShowDamageText(ev.Position, ev.Amount);
+                        CameraShake.MicroShake();
+                    }
                     break;
 
                 case SimEventKind.EnemyDied:
-                    if (views.TryGetValue(ev.Source, out var deadView) && deadView.TryGetComponent<Enemy>(out var deadEnemy))
+                    if (views.TryGetValue(ev.Source, out var deadView) && deadView.Enemy != null)
                     {
-                        if (deadEnemy.ExplosionParticle != null)
-                            Instantiate(deadEnemy.ExplosionParticle, (Vector3)ev.Position, Quaternion.identity);
-                        deadEnemy.OnDied();
+                        if (deadView.Enemy.ExplosionParticle != null)
+                            Instantiate(deadView.Enemy.ExplosionParticle, (Vector3)ev.Position, Quaternion.identity);
+                        deadView.Enemy.OnDied();
                     }
-                    if (GameManager.instance != null) GameManager.instance.ActualScore += ev.IntValue;
+                    CameraShake.MediumShake();
                     if (lootBag != null) lootBag.InstantiateLoot();
                     break;
 
+                case SimEventKind.ScoreChanged:
+                    if (GameManager.instance != null) GameManager.instance.ActualScore = ev.IntValue;
+                    break;
+
                 case SimEventKind.EnemyReachedEnd:
-                    if (views.TryGetValue(ev.Source, out var endView) && endView.TryGetComponent<Enemy>(out var endEnemy))
-                        endEnemy.OnReachedEnd();
+                    if (views.TryGetValue(ev.Source, out var endView) && endView.Enemy != null)
+                        endView.Enemy.OnReachedEnd();
                     break;
 
                 case SimEventKind.PlayerHit:
-                    if (player != null) player.TakeHit(ev.Amount);
+                    if (player != null) player.TakeHit(ev.Amount, ev.IntValue);
+                    CameraShake.HeavyShake();
                     break;
 
                 case SimEventKind.WaveChanged:
                     MirrorWaveState(ev.IntValue, (EnemyBuffKind)(int)ev.Amount);
                     break;
+
+                case SimEventKind.GameOver:
+                    Debug.Log("SimulationBridge: Game Over triggered by ECS.");
+                    if (WaveManager.instance != null && WaveManager.instance.winScreen != null)
+                        WaveManager.instance.winScreen.SetActive(true);
+                    break;
             }
+        }
+    }
+
+    GameObject GetEnemyView(int prefabId, Vector3 position)
+    {
+        if (enemyPools != null && prefabId >= 0 && prefabId < enemyPools.Length)
+        {
+            var poolQueue = enemyPools[prefabId];
+            while (poolQueue.Count > 0)
+            {
+                var instance = poolQueue.Dequeue();
+                if (instance != null)
+                {
+                    instance.transform.position = position;
+                    instance.SetActive(true);
+                    if (instance.TryGetComponent<Enemy>(out var enemy))
+                        enemy.ResetForPool();
+                    return instance;
+                }
+            }
+        }
+        var view = Instantiate(enemyPrefabs[prefabId], position, Quaternion.identity);
+        MakeKinematic(view);
+        return view;
+    }
+
+    void ReturnEnemyView(int prefabId, GameObject view)
+    {
+        if (view == null) return;
+        view.SetActive(false);
+        if (enemyPools != null && prefabId >= 0 && prefabId < enemyPools.Length)
+        {
+            enemyPools[prefabId].Enqueue(view);
+        }
+        else
+        {
+            Destroy(view);
         }
     }
 
@@ -362,9 +460,8 @@ public class SimulationBridge : MonoBehaviour
             switch (request.Kind)
             {
                 case ViewKind.Enemy:
-                    view = Instantiate(enemyPrefabs[request.PrefabId], position, Quaternion.identity);
+                    view = GetEnemyView(request.PrefabId, position);
                     view.GetComponent<Enemy>().Entity = entity;
-                    MakeKinematic(view);
                     break;
                 case ViewKind.TowerProjectile:
                     view = pool.TurretShoot();
@@ -382,7 +479,7 @@ public class SimulationBridge : MonoBehaviour
                 var velocity = em.GetComponentData<Projectile>(entity).Velocity;
                 view.transform.SetPositionAndRotation(position, RotateObjectTo.FromDirection(velocity));
             }
-            RegisterView(entity, view, request.Kind);
+            RegisterView(entity, view, request.Kind, request.PrefabId);
         }
         em.RemoveComponent<NeedsView>(needsViewQuery);
     }
@@ -394,53 +491,71 @@ public class SimulationBridge : MonoBehaviour
         {
             var entity = pair.Key;
             var view = pair.Value;
-            if (view == null || !em.Exists(entity))
+            if (view.GameObject == null || !em.Exists(entity))
             {
                 removals.Add(entity);
                 continue;
             }
 
             Vector3 position = em.GetComponentData<LocalTransform>(entity).Position;
-            var kind = viewKinds[entity];
-            if (kind == ViewKind.Enemy)
+            if (view.Kind == ViewKind.Enemy)
             {
-                float dx = position.x - view.transform.position.x;
+                float dx = position.x - view.Transform.position.x;
                 if (Mathf.Abs(dx) > 1e-4f)
                 {
-                    var scale = view.transform.localScale;
+                    var scale = view.Transform.localScale;
                     scale.x = Mathf.Abs(scale.x) * (dx < 0f ? -1f : 1f);
-                    view.transform.localScale = scale;
+                    view.Transform.localScale = scale;
                 }
             }
-            else if (kind == (ViewKind)LocalViewKind.Tower)
+            else if (view.Kind == (ViewKind)LocalViewKind.Tower)
             {
-                view.GetComponent<TurretCard>().Life = em.GetComponentData<Health>(entity).Value;
+                if (view.TurretCard != null)
+                    view.TurretCard.Life = em.GetComponentData<Health>(entity).Value;
             }
-            view.transform.position = position;
+            view.Transform.position = position;
         }
 
         foreach (var entity in removals)
             RemoveView(entity);
     }
 
-    void RegisterView(Entity entity, GameObject view, ViewKind kind)
+    void RegisterView(Entity entity, GameObject view, ViewKind kind, int prefabId = 0)
     {
-        views[entity] = view;
-        viewKinds[entity] = kind;
+        var ev = new EntityView
+        {
+            GameObject = view,
+            Transform = view.transform,
+            Kind = kind,
+            PrefabId = prefabId,
+            Enemy = view.GetComponent<Enemy>(),
+            TurretCard = view.GetComponent<TurretCard>(),
+            Bullet = view.GetComponent<Bullet>()
+        };
+        views[entity] = ev;
     }
 
     void RemoveView(Entity entity)
     {
-        if (views.TryGetValue(entity, out var view) && view != null)
+        if (views.TryGetValue(entity, out var view))
         {
-            var kind = viewKinds[entity];
-            if (kind == ViewKind.TowerProjectile || kind == ViewKind.EnemyProjectile)
-                view.SetActive(false);
-            else
-                Destroy(view);
+            if (view.GameObject != null)
+            {
+                if (view.Kind == ViewKind.TowerProjectile || view.Kind == ViewKind.EnemyProjectile)
+                {
+                    view.GameObject.SetActive(false);
+                }
+                else if (view.Kind == ViewKind.Enemy)
+                {
+                    ReturnEnemyView(view.PrefabId, view.GameObject);
+                }
+                else
+                {
+                    Destroy(view.GameObject);
+                }
+            }
+            views.Remove(entity);
         }
-        views.Remove(entity);
-        viewKinds.Remove(entity);
     }
 
     static void MakeKinematic(GameObject view)
@@ -456,11 +571,13 @@ public class SimulationBridge : MonoBehaviour
     void ShowDamageText(Vector3 position, float amount)
     {
         var text = pool.TextDamage();
+        if (text == null) return;
         text.SetActive(false);
-        text.GetComponent<DisableTextDamage>().DamageTxt = amount;
-        text.transform.position = position;
         text.SetActive(true);
-        LeanTween.move(text, position + new Vector3(0f, damageTextOffsetY, 0f), damageTextTime).setEaseOutQuad();
+        if (text.TryGetComponent<DisableTextDamage>(out var damageTextComp))
+        {
+            damageTextComp.Animate(position, amount);
+        }
     }
 
     static void MirrorWaveState(int wave, EnemyBuffKind buff)
@@ -483,7 +600,17 @@ public class SimulationBridge : MonoBehaviour
         }
         if (rosterBlob.IsCreated) rosterBlob.Dispose();
         if (buffBlob.IsCreated) buffBlob.Dispose();
+
+        if (enemyPools != null)
+        {
+            for (int i = 0; i < enemyPools.Length; i++)
+            {
+                if (enemyPools[i] != null)
+                    enemyPools[i].Clear();
+            }
+            enemyPools = null;
+        }
+
         views.Clear();
-        viewKinds.Clear();
     }
 }

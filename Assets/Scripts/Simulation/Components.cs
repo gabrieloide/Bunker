@@ -23,12 +23,21 @@ namespace Bunker.Simulation
         TowerDied,
         EnemyReachedEnd,
         PlayerHit,
-        WaveChanged
+        WaveChanged,
+        ScoreChanged,
+        GameOver
     }
 
     public struct SimulationTag : IComponentData { }
     public struct TowerTag : IComponentData { }
     public struct EnemyTag : IComponentData { }
+    public struct BunkerTag : IComponentData { }
+
+    public struct GameSession : IComponentData
+    {
+        public int Score;
+        public bool IsGameOver;
+    }
 
     public struct Health : IComponentData
     {
