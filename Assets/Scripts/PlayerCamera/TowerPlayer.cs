@@ -14,6 +14,8 @@ public class TowerPlayer : MonoBehaviour
     [SerializeField] bool canChangeChance;
     [SerializeField] int currentIndex = 9;
 
+    public Unity.Entities.Entity Entity { get; set; }
+
     private void Awake()
     {
         if (!instance)
@@ -22,30 +24,43 @@ public class TowerPlayer : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void TakeHit(float enemyDamage)
+    public void TakeHit(float enemyDamage, float remainingLife = -1f)
     {
-        life -= enemyDamage;
-        HitSound.Post(gameObject);
-        Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform);
-    }
+        if (remainingLife >= 0f)
+            life = remainingLife;
+        else
+            life = Mathf.Max(0f, life - enemyDamage);
 
-    private void Update()
-    {
-        ChangeCardChance();
-    }
-
-    public void ChangeCardChance()
-    {
-        if (Mathf.Floor(life / 10) == currentIndex && canChangeChance)
+        if (enemyDamage > 0f)
         {
+            HitSound.Post(gameObject);
+            if (hitParticle != null)
+                Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform);
+        }
+
+        UpdateCardChance();
+    }
+
+    public void OnHealed(float newLife)
+    {
+        life = Mathf.Clamp(newLife, 0f, 100f);
+        UpdateCardChance();
+    }
+
+    void UpdateCardChance()
+    {
+        int lifeTier = Mathf.FloorToInt(life / 10f);
+        if (lifeTier == currentIndex && canChangeChance)
+        {
+            float extraChance = IncreaseChance();
             foreach (var item in loot)
             {
-                item.dropChance += Mathf.FloorToInt(IncreaseChance());
+                item.dropChance += Mathf.FloorToInt(extraChance);
             }
             currentIndex--;
             canChangeChance = false;
         }
-        else if (Mathf.Floor(life / 10) != currentIndex)
+        else if (lifeTier != currentIndex)
         {
             canChangeChance = true;
         }
@@ -53,18 +68,7 @@ public class TowerPlayer : MonoBehaviour
 
     float IncreaseChance()
     {
-        int index = 10;
-        float currentLife = Mathf.Floor(life / index) * index;
-        float chance = 0;
-
-        for (int i = 0; i < index; i++)
-        {
-            if (Mathf.Floor(life / index) == i)
-            {
-                chance = (100 - currentLife) / 10;
-                return chance;
-            }
-        }
-        return chance;
+        float currentLifeTier = Mathf.Floor(life / 10f) * 10f;
+        return (100f - currentLifeTier) / 10f;
     }
 }

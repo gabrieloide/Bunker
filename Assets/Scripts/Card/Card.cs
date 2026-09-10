@@ -27,6 +27,8 @@ public abstract class Card : MonoBehaviour
         showCard();
     }
 
+    float currentTiltAngle = 0f;
+
     private void OnMouseOver()
     {
         if (Input.GetMouseButtonDown(1) && !GameManager.instance.onDrag)
@@ -36,31 +38,40 @@ public abstract class Card : MonoBehaviour
     {
         if (!GameManager.instance.onDrag)
         {
-            //MOUSE ENCIMA DE LA CARTA
-
-            transform.position += new Vector3(0f, transform.localScale.y / 2f, 0f);
+            Vector3 slotPos = dc.cardSlots[index()].position;
+            LeanTween.cancel(gameObject);
+            LeanTween.move(gameObject, slotPos + new Vector3(0f, 0.45f, 0f), 0.12f).setEaseOutQuad();
+            LeanTween.scale(gameObject, Vector3.one * 1.08f, 0.12f).setEaseOutQuad();
         }
     }
     private void OnMouseExit()
     {
         if (!GameManager.instance.onDrag)
         {
-            // MOUSE CUANDO SALE DE LA CARTA    
-            transform.position = dc.cardSlots[index()].position;
-            Destroy(UIManager.instance.cardInstantiate);
+            Vector3 slotPos = dc.cardSlots[index()].position;
+            LeanTween.cancel(gameObject);
+            LeanTween.move(gameObject, slotPos, 0.12f).setEaseOutQuad();
+            LeanTween.scale(gameObject, Vector3.one, 0.12f).setEaseOutQuad();
+            if (UIManager.instance.cardInstantiate != null)
+                Destroy(UIManager.instance.cardInstantiate);
         }
     }
     private void OnMouseDrag()
     {
-        //ARRASTRAR CARTA
-
         MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
         transform.position = MousePosition;
+
+        // Dynamic tilt based on horizontal mouse movement
+        float mouseDeltaX = Input.GetAxis("Mouse X");
+        float targetAngle = Mathf.Clamp(-mouseDeltaX * 14f, -22f, 22f);
+        currentTiltAngle = Mathf.Lerp(currentTiltAngle, targetAngle, Time.deltaTime * 18f);
+        transform.rotation = Quaternion.Euler(0f, 0f, currentTiltAngle);
     }
     private void OnMouseDown()
     {
         var uimanager = UIManager.instance;
-        //TOMAR CARTA
+        currentTiltAngle = 0f;
+        LeanTween.cancel(gameObject);
 
         spriteRenderer.sprite = backCard;
         LeanTween.alpha(gameObject, 0.87f, 0.3f);
@@ -80,6 +91,7 @@ public abstract class Card : MonoBehaviour
         spriteRenderer.sprite = defaultCard;
         UIManager.instance.ShowTowerSlot = false;
         GameManager.instance.onDrag = false;
+        transform.rotation = Quaternion.identity;
 
         if (!FindObjectOfType<Trash>().hit2D)
         {
@@ -104,7 +116,8 @@ public abstract class Card : MonoBehaviour
         float d = Vector2.Distance(transform.position, dc.cardSlots[index()].position);
         if (!DetectObjectsBelow() && d > radious)
         {
-            //Usar carta
+            // Usar carta con micro-shake de impacto
+            CameraShake.MicroShake();
             dc.availableCardSlots[index()] = true;
             GameManager.instance.CurrentCardAmount--;
             GameObject c = Instantiate(CardFlipAnim, transform.position, Quaternion.identity);
@@ -114,8 +127,12 @@ public abstract class Card : MonoBehaviour
         }
         else
         {
-            transform.position = dc.cardSlots[index()].position;
-            transform.localScale = Vector3.one;
+            // Drop cancelado / inválido: rebote elástico hacia el slot
+            Vector3 slotPos = dc.cardSlots[index()].position;
+            LeanTween.cancel(gameObject);
+            LeanTween.move(gameObject, slotPos, 0.25f).setEaseOutBack();
+            LeanTween.scale(gameObject, Vector3.one, 0.2f).setEaseOutBack();
+            LeanTween.rotateZ(gameObject, 0f, 0.2f);
         }
     }
     protected abstract void CardBehaviour();

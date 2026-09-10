@@ -5,20 +5,24 @@ namespace Bunker.Simulation
 {
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(TowerBuffSystem))]
+    [UpdateAfter(typeof(ProjectileSystem))]
     public partial struct PlayerAttackSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<WaveConfig>();
+            state.RequireForUpdate<BunkerTag>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            if (!SystemAPI.TryGetSingletonEntity<BunkerTag>(out var bunkerEntity))
+                return;
+
             var config = SystemAPI.GetSingleton<WaveConfig>();
-            var events = SystemAPI.GetSingletonBuffer<SimEvent>();
+            var damageBuffer = SystemAPI.GetBuffer<DamageRequest>(bunkerEntity);
             float dt = SystemAPI.Time.DeltaTime;
 
             foreach (var (atEnd, weapon, entity) in
@@ -29,7 +33,7 @@ namespace Bunker.Simulation
                     continue;
 
                 atEnd.ValueRW.AttackTimer += config.PlayerDamageInterval;
-                events.Add(new SimEvent { Kind = SimEventKind.PlayerHit, Source = entity, Amount = weapon.ValueRO.Damage });
+                damageBuffer.Add(new DamageRequest { Damage = weapon.ValueRO.Damage, BulletPen = 0f });
             }
         }
     }
