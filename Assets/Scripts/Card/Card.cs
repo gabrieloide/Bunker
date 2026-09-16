@@ -94,7 +94,7 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual void Start()
     {
-        dc = FindObjectOfType<Deck>();
+        dc = Deck.instance != null ? Deck.instance : FindAnyObjectByType<Deck>();
         showCard();
     }
 
@@ -269,7 +269,7 @@ public abstract class Card : MonoBehaviour,
         if (UIManager.instance != null)
             UIManager.instance.ShowTowerSlot = false;
 
-        var trash = FindObjectOfType<Trash>();
+        var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
         bool isTrash = (trash != null && (trash.hit2D || trash.IsPointerOver()));
 
         if (isTrash)

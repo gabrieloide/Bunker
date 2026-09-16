@@ -27,9 +27,9 @@ public class AirAttackManager : TurretStats
     void LaunchPlane()
     {
         PlaneSound.Post(gameObject);
-        camera = FindObjectOfType<Camera>();
-        Vector3 position = GetPointLeftOfCamera(camera, distance, diametroGO);
-        MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        camera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
+        Vector3 position = camera != null ? GetPointLeftOfCamera(camera, distance, diametroGO) : Vector3.zero;
+        MousePosition = camera != null ? camera.ScreenToWorldPoint(Input.mousePosition) : Vector3.zero;
         PlaneBehaviour(position);
     }
     public static Vector3 GetPointLeftOfCamera(Camera camera, float distance, float goDiameter)
@@ -74,8 +74,9 @@ public class AirAttackManager : TurretStats
         if (SimulationBridge.Instance == null)
             return;
 
-        // Aim point kept from the original implementation, which passed a direction as the target position.
-        Vector3 aimPoint = new Vector3(1, -1).normalized;
-        SimulationBridge.Instance.SpawnTowerProjectile(airPlanePos.transform.position, aimPoint, damage, bulletPen);
+        Vector3 origin = airPlanePos.transform.position;
+        Vector3 fireDirection = new Vector3(1f, -1f, 0f).normalized;
+        Vector3 aimPoint = origin + fireDirection * 15f;
+        SimulationBridge.Instance.SpawnTowerProjectile(origin, aimPoint, damage, bulletPen);
     }
 }

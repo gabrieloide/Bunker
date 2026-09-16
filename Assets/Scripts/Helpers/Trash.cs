@@ -13,10 +13,33 @@ public class Trash : MonoBehaviour
     [SerializeField] Sprite defaultTrash, openTrash;
     [SerializeField] GameObject trashGO;
 
+    public static Trash Instance { get; private set; }
+
+    private SpriteRenderer trashRenderer;
+    private Camera mainCamera;
+    private bool wasOpen;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
+            Destroy(gameObject);
+
+        if (trashGO != null)
+            trashRenderer = trashGO.GetComponent<SpriteRenderer>();
+
+        mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
+    }
+
     public bool IsPointerOver()
     {
-        if (Camera.main == null) return false;
-        Vector3 worldMouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (mainCamera == null)
+            mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
+
+        if (mainCamera == null) return false;
+
+        Vector3 worldMouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Bounds b = new Bounds(transform.position, new Vector3(widthBox, heightBox, 10f));
         return b.Contains(new Vector3(worldMouse.x, worldMouse.y, transform.position.z));
     }
@@ -29,15 +52,34 @@ public class Trash : MonoBehaviour
 
     private void LateUpdate()
     {
-        hit2D = Physics2D.BoxCast(transform.position, new Vector2(widthBox, heightBox), 360, Vector2.one, 5, CardLayer);
-        bool isHovered = hit2D || (GameManager.instance != null && GameManager.instance.onDrag && IsPointerOver());
-        if (isHovered)
+        bool dragging = GameManager.instance != null && GameManager.instance.onDrag;
+
+        if (dragging)
         {
-            if (trashGO != null) trashGO.GetComponent<SpriteRenderer>().sprite = openTrash;
+            hit2D = Physics2D.BoxCast(transform.position, new Vector2(widthBox, heightBox), 0f, Vector2.zero, 0f, CardLayer);
         }
         else
         {
-            if (trashGO != null) trashGO.GetComponent<SpriteRenderer>().sprite = defaultTrash;
+            hit2D = default;
+        }
+
+        bool isOpen = dragging && (hit2D || IsPointerOver());
+
+        if (isOpen != wasOpen)
+        {
+            wasOpen = isOpen;
+
+            if (trashRenderer != null)
+                trashRenderer.sprite = isOpen ? openTrash : defaultTrash;
+
+            if (isOpen)
+            {
+                openTrashSound.Post(gameObject);
+            }
+            else
+            {
+                closeTrashSound.Post(gameObject);
+            }
         }
     }
 }
