@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using EntityView = ViewRegistry.EntityView;
 
 public class SimulationBridge : MonoBehaviour
 {
@@ -31,19 +32,8 @@ public class SimulationBridge : MonoBehaviour
     BlobAssetReference<EnemyRosterBlob> rosterBlob;
     BlobAssetReference<EnemyBuffTableBlob> buffBlob;
 
-    public struct EntityView
-    {
-        public GameObject GameObject;
-        public Transform Transform;
-        public ViewKind Kind;
-        public int PrefabId;
-        public Enemy Enemy;
-        public TurretCard TurretCard;
-        public Bullet Bullet;
-    }
-
-    readonly Dictionary<Entity, EntityView> views = new Dictionary<Entity, EntityView>();
-    Queue<GameObject>[] enemyPools;
+    public ViewRegistry Views => viewRegistry;
+    private ViewRegistry viewRegistry;
     readonly List<Entity> removals = new List<Entity>();
     readonly List<SimEvent> pendingEvents = new List<SimEvent>();
 
@@ -84,9 +74,7 @@ public class SimulationBridge : MonoBehaviour
         }
 
         enemyPrefabs = spawner.Enemies;
-        enemyPools = new Queue<GameObject>[enemyPrefabs.Length];
-        for (int i = 0; i < enemyPools.Length; i++)
-            enemyPools[i] = new Queue<GameObject>();
+        viewRegistry = new ViewRegistry(enemyPrefabs);
         ReadBulletPrefabs();
         rosterBlob = BuildRoster();
         buffBlob = BuildBuffTable();
@@ -158,6 +146,8 @@ public class SimulationBridge : MonoBehaviour
 
         needsViewQuery = em.CreateEntityQuery(typeof(NeedsView), typeof(LocalTransform));
         MirrorWaveState(state.Wave, state.Buff);
+        int initialScore = GameManager.instance != null ? GameManager.instance.ActualScore : 0;
+        SimEventDispatcher.Seed(initialScore, state.Wave, state.Buff, playerStartLife, 100f);
         ready = true;
     }
 
@@ -278,7 +268,7 @@ public class SimulationBridge : MonoBehaviour
         em.AddBuffer<TowerBuffRequest>(entity);
 
         card.Entity = entity;
-        RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
+        viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
         return view;
     }
 
@@ -319,6 +309,7 @@ public class SimulationBridge : MonoBehaviour
     {
         if (!ready || player == null || !em.Exists(player.Entity) || !em.HasBuffer<DamageRequest>(player.Entity)) return;
         em.GetBuffer<DamageRequest>(player.Entity).Add(new DamageRequest { Damage = -amount, BulletPen = 0f });
+        SimEventDispatcher.RecordHeal(amount);
     }
 
     public void RequestBunkerDamage(float amount)
@@ -352,7 +343,7 @@ public class SimulationBridge : MonoBehaviour
             switch (ev.Kind)
             {
                 case SimEventKind.Fired:
-                    if (views.TryGetValue(ev.Source, out var shooter))
+                    if (viewRegistry.TryGetView(ev.Source, out var shooter))
                     {
                         if (shooter.TurretCard != null) shooter.TurretCard.OnFired(ev.Position);
                         else if (shooter.Enemy != null) shooter.Enemy.OnFired();
@@ -360,9 +351,9 @@ public class SimulationBridge : MonoBehaviour
                     break;
 
                 case SimEventKind.ProjectileHit:
-                    if (views.TryGetValue(ev.Source, out var bulletView) && bulletView.Bullet != null)
+                    if (viewRegistry.TryGetView(ev.Source, out var bulletView) && bulletView.Bullet != null)
                         bulletView.Bullet.PlayHitSound();
-                    if (views.TryGetValue(ev.Target, out var hitView) && hitView.Enemy != null)
+                    if (viewRegistry.TryGetView(ev.Target, out var hitView) && hitView.Enemy != null)
                         hitView.Enemy.OnHit();
                     if ((Faction)ev.IntValue == Faction.Enemy)
                     {
@@ -372,7 +363,7 @@ public class SimulationBridge : MonoBehaviour
                     break;
 
                 case SimEventKind.EnemyDied:
-                    if (views.TryGetValue(ev.Source, out var deadView) && deadView.Enemy != null)
+                    if (viewRegistry.TryGetView(ev.Source, out var deadView) && deadView.Enemy != null)
                     {
                         if (deadView.Enemy.ExplosionParticle != null)
                             Instantiate(deadView.Enemy.ExplosionParticle, (Vector3)ev.Position, Quaternion.identity);
@@ -387,7 +378,7 @@ public class SimulationBridge : MonoBehaviour
                     break;
 
                 case SimEventKind.EnemyReachedEnd:
-                    if (views.TryGetValue(ev.Source, out var endView) && endView.Enemy != null)
+                    if (viewRegistry.TryGetView(ev.Source, out var endView) && endView.Enemy != null)
                         endView.Enemy.OnReachedEnd();
                     break;
 
@@ -406,43 +397,8 @@ public class SimulationBridge : MonoBehaviour
                         WaveManager.instance.winScreen.SetActive(true);
                     break;
             }
-        }
-    }
 
-    GameObject GetEnemyView(int prefabId, Vector3 position)
-    {
-        if (enemyPools != null && prefabId >= 0 && prefabId < enemyPools.Length)
-        {
-            var poolQueue = enemyPools[prefabId];
-            while (poolQueue.Count > 0)
-            {
-                var instance = poolQueue.Dequeue();
-                if (instance != null)
-                {
-                    instance.transform.position = position;
-                    instance.SetActive(true);
-                    if (instance.TryGetComponent<Enemy>(out var enemy))
-                        enemy.ResetForPool();
-                    return instance;
-                }
-            }
-        }
-        var view = Instantiate(enemyPrefabs[prefabId], position, Quaternion.identity);
-        MakeKinematic(view);
-        return view;
-    }
-
-    void ReturnEnemyView(int prefabId, GameObject view)
-    {
-        if (view == null) return;
-        view.SetActive(false);
-        if (enemyPools != null && prefabId >= 0 && prefabId < enemyPools.Length)
-        {
-            enemyPools[prefabId].Enqueue(view);
-        }
-        else
-        {
-            Destroy(view);
+            SimEventDispatcher.Dispatch(ev);
         }
     }
 
@@ -460,8 +416,9 @@ public class SimulationBridge : MonoBehaviour
             switch (request.Kind)
             {
                 case ViewKind.Enemy:
-                    view = GetEnemyView(request.PrefabId, position);
-                    view.GetComponent<Enemy>().Entity = entity;
+                    view = viewRegistry.GetEnemyView(request.PrefabId, position);
+                    if (view != null && view.TryGetComponent<Enemy>(out var enemy))
+                        enemy.Entity = entity;
                     break;
                 case ViewKind.TowerProjectile:
                     view = pool.TurretShoot();
@@ -475,11 +432,11 @@ public class SimulationBridge : MonoBehaviour
 
             if (request.Kind != ViewKind.Enemy)
             {
-                MakeKinematic(view);
+                ViewRegistry.MakeKinematic(view);
                 var velocity = em.GetComponentData<Projectile>(entity).Velocity;
                 view.transform.SetPositionAndRotation(position, RotateObjectTo.FromDirection(velocity));
             }
-            RegisterView(entity, view, request.Kind, request.PrefabId);
+            viewRegistry.RegisterView(entity, view, request.Kind, request.PrefabId);
         }
         em.RemoveComponent<NeedsView>(needsViewQuery);
     }
@@ -487,8 +444,10 @@ public class SimulationBridge : MonoBehaviour
     void SyncViews()
     {
         removals.Clear();
-        foreach (var pair in views)
+        var enumerator = viewRegistry.GetEnumerator();
+        while (enumerator.MoveNext())
         {
+            var pair = enumerator.Current;
             var entity = pair.Key;
             var view = pair.Value;
             if (view.GameObject == null || !em.Exists(entity))
@@ -517,55 +476,7 @@ public class SimulationBridge : MonoBehaviour
         }
 
         foreach (var entity in removals)
-            RemoveView(entity);
-    }
-
-    void RegisterView(Entity entity, GameObject view, ViewKind kind, int prefabId = 0)
-    {
-        var ev = new EntityView
-        {
-            GameObject = view,
-            Transform = view.transform,
-            Kind = kind,
-            PrefabId = prefabId,
-            Enemy = view.GetComponent<Enemy>(),
-            TurretCard = view.GetComponent<TurretCard>(),
-            Bullet = view.GetComponent<Bullet>()
-        };
-        views[entity] = ev;
-    }
-
-    void RemoveView(Entity entity)
-    {
-        if (views.TryGetValue(entity, out var view))
-        {
-            if (view.GameObject != null)
-            {
-                if (view.Kind == ViewKind.TowerProjectile || view.Kind == ViewKind.EnemyProjectile)
-                {
-                    view.GameObject.SetActive(false);
-                }
-                else if (view.Kind == ViewKind.Enemy)
-                {
-                    ReturnEnemyView(view.PrefabId, view.GameObject);
-                }
-                else
-                {
-                    Destroy(view.GameObject);
-                }
-            }
-            views.Remove(entity);
-        }
-    }
-
-    static void MakeKinematic(GameObject view)
-    {
-        if (view.TryGetComponent<Rigidbody2D>(out var rb))
-        {
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            rb.useFullKinematicContacts = true;
-            rb.linearVelocity = Vector2.zero;
-        }
+            viewRegistry.RemoveView(entity);
     }
 
     void ShowDamageText(Vector3 position, float amount)
@@ -601,16 +512,10 @@ public class SimulationBridge : MonoBehaviour
         if (rosterBlob.IsCreated) rosterBlob.Dispose();
         if (buffBlob.IsCreated) buffBlob.Dispose();
 
-        if (enemyPools != null)
+        if (viewRegistry != null)
         {
-            for (int i = 0; i < enemyPools.Length; i++)
-            {
-                if (enemyPools[i] != null)
-                    enemyPools[i].Clear();
-            }
-            enemyPools = null;
+            viewRegistry.Clear();
+            viewRegistry = null;
         }
-
-        views.Clear();
     }
 }

@@ -14,6 +14,7 @@ public class BuffHealth : Card
         else if (TowerPlayer.instance != null)
         {
             TowerPlayer.instance.life = Mathf.Clamp(TowerPlayer.instance.life + healthRestore, 0, 100);
+            SimEventDispatcher.RecordHeal(healthRestore);
         }
     }
 }

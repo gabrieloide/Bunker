@@ -7,31 +7,59 @@ public class LootBag : MonoBehaviour
     public static LootBag instance;
     public List<Loot> lootList = new List<Loot>();
 
+    private readonly List<Loot> possibleItems = new List<Loot>(8);
+    private CardDrop cardDrop;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        cardDrop = GetComponentInChildren<CardDrop>();
+        if (cardDrop == null)
+            cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
+    }
+
     Loot GetDroppedItem()
     {
-        List<Loot> possibleItems = new List<Loot>();
+        possibleItems.Clear();
         int randomNumber = Random.Range(1, 101);
-        foreach (Loot item in lootList)
+        for (int i = 0; i < lootList.Count; i++)
         {
-            if (randomNumber <= item.dropChance)
+            var item = lootList[i];
+            if (item != null && randomNumber <= item.dropChance)
             {
                 possibleItems.Add(item);
             }
         }
+
         if (possibleItems.Count > 0)
         {
-            Loot droppedItem = possibleItems[Random.Range(0, possibleItems.Count)];
-            return droppedItem;
+            return possibleItems[Random.Range(0, possibleItems.Count)];
         }
         return null;
     }
+
     public void InstantiateLoot()
     {
-        Loot droppItem = GetDroppedItem();
+        Loot dropItem = GetDroppedItem();
 
-        if (droppItem != null)
+        if (dropItem != null)
         {
-            GetComponentInChildren<CardDrop>().cardsQueue.Enqueue(droppItem.indexCard);
+            if (cardDrop == null)
+                cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
+
+            if (cardDrop != null)
+            {
+                cardDrop.cardsQueue.Enqueue(dropItem.indexCard);
+            }
         }
     }
 }
