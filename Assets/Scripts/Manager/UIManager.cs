@@ -29,10 +29,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] Slider LifeSlider;
     [Space]
     [Header("Deck")]
-    public LeanTweenType TweenDeckIn;
     public LeanTweenType TweenDeckOut;
     public GameObject Deck;
-    public float posInCamera;
     public float TimeMovement;
 
     private Camera mainCamera;
