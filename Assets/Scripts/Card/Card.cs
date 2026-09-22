@@ -31,6 +31,7 @@ public abstract class Card : MonoBehaviour,
     bool isDragging = false;
     Transform originalParent;
     Vector2 baseAnchoredPos;
+    Vector2 dragStartScreenPos;
 
     public virtual Vector3 GetRaycastOrigin()
     {
@@ -126,6 +127,7 @@ public abstract class Card : MonoBehaviour,
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
         isDragging = true;
+        dragStartScreenPos = eventData.position;
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
 
@@ -218,7 +220,8 @@ public abstract class Card : MonoBehaviour,
     protected virtual void spawnCard()
     {
         Vector3 worldDropPos = GetRaycastOrigin();
-        float d = Vector2.Distance(rectTransform.anchoredPosition, baseAnchoredPos);
+        // Measured in screen space: anchoredPosition is relative to the root canvas while dragging, not the slot
+        float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
         bool hasObstacle = DetectObjectsBelow();
 
         if (!hasObstacle && d > dragThreshold)
@@ -248,7 +251,7 @@ public abstract class Card : MonoBehaviour,
     {
         if (originalParent != null)
         {
-            transform.SetParent(originalParent, false);
+            transform.SetParent(originalParent, true);
             transform.SetSiblingIndex(index());
         }
 
