@@ -2,9 +2,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RectTransform), typeof(Image), typeof(CanvasGroup))]
 public abstract class Card : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler,
-    IPointerDownHandler, IPointerUpHandler,
+    IPointerDownHandler,
     IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] protected LayerMask objectLayerMask;
@@ -19,31 +20,24 @@ public abstract class Card : MonoBehaviour,
 
     [HideInInspector] public int index() => GetComponent<CardIndex>() != null ? GetComponent<CardIndex>().HandIndex : 0;
 
-    protected SpriteRenderer spriteRenderer;
     protected Image uiImage;
     protected RectTransform rectTransform;
     protected CanvasGroup canvasGroup;
-    public bool isUI { get; protected set; } = false;
 
-    [SerializeField] float radious = 1.36f;
     [SerializeField] float uiHoverHeight = 16f;
+    [SerializeField] float dragThreshold = 20f;
 
     float currentTiltAngle = 0f;
     bool isDragging = false;
-    bool isHovered = false;
     Transform originalParent;
     Vector2 baseAnchoredPos;
 
     public virtual Vector3 GetRaycastOrigin()
     {
-        if (isUI && Camera.main != null)
-        {
-            Vector3 screenPos = Input.mousePosition;
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
-            worldPos.z = 0f;
-            return worldPos;
-        }
-        return transform.position;
+        if (Camera.main == null) return transform.position;
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        worldPos.z = 0f;
+        return worldPos;
     }
 
     protected virtual RaycastHit2D DetectObjectsBelow()
@@ -54,42 +48,13 @@ public abstract class Card : MonoBehaviour,
     protected virtual void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        if (rectTransform != null && GetComponentInParent<Canvas>() != null)
-        {
-            isUI = true;
+        uiImage = GetComponent<Image>();
+        canvasGroup = GetComponent<CanvasGroup>();
 
-            // Remove 2D collider to prevent interference with UI GraphicRaycaster
-            var col = GetComponent<Collider2D>();
-            if (col != null) Destroy(col);
+        if (GetComponentInParent<Canvas>() == null)
+            Debug.LogError($"[Card] {name} must be instantiated under a Canvas.", this);
 
-            // Convert SpriteRenderer to UI Image if needed
-            uiImage = GetComponent<Image>();
-            if (uiImage == null)
-            {
-                var sr = GetComponent<SpriteRenderer>();
-                Sprite initialSprite = defaultCard;
-                if (sr != null)
-                {
-                    if (initialSprite == null) initialSprite = sr.sprite;
-                    Destroy(sr);
-                }
-                gameObject.AddComponent<CanvasRenderer>();
-                uiImage = gameObject.AddComponent<Image>();
-                uiImage.sprite = initialSprite != null ? initialSprite : defaultCard;
-                uiImage.preserveAspect = true;
-                uiImage.raycastTarget = true;
-            }
-
-            canvasGroup = GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-                canvasGroup = gameObject.AddComponent<CanvasGroup>();
-
-            baseAnchoredPos = rectTransform.anchoredPosition;
-        }
-        else
-        {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-        }
+        baseAnchoredPos = rectTransform.anchoredPosition;
     }
 
     protected virtual void Start()
@@ -98,14 +63,13 @@ public abstract class Card : MonoBehaviour,
         showCard();
     }
 
-    // ------------------------------------------------ UI EventSystem Handlers (Rock solid, 0 jitter)
+    // ------------------------------------------------ UI EventSystem Handlers
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
 
-        isHovered = true;
         ElevateCard();
     }
 
@@ -114,25 +78,13 @@ public abstract class Card : MonoBehaviour,
         if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
 
-        isHovered = false;
         LowerCard();
     }
 
     void ElevateCard()
     {
         LeanTween.cancel(gameObject);
-        if (isUI && rectTransform != null)
-        {
-            LeanTween.value(gameObject, y => {
-                if (rectTransform != null)
-                    rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, y);
-            }, rectTransform.anchoredPosition.y, baseAnchoredPos.y + uiHoverHeight, 0.12f).setEaseOutQuad();
-        }
-        else if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
-        {
-            Vector3 slotPos = dc.cardSlots[index()].position;
-            LeanTween.move(gameObject, slotPos + new Vector3(0f, 0.45f, 0f), 0.12f).setEaseOutQuad();
-        }
+        TweenAnchoredY(baseAnchoredPos.y + uiHoverHeight, 0.12f).setEaseOutQuad();
         LeanTween.scale(gameObject, Vector3.one * 1.08f, 0.12f).setEaseOutQuad();
         transform.SetAsLastSibling();
     }
@@ -140,18 +92,7 @@ public abstract class Card : MonoBehaviour,
     void LowerCard()
     {
         LeanTween.cancel(gameObject);
-        if (isUI && rectTransform != null)
-        {
-            LeanTween.value(gameObject, y => {
-                if (rectTransform != null)
-                    rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, y);
-            }, rectTransform.anchoredPosition.y, baseAnchoredPos.y, 0.12f).setEaseOutQuad();
-        }
-        else if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
-        {
-            Vector3 slotPos = dc.cardSlots[index()].position;
-            LeanTween.move(gameObject, slotPos, 0.12f).setEaseOutQuad();
-        }
+        TweenAnchoredY(baseAnchoredPos.y, 0.12f).setEaseOutQuad();
         LeanTween.scale(gameObject, Vector3.one, 0.12f).setEaseOutQuad();
 
         if (originalParent != null)
@@ -159,6 +100,14 @@ public abstract class Card : MonoBehaviour,
 
         if (UIManager.instance != null && UIManager.instance.cardInstantiate != null)
             Destroy(UIManager.instance.cardInstantiate);
+    }
+
+    LTDescr TweenAnchoredY(float targetY, float time)
+    {
+        return LeanTween.value(gameObject, y => {
+            if (rectTransform != null)
+                rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, y);
+        }, rectTransform.anchoredPosition.y, targetY, time);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -172,10 +121,6 @@ public abstract class Card : MonoBehaviour,
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-    }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
@@ -184,13 +129,10 @@ public abstract class Card : MonoBehaviour,
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
 
-        if (isUI && uiImage != null && backCard != null)
+        if (backCard != null)
             uiImage.sprite = backCard;
-        else if (spriteRenderer != null && backCard != null)
-            spriteRenderer.sprite = backCard;
 
-        if (canvasGroup != null)
-            canvasGroup.alpha = 0.85f;
+        canvasGroup.alpha = 0.85f;
 
         if (GameManager.instance != null)
             GameManager.instance.onDrag = true;
@@ -216,21 +158,10 @@ public abstract class Card : MonoBehaviour,
     {
         if (!isDragging) return;
 
-        if (isUI && rectTransform != null)
-        {
-            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
-            {
-                transform.position = worldPoint;
-            }
-            else
-            {
-                transform.position = eventData.position;
-            }
-        }
-        else if (Camera.main != null)
-        {
-            transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0.9f, 10f);
-        }
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
+            transform.position = worldPoint;
+        else
+            transform.position = eventData.position;
 
         // Dynamic tilt based on horizontal mouse movement
         float deltaX = eventData.delta.x;
@@ -255,13 +186,10 @@ public abstract class Card : MonoBehaviour,
 
         transform.rotation = Quaternion.identity;
 
-        if (isUI && uiImage != null && defaultCard != null)
+        if (defaultCard != null)
             uiImage.sprite = defaultCard;
-        else if (spriteRenderer != null && defaultCard != null)
-            spriteRenderer.sprite = defaultCard;
 
-        if (canvasGroup != null)
-            canvasGroup.alpha = 1f;
+        canvasGroup.alpha = 1f;
 
         if (GameManager.instance != null)
             GameManager.instance.onDrag = false;
@@ -285,29 +213,12 @@ public abstract class Card : MonoBehaviour,
         spawnCard();
     }
 
-    // ------------------------------------------------ Legacy Mouse Fallback for non-UI mode
-    private void OnMouseEnter() { if (!isUI) OnPointerEnter(null); }
-    private void OnMouseExit() { if (!isUI) OnPointerExit(null); }
-    private void OnMouseDown() { if (!isUI) { var pe = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left }; OnBeginDrag(pe); } }
-    private void OnMouseDrag() { if (!isUI) { var pe = new PointerEventData(EventSystem.current) { delta = new Vector2(Input.GetAxis("Mouse X") * 10f, 0f) }; OnDrag(pe); } }
-    private void OnMouseUp() { if (!isUI) { var pe = new PointerEventData(EventSystem.current); OnEndDrag(pe); } }
-    private void OnMouseOver() { if (!isUI && Input.GetMouseButtonDown(1) && !GameManager.instance.onDrag) UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position, GameManager.instance.onDrag); }
-
     // ------------------------------------------------ Card Placement & Slot Logic
 
     protected virtual void spawnCard()
     {
         Vector3 worldDropPos = GetRaycastOrigin();
-        float d = 0f;
-        if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
-        {
-            if (isUI && rectTransform != null)
-                d = Vector2.Distance(rectTransform.anchoredPosition, baseAnchoredPos);
-            else
-                d = Vector2.Distance(transform.position, dc.cardSlots[index()].position);
-        }
-
-        float dragThreshold = isUI ? 20f : radious;
+        float d = Vector2.Distance(rectTransform.anchoredPosition, baseAnchoredPos);
         bool hasObstacle = DetectObjectsBelow();
 
         if (!hasObstacle && d > dragThreshold)
@@ -342,18 +253,10 @@ public abstract class Card : MonoBehaviour,
         }
 
         LeanTween.cancel(gameObject);
-        if (isUI && rectTransform != null)
-        {
-            LeanTween.value(gameObject, pos => {
-                if (rectTransform != null)
-                    rectTransform.anchoredPosition = pos;
-            }, rectTransform.anchoredPosition, baseAnchoredPos, 0.25f).setEaseOutBack();
-        }
-        else if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
-        {
-            Vector3 slotPos = dc.cardSlots[index()].position;
-            LeanTween.move(gameObject, slotPos, 0.25f).setEaseOutBack();
-        }
+        LeanTween.value(gameObject, pos => {
+            if (rectTransform != null)
+                rectTransform.anchoredPosition = pos;
+        }, rectTransform.anchoredPosition, baseAnchoredPos, 0.25f).setEaseOutBack();
         LeanTween.scale(gameObject, Vector3.one, 0.2f).setEaseOutBack();
         LeanTween.rotateZ(gameObject, 0f, 0.2f);
     }
@@ -362,18 +265,7 @@ public abstract class Card : MonoBehaviour,
 
     public void showCard()
     {
-        if (isUI && rectTransform != null)
-        {
-            rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, baseAnchoredPos.y - 35f);
-            LeanTween.value(gameObject, y => {
-                if (rectTransform != null)
-                    rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, y);
-            }, baseAnchoredPos.y - 35f, baseAnchoredPos.y, 0.25f).setEaseOutQuad();
-        }
-        else
-        {
-            LeanTween.moveLocalY(gameObject, UIManager.instance != null ? UIManager.instance.posInCamera : -5.5f, UIManager.instance != null ? UIManager.instance.TimeMovement : 0.3f)
-                .setEase(UIManager.instance != null ? UIManager.instance.TweenDeckIn : LeanTweenType.easeOutQuad);
-        }
+        rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, baseAnchoredPos.y - 35f);
+        TweenAnchoredY(baseAnchoredPos.y, 0.25f).setEaseOutQuad();
     }
 }
