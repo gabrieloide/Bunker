@@ -274,7 +274,11 @@ public abstract class Card : MonoBehaviour,
             GameManager.instance.onDrag = false;
 
         if (UIManager.instance != null)
+        {
             UIManager.instance.ShowTowerSlot = false;
+            // onDrag is already false: hides the slot placeholder shown in OnBeginDrag
+            UIManager.instance.ShowLastCardPosition(transform.position);
+        }
         RangeIndicator.Hide();
 
         var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
