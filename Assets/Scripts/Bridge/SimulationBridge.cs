@@ -93,9 +93,9 @@ public class SimulationBridge : MonoBehaviour
 
         var config = new WaveConfig
         {
-            StartDelay = spawner.StartEnemySpawner,
-            SpawnInterval = spawner.EnemyDelay,
-            InitialEnemyAmount = spawner.EnemyAmount,
+            StartDelay = balance.startDelay,
+            SpawnInterval = balance.spawnInterval,
+            InitialEnemyAmount = balance.initialEnemyAmount,
             AmountIncreasePerTier = balance.amountIncreasePerTier,
             WavesPerTier = balance.wavesPerTier,
             InitialUnlockedTypes = balance.initialUnlockedTypes,
@@ -118,9 +118,9 @@ public class SimulationBridge : MonoBehaviour
             Wave = WaveManager.instance != null ? WaveManager.instance.Wave : 1,
             EnemiesAlive = 0,
             SpawnedThisWave = 0,
-            EnemyAmount = spawner.EnemyAmount,
+            EnemyAmount = balance.initialEnemyAmount,
             UnlockedTypes = balance.initialUnlockedTypes,
-            Timer = spawner.StartEnemySpawner,
+            Timer = balance.startDelay,
             Phase = WavePhase.WaitingToStart,
             Buff = BalanceMath.PickWeighted(ref buffBlob.Value.Weights, ref rng),
             Rng = rng
@@ -182,17 +182,16 @@ public class SimulationBridge : MonoBehaviour
         var types = builder.Allocate(ref root.Types, enemyPrefabs.Length);
         for (int i = 0; i < enemyPrefabs.Length; i++)
         {
-            var enemy = enemyPrefabs[i].GetComponent<Enemy>();
-            var data = enemy.Data;
+            var data = enemyPrefabs[i].GetComponent<Enemy>().Data;
             ColliderBox(enemyPrefabs[i], out var half, out var offset);
             types[i] = new EnemyTypeDef
             {
                 Life = data.BaseLife,
                 Damage = data.BaseDamage,
-                FireInterval = enemy.FireInterval,
+                FireInterval = data.BaseAttackInterval,
                 Defense = data.BaseDefense,
                 MoveSpeed = data.BaseMoveSpeed,
-                AttackRange = enemy.AttackRadius,
+                AttackRange = data.BaseAttackRange,
                 HitHalfExtents = half,
                 HitOffset = offset,
                 Score = data.Score
@@ -242,34 +241,49 @@ public class SimulationBridge : MonoBehaviour
 
     // ---------------------------------------------------------------- public API (game code -> simulation)
 
-    public static GameObject SpawnFromCard(GameObject prefab, Vector3 position)
+    // Places what a card spawns and hands it the card's numbers
+    public static GameObject SpawnFromCard(CardDefinition definition, Vector3 position)
     {
-        if (Instance != null && Instance.ready && prefab.GetComponent<TurretCard>() != null)
-            return Instance.SpawnTower(prefab, position);
-        return Instantiate(prefab, position, Quaternion.identity);
+        if (definition == null || definition.placedPrefab == null)
+        {
+            Debug.LogError($"SimulationBridge: card '{(definition != null ? definition.name : "null")}' has no placed prefab.");
+            return null;
+        }
+
+        if (definition is TowerCardDefinition tower && tower.placedPrefab.GetComponent<TurretCard>() != null
+            && Instance != null && Instance.ready)
+            return Instance.SpawnTower(tower, position);
+
+        var spawned = Instantiate(definition.placedPrefab, position, Quaternion.identity);
+        foreach (var configurable in spawned.GetComponentsInChildren<ICardConfigurable>())
+            configurable.Configure(definition);
+        return spawned;
     }
 
-    public GameObject SpawnTower(GameObject prefab, Vector3 position)
+    public GameObject SpawnTower(TowerCardDefinition def, Vector3 position)
     {
-        var view = Instantiate(prefab, position, Quaternion.identity);
+        var view = Instantiate(def.placedPrefab, position, Quaternion.identity);
         var card = view.GetComponent<TurretCard>();
+        // Set before Start so the life bar picks up the max life
+        card.Definition = def;
+        card.Life = def.life;
         ColliderBox(view, out var half, out var offset);
 
         var entity = em.CreateEntity();
         em.AddComponent<SimulationTag>(entity);
         em.AddComponent<TowerTag>(entity);
         em.AddComponentData(entity, LocalTransform.FromPosition(position));
-        em.AddComponentData(entity, new Health { Value = card.Life, Max = card.Life });
+        em.AddComponentData(entity, new Health { Value = def.life, Max = def.life });
         em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
         em.AddComponentData(entity, new Weapon
         {
-            Damage = card.damage,
-            BulletPen = card.bulletPen,
-            FireInterval = card.FireRate > 0f ? 1f / card.FireRate : float.MaxValue,
-            BurstCount = card.BurstCount,
-            BurstInterval = card.BurstInterval,
-            Range = card.Range,
-            Cooldown = card.fireRateCountDown,
+            Damage = def.damage,
+            BulletPen = def.bulletPen,
+            FireInterval = def.fireRate > 0f ? 1f / def.fireRate : float.MaxValue,
+            BurstCount = def.burstCount,
+            BurstInterval = def.burstInterval,
+            Range = def.range,
+            Cooldown = def.initialCooldown,
             ProjectileSpeed = towerBulletSpeed,
             ProjectileLifetime = towerBulletLifetime,
             ProjectileHalfExtents = towerBulletHalfExtents,
@@ -277,15 +291,17 @@ public class SimulationBridge : MonoBehaviour
             TargetFaction = Faction.Enemy,
             HasBuff = false
         });
-        if (view.TryGetComponent(out ArtilleryAuthoring artillery))
+        if (def is ArtilleryTowerCardDefinition shellStats)
         {
+            if (!view.TryGetComponent(out ArtilleryAuthoring artillery))
+                Debug.LogError($"SimulationBridge: artillery card '{def.name}' needs an ArtilleryAuthoring on its placed prefab.", view);
             em.AddComponentData(entity, new Artillery
             {
-                RiseTime = artillery.riseTime,
-                FallTime = artillery.fallTime,
-                Height = artillery.height,
-                SplashRadius = artillery.splashRadius,
-                ViewId = RegisterArtillery(artillery)
+                RiseTime = shellStats.riseTime,
+                FallTime = shellStats.fallTime,
+                Height = shellStats.height,
+                SplashRadius = shellStats.splashRadius,
+                ViewId = artillery != null ? RegisterArtillery(artillery) : -1
             });
         }
         em.AddComponentData(entity, new Target { Value = Entity.Null });

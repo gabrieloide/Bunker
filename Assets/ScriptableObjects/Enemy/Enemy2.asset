@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _life: 60
   _damage: 2
-  _fireRate: 2
+  _attackInterval: 1.8
+  _attackRange: 3
   _defense: 3
   _moveSpeed: 1.5
   Score: 8

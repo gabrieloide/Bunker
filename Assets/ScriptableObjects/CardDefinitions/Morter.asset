@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 115fa7d754db769479a1e6623712d4d3, type: 3}
+  m_Name: Morter
+  m_EditorClassIdentifier: Assembly-CSharp::ArtilleryTowerCardDefinition
+  displayName: Morter
+  description: 
+  handPrefab: {fileID: -652577218635365887, guid: b7953ad7a4b0f9443a7f96d2d8ddd462, type: 3}
+  placedPrefab: {fileID: 4918984512011459238, guid: 741ef0040776d6541a47680d8fc98763, type: 3}
+  dropWeight: 10
+  life: 85
+  damage: 14
+  bulletPen: 2
+  fireRate: 0.4
+  burstCount: 1
+  burstInterval: 0.12
+  range: 6
+  initialCooldown: 1.5
+  splashRadius: 1.25
+  riseTime: 0.45
+  fallTime: 0.55
+  height: 9

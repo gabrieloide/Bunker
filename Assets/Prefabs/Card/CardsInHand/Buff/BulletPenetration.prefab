@@ -55,6 +55,7 @@ MonoBehaviour:
   objectLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  definition: {fileID: 11400000, guid: 72b0b77ae75ede74398da3b3661acaf7, type: 2}
   towerData: {fileID: 11400000, guid: c4ade0279fe4086458d2d409326576a7, type: 2}
   defaultCard: {fileID: 21300000, guid: 4f410d0595adbc247b777ebb6ab9023a, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}

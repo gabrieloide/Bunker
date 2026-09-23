@@ -3,7 +3,7 @@ using UnityEngine;
 public class CardDrop : MonoBehaviour
 {
     public static CardDrop instance;
-    public Queue<int> cardsQueue = new Queue<int>();
+    public Queue<CardDefinition> cardsQueue = new Queue<CardDefinition>();
     public float posInCamera, posOutCamera;
     [SerializeField] RectTransform deckSliceAnimation;
     [SerializeField] GameObject DeckGameObject;

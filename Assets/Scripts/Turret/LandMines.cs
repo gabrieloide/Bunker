@@ -1,12 +1,19 @@
 using UnityEngine;
 
-public class LandMines : MonoBehaviour
+public class LandMines : MonoBehaviour, ICardConfigurable
 {
     [SerializeField] AK.Wwise.Event ExplotionLandMine;
-    public TowersData LandMineData;
     [SerializeField] GameObject ExplosionParticle;
-    [SerializeField] float damage;
-    [SerializeField] float penArmor;
+
+    // LEGACY: moved to LandMineCardDefinition, dropped after migration
+    [HideInInspector][SerializeField] float damage;
+    [HideInInspector][SerializeField] float penArmor;
+    public float LegacyDamage => damage;
+    public float LegacyPenArmor => penArmor;
+
+    LandMineCardDefinition definition;
+
+    public void Configure(CardDefinition card) => definition = card as LandMineCardDefinition;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -15,7 +22,10 @@ public class LandMines : MonoBehaviour
             //Explosion de mina de tierra
             ExplotionLandMine.Post(gameObject);
             Instantiate(ExplosionParticle, transform.position, Quaternion.identity);
-            collision.GetComponent<Enemy>().Damage(damage, penArmor, gameObject);
+            if (definition != null)
+                collision.GetComponent<Enemy>().Damage(definition.damage, definition.bulletPen, gameObject);
+            else
+                Debug.LogWarning($"[LandMines] {name} was placed without a LandMineCardDefinition; no damage dealt.", this);
             Destroy(gameObject);
         }
     }
