@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4a83ec35221a9746b624d93e0a611a5, type: 3}
+  m_Name: Sniper
+  m_EditorClassIdentifier: Assembly-CSharp::TowerCardDefinition
+  displayName: Sniper
+  description: lorem
+  handPrefab: {fileID: 3708226502008462382, guid: 9f25c04d807549046b5a71e419d59d0e, type: 3}
+  placedPrefab: {fileID: 1065562097503117305, guid: 54cd5a6ddd80eaa43b2bcae8a5dfa3fe, type: 3}
+  dropWeight: 10
+  life: 60
+  damage: 30
+  bulletPen: 12
+  fireRate: 0.45
+  burstCount: 1
+  burstInterval: 0.12
+  range: 7
+  initialCooldown: 1.5

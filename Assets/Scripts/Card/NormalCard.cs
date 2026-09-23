@@ -8,6 +8,6 @@ public class NormalCard : Card
 
     protected override void CardBehaviour()
     {
-        SpawnPlacement(towerData.CardToInstantiate);
+        SpawnPlacement();
     }
 }

@@ -1,19 +1,17 @@
 using UnityEngine;
 
-// Authoring + presentation base for path-walking NPCs. Movement and attacks run in Bunker.Simulation.
+// Presentation base for path-walking NPCs. Stats live in EnemyData; movement and attacks run in Bunker.Simulation.
 public class NPCBehaviour : MonoBehaviour
 {
     [Header("Sound")]
     [SerializeField] protected AK.Wwise.Event shoot;
     [SerializeField] protected AK.Wwise.Event destroy;
-    [Space]
 
-    [Range(3, 20)][SerializeField] float radius;
-    [SerializeField] protected float FireRate;
-    public float fireRateCountDown;
-
-    public float AttackRadius => radius;
-    public float FireInterval => FireRate;
+    // LEGACY: moved to EnemyData, dropped after migration
+    [HideInInspector][SerializeField] float radius;
+    [HideInInspector][SerializeField] protected float FireRate;
+    public float LegacyAttackRadius => radius;
+    public float LegacyFireInterval => FireRate;
 
     public void OnFired()
     {

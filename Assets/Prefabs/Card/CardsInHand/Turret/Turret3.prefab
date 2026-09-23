@@ -55,6 +55,7 @@ MonoBehaviour:
   objectLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  definition: {fileID: 11400000, guid: 963dcd4807a6d6047b8a1730cca2a3f1, type: 2}
   towerData: {fileID: 11400000, guid: a0c76e6385f8db243b27d9ea6d11d7e0, type: 2}
   defaultCard: {fileID: 21300000, guid: 8f3148d80efb9644698fa86178fac5db, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
@@ -64,6 +65,7 @@ MonoBehaviour:
   CardFlipAnim: {fileID: 546763863824955450, guid: 3b92ffc65c6fa9f489d039d89530410a, type: 3}
   uiHoverHeight: 16
   dragThreshold: 20
+  dragPointerGap: 4
 --- !u!114 &82753302256148822
 MonoBehaviour:
   m_ObjectHideFlags: 0
