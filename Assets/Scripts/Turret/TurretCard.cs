@@ -10,7 +10,12 @@ public abstract class TurretCard : TurretStats, IDamageable
 
     [Space]
     [SerializeField] public float fireRateCountDown = 0f;
+    [Tooltip("Bursts per second (the rest between bursts); plain shots per second when Burst Count is 1")]
     [SerializeField] float fireRate = 0;
+    [Tooltip("Quick shots per burst (PvZ Threepeater style); 1 = no burst")]
+    [Min(1)][SerializeField] int burstCount = 1;
+    [Tooltip("Seconds between the shots inside a burst")]
+    [Min(0.02f)][SerializeField] float burstInterval = 0.12f;
 
     [Range(3, 20)][SerializeField] protected float range = 3f;
     [SerializeField] protected GameObject BulletParticle;
@@ -22,6 +27,8 @@ public abstract class TurretCard : TurretStats, IDamageable
 
     public Entity Entity { get; set; }
     public float FireRate => fireRate;
+    public int BurstCount => burstCount;
+    public float BurstInterval => burstInterval;
     public float Range => range;
     public virtual Vector3 MuzzlePosition => transform.position;
 

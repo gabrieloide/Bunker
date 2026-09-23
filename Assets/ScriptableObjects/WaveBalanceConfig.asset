@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad2ca9a1a96df82458fb469e36b56ba9, type: 3}
   m_Name: WaveBalanceConfig
   m_EditorClassIdentifier: Assembly-CSharp::WaveBalanceConfig
-  wavesPerTier: 10
+  wavesPerTier: 3
   initialUnlockedTypes: 2
   maxUnlockedTypes: 9
-  amountIncreasePerTier: 5
+  amountIncreasePerTier: 2
+  lifeGrowthPerWave: 0.1
+  bossEveryWaves: 10
+  bossTypeIndex: 9
   weightNormal: 60
   weightAttack: 13
   weightDefense: 7

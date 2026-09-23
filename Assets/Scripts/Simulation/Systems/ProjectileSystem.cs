@@ -42,6 +42,7 @@ namespace Bunker.Simulation
             }
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
+            var defenseLookup = SystemAPI.GetComponentLookup<Defense>(true);
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -81,7 +82,10 @@ namespace Bunker.Simulation
                         Source = entity,
                         Target = candidates[i],
                         Position = pos,
-                        Amount = p.Damage,
+                        // What the target actually loses, so the floating number matches the health bar
+                        Amount = defenseLookup.TryGetComponent(candidates[i], out var defense)
+                            ? BalanceMath.EnemyDamageTaken(p.Damage, p.BulletPen, defense.Value)
+                            : p.Damage,
                         IntValue = (int)p.TargetFaction
                     });
                     ecb.DestroyEntity(entity);

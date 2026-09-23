@@ -73,7 +73,7 @@ MonoBehaviour:
   buffEffect: {fileID: 4536432326096709570, guid: d68101c8d4269444491abfb338a772c2, type: 3}
   buffEffectTint: {r: 1, g: 1, b: 1, a: 1}
   buffType: 2
-  multiplierStat: 1.26
+  multiplierStat: 6
 --- !u!114 &-4628754941117444515
 MonoBehaviour:
   m_ObjectHideFlags: 0
