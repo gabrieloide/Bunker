@@ -56,7 +56,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   definition: {fileID: 11400000, guid: 8422cac2b8b8ed042ad044519c5b342d, type: 2}
-  towerData: {fileID: 11400000, guid: 18851507d67fa8142b9a12bdd38ada03, type: 2}
   defaultCard: {fileID: 21300000, guid: f7d62bc5cb6bfcf4cb4a7aef2ef080f1, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
   offset: {x: 0, y: -2.1, z: 0}
@@ -73,8 +72,6 @@ MonoBehaviour:
   BuffSprite: {fileID: 715794629563247394, guid: 050e6b00469ad4b4abaadf8cc5a44dad, type: 3}
   buffEffect: {fileID: 4536432326096709570, guid: d68101c8d4269444491abfb338a772c2, type: 3}
   buffEffectTint: {r: 1, g: 1, b: 1, a: 1}
-  buffType: 1
-  multiplierStat: 1.5
 --- !u!114 &-4759238867510822675
 MonoBehaviour:
   m_ObjectHideFlags: 0

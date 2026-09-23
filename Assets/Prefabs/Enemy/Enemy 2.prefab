@@ -117,9 +117,6 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  radius: 3
-  FireRate: 1.8
-  fireRateCountDown: 0
   Data: {fileID: 11400000, guid: 2f618eeca13dcf443abe63b66b48864e, type: 2}
   hitParticle: {fileID: 7913869517764351135}
   explosionParticle: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}

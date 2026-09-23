@@ -7,11 +7,6 @@ public class EnemySpawner : MonoBehaviour
     public static EnemySpawner instance;
     public GameObject[] Enemies;
 
-    // LEGACY: moved to WaveBalanceConfig, dropped after migration
-    [HideInInspector] public float StartEnemySpawner;
-    [HideInInspector] public float EnemyDelay;
-    [HideInInspector] public int EnemyAmount = 15;
-
     private void Awake()
     {
         if (!instance)

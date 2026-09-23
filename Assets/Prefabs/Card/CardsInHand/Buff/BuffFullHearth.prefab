@@ -56,7 +56,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   definition: {fileID: 11400000, guid: 1ef9f7f520ab32f4bb76eec8675f82ef, type: 2}
-  towerData: {fileID: 11400000, guid: e0539bb893bb35f439be7cba689cb18c, type: 2}
   defaultCard: {fileID: 21300000, guid: 9735567277ea5b344b29d5ae54f313ea, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
   offset: {x: 0, y: -0.5, z: 0}
@@ -66,7 +65,6 @@ MonoBehaviour:
   uiHoverHeight: 16
   dragThreshold: 20
   dragPointerGap: 4
-  healthRestore: 50
 --- !u!114 &-3690923982419404029
 MonoBehaviour:
   m_ObjectHideFlags: 0

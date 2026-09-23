@@ -247,14 +247,6 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  damage: 7
-  bulletPen: 2
-  Life: 140
-  fireRateCountDown: 1.5
-  fireRate: 1.4
-  burstCount: 3
-  burstInterval: 0.12
-  range: 3.9
   BulletParticle: {fileID: 8681464871039516000}
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 1.39
