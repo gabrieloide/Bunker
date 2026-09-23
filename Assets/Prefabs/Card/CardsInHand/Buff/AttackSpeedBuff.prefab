@@ -64,11 +64,14 @@ MonoBehaviour:
   CardFlipAnim: {fileID: 546763863824955450, guid: 3b92ffc65c6fa9f489d039d89530410a, type: 3}
   uiHoverHeight: 16
   dragThreshold: 20
+  dragPointerGap: 4
   buffSound:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
   BuffSprite: {fileID: 715794629563247394, guid: 050e6b00469ad4b4abaadf8cc5a44dad, type: 3}
+  buffEffect: {fileID: 4536432326096709570, guid: d68101c8d4269444491abfb338a772c2, type: 3}
+  buffEffectTint: {r: 1, g: 1, b: 1, a: 1}
   buffType: 1
   multiplierStat: 1.65
 --- !u!114 &-4759238867510822675

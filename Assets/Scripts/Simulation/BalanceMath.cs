@@ -10,6 +10,29 @@ namespace Bunker.Simulation
             return math.max(0f, damage - (bulletPen - defense));
         }
 
+        // Where a path follower will be after `time` seconds, walking its remaining waypoints at constant speed
+        public static float3 PredictAlongPath(float3 position, int nextIndex, DynamicBuffer<PathPoint> path, float speed, float time)
+        {
+            float remaining = speed * time;
+            while (nextIndex < path.Length && remaining > 0f)
+            {
+                float3 next = path[nextIndex].Value;
+                float d = math.distance(position, next);
+                if (d >= remaining)
+                    return position + (next - position) / d * remaining;
+                remaining -= d;
+                position = next;
+                nextIndex++;
+            }
+            return position;
+        }
+
+        public static bool CircleOverlapsBox(float2 center, float radius, float2 boxCenter, float2 halfExtents)
+        {
+            float2 closest = math.clamp(center, boxCenter - halfExtents, boxCenter + halfExtents);
+            return math.lengthsq(center - closest) <= radius * radius;
+        }
+
         public static bool ShouldUnlockTier(int completedWave, int wavesPerTier, int unlockedTypes, int maxUnlockedTypes)
         {
             return completedWave % wavesPerTier == 0 && unlockedTypes < maxUnlockedTypes;

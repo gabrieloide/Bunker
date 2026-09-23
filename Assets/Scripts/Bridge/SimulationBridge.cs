@@ -39,6 +39,15 @@ public class SimulationBridge : MonoBehaviour
 
     enum LocalViewKind { Tower = 100 }
 
+    // Entities can't hold GameObject refs: artillery towers register their visuals here and carry the index
+    struct ArtilleryVisuals
+    {
+        public ArtilleryShellView Shell;
+        public GameObject ImpactEffect;
+        public AK.Wwise.Event ImpactSound;
+    }
+    readonly List<ArtilleryVisuals> artilleryVisuals = new List<ArtilleryVisuals>();
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -263,6 +272,17 @@ public class SimulationBridge : MonoBehaviour
             TargetFaction = Faction.Enemy,
             HasBuff = false
         });
+        if (view.TryGetComponent(out ArtilleryAuthoring artillery))
+        {
+            em.AddComponentData(entity, new Artillery
+            {
+                RiseTime = artillery.riseTime,
+                FallTime = artillery.fallTime,
+                Height = artillery.height,
+                SplashRadius = artillery.splashRadius,
+                ViewId = RegisterArtillery(artillery)
+            });
+        }
         em.AddComponentData(entity, new Target { Value = Entity.Null });
         em.AddBuffer<DamageRequest>(entity);
         em.AddBuffer<TowerBuffRequest>(entity);
@@ -270,6 +290,41 @@ public class SimulationBridge : MonoBehaviour
         card.Entity = entity;
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
         return view;
+    }
+
+    int RegisterArtillery(ArtilleryAuthoring artillery)
+    {
+        for (int i = 0; i < artilleryVisuals.Count; i++)
+        {
+            if (artilleryVisuals[i].Shell == artillery.shellPrefab && artilleryVisuals[i].ImpactEffect == artillery.impactEffect)
+                return i;
+        }
+        artilleryVisuals.Add(new ArtilleryVisuals
+        {
+            Shell = artillery.shellPrefab,
+            ImpactEffect = artillery.impactEffect,
+            ImpactSound = artillery.impactSound
+        });
+        return artilleryVisuals.Count - 1;
+    }
+
+    GameObject SpawnShellView(Entity entity, int viewId, Vector3 position)
+    {
+        if (viewId < 0 || viewId >= artilleryVisuals.Count || artilleryVisuals[viewId].Shell == null) return null;
+        var shell = em.GetComponentData<ArtilleryShell>(entity);
+        var view = Instantiate(artilleryVisuals[viewId].Shell, position, Quaternion.identity);
+        view.Init(shell.Origin, shell.Impact, shell.Height, shell.SplashRadius);
+        return view.gameObject;
+    }
+
+    void PlayShellImpact(int viewId, Vector3 position)
+    {
+        if (viewId < 0 || viewId >= artilleryVisuals.Count) return;
+        var visuals = artilleryVisuals[viewId];
+        if (visuals.ImpactEffect == null) return;
+        var fx = Instantiate(visuals.ImpactEffect, position, Quaternion.identity);
+        if (visuals.ImpactSound != null && visuals.ImpactSound.IsValid())
+            visuals.ImpactSound.Post(fx);
     }
 
     public void SpawnTowerProjectile(Vector3 origin, Vector3 aimPoint, float damage, float bulletPen)
@@ -356,10 +411,7 @@ public class SimulationBridge : MonoBehaviour
                     if (viewRegistry.TryGetView(ev.Target, out var hitView) && hitView.Enemy != null)
                         hitView.Enemy.OnHit();
                     if ((Faction)ev.IntValue == Faction.Enemy)
-                    {
                         ShowDamageText(ev.Position, ev.Amount);
-                        CameraShake.MicroShake();
-                    }
                     break;
 
                 case SimEventKind.EnemyDied:
@@ -369,7 +421,6 @@ public class SimulationBridge : MonoBehaviour
                             Instantiate(deadView.Enemy.ExplosionParticle, (Vector3)ev.Position, Quaternion.identity);
                         deadView.Enemy.OnDied();
                     }
-                    CameraShake.MediumShake();
                     if (lootBag != null) lootBag.InstantiateLoot();
                     break;
 
@@ -384,7 +435,12 @@ public class SimulationBridge : MonoBehaviour
 
                 case SimEventKind.PlayerHit:
                     if (player != null) player.TakeHit(ev.Amount, ev.IntValue);
+                    // Only damage to the bunker shakes the camera; combat hits and kills stay still
                     CameraShake.HeavyShake();
+                    break;
+
+                case SimEventKind.ShellImpact:
+                    PlayShellImpact(ev.IntValue, ev.Position);
                     break;
 
                 case SimEventKind.WaveChanged:
@@ -426,11 +482,14 @@ public class SimulationBridge : MonoBehaviour
                 case ViewKind.EnemyProjectile:
                     view = pool.EnemyShoot();
                     break;
+                case ViewKind.ArtilleryShell:
+                    view = SpawnShellView(entity, request.PrefabId, position);
+                    break;
             }
 
             if (view == null) continue;
 
-            if (request.Kind != ViewKind.Enemy)
+            if (request.Kind == ViewKind.TowerProjectile || request.Kind == ViewKind.EnemyProjectile)
             {
                 ViewRegistry.MakeKinematic(view);
                 var velocity = em.GetComponentData<Projectile>(entity).Velocity;

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -26,6 +27,8 @@ public abstract class Card : MonoBehaviour,
 
     [SerializeField] float uiHoverHeight = 16f;
     [SerializeField] float dragThreshold = 20f;
+    [Tooltip("Gap between the pointer and the dragged card's bottom edge, in canvas units, so the placement preview stays visible")]
+    [SerializeField] float dragPointerGap = 4f;
 
     float currentTiltAngle = 0f;
     bool isDragging = false;
@@ -33,7 +36,11 @@ public abstract class Card : MonoBehaviour,
     Vector2 baseAnchoredPos;
     Vector2 dragStartScreenPos;
 
-    public virtual Vector3 GetRaycastOrigin()
+    // Cards that place an object on the map snap its footprint (origin + offset) to a grid cell
+    protected virtual bool SnapsToGrid => false;
+    bool UseGrid => SnapsToGrid && PlacementGrid.Available;
+
+    protected Vector3 PointerWorld()
     {
         if (Camera.main == null) return transform.position;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -41,10 +48,68 @@ public abstract class Card : MonoBehaviour,
         return worldPos;
     }
 
-    protected virtual RaycastHit2D DetectObjectsBelow()
+    Vector3Int FootprintCell() => PlacementGrid.WorldToCell(PointerWorld() + offset);
+
+    public virtual Vector3 GetRaycastOrigin()
     {
-        return Physics2D.BoxCast(GetRaycastOrigin() + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, objectLayerMask);
+        if (!UseGrid) return PointerWorld();
+        return PlacementGrid.CellCenter(FootprintCell()) - offset;
     }
+
+    // Snapped footprint is shrunk below one cell so it never touches neighbouring cells
+    protected RaycastHit2D CastFootprint(LayerMask mask)
+    {
+        Vector2 size = UseGrid ? PlacementGrid.CellSize * 0.9f : new Vector2(width, height);
+        float distance = UseGrid ? 0f : 0.1f;
+        return Physics2D.BoxCast(GetRaycastOrigin() + offset, size, 0f, Vector2.down, distance, mask);
+    }
+
+    protected virtual RaycastHit2D DetectObjectsBelow() => CastFootprint(objectLayerMask);
+
+    // Captured on drop: placement resolves after the flip animation, when the pointer may have moved
+    Vector3 dropOrigin;
+    Vector3Int dropCell;
+
+    protected GameObject SpawnPlacement(GameObject prefab)
+    {
+        GameObject spawned = SimulationBridge.SpawnFromCard(prefab, dropOrigin);
+        if (UseGrid)
+            PlacementGrid.Occupy(dropCell, spawned);
+        return spawned;
+    }
+
+    // Where the drag preview goes; false hides it (e.g. a buff with no valid target under the pointer).
+    // Grid cards mark the footprint cell; free cards mark the pointer.
+    protected virtual bool TryGetPreviewPosition(out Vector3 position)
+    {
+        position = UseGrid ? PlacementGrid.CellCenter(FootprintCell()) : PointerWorld();
+        return true;
+    }
+
+    // How far the preview can reach above the pointer, so the dragged card never covers it
+    protected virtual float PreviewClearance => UseGrid ? Mathf.Max(0f, PlacementGrid.CellSize.y + offset.y) : 0f;
+
+    void UpdatePlacementPreview()
+    {
+        if (!isDragging || UIManager.instance == null || UIManager.instance.TowerSlotAnimation == null)
+            return;
+
+        bool visible = TryGetPreviewPosition(out Vector3 target);
+        UIManager.instance.ShowTowerSlot = visible;
+        if (visible)
+            UIManager.instance.TowerSlotAnimation.transform.position = target - UIManager.instance.offset;
+
+        // Towers aim from their pivot (footprint origin), not from the footprint cell
+        if (visible && PlacedRange > 0f)
+            RangeIndicator.Show(GetRaycastOrigin(), PlacedRange);
+        else
+            RangeIndicator.Hide();
+    }
+
+    // Attack range of the tower this card places; 0 when it places nothing that shoots
+    float PlacedRange =>
+        SnapsToGrid && towerData != null && towerData.CardToInstantiate != null
+        && towerData.CardToInstantiate.TryGetComponent(out TurretCard turret) ? turret.Range : 0f;
 
     protected virtual void Awake()
     {
@@ -62,6 +127,14 @@ public abstract class Card : MonoBehaviour,
     {
         dc = Deck.instance != null ? Deck.instance : FindAnyObjectByType<Deck>();
         showCard();
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (UIManager.instance != null)
+            UIManager.instance.HideCardBox(this);
+        if (isDragging)
+            RangeIndicator.Hide();
     }
 
     // ------------------------------------------------ UI EventSystem Handlers
@@ -99,8 +172,8 @@ public abstract class Card : MonoBehaviour,
         if (originalParent != null)
             transform.SetSiblingIndex(index());
 
-        if (UIManager.instance != null && UIManager.instance.cardInstantiate != null)
-            Destroy(UIManager.instance.cardInstantiate);
+        if (UIManager.instance != null)
+            UIManager.instance.HideCardBox(this);
     }
 
     LTDescr TweenAnchoredY(float targetY, float time)
@@ -117,7 +190,7 @@ public abstract class Card : MonoBehaviour,
         {
             if (UIManager.instance != null && towerData != null && GameManager.instance != null && !GameManager.instance.onDrag)
             {
-                UIManager.instance.ShowCardBox(towerData.Name, towerData.Description, transform.position, GameManager.instance.onDrag);
+                UIManager.instance.ToggleCardBox(this, towerData.Name, towerData.Description);
             }
         }
     }
@@ -142,12 +215,12 @@ public abstract class Card : MonoBehaviour,
         if (UIManager.instance != null)
         {
             UIManager.instance.ShowTowerSlot = true;
-            if (UIManager.instance.cardInstantiate != null)
-                Destroy(UIManager.instance.cardInstantiate);
+            UIManager.instance.HideCardBox(this);
 
             if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
                 UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
         }
+        UpdatePlacementPreview();
 
         originalParent = transform.parent;
         Canvas rootCanvas = GetComponentInParent<Canvas>();
@@ -161,7 +234,7 @@ public abstract class Card : MonoBehaviour,
         if (!isDragging) return;
 
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
-            transform.position = worldPoint;
+            transform.position = worldPoint + DragLift();
         else
             transform.position = eventData.position;
 
@@ -171,14 +244,18 @@ public abstract class Card : MonoBehaviour,
         currentTiltAngle = Mathf.Lerp(currentTiltAngle, targetAngle, Time.deltaTime * 18f);
         transform.rotation = Quaternion.Euler(0f, 0f, currentTiltAngle);
 
-        // Update world placement preview indicator
-        if (UIManager.instance != null && UIManager.instance.ShowTowerSlot && Camera.main != null)
-        {
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(eventData.position);
-            worldPos.z = 0f;
-            if (UIManager.instance.TowerSlotAnimation != null)
-                UIManager.instance.TowerSlotAnimation.transform.position = worldPos - UIManager.instance.offset;
-        }
+        UpdatePlacementPreview();
+    }
+
+    // Card floats above the pointer (bottom edge + gap) so the tile under the pointer is not covered
+    Vector3 DragLift()
+    {
+        Transform canvasSpace = transform.parent != null ? transform.parent : transform;
+        float canvasUnits = rectTransform.rect.height * rectTransform.pivot.y * transform.localScale.y + dragPointerGap;
+        Vector3 lift = canvasSpace.TransformVector(Vector3.up * canvasUnits);
+        // Constant clearance (not per-cell) so the card doesn't jump while the preview snaps
+        lift.y += PreviewClearance;
+        return lift;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -198,6 +275,7 @@ public abstract class Card : MonoBehaviour,
 
         if (UIManager.instance != null)
             UIManager.instance.ShowTowerSlot = false;
+        RangeIndicator.Hide();
 
         var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
         bool isTrash = (trash != null && (trash.hit2D || trash.IsPointerOver()));
@@ -222,7 +300,7 @@ public abstract class Card : MonoBehaviour,
         Vector3 worldDropPos = GetRaycastOrigin();
         // Measured in screen space: anchoredPosition is relative to the root canvas while dragging, not the slot
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
-        bool hasObstacle = DetectObjectsBelow();
+        bool hasObstacle = DetectObjectsBelow() || (UseGrid && PlacementGrid.IsOccupied(FootprintCell()));
 
         if (!hasObstacle && d > dragThreshold)
         {
@@ -232,19 +310,41 @@ public abstract class Card : MonoBehaviour,
             if (GameManager.instance != null)
                 GameManager.instance.CurrentCardAmount--;
 
+            dropOrigin = worldDropPos;
+            dropCell = UseGrid ? FootprintCell() : default;
+
+            float flipDuration = 0f;
             if (CardFlipAnim != null)
             {
-                GameObject c = Instantiate(CardFlipAnim, worldDropPos, Quaternion.identity);
-                Destroy(c, 0.46f);
+                GameObject flip = Instantiate(CardFlipAnim, worldDropPos, Quaternion.identity);
+                if (flip.TryGetComponent(out OneShotEffect fx))
+                    flipDuration = fx.Duration;
+                else
+                    Destroy(flip, FallbackFlipDuration);
+                // The flip holds the cell until the real occupant takes it over, so nothing else drops there meanwhile
+                if (UseGrid)
+                    PlacementGrid.Occupy(dropCell, flip);
             }
 
-            CardBehaviour();
-            Destroy(gameObject);
+            StartCoroutine(ResolveAfter(flipDuration));
         }
         else
         {
             ReturnToSlot();
         }
+    }
+
+    const float FallbackFlipDuration = 0.46f;
+
+    // The card is already spent (slot freed, count decremented); it stays alive, hidden, only to run CardBehaviour once the flip ends
+    IEnumerator ResolveAfter(float delay)
+    {
+        canvasGroup.alpha = 0f;
+        canvasGroup.blocksRaycasts = false;
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+        CardBehaviour();
+        Destroy(gameObject);
     }
 
     protected void ReturnToSlot()

@@ -13,18 +13,57 @@ public class BuffCard : Card
     [SerializeField] AK.Wwise.Event buffSound;
     [Space]
     [SerializeField] GameObject BuffSprite;
+    [Tooltip("One-shot burst played on the tower (OneShotEffect prefab)")]
+    [SerializeField] GameObject buffEffect;
+    [SerializeField] Color buffEffectTint = Color.white;
     [SerializeField] BuffType buffType = BuffType.AttackBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Turret");
     [Range(1.1f, 3f)][SerializeField] float multiplierStat;
 
     TurretCard pendingTurret;
 
-    protected override RaycastHit2D DetectObjectsBelow() => Physics2D.BoxCast(GetRaycastOrigin() + offset, new Vector2(width, height), 0f, Vector2.down, 0.1f, NormalCardLM());
+    protected override RaycastHit2D DetectObjectsBelow() => CastFootprint(NormalCardLM());
+
+    // Towers are 1x2 with their occupied cell at the base, so the pointer may be over the base cell or the one above it
+    protected override float PreviewClearance => PlacementGrid.Available ? PlacementGrid.CellSize.y : 0f;
+
+    // Buffs don't snap: the preview jumps onto the targeted tower's cell and hides when nothing valid is under the pointer
+    protected override bool TryGetPreviewPosition(out Vector3 position)
+    {
+        TurretCard target = FindTarget(out position);
+        return target != null && !target.HaveBuff;
+    }
+
+    TurretCard FindTarget(out Vector3 previewPosition)
+    {
+        previewPosition = default;
+
+        if (!PlacementGrid.Available)
+        {
+            var hit = DetectObjectsBelow();
+            TurretCard turret = hit ? hit.collider.GetComponent<TurretCard>() : null;
+            if (turret != null) previewPosition = turret.transform.position;
+            return turret;
+        }
+
+        Vector3Int cell = PlacementGrid.WorldToCell(PointerWorld());
+        if (TryTurretAt(cell, out TurretCard found) || TryTurretAt(cell + Vector3Int.down, out found))
+        {
+            previewPosition = PlacementGrid.CellCenter(found.GetComponent<GridOccupant>().Cell);
+            return found;
+        }
+        return null;
+    }
+
+    static bool TryTurretAt(Vector3Int cell, out TurretCard turret)
+    {
+        turret = PlacementGrid.TryGetOccupant(cell, out GameObject occupant) ? occupant.GetComponent<TurretCard>() : null;
+        return turret != null;
+    }
 
     protected override void spawnCard()
     {
-        var hit = DetectObjectsBelow();
-        pendingTurret = hit ? hit.collider.gameObject.GetComponent<TurretCard>() : null;
+        pendingTurret = FindTarget(out _);
 
         if (pendingTurret != null && !pendingTurret.HaveBuff)
         {
@@ -43,8 +82,11 @@ public class BuffCard : Card
 
     protected override void CardBehaviour()
     {
-        pendingTurret.ShowBuffSprite(BuffSprite);
+        pendingTurret.ApplyBuff(BuffSprite, buffEffect, buffEffectTint);
         pendingTurret.HaveBuff = true;
+        // Posted on the tower: the card is destroyed this frame and would cut the sound
+        if (buffSound != null && buffSound.IsValid())
+            buffSound.Post(pendingTurret.gameObject);
         if (SimulationBridge.Instance != null)
             SimulationBridge.Instance.RequestBuff(pendingTurret.Entity, buffType, multiplierStat);
     }
