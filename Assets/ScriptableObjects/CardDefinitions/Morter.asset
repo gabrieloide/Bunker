@@ -25,6 +25,7 @@ MonoBehaviour:
   burstInterval: 0.12
   range: 6
   initialCooldown: 1.5
+  maxOnField: 0
   splashRadius: 1.25
   riseTime: 0.45
   fallTime: 0.55

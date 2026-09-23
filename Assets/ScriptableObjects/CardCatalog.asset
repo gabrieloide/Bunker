@@ -32,5 +32,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5615dfbfbad058343857b022a321302c, type: 2}
   - {fileID: 11400000, guid: 5615dfbfbad058343857b022a321302c, type: 2}
   - {fileID: 11400000, guid: 5615dfbfbad058343857b022a321302c, type: 2}
+  maxTowers: 8
   baseDropChance: 0.25
   dropChancePerMissingTenLife: 0.02

@@ -17,4 +17,6 @@ public class TowerCardDefinition : CardDefinition
     [Range(3f, 20f)] public float range = 3f;
     [Tooltip("Seconds before the first shot after being placed")]
     [Min(0f)] public float initialCooldown = 1.5f;
+    [Tooltip("Copies of this tower allowed on the map at once; 0 = only the catalog's global limit applies")]
+    [Min(0)] public int maxOnField = 0;
 }

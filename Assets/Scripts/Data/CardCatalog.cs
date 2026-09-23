@@ -10,6 +10,10 @@ public class CardCatalog : ScriptableObject
     [Tooltip("Dealt in this order when a run starts")]
     public List<CardDefinition> startingHand = new List<CardDefinition>();
 
+    [Header("Placement")]
+    [Tooltip("Towers allowed on the map at the same time; 0 = no limit. Each tower card can also set its own Max On Field")]
+    [Min(0)] public int maxTowers = 8;
+
     [Header("Kill drops")]
     [Tooltip("Chance that a kill drops a card at full bunker life")]
     [Range(0f, 1f)] public float baseDropChance = 0.25f;
