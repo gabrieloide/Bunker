@@ -11,7 +11,7 @@ namespace Bunker.Simulation
     // Same order as the game-side BuffType enum.
     public enum TowerBuffKind : byte { Attack = 0, Speed = 1, BulletPen = 2 }
 
-    public enum ViewKind : byte { Enemy = 0, TowerProjectile = 1, EnemyProjectile = 2 }
+    public enum ViewKind : byte { Enemy = 0, TowerProjectile = 1, EnemyProjectile = 2, ArtilleryShell = 3 }
 
     public enum WavePhase : byte { WaitingToStart = 0, Spawning = 1, WaitingForClear = 2 }
 
@@ -25,7 +25,8 @@ namespace Bunker.Simulation
         PlayerHit,
         WaveChanged,
         ScoreChanged,
-        GameOver
+        GameOver,
+        ShellImpact
     }
 
     public struct SimulationTag : IComponentData { }
@@ -84,6 +85,30 @@ namespace Bunker.Simulation
         public float3 Velocity;
         public float2 HalfExtents;
         public Faction TargetFaction;
+    }
+
+    // Tower lobs shells (straight up, then free fall onto the predicted impact) instead of firing straight projectiles
+    public struct Artillery : IComponentData
+    {
+        public float RiseTime;
+        public float FallTime;
+        public float Height;
+        public float SplashRadius;
+        public int ViewId;
+    }
+
+    public struct ArtilleryShell : IComponentData
+    {
+        public float3 Origin;
+        public float3 Impact;
+        public float Elapsed;
+        public float RiseTime;
+        public float FallTime;
+        public float Height;
+        public float Damage;
+        public float BulletPen;
+        public float SplashRadius;
+        public int ViewId;
     }
 
     public struct DamageRequest : IBufferElementData

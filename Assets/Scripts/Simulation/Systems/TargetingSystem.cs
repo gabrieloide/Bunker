@@ -42,6 +42,11 @@ namespace Bunker.Simulation
                 .CreateCommandBuffer(state.WorldUnmanaged);
             float dt = SystemAPI.Time.DeltaTime;
 
+            var artilleryLookup = SystemAPI.GetComponentLookup<Artillery>(true);
+            var followerLookup = SystemAPI.GetComponentLookup<PathFollower>(true);
+            var speedLookup = SystemAPI.GetComponentLookup<MoveSpeed>(true);
+            bool hasPath = SystemAPI.TryGetSingletonBuffer<PathPoint>(out var path, true);
+
             foreach (var (transform, weapon, target, entity) in
                      SystemAPI.Query<RefRO<LocalTransform>, RefRW<Weapon>, RefRW<Target>>()
                          .WithNone<AtPathEnd>()
@@ -77,6 +82,34 @@ namespace Bunker.Simulation
 
                 float3 origin = pos + w.MuzzleOffset;
                 float3 targetPos = candidatePositions[best];
+
+                if (artilleryLookup.TryGetComponent(entity, out var artillery))
+                {
+                    // Shells take a while to land: aim where the target will be, not where it is
+                    float3 impact = targetPos;
+                    if (hasPath && followerLookup.TryGetComponent(newTarget, out var follower) && speedLookup.TryGetComponent(newTarget, out var speed))
+                        impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, path, speed.Value, artillery.RiseTime + artillery.FallTime);
+
+                    var shell = ecb.CreateEntity();
+                    ecb.AddComponent(shell, LocalTransform.FromPosition(origin));
+                    ecb.AddComponent<SimulationTag>(shell);
+                    ecb.AddComponent(shell, new ArtilleryShell
+                    {
+                        Origin = origin,
+                        Impact = impact,
+                        RiseTime = artillery.RiseTime,
+                        FallTime = artillery.FallTime,
+                        Height = artillery.Height,
+                        Damage = w.Damage,
+                        BulletPen = w.BulletPen,
+                        SplashRadius = artillery.SplashRadius,
+                        ViewId = artillery.ViewId
+                    });
+                    ecb.AddComponent(shell, new NeedsView { Kind = ViewKind.ArtilleryShell, PrefabId = artillery.ViewId });
+
+                    events.Add(new SimEvent { Kind = SimEventKind.Fired, Source = entity, Target = newTarget, Position = impact });
+                    continue;
+                }
                 float3 dir = targetPos - origin;
                 float len = math.length(dir);
                 dir = len > 1e-5f ? dir / len : new float3(1f, 0f, 0f);
