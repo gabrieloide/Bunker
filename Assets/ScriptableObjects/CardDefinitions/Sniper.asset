@@ -25,3 +25,4 @@ MonoBehaviour:
   burstInterval: 0.12
   range: 7
   initialCooldown: 1.5
+  maxOnField: 0

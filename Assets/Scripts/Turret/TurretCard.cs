@@ -21,6 +21,9 @@ public abstract class TurretCard : TurretStats, IDamageable
     public float Range => Definition != null ? Definition.range : 0f;
     public virtual Vector3 MuzzlePosition => transform.position;
 
+    protected void Awake() => TowerLimits.Register(this);
+    protected void OnDestroy() => TowerLimits.Unregister(this);
+
     protected void Start()
     {
         if (TurretLifeSlider != null)

@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]public int CurrentCardAmount;
     [Tooltip("Starting hand is dealt from here")]
     [SerializeField] CardCatalog catalog;
+    public CardCatalog Catalog => catalog;
     private CardDrop cardDrop;
 
     private void Awake()

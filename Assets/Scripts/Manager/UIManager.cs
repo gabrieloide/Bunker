@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     public Texture2D cursorDefault, cursorTexture;
     [Space]
     public TMP_Text waveText, scoreText;
+    [Tooltip("Shows towers on the map / the limit; flashes when a drop is refused")]
+    public TMP_Text towerCountText;
     [Space]
     public bool ShowTowerSlot;
     public GameObject TowerSlotAnimation;
@@ -62,6 +64,8 @@ public class UIManager : MonoBehaviour
         SimEventDispatcher.OnWaveChanged += SetWave;
         SimEventDispatcher.OnPlayerHit += OnPlayerHit;
         SimEventDispatcher.OnBunkerHealed += OnBunkerHealed;
+        TowerLimits.Changed += UpdateTowerCount;
+        UpdateTowerCount();
     }
 
     private void OnDisable()
@@ -70,6 +74,29 @@ public class UIManager : MonoBehaviour
         SimEventDispatcher.OnWaveChanged -= SetWave;
         SimEventDispatcher.OnPlayerHit -= OnPlayerHit;
         SimEventDispatcher.OnBunkerHealed -= OnBunkerHealed;
+        TowerLimits.Changed -= UpdateTowerCount;
+    }
+
+    // OnEnable can run before GameManager.Awake, so the limit is read again once everything exists
+    void Start() => UpdateTowerCount();
+
+    void UpdateTowerCount()
+    {
+        if (towerCountText == null) return;
+        int max = GameManager.instance != null && GameManager.instance.Catalog != null ? GameManager.instance.Catalog.maxTowers : 0;
+        if (max > 0) towerCountText.SetText("Towers: {0}/{1}", TowerLimits.Count, max);
+        else towerCountText.SetText("Towers: {0}", TowerLimits.Count);
+    }
+
+    // Punch the counter so a refused tower drop has visible feedback
+    public void FlashTowerLimit()
+    {
+        if (towerCountText == null) return;
+        var go = towerCountText.gameObject;
+        LeanTween.cancel(go);
+        go.transform.localScale = Vector3.one;
+        LeanTween.scale(go, Vector3.one * 1.35f, 0.08f).setEaseOutQuad().setLoopPingPong(2);
+        CameraShake.MicroShake();
     }
 
     private void SetScore(int newScore, int delta)
