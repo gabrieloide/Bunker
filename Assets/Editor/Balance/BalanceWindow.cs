@@ -34,7 +34,7 @@ public class BalanceWindow : EditorWindow
         { Section.AirStrikes, new SectionInfo { Group = "CARDS", Title = "Air strikes", CardType = typeof(AirStrikeCardDefinition), Subtitle = "A plane crosses the screen and fires a volley." } },
         { Section.Enemies, new SectionInfo { Group = "ENEMIES", Title = "Enemies", Subtitle = "Roster order = unlock order (read from the open scene's EnemySpawner). DPS = damage ÷ shot interval." } },
         { Section.Waves, new SectionInfo { Group = "RULES", Title = "Waves", Subtitle = "Spawning, progression, bosses and the random enemy buff of each wave." } },
-        { Section.Loot, new SectionInfo { Group = "RULES", Title = "Loot & starting hand", Subtitle = "How often kills drop a card, which card comes out, and the hand you start with." } },
+        { Section.Loot, new SectionInfo { Group = "RULES", Title = "Loot, hand & limits", Subtitle = "How often kills drop a card, which card comes out, the hand you start with and how many towers fit on the map." } },
     };
 
     // Short headers; the field's tooltip is shown on hover
@@ -44,7 +44,7 @@ public class BalanceWindow : EditorWindow
         { "handPrefab", ("Hand prefab", 150) }, { "placedPrefab", ("Placed prefab", 150) },
         { "life", ("Life", 58) }, { "damage", ("Damage", 62) }, { "bulletPen", ("Pen", 50) },
         { "fireRate", ("Rate /s", 60) }, { "burstCount", ("Burst", 52) }, { "burstInterval", ("Burst gap", 70) },
-        { "range", ("Range", 56) }, { "initialCooldown", ("1st shot", 62) },
+        { "range", ("Range", 56) }, { "initialCooldown", ("1st shot", 62) }, { "maxOnField", ("Max", 50) },
         { "splashRadius", ("Splash", 60) }, { "riseTime", ("Rise", 56) }, { "fallTime", ("Fall", 56) }, { "height", ("Apex", 56) },
         { "buffType", ("Stat", 130) }, { "amount", ("Amount", 70) }, { "healAmount", ("Heal", 70) },
         { "shotCount", ("Shots", 60) }, { "shotInterval", ("Shot gap", 70) },
@@ -378,6 +378,10 @@ public class BalanceWindow : EditorWindow
         liveCells.Add(example);
         chance.Add(example);
         scroll.Add(chance);
+
+        var limit = Panel("Tower limit", "Towers allowed on the map at once (0 = no limit). A tower card can also cap its own copies with the Max column in Towers / Artillery.");
+        limit.Add(Bound(new IntegerField("Max towers on the map"), so, "maxTowers"));
+        scroll.Add(limit);
 
         var table = Panel("Which card drops", "Type a Drop % and the other cards rescale to keep their proportions. Weight is the raw value behind it.");
         var actions = new VisualElement();

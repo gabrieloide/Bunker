@@ -306,8 +306,9 @@ public abstract class Card : MonoBehaviour,
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
         bool hasObstacle = DetectObjectsBelow() || (UseGrid && PlacementGrid.IsOccupied(FootprintCell()));
 
-        if (!hasObstacle && d > dragThreshold)
+        if (!hasObstacle && d > dragThreshold && AllowPlacement())
         {
+            OnPlacementAccepted();
             CameraShake.MicroShake();
             if (dc != null && index() < dc.availableCardSlots.Length)
                 dc.availableCardSlots[index()] = true;
@@ -337,6 +338,11 @@ public abstract class Card : MonoBehaviour,
             ReturnToSlot();
         }
     }
+
+    // Last say before a drop is accepted (e.g. the tower limit); false sends the card back to the hand
+    protected virtual bool AllowPlacement() => true;
+    // The drop is accepted; CardBehaviour runs after the flip animation
+    protected virtual void OnPlacementAccepted() { }
 
     const float FallbackFlipDuration = 0.46f;
 
