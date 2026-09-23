@@ -2,22 +2,13 @@ using System.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-// Authoring + presentation for a tower. Stats are read once by SimulationBridge when the
-// entity is created; combat logic lives in Bunker.Simulation.
+// Presentation for a tower. Stats come from the TowerCardDefinition that spawned it (set by
+// SimulationBridge before Start); combat logic lives in Bunker.Simulation.
 public abstract class TurretCard : TurretStats, IDamageable
 {
-    public float Life;
+    // Mirrored from the simulation every frame; the life bar reads it. LEGACY: serialized only until migration
+    [HideInInspector] public float Life;
 
-    [Space]
-    [SerializeField] public float fireRateCountDown = 0f;
-    [Tooltip("Bursts per second (the rest between bursts); plain shots per second when Burst Count is 1")]
-    [SerializeField] float fireRate = 0;
-    [Tooltip("Quick shots per burst (PvZ Threepeater style); 1 = no burst")]
-    [Min(1)][SerializeField] int burstCount = 1;
-    [Tooltip("Seconds between the shots inside a burst")]
-    [Min(0.02f)][SerializeField] float burstInterval = 0.12f;
-
-    [Range(3, 20)][SerializeField] protected float range = 3f;
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
     [SerializeField] float TurretLifeSliderOffset;
@@ -25,11 +16,21 @@ public abstract class TurretCard : TurretStats, IDamageable
     [HideInInspector] public GameObject _BuffSpritePosition;
     [HideInInspector] public bool HaveBuff;
 
+    // LEGACY: moved to TowerCardDefinition, dropped after migration
+    [HideInInspector][SerializeField] float fireRateCountDown;
+    [HideInInspector][SerializeField] float fireRate;
+    [HideInInspector][SerializeField] int burstCount = 1;
+    [HideInInspector][SerializeField] float burstInterval = 0.12f;
+    [HideInInspector][SerializeField] float range = 3f;
+    public float LegacyFireRateCountDown => fireRateCountDown;
+    public float LegacyFireRate => fireRate;
+    public int LegacyBurstCount => burstCount;
+    public float LegacyBurstInterval => burstInterval;
+    public float LegacyRange => range;
+
     public Entity Entity { get; set; }
-    public float FireRate => fireRate;
-    public int BurstCount => burstCount;
-    public float BurstInterval => burstInterval;
-    public float Range => range;
+    public TowerCardDefinition Definition { get; set; }
+    public float Range => Definition != null ? Definition.range : 0f;
     public virtual Vector3 MuzzlePosition => transform.position;
 
     protected void Start()
@@ -43,7 +44,7 @@ public abstract class TurretCard : TurretStats, IDamageable
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, range);
+        Gizmos.DrawWireSphere(transform.position, Range);
     }
 
     public void Damage(float damage, float bulletPen, GameObject deactivateBullet)

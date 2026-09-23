@@ -16,10 +16,13 @@ public class BuffCard : Card
     [Tooltip("One-shot burst played on the tower (OneShotEffect prefab)")]
     [SerializeField] GameObject buffEffect;
     [SerializeField] Color buffEffectTint = Color.white;
-    [SerializeField] BuffType buffType = BuffType.AttackBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Turret");
-    [Tooltip("Attack / Speed: multiplier (e.g. 1.5). Bullet Pen: flat armor penetration added (e.g. 6)")]
-    [Min(0f)][SerializeField] float multiplierStat;
+
+    // LEGACY: moved to BuffCardDefinition, dropped after migration
+    [HideInInspector][SerializeField] BuffType buffType = BuffType.AttackBuff;
+    [HideInInspector][SerializeField] float multiplierStat;
+    public BuffType LegacyBuffType => buffType;
+    public float LegacyAmount => multiplierStat;
 
     TurretCard pendingTurret;
 
@@ -88,7 +91,7 @@ public class BuffCard : Card
         // Posted on the tower: the card is destroyed this frame and would cut the sound
         if (buffSound != null && buffSound.IsValid())
             buffSound.Post(pendingTurret.gameObject);
-        if (SimulationBridge.Instance != null)
-            SimulationBridge.Instance.RequestBuff(pendingTurret.Entity, buffType, multiplierStat);
+        if (SimulationBridge.Instance != null && definition is BuffCardDefinition buff)
+            SimulationBridge.Instance.RequestBuff(pendingTurret.Entity, buff.buffType, buff.amount);
     }
 }

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc8cb003257009a41b495000c527afd7, type: 3}
+  m_Name: BuffAttackSpeed
+  m_EditorClassIdentifier: Assembly-CSharp::BuffCardDefinition
+  displayName: Buff Attack Speed
+  description: Buff the attack speed of a card
+  handPrefab: {fileID: -4759238867510822675, guid: f70eb0f822558f6478c688f226f8bb19, type: 3}
+  placedPrefab: {fileID: 0}
+  dropWeight: 7
+  buffType: 1
+  amount: 1.5

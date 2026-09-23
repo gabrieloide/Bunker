@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
     public bool onDrag;
     public int ActualScore;
     [HideInInspector]public int CurrentCardAmount;
+    [Tooltip("Starting hand is dealt from here")]
+    [SerializeField] CardCatalog catalog;
     private CardDrop cardDrop;
 
     private void Awake()
@@ -30,12 +32,9 @@ public class GameManager : MonoBehaviour
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         }
 
-        AddCardToHand(3);
-        AddCardToHand(3);
-        AddCardToHand(3);
-        AddCardToHand(9);
-        AddCardToHand(9);
-        AddCardToHand(9);
+        if (catalog != null)
+            foreach (var card in catalog.startingHand)
+                AddCardToHand(card);
     }
 
     private void Update()
@@ -52,7 +51,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddCardToHand(int cardNumber)
+    public void AddCardToHand(CardDefinition card)
     {
         if (cardDrop == null)
         {
@@ -61,7 +60,7 @@ public class GameManager : MonoBehaviour
 
         if (cardDrop != null)
         {
-            cardDrop.cardsQueue.Enqueue(cardNumber);
+            cardDrop.cardsQueue.Enqueue(card);
         }
     }
 }

@@ -6,6 +6,6 @@ public class SpawnCardOnMouse : Card
 
     protected override void CardBehaviour()
     {
-        SpawnPlacement(towerData.CardToInstantiate);
+        SpawnPlacement();
     }
 }

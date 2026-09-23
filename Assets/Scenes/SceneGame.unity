@@ -728,6 +728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4496d61581f0385469e98e53ced8cb31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  catalog: {fileID: 11400000, guid: de13e7964c8fa1b48af5c8f6e110337c, type: 2}
   lootList:
   - {fileID: 11400000, guid: 1d07fe95b65120a4c83bc50124116b87, type: 2}
   - {fileID: 11400000, guid: 7aeac220f01418d41bd29392d344b63d, type: 2}
@@ -22518,9 +22519,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a014b254790fd94d89be4bd5f854f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartEnemySpawner: 5
-  EnemyDelay: 2
-  EnemyAmount: 10
   Enemies:
   - {fileID: 1452678203366704559, guid: 7048b45da0f66b24fa0639ec0c4add21, type: 3}
   - {fileID: 3682393951736515246, guid: e6ca98ca5ed1edb44be7b32bc90bc83f, type: 3}
@@ -22532,7 +22530,9 @@ MonoBehaviour:
   - {fileID: 1452678203366704559, guid: 6157b27a9c5ad344d9bd58633d63db1f, type: 3}
   - {fileID: 24249937453714612, guid: b08e6d05e16742c40b7505b45f7ce4a8, type: 3}
   - {fileID: 229963523825216096, guid: b82a68bf69065eb4fb6477d902263e62, type: 3}
-  enemiesAlive: 0
+  StartEnemySpawner: 5
+  EnemyDelay: 2
+  EnemyAmount: 10
 --- !u!1 &917504443
 GameObject:
   m_ObjectHideFlags: 0
@@ -41951,6 +41951,7 @@ MonoBehaviour:
   onDrag: 0
   ActualScore: 0
   CurrentCardAmount: 0
+  catalog: {fileID: 11400000, guid: de13e7964c8fa1b48af5c8f6e110337c, type: 2}
 --- !u!4 &1226819728
 Transform:
   m_ObjectHideFlags: 0

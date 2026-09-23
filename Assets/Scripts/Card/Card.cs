@@ -10,7 +10,9 @@ public abstract class Card : MonoBehaviour,
     IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] protected LayerMask objectLayerMask;
-    public TowersData towerData;
+    [Tooltip("Name, description, stats and drop weight of this card")]
+    public CardDefinition definition;
+    [HideInInspector] public TowersData towerData; // LEGACY: replaced by definition, dropped after migration
     [SerializeField] Sprite defaultCard, backCard;
 
     protected Deck dc;
@@ -70,9 +72,10 @@ public abstract class Card : MonoBehaviour,
     Vector3 dropOrigin;
     Vector3Int dropCell;
 
-    protected GameObject SpawnPlacement(GameObject prefab)
+    protected GameObject SpawnPlacement()
     {
-        GameObject spawned = SimulationBridge.SpawnFromCard(prefab, dropOrigin);
+        GameObject spawned = SimulationBridge.SpawnFromCard(definition, dropOrigin);
+        if (spawned == null) return null;
         if (UseGrid)
             PlacementGrid.Occupy(dropCell, spawned);
         return spawned;
@@ -107,9 +110,7 @@ public abstract class Card : MonoBehaviour,
     }
 
     // Attack range of the tower this card places; 0 when it places nothing that shoots
-    float PlacedRange =>
-        SnapsToGrid && towerData != null && towerData.CardToInstantiate != null
-        && towerData.CardToInstantiate.TryGetComponent(out TurretCard turret) ? turret.Range : 0f;
+    float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
 
     protected virtual void Awake()
     {
@@ -188,9 +189,9 @@ public abstract class Card : MonoBehaviour,
     {
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            if (UIManager.instance != null && towerData != null && GameManager.instance != null && !GameManager.instance.onDrag)
+            if (UIManager.instance != null && definition != null && GameManager.instance != null && !GameManager.instance.onDrag)
             {
-                UIManager.instance.ToggleCardBox(this, towerData.Name, towerData.Description);
+                UIManager.instance.ToggleCardBox(this, definition.displayName, definition.description);
             }
         }
     }

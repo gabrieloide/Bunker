@@ -3,6 +3,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "WaveBalanceConfig", menuName = "Bunker/Wave Balance Config")]
 public class WaveBalanceConfig : ScriptableObject
 {
+    [Header("Spawning")]
+    [Tooltip("Seconds before the first enemy of the run")]
+    [Min(0f)] public float startDelay = 3f;
+    [Tooltip("Seconds between two spawns inside a wave")]
+    [Min(0.05f)] public float spawnInterval = 1f;
+    [Tooltip("Enemies in the first wave")]
+    [Min(1)] public int initialEnemyAmount = 15;
+
     [Header("Wave progression")]
     public int wavesPerTier = 10;
     public int initialUnlockedTypes = 2;

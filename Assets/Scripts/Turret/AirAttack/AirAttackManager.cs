@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AirAttackManager : TurretStats
+public class AirAttackManager : TurretStats, ICardConfigurable
 {
     [SerializeField] AK.Wwise.Event PlaneSound;
     [SerializeField] AK.Wwise.Event PlaneShoot;
@@ -16,10 +16,16 @@ public class AirAttackManager : TurretStats
     [SerializeField] private float distance;
     private float diametroGO;
     Camera camera;
-    [SerializeField] float bulletSpeed;
-    [SerializeField] private float delayBtwBullets;
     [SerializeField] private float threshold;
     private Vector3 MousePosition;
+    AirStrikeCardDefinition definition;
+
+    // LEGACY: moved to AirStrikeCardDefinition, dropped after migration
+    [HideInInspector][SerializeField] private float delayBtwBullets;
+    public float LegacyShotInterval => delayBtwBullets;
+
+    public void Configure(CardDefinition card) => definition = card as AirStrikeCardDefinition;
+
     private void Start()
     {
         LaunchPlane();
@@ -62,10 +68,15 @@ public class AirAttackManager : TurretStats
     }
     IEnumerator bulletMovement(GameObject airPlanePos)
     {
-        for (int i = 0; i < 5; i++)
+        if (definition == null)
+        {
+            Debug.LogWarning($"[AirAttackManager] {name} was spawned without an AirStrikeCardDefinition; no shots fired.", this);
+            yield break;
+        }
+        for (int i = 0; i < definition.shotCount; i++)
         {
             Shoot(airPlanePos);
-            yield return new WaitForSeconds(delayBtwBullets);
+            yield return new WaitForSeconds(definition.shotInterval);
         }
     }
     void Shoot(GameObject airPlanePos)
@@ -77,6 +88,6 @@ public class AirAttackManager : TurretStats
         Vector3 origin = airPlanePos.transform.position;
         Vector3 fireDirection = new Vector3(1f, -1f, 0f).normalized;
         Vector3 aimPoint = origin + fireDirection * 15f;
-        SimulationBridge.Instance.SpawnTowerProjectile(origin, aimPoint, damage, bulletPen);
+        SimulationBridge.Instance.SpawnTowerProjectile(origin, aimPoint, definition.damage, definition.bulletPen);
     }
 }
