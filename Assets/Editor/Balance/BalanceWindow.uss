@@ -1,0 +1,301 @@
+.root {
+    flex-direction: row;
+    flex-grow: 1;
+    background-color: var(--unity-colors-window-background);
+}
+
+/* ------------------------------------------------ sidebar */
+
+.sidebar {
+    width: 190px;
+    flex-shrink: 0;
+    padding: 12px 8px;
+    background-color: var(--unity-colors-toolbar-background);
+    border-right-width: 1px;
+    border-right-color: var(--unity-colors-default-border);
+}
+
+.sidebar__title {
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin: 0 8px 14px 8px;
+}
+
+.sidebar__group {
+    font-size: 10px;
+    -unity-font-style: bold;
+    opacity: 0.55;
+    margin: 12px 8px 4px 8px;
+    letter-spacing: 1px;
+}
+
+.nav-item {
+    flex-direction: row;
+    align-items: center;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 4px;
+    margin-bottom: 1px;
+}
+
+.nav-item:hover {
+    background-color: var(--unity-colors-button-background-hover);
+}
+
+.nav-item--selected,
+.nav-item--selected:hover {
+    background-color: var(--unity-colors-highlight-background);
+}
+
+.nav-item__label {
+    flex-grow: 1;
+}
+
+.nav-item__count {
+    font-size: 10px;
+    opacity: 0.6;
+    padding: 1px 6px;
+    border-radius: 8px;
+    background-color: rgba(128, 128, 128, 0.18);
+}
+
+.nav-item__warn {
+    width: 7px;
+    height: 7px;
+    border-radius: 4px;
+    margin-left: 6px;
+    background-color: rgb(230, 170, 40);
+}
+
+/* ------------------------------------------------ content */
+
+.content {
+    flex-grow: 1;
+    padding: 14px 16px 10px 16px;
+}
+
+.header__title {
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.header__subtitle {
+    opacity: 0.65;
+    margin-top: 2px;
+    margin-bottom: 10px;
+    white-space: normal;
+}
+
+.toolbar {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.toolbar__search {
+    width: 220px;
+    margin-left: 0;
+}
+
+.toolbar__spacer {
+    flex-grow: 1;
+}
+
+.toolbar__button {
+    height: 22px;
+    padding: 0 10px;
+    margin-left: 6px;
+}
+
+.toolbar__toggle {
+    margin-left: 10px;
+}
+
+/* ------------------------------------------------ warnings */
+
+.warnings {
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border-left-width: 3px;
+    border-left-color: rgb(230, 170, 40);
+    background-color: rgba(230, 170, 40, 0.10);
+}
+
+.warnings__title {
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+
+.warning-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 1px 0;
+}
+
+.warning-row:hover {
+    opacity: 0.75;
+}
+
+.warning-row__icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------ table */
+
+.table {
+    flex-grow: 1;
+    border-width: 1px;
+    border-color: var(--unity-colors-default-border);
+    border-radius: 4px;
+}
+
+.cell {
+    margin: 0 2px;
+    height: 20px;
+    align-self: center;
+    flex-grow: 1;
+}
+
+.cell > .unity-base-field__input {
+    min-width: 0;
+}
+
+.cell--name {
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    padding-left: 6px;
+}
+
+.cell--name:hover {
+    color: var(--unity-colors-link-text);
+}
+
+.cell--derived {
+    -unity-text-align: middle-center;
+    opacity: 0.8;
+}
+
+.cell--muted {
+    opacity: 0.4;
+}
+
+.boss-badge {
+    font-size: 9px;
+    -unity-font-style: bold;
+    padding: 1px 5px;
+    margin-left: 6px;
+    border-radius: 6px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(190, 60, 60);
+}
+
+/* ------------------------------------------------ drop % cell */
+
+.drop {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 2px;
+}
+
+.drop__bar-track {
+    width: 48px;
+    height: 6px;
+    margin-right: 4px;
+    border-radius: 3px;
+    background-color: rgba(128, 128, 128, 0.2);
+    overflow: hidden;
+}
+
+.drop__bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background-color: rgb(80, 150, 230);
+}
+
+.drop__field {
+    flex-grow: 1;
+    margin: 0;
+}
+
+.drop__suffix {
+    opacity: 0.6;
+    margin-left: 2px;
+}
+
+/* ------------------------------------------------ panels (waves / loot) */
+
+.scroll {
+    flex-grow: 1;
+}
+
+.panel {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--unity-colors-default-border);
+    background-color: rgba(128, 128, 128, 0.05);
+}
+
+.panel__title {
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+
+.panel__hint {
+    opacity: 0.6;
+    margin-bottom: 8px;
+    white-space: normal;
+}
+
+.panel__row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.drop-table {
+    min-height: 260px;
+    margin-top: 6px;
+}
+
+/* Numbers centred in their cells, every input vertically centred */
+.cell--number .unity-base-text-field__input,
+.cell--number .unity-text-element {
+    -unity-text-align: middle-center;
+}
+
+.unity-multi-column-view__header .unity-multi-column-header__column {
+    justify-content: center;
+    align-items: center;
+}
+
+.unity-multi-column-view .unity-list-view__item {
+    justify-content: center;
+}
+
+.header-cell {
+    flex-grow: 1;
+    height: 100%;
+    padding: 0 6px;
+    -unity-font-style: bold;
+}
+
+/* Form panels: one label column so every input starts at the same x */
+.panel .unity-base-field {
+    max-width: 560px;
+    min-height: 20px;
+    align-items: center;
+}
+
+.panel .unity-base-field__label {
+    width: 210px;
+    min-width: 210px;
+    -unity-text-align: middle-left;
+}
