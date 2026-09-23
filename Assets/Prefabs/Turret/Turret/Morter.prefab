@@ -162,14 +162,6 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  damage: 14
-  bulletPen: 2
-  Life: 85
-  fireRateCountDown: 1.5
-  fireRate: 0.4
-  burstCount: 1
-  burstInterval: 0.12
-  range: 6
   BulletParticle: {fileID: 5863213635603048775, guid: 85692655cd3397947851eb9d07a05865, type: 3}
   TurretLifeSlider: {fileID: 5744714932135731043, guid: 0a4d6acc88c5b1f4481804105eca8407, type: 3}
   TurretLifeSliderOffset: 0.7
@@ -190,10 +182,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b76f00bd20fbcfd41be94a6809c49c50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArtilleryAuthoring
-  riseTime: 0.45
-  fallTime: 0.55
-  height: 9
-  splashRadius: 1.25
   shellPrefab: {fileID: 3372900226168678565, guid: 53f33e00b794b1b43a3cc659868dae5a, type: 3}
   impactEffect: {fileID: 914968857072033425, guid: e39eeb6128cb4fc4fb5b9040fa253753, type: 3}
   impactSound:

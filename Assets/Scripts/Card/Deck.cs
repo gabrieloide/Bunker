@@ -4,7 +4,6 @@ using UnityEngine;
 public class Deck : MonoBehaviour
 {
     [SerializeField] AK.Wwise.Event TakeCard;
-    [HideInInspector] public List<CardIndex> deck = new List<CardIndex>(); // LEGACY: cards now come as CardDefinitions, dropped after migration
     public Transform[] cardSlots;
     public bool[] availableCardSlots;
     public static Deck instance;

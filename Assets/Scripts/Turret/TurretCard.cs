@@ -6,8 +6,8 @@ using UnityEngine;
 // SimulationBridge before Start); combat logic lives in Bunker.Simulation.
 public abstract class TurretCard : TurretStats, IDamageable
 {
-    // Mirrored from the simulation every frame; the life bar reads it. LEGACY: serialized only until migration
-    [HideInInspector] public float Life;
+    // Mirrored from the simulation every frame; the life bar reads it
+    [System.NonSerialized] public float Life;
 
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
@@ -15,18 +15,6 @@ public abstract class TurretCard : TurretStats, IDamageable
     [SerializeField] Transform BuffSpritePosition;
     [HideInInspector] public GameObject _BuffSpritePosition;
     [HideInInspector] public bool HaveBuff;
-
-    // LEGACY: moved to TowerCardDefinition, dropped after migration
-    [HideInInspector][SerializeField] float fireRateCountDown;
-    [HideInInspector][SerializeField] float fireRate;
-    [HideInInspector][SerializeField] int burstCount = 1;
-    [HideInInspector][SerializeField] float burstInterval = 0.12f;
-    [HideInInspector][SerializeField] float range = 3f;
-    public float LegacyFireRateCountDown => fireRateCountDown;
-    public float LegacyFireRate => fireRate;
-    public int LegacyBurstCount => burstCount;
-    public float LegacyBurstInterval => burstInterval;
-    public float LegacyRange => range;
 
     public Entity Entity { get; set; }
     public TowerCardDefinition Definition { get; set; }

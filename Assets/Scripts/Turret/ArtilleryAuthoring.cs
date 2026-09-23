@@ -8,10 +8,4 @@ public class ArtilleryAuthoring : MonoBehaviour
     public ArtilleryShellView shellPrefab;
     public GameObject impactEffect;
     public AK.Wwise.Event impactSound;
-
-    // LEGACY: moved to ArtilleryTowerCardDefinition, dropped after migration
-    [HideInInspector] public float riseTime = 0.45f;
-    [HideInInspector] public float fallTime = 0.55f;
-    [HideInInspector] public float height = 9f;
-    [HideInInspector] public float splashRadius = 1.25f;
 }
