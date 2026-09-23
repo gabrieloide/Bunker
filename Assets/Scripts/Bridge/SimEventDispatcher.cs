@@ -25,6 +25,7 @@ public static class SimEventDispatcher
     public static event Action<int, EnemyBuffKind> OnWaveChanged;
     public static event Action<int, int> OnScoreChanged; // currentScore, delta
     public static event Action OnGameOver;
+    public static event Action<Vector3, float> OnShellImpact; // position, splashRadius
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     public static void ResetStatics()
@@ -46,6 +47,7 @@ public static class SimEventDispatcher
         OnWaveChanged = null;
         OnScoreChanged = null;
         OnGameOver = null;
+        OnShellImpact = null;
     }
 
     public static void Seed(int initialScore, int initialWave, EnemyBuffKind initialBuff, float currentHealth, float maxHealth)
@@ -109,6 +111,10 @@ public static class SimEventDispatcher
             case SimEventKind.GameOver:
                 IsGameOver = true;
                 OnGameOver?.Invoke();
+                break;
+
+            case SimEventKind.ShellImpact:
+                OnShellImpact?.Invoke((Vector3)ev.Position, ev.Amount);
                 break;
         }
     }

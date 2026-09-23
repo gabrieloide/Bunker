@@ -18,7 +18,6 @@ public class UIManager : MonoBehaviour
     public Vector3 offset;
     [Space]
     public GameObject CardStats;
-    [HideInInspector] public GameObject cardInstantiate;
     public GameObject Canvas2;
     [Space]
     [Header("Last Card")]
@@ -33,11 +32,10 @@ public class UIManager : MonoBehaviour
     public GameObject Deck;
     public float TimeMovement;
 
-    private Camera mainCamera;
     private int lastScore = -1;
     private int lastWave = -1;
     private float lastLife = -1f;
-    private ChangeCardText cachedCardText;
+    private ChangeCardText cardPanel;
 
     void Awake()
     {
@@ -50,8 +48,6 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
     }
 
     private void OnEnable()
@@ -123,41 +119,39 @@ public class UIManager : MonoBehaviour
     {
         if (TowerSlotAnimation == null) return;
 
-        if (ShowTowerSlot)
-        {
-            if (!TowerSlotAnimation.activeSelf)
-                TowerSlotAnimation.SetActive(true);
-
-            if (mainCamera == null)
-                mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
-
-            if (mainCamera != null)
-            {
-                Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition) - offset;
-                worldPos.z = 0f;
-                TowerSlotAnimation.transform.position = worldPos;
-            }
-        }
-        else if (TowerSlotAnimation.activeSelf)
-        {
-            TowerSlotAnimation.SetActive(false);
-        }
+        // Position is driven by the dragged Card (snapped to the placement grid when applicable)
+        if (TowerSlotAnimation.activeSelf != ShowTowerSlot)
+            TowerSlotAnimation.SetActive(ShowTowerSlot);
     }
 
-    public void ShowCardBox(string _name, string _description, Vector3 TC, bool onDrag)
+    // Right click on a hand card: toggles its detail panel (single reusable instance)
+    public void ToggleCardBox(Card card, string _name, string _description)
     {
-        if (cardInstantiate == null)
+        if (!EnsureCardPanel()) return;
+
+        if (cardPanel.Owner == card)
         {
-            ShowBoxText.Post(gameObject);
-            cardInstantiate = Instantiate(CardStats, Canvas2.transform);
-            cardInstantiate.transform.position = TC;
-
-            if (cachedCardText == null)
-                cachedCardText = ChangeCardText.instance != null ? ChangeCardText.instance : FindAnyObjectByType<ChangeCardText>();
-
-            if (cachedCardText != null)
-                cachedCardText.instantiateStats(_name, _description);
+            cardPanel.Hide(card);
+            return;
         }
+
+        ShowBoxText.Post(gameObject);
+        cardPanel.Show(card, _name, _description, card.transform as RectTransform);
+    }
+
+    public void HideCardBox(Card card = null)
+    {
+        if (cardPanel != null)
+            cardPanel.Hide(card);
+    }
+
+    bool EnsureCardPanel()
+    {
+        if (cardPanel != null) return true;
+        if (CardStats == null || Canvas2 == null) return false;
+
+        cardPanel = Instantiate(CardStats, Canvas2.transform).GetComponent<ChangeCardText>();
+        return cardPanel != null;
     }
 
     public void ShowLastCardPosition(Vector3 CardPosition)
