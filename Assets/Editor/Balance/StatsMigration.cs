@@ -1,3 +1,4 @@
+#if false // One-shot migration already run (2026-09-23); safe to delete this file
 using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
@@ -208,3 +209,4 @@ public static class StatsMigration
 
     static void Log(string line) => report.AppendLine(line);
 }
+#endif

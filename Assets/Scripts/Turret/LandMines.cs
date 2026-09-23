@@ -5,12 +5,6 @@ public class LandMines : MonoBehaviour, ICardConfigurable
     [SerializeField] AK.Wwise.Event ExplotionLandMine;
     [SerializeField] GameObject ExplosionParticle;
 
-    // LEGACY: moved to LandMineCardDefinition, dropped after migration
-    [HideInInspector][SerializeField] float damage;
-    [HideInInspector][SerializeField] float penArmor;
-    public float LegacyDamage => damage;
-    public float LegacyPenArmor => penArmor;
-
     LandMineCardDefinition definition;
 
     public void Configure(CardDefinition card) => definition = card as LandMineCardDefinition;

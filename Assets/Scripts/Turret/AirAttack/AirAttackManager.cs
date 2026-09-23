@@ -20,10 +20,6 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     private Vector3 MousePosition;
     AirStrikeCardDefinition definition;
 
-    // LEGACY: moved to AirStrikeCardDefinition, dropped after migration
-    [HideInInspector][SerializeField] private float delayBtwBullets;
-    public float LegacyShotInterval => delayBtwBullets;
-
     public void Configure(CardDefinition card) => definition = card as AirStrikeCardDefinition;
 
     private void Start()

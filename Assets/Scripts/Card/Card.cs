@@ -12,7 +12,6 @@ public abstract class Card : MonoBehaviour,
     [SerializeField] protected LayerMask objectLayerMask;
     [Tooltip("Name, description, stats and drop weight of this card")]
     public CardDefinition definition;
-    [HideInInspector] public TowersData towerData; // LEGACY: replaced by definition, dropped after migration
     [SerializeField] Sprite defaultCard, backCard;
 
     protected Deck dc;

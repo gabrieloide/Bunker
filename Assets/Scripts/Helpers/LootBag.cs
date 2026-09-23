@@ -8,11 +8,6 @@ public class LootBag : MonoBehaviour
     public static LootBag instance;
     [SerializeField] CardCatalog catalog;
 
-    // LEGACY: moved to CardCatalog, dropped after migration
-    [HideInInspector] public List<Loot> lootList = new List<Loot>();
-    [HideInInspector][SerializeField] float baseDropChance = 0.25f;
-    [HideInInspector][SerializeField] float dropChancePerMissingTenLife = 0.02f;
-
     private CardDrop cardDrop;
 
     private void Awake()

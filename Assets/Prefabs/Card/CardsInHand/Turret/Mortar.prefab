@@ -56,7 +56,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   definition: {fileID: 11400000, guid: d0aabdc76f744c047880298f3b8c0fdb, type: 2}
-  towerData: {fileID: 11400000, guid: b179ffb06a53fae48b6998c4db497791, type: 2}
   defaultCard: {fileID: 21300000, guid: d5c4302605fc9cf44b914410016bb4c0, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
   offset: {x: 0, y: -0.5, z: 0}

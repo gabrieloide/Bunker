@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7096330679601391949}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.6534694, y: -0.51398313, z: 0.043596435}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7096330679601391950
 MonoBehaviour:
@@ -44,21 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad11d7872812af64fafe32bdb18af77f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deck:
-  - {fileID: 2607700782867712522, guid: accd407f48c24194b800df1472ec5053, type: 3}
-  - {fileID: 5401993026336709353, guid: f70eb0f822558f6478c688f226f8bb19, type: 3}
-  - {fileID: 7318967318485075846, guid: ed16a50f0dc4cec4582ada0eb0c6e189, type: 3}
-  - {fileID: 6787536753558464387, guid: 265847ad779d53f408b506d2f05baa82, type: 3}
-  - {fileID: 1461684082307142355, guid: 4b67ed70786e6494aab744314bd092ee, type: 3}
-  - {fileID: -5744818967393508665, guid: 1a08555a349a415448da8ebf559bd6f6, type: 3}
-  - {fileID: -6805057479063158895, guid: d81b9daf69722e54c8bd9a365da20a11, type: 3}
-  - {fileID: 4832620425749470141, guid: 0460eca159e425c4e97257c31fa754fd, type: 3}
-  - {fileID: 5407731400470316139, guid: bd018aff57d6ede429b2526f5fbeb868, type: 3}
-  - {fileID: 7179972322792324095, guid: 0f5bddaa100c36d46a4fc5a039614185, type: 3}
-  - {fileID: 3740360725888658753, guid: 03dd24ccfc59b9b41bd97c28afc8c26b, type: 3}
-  - {fileID: 6300725258019825089, guid: b7953ad7a4b0f9443a7f96d2d8ddd462, type: 3}
-  - {fileID: 8580732572771231197, guid: 7dbdbc7856218a44d890ed3b13484b76, type: 3}
-  - {fileID: 8717237667980497478, guid: 3b43d253a0efdd348866a5c3c56508a5, type: 3}
+  TakeCard:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
   cardSlots:
   - {fileID: 0}
   - {fileID: 0}
@@ -66,4 +55,3 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   availableCardSlots: 0101010101
-  CardsInHand: 0

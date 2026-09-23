@@ -2,10 +2,6 @@ using UnityEngine;
 
 public class BuffHealth : Card
 {
-    // LEGACY: moved to HealCardDefinition, dropped after migration
-    [HideInInspector][SerializeField] float healthRestore = 25;
-    public float LegacyHealAmount => healthRestore;
-
     protected override void CardBehaviour()
     {
         float healAmount = definition is HealCardDefinition heal ? heal.healAmount : 0f;

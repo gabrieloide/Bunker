@@ -18,12 +18,6 @@ public class BuffCard : Card
     [SerializeField] Color buffEffectTint = Color.white;
     LayerMask NormalCardLM() => LayerMask.GetMask("Turret");
 
-    // LEGACY: moved to BuffCardDefinition, dropped after migration
-    [HideInInspector][SerializeField] BuffType buffType = BuffType.AttackBuff;
-    [HideInInspector][SerializeField] float multiplierStat;
-    public BuffType LegacyBuffType => buffType;
-    public float LegacyAmount => multiplierStat;
-
     TurretCard pendingTurret;
 
     protected override RaycastHit2D DetectObjectsBelow() => CastFootprint(NormalCardLM());

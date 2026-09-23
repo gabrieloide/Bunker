@@ -729,21 +729,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   catalog: {fileID: 11400000, guid: de13e7964c8fa1b48af5c8f6e110337c, type: 2}
-  lootList:
-  - {fileID: 11400000, guid: 1d07fe95b65120a4c83bc50124116b87, type: 2}
-  - {fileID: 11400000, guid: 7aeac220f01418d41bd29392d344b63d, type: 2}
-  - {fileID: 11400000, guid: 0d332869f25536940b7b8e9d1caaf88b, type: 2}
-  - {fileID: 11400000, guid: 48a0424b73a1cb743beabd19db982a4c, type: 2}
-  - {fileID: 11400000, guid: fc99e1a6220aea843898cad6f85b309c, type: 2}
-  - {fileID: 11400000, guid: 4d350e8f90a3c7d49966e1b6a13aae1a, type: 2}
-  - {fileID: 11400000, guid: 673bfeeac8624b54d830bd26c9e95d87, type: 2}
-  - {fileID: 11400000, guid: a2840fa0c879c9241bc4deb770e971ad, type: 2}
-  - {fileID: 11400000, guid: c7dfee00468d11846a02622899118d06, type: 2}
-  - {fileID: 11400000, guid: f5ad6066a4b89bc4a9f45187a2751e68, type: 2}
-  - {fileID: 11400000, guid: 093226d1d5ba2ca49a859e5801394fc1, type: 2}
-  - {fileID: 11400000, guid: c883ac6ba641b544081c302c48169d9b, type: 2}
-  baseDropChance: 0.25
-  dropChancePerMissingTenLife: 0.02
 --- !u!1 &153825630
 GameObject:
   m_ObjectHideFlags: 0
@@ -22530,9 +22515,6 @@ MonoBehaviour:
   - {fileID: 1452678203366704559, guid: 6157b27a9c5ad344d9bd58633d63db1f, type: 3}
   - {fileID: 24249937453714612, guid: b08e6d05e16742c40b7505b45f7ce4a8, type: 3}
   - {fileID: 229963523825216096, guid: b82a68bf69065eb4fb6477d902263e62, type: 3}
-  StartEnemySpawner: 5
-  EnemyDelay: 2
-  EnemyAmount: 10
 --- !u!1 &917504443
 GameObject:
   m_ObjectHideFlags: 0
