@@ -27,11 +27,13 @@ namespace Bunker.Simulation
             var enemies = new NativeList<Entity>(Allocator.Temp);
             var enemyPositions = new NativeList<float3>(Allocator.Temp);
             var enemyBoxes = new NativeList<HitBox>(Allocator.Temp);
-            foreach (var (transform, box, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>>().WithAll<EnemyTag, Health>().WithEntityAccess())
+            var enemyDefense = new NativeList<float>(Allocator.Temp);
+            foreach (var (transform, box, defense, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>, RefRO<Defense>>().WithAll<EnemyTag, Health>().WithEntityAccess())
             {
                 enemies.Add(entity);
                 enemyPositions.Add(transform.ValueRO.Position);
                 enemyBoxes.Add(box.ValueRO);
+                enemyDefense.Add(defense.ValueRO.Value);
             }
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
@@ -79,7 +81,7 @@ namespace Bunker.Simulation
                         Source = entity,
                         Target = enemies[i],
                         Position = enemyPositions[i],
-                        Amount = s.Damage,
+                        Amount = BalanceMath.EnemyDamageTaken(s.Damage, s.BulletPen, enemyDefense[i]),
                         IntValue = (int)Faction.Enemy
                     });
                 }
@@ -91,6 +93,7 @@ namespace Bunker.Simulation
             enemies.Dispose();
             enemyPositions.Dispose();
             enemyBoxes.Dispose();
+            enemyDefense.Dispose();
         }
     }
 }

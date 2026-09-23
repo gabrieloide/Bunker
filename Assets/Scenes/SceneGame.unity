@@ -741,6 +741,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f5ad6066a4b89bc4a9f45187a2751e68, type: 2}
   - {fileID: 11400000, guid: 093226d1d5ba2ca49a859e5801394fc1, type: 2}
   - {fileID: 11400000, guid: c883ac6ba641b544081c302c48169d9b, type: 2}
+  baseDropChance: 0.25
+  dropChancePerMissingTenLife: 0.02
 --- !u!1 &153825630
 GameObject:
   m_ObjectHideFlags: 0
@@ -22517,8 +22519,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartEnemySpawner: 5
-  EnemyDelay: 2.5
-  EnemyAmount: 15
+  EnemyDelay: 2
+  EnemyAmount: 10
   Enemies:
   - {fileID: 1452678203366704559, guid: 7048b45da0f66b24fa0639ec0c4add21, type: 3}
   - {fileID: 3682393951736515246, guid: e6ca98ca5ed1edb44be7b32bc90bc83f, type: 3}
@@ -42354,24 +42356,12 @@ MonoBehaviour:
     idInternal: 0
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 0}
-  loot:
-  - {fileID: 11400000, guid: 1d07fe95b65120a4c83bc50124116b87, type: 2}
-  - {fileID: 11400000, guid: 7aeac220f01418d41bd29392d344b63d, type: 2}
-  - {fileID: 11400000, guid: 48a0424b73a1cb743beabd19db982a4c, type: 2}
-  - {fileID: 11400000, guid: 673bfeeac8624b54d830bd26c9e95d87, type: 2}
-  - {fileID: 11400000, guid: a2840fa0c879c9241bc4deb770e971ad, type: 2}
-  - {fileID: 11400000, guid: c7dfee00468d11846a02622899118d06, type: 2}
-  - {fileID: 11400000, guid: f5ad6066a4b89bc4a9f45187a2751e68, type: 2}
-  - {fileID: 11400000, guid: 093226d1d5ba2ca49a859e5801394fc1, type: 2}
-  - {fileID: 11400000, guid: c883ac6ba641b544081c302c48169d9b, type: 2}
   life: 100
   hitParticle: {fileID: 5344303866790203651, guid: 88ab42a7919fca24ca6b3b817601ff0d, type: 3}
   DealTime: 2
   EnemyLayer:
     serializedVersion: 2
     m_Bits: 0
-  canChangeChance: 0
-  currentIndex: 9
 --- !u!212 &1390075893
 SpriteRenderer:
   serializedVersion: 2

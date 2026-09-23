@@ -37,7 +37,8 @@ namespace Bunker.Simulation
                             w.FireInterval /= math.max(request.Multiplier, 1e-3f);
                             break;
                         case TowerBuffKind.BulletPen:
-                            w.BulletPen = math.floor(w.BulletPen * request.Multiplier);
+                            // Flat: pen only matters against armor, and low base pen would scale to nothing
+                            w.BulletPen += request.Multiplier;
                             break;
                     }
                     w.HasBuff = true;

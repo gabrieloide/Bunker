@@ -8,6 +8,14 @@ public class WaveBalanceConfig : ScriptableObject
     public int initialUnlockedTypes = 2;
     public int maxUnlockedTypes = 9;
     public int amountIncreasePerTier = 5;
+    [Tooltip("Enemy life grows by this fraction every wave (0.1 = +10% per wave, linear)")]
+    [Min(0f)] public float lifeGrowthPerWave = 0.1f;
+
+    [Header("Boss")]
+    [Tooltip("Every N waves the last spawn is the boss; 0 disables bosses")]
+    [Min(0)] public int bossEveryWaves = 10;
+    [Tooltip("Roster index of the boss; keep it >= maxUnlockedTypes so it never spawns as a regular enemy")]
+    public int bossTypeIndex = 9;
 
     [Header("Enemy buff roll weights")]
     public float weightNormal = 60f;

@@ -78,7 +78,11 @@ namespace Bunker.Simulation
                 if (newTarget == Entity.Null || w.Cooldown > 0f)
                     continue;
 
-                w.Cooldown = w.FireInterval;
+                // Bursts fire BurstCount quick shots, then rest for FireInterval
+                if (w.ShotsLeftInBurst <= 0)
+                    w.ShotsLeftInBurst = math.max(1, w.BurstCount);
+                w.ShotsLeftInBurst--;
+                w.Cooldown = w.ShotsLeftInBurst > 0 ? w.BurstInterval : w.FireInterval;
 
                 float3 origin = pos + w.MuzzleOffset;
                 float3 targetPos = candidatePositions[best];

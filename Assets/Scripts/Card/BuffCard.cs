@@ -18,7 +18,8 @@ public class BuffCard : Card
     [SerializeField] Color buffEffectTint = Color.white;
     [SerializeField] BuffType buffType = BuffType.AttackBuff;
     LayerMask NormalCardLM() => LayerMask.GetMask("Turret");
-    [Range(1.1f, 3f)][SerializeField] float multiplierStat;
+    [Tooltip("Attack / Speed: multiplier (e.g. 1.5). Bullet Pen: flat armor penetration added (e.g. 6)")]
+    [Min(0f)][SerializeField] float multiplierStat;
 
     TurretCard pendingTurret;
 
