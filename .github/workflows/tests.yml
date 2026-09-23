@@ -21,6 +21,16 @@ jobs:
         with:
           lfs: true
 
+      # The Wwise integration only ships the Windows/Mac platform API, so the Linux editor used here
+      # can't compile it. EditMode tests never touch audio: compile the Windows API on Linux as well.
+      # CI only; the files in the repo stay as Wwise generated them.
+      - name: Let Wwise compile on the Linux editor
+        run: |
+          files=$(grep -rlE '\bUNITY_EDITOR_WIN\b' Assets/Wwise --include=*.cs)
+          test -n "$files" || { echo "No UNITY_EDITOR_WIN guards found in Assets/Wwise"; exit 1; }
+          sed -i -E 's/\bUNITY_EDITOR_WIN\b/(UNITY_EDITOR_WIN || UNITY_EDITOR_LINUX)/g' $files
+          echo "Patched $(echo "$files" | wc -l) Wwise files"
+
       - name: Restore Library Cache
         uses: actions/cache@v4
         with:
