@@ -77,7 +77,13 @@ namespace Bunker.Simulation
                 return;
 
             int typeIndex = wave.Rng.NextInt(0, typeCount);
+            bool bossWave = config.BossEveryWaves > 0 && wave.Wave % config.BossEveryWaves == 0;
+            bool lastSpawn = wave.SpawnedThisWave == wave.EnemyAmount - 1;
+            if (bossWave && lastSpawn && config.BossTypeIndex >= 0 && config.BossTypeIndex < roster.Types.Length)
+                typeIndex = config.BossTypeIndex;
+
             var def = BalanceMath.ApplyBuff(roster.Types[typeIndex], wave.Buff, ref config.BuffTable.Value);
+            def.Life *= BalanceMath.WaveLifeMultiplier(wave.Wave, config.LifeGrowthPerWave);
 
             var e = ecb.CreateEntity();
             ecb.AddComponent(e, LocalTransform.FromPosition(config.SpawnPosition));

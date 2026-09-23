@@ -5,9 +5,14 @@ namespace Bunker.Simulation
 {
     public static class BalanceMath
     {
+        // Armor soaks flat damage per hit; penetration cancels armor point for point.
+        // Every hit keeps a chip of its damage so no enemy is ever immune.
+        public const float MinDamageFraction = 0.25f;
+
         public static float EnemyDamageTaken(float damage, float bulletPen, float defense)
         {
-            return math.max(0f, damage - (bulletPen - defense));
+            float armor = math.max(0f, defense - bulletPen);
+            return math.max(damage * MinDamageFraction, damage - armor);
         }
 
         // Where a path follower will be after `time` seconds, walking its remaining waypoints at constant speed
@@ -31,6 +36,11 @@ namespace Bunker.Simulation
         {
             float2 closest = math.clamp(center, boxCenter - halfExtents, boxCenter + halfExtents);
             return math.lengthsq(center - closest) <= radius * radius;
+        }
+
+        public static float WaveLifeMultiplier(int wave, float growthPerWave)
+        {
+            return 1f + growthPerWave * math.max(0, wave - 1);
         }
 
         public static bool ShouldUnlockTier(int completedWave, int wavesPerTier, int unlockedTypes, int maxUnlockedTypes)

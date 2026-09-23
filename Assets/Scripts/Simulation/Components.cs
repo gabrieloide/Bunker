@@ -64,7 +64,11 @@ namespace Bunker.Simulation
     {
         public float Damage;
         public float BulletPen;
+        // Rest after a full burst; with BurstCount <= 1 it is simply the time between shots
         public float FireInterval;
+        public int BurstCount;
+        public float BurstInterval;
+        public int ShotsLeftInBurst;
         public float Range;
         public float Cooldown;
         public float ProjectileSpeed;
@@ -176,6 +180,9 @@ namespace Bunker.Simulation
         public int WavesPerTier;
         public int InitialUnlockedTypes;
         public int MaxUnlockedTypes;
+        public float LifeGrowthPerWave;
+        public int BossEveryWaves;
+        public int BossTypeIndex;
         public float PlayerDamageInterval;
         public float EnemyProjectileSpeed;
         public float EnemyProjectileLifetime;
