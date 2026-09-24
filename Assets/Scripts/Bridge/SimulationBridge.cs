@@ -479,6 +479,13 @@ public class SimulationBridge : MonoBehaviour
     void LateUpdate()
     {
         if (!ready) return;
+        // Leaving play mode can dispose the ECS world before the last LateUpdate
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null || !world.IsCreated)
+        {
+            ready = false;
+            return;
+        }
         DrainEvents();
         CreateViews();
         SyncViews();
@@ -685,10 +692,9 @@ public class SimulationBridge : MonoBehaviour
     void OnDestroy()
     {
         if (Instance == this) Instance = null;
-        if (!ready) return;
 
         var world = World.DefaultGameObjectInjectionWorld;
-        if (world != null && world.IsCreated)
+        if (ready && world != null && world.IsCreated)
         {
             var query = em.CreateEntityQuery(typeof(SimulationTag));
             em.DestroyEntity(query);
