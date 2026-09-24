@@ -31,7 +31,7 @@ public class BalanceWindow : EditorWindow
     {
         { Section.Towers, new SectionInfo { Group = "CARDS", Title = "Towers", CardType = typeof(TowerCardDefinition), Subtitle = "Towers that shoot straight bullets. DPS = damage × burst × rate." } },
         { Section.Artillery, new SectionInfo { Group = "CARDS", Title = "Artillery", CardType = typeof(ArtilleryTowerCardDefinition), Subtitle = "Towers that lob shells with splash damage. The placed prefab needs an ArtilleryAuthoring." } },
-        { Section.Buffs, new SectionInfo { Group = "CARDS", Title = "Tower buffs", CardType = typeof(BuffCardDefinition), Subtitle = "Each column is a multiplier on the tower (1 = no change, 1.3 = +30%); Pen + is flat armor penetration added. Combine several on one card." } },
+        { Section.Buffs, new SectionInfo { Group = "CARDS", Title = "Tower buffs", CardType = typeof(BuffCardDefinition), Subtitle = "Value multiplies the stat (1.3 = +30%); for Bullet Pen it is flat armor penetration added." } },
         { Section.Heals, new SectionInfo { Group = "CARDS", Title = "Bunker heals", CardType = typeof(HealCardDefinition), Subtitle = "Restore bunker life when played." } },
         { Section.Mines, new SectionInfo { Group = "CARDS", Title = "Land mines", CardType = typeof(LandMineCardDefinition), Subtitle = "Explode on the first enemy that steps on them." } },
         { Section.AirStrikes, new SectionInfo { Group = "CARDS", Title = "Air strikes", CardType = typeof(AirStrikeCardDefinition), Subtitle = "A plane crosses the screen and fires a volley." } },
@@ -57,8 +57,7 @@ public class BalanceWindow : EditorWindow
         { "_life", ("Life", 64) }, { "_damage", ("Damage", 64) }, { "_attackInterval", ("Shot every", 80) },
         { "_attackRange", ("Range", 60) }, { "_defense", ("Armor", 60) }, { "_moveSpeed", ("Speed", 60) }, { "Score", ("Score", 60) },
         { "radius", ("Radius", 60) },
-        { "damageMultiplier", ("Damage ×", 70) }, { "fireRateMultiplier", ("Rate ×", 62) }, { "rangeMultiplier", ("Range ×", 64) },
-        { "lifeMultiplier", ("Life ×", 58) }, { "bulletPenBonus", ("Pen +", 56) },
+        { "stat", ("Stat", 110) }, { "value", ("Value", 64) },
         { "attackInterval", ("Hit every", 70) }, { "attackRange", ("Reach", 60) }, { "moveSpeed", ("Speed", 60) },
         { "sceneName", ("Scene", 110) }, { "enemyBaseLife", ("Base life", 70) }, { "balance", ("Waves config", 150) },
         { "allySpawnInterval", ("Ally every", 76) }, { "firstAllyDelay", ("1st ally", 64) },

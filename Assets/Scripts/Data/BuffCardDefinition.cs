@@ -1,14 +1,12 @@
 using UnityEngine;
 
-// A tower buff is just the numbers it changes: 1 = unchanged. Combine as many as you like on one card.
+public enum TowerStat { Damage, FireRate, BulletPen, Range, Life }
+
 [CreateAssetMenu(fileName = "New Buff Card", menuName = "Bunker/Cards/Tower Buff")]
 public class BuffCardDefinition : CardDefinition
 {
-    [Header("Buff (1 = no change)")]
-    [Min(0f)] public float damageMultiplier = 1f;
-    [Min(0f)] public float fireRateMultiplier = 1f;
-    [Min(0f)] public float rangeMultiplier = 1f;
-    [Min(0f)] public float lifeMultiplier = 1f;
-    [Tooltip("Flat armor penetration added")]
-    [Min(0f)] public float bulletPenBonus = 0f;
+    [Header("Buff")]
+    public TowerStat stat = TowerStat.Damage;
+    [Tooltip("Multiplier (1.3 = +30%). Bullet Pen: flat armor penetration added (e.g. 6)")]
+    [Min(0f)] public float value = 1.5f;
 }

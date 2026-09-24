@@ -460,16 +460,17 @@ public class SimulationBridge : MonoBehaviour
         if (!ready || !em.Exists(entity) || !em.HasComponent<Weapon>(entity)) return;
         var weapon = em.GetComponentData<Weapon>(entity);
         if (weapon.HasBuff) return;
-        weapon.Damage *= buff.damageMultiplier;
-        weapon.FireInterval /= Mathf.Max(buff.fireRateMultiplier, 1e-3f);
-        weapon.Range *= buff.rangeMultiplier;
-        weapon.BulletPen += buff.bulletPenBonus;
+        var health = em.GetComponentData<Health>(entity);
+        switch (buff.stat)
+        {
+            case TowerStat.Damage: weapon.Damage *= buff.value; break;
+            case TowerStat.FireRate: weapon.FireInterval /= Mathf.Max(buff.value, 1e-3f); break;
+            case TowerStat.BulletPen: weapon.BulletPen += buff.value; break;
+            case TowerStat.Range: weapon.Range *= buff.value; break;
+            case TowerStat.Life: health.Value *= buff.value; health.Max *= buff.value; break;
+        }
         weapon.HasBuff = true;
         em.SetComponentData(entity, weapon);
-
-        var health = em.GetComponentData<Health>(entity);
-        health.Value *= buff.lifeMultiplier;
-        health.Max *= buff.lifeMultiplier;
         em.SetComponentData(entity, health);
     }
 
