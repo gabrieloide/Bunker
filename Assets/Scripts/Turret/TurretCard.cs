@@ -8,6 +8,7 @@ public abstract class TurretCard : TurretStats, IDamageable
 {
     // Mirrored from the simulation every frame; the life bar reads it
     [System.NonSerialized] public float Life;
+    [System.NonSerialized] public float MaxLife;
 
     [SerializeField] protected GameObject BulletParticle;
     [SerializeField] GameObject TurretLifeSlider;
@@ -18,7 +19,10 @@ public abstract class TurretCard : TurretStats, IDamageable
 
     public Entity Entity { get; set; }
     public TowerCardDefinition Definition { get; set; }
-    public float Range => Definition != null ? Definition.range : 0f;
+    // Mirrored from the simulation so range buffs show on the hover ring
+    float? rangeOverride;
+    public float Range => rangeOverride ?? (Definition != null ? Definition.range : 0f);
+    public void SetRange(float range) => rangeOverride = range;
     public virtual Vector3 MuzzlePosition => transform.position;
 
     protected void Awake() => TowerLimits.Register(this);

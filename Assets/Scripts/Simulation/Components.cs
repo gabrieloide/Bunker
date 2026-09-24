@@ -8,9 +8,6 @@ namespace Bunker.Simulation
     // Same order as the game-side BuffEnemyType enum so values can be cast directly.
     public enum EnemyBuffKind : byte { None = 0, Attack = 1, Defense = 2, Velocity = 3, Life = 4, FireRate = 5 }
 
-    // Same order as the game-side BuffType enum.
-    public enum TowerBuffKind : byte { Attack = 0, Speed = 1, BulletPen = 2 }
-
     public enum ViewKind : byte { Enemy = 0, TowerProjectile = 1, EnemyProjectile = 2, ArtilleryShell = 3, Ally = 4 }
 
     public enum WavePhase : byte { WaitingToStart = 0, Spawning = 1, WaitingForClear = 2 }
@@ -142,12 +139,6 @@ namespace Bunker.Simulation
     {
         public float Damage;
         public float BulletPen;
-    }
-
-    public struct TowerBuffRequest : IBufferElementData
-    {
-        public TowerBuffKind Kind;
-        public float Multiplier;
     }
 
     public struct NeedsView : IComponentData
