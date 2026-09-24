@@ -11,7 +11,7 @@ namespace Bunker.Simulation
     // Same order as the game-side BuffType enum.
     public enum TowerBuffKind : byte { Attack = 0, Speed = 1, BulletPen = 2 }
 
-    public enum ViewKind : byte { Enemy = 0, TowerProjectile = 1, EnemyProjectile = 2, ArtilleryShell = 3 }
+    public enum ViewKind : byte { Enemy = 0, TowerProjectile = 1, EnemyProjectile = 2, ArtilleryShell = 3, Ally = 4 }
 
     public enum WavePhase : byte { WaitingToStart = 0, Spawning = 1, WaitingForClear = 2 }
 
@@ -26,13 +26,23 @@ namespace Bunker.Simulation
         WaveChanged,
         ScoreChanged,
         GameOver,
-        ShellImpact
+        ShellImpact,
+        AllyDied,
+        // Melee blow (ally on an enemy or on the enemy base); Amount = what the target actually loses
+        MeleeHit,
+        // Amount = damage taken, IntValue = remaining life rounded
+        EnemyBaseHit,
+        Victory
     }
 
     public struct SimulationTag : IComponentData { }
     public struct TowerTag : IComponentData { }
     public struct EnemyTag : IComponentData { }
     public struct BunkerTag : IComponentData { }
+    // Player units that walk the enemy path backwards to the enemy base
+    public struct AllyTag : IComponentData { }
+    // Destroying it wins the match
+    public struct EnemyBaseTag : IComponentData { }
 
     public struct GameSession : IComponentData
     {
@@ -80,6 +90,19 @@ namespace Bunker.Simulation
     }
 
     public struct Target : IComponentData { public Entity Value; }
+
+    // Hits whatever is within Range once per Interval, no projectile
+    public struct Melee : IComponentData
+    {
+        public float Damage;
+        public float BulletPen;
+        public float Interval;
+        public float Range;
+        public float Cooldown;
+    }
+
+    // Walks the PathPoint buffer from the end towards the start; below 0 it heads for the enemy base
+    public struct AllyPathFollower : IComponentData { public int NextIndex; }
 
     public struct Projectile : IComponentData
     {
@@ -169,6 +192,37 @@ namespace Bunker.Simulation
         public float FireRateMultiplier;
         public float DefenseMultiplier;
         public float SpeedMultiplier;
+    }
+
+    public struct AllyTypeDef
+    {
+        public float Life;
+        public float Damage;
+        public float BulletPen;
+        public float AttackInterval;
+        public float AttackRange;
+        public float MoveSpeed;
+        public float2 HitHalfExtents;
+        public float2 HitOffset;
+    }
+
+    public struct AllyRosterBlob
+    {
+        public BlobArray<AllyTypeDef> Types;
+    }
+
+    public struct AllySpawnConfig : IComponentData
+    {
+        // Seconds between two allies; <= 0 disables them
+        public float Interval;
+        public float3 SpawnPosition;
+        public BlobAssetReference<AllyRosterBlob> Roster;
+    }
+
+    public struct AllySpawnState : IComponentData
+    {
+        public float Timer;
+        public int NextType;
     }
 
     public struct WaveConfig : IComponentData

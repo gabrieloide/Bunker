@@ -20,7 +20,7 @@ public abstract class Card : MonoBehaviour,
     [SerializeField] protected float height = 1;
     [SerializeField] GameObject CardFlipAnim;
 
-    [HideInInspector] public int index() => GetComponent<CardIndex>() != null ? GetComponent<CardIndex>().HandIndex : 0;
+    protected HandLayout Hand => dc != null ? dc.Hand : null;
 
     protected Image uiImage;
     protected RectTransform rectTransform;
@@ -33,6 +33,8 @@ public abstract class Card : MonoBehaviour,
 
     float currentTiltAngle = 0f;
     bool isDragging = false;
+    bool hovered = false;
+    int moveTweenId = -1;
     Transform originalParent;
     Vector2 baseAnchoredPos;
     Vector2 dragStartScreenPos;
@@ -67,6 +69,10 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual RaycastHit2D DetectObjectsBelow() => CastFootprint(objectLayerMask);
 
+    // Every card has to be played inside a flag's radius (see FlagTerritory)
+    protected virtual Vector3 TerritoryPoint => UseGrid ? PlacementGrid.CellCenter(FootprintCell()) : PointerWorld();
+    protected bool InTerritory => FlagTerritory.Contains(TerritoryPoint);
+
     // Captured on drop: placement resolves after the flip animation, when the pointer may have moved
     Vector3 dropOrigin;
     Vector3Int dropCell;
@@ -96,7 +102,7 @@ public abstract class Card : MonoBehaviour,
         if (!isDragging || UIManager.instance == null || UIManager.instance.TowerSlotAnimation == null)
             return;
 
-        bool visible = TryGetPreviewPosition(out Vector3 target);
+        bool visible = TryGetPreviewPosition(out Vector3 target) && InTerritory;
         UIManager.instance.ShowTowerSlot = visible;
         if (visible)
             UIManager.instance.TowerSlotAnimation.transform.position = target - UIManager.instance.offset;
@@ -131,6 +137,8 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual void OnDestroy()
     {
+        if (Hand != null)
+            Hand.Remove(this);
         if (UIManager.instance != null)
             UIManager.instance.HideCardBox(this);
         if (isDragging)
@@ -157,31 +165,64 @@ public abstract class Card : MonoBehaviour,
 
     void ElevateCard()
     {
+        hovered = true;
         LeanTween.cancel(gameObject);
-        TweenAnchoredY(baseAnchoredPos.y + uiHoverHeight, 0.12f).setEaseOutQuad();
+        TweenAnchored(HandPosition, 0.12f).setEaseOutQuad();
         LeanTween.scale(gameObject, Vector3.one * 1.08f, 0.12f).setEaseOutQuad();
         transform.SetAsLastSibling();
     }
 
     void LowerCard()
     {
+        hovered = false;
         LeanTween.cancel(gameObject);
-        TweenAnchoredY(baseAnchoredPos.y, 0.12f).setEaseOutQuad();
+        TweenAnchored(HandPosition, 0.12f).setEaseOutQuad();
         LeanTween.scale(gameObject, Vector3.one, 0.12f).setEaseOutQuad();
-
-        if (originalParent != null)
-            transform.SetSiblingIndex(index());
+        RestoreHandOrder();
 
         if (UIManager.instance != null)
             UIManager.instance.HideCardBox(this);
     }
 
-    LTDescr TweenAnchoredY(float targetY, float time)
+    // Home spot in the hand, raised while hovered
+    Vector2 HandPosition => baseAnchoredPos + (hovered ? Vector2.up * uiHoverHeight : Vector2.zero);
+
+    LTDescr TweenAnchored(Vector2 target, float time)
     {
-        return LeanTween.value(gameObject, y => {
+        if (moveTweenId >= 0)
+            LeanTween.cancel(gameObject, moveTweenId);
+        var tween = LeanTween.value(gameObject, pos => {
             if (rectTransform != null)
-                rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, y);
-        }, rectTransform.anchoredPosition.y, targetY, time);
+                rectTransform.anchoredPosition = pos;
+        }, rectTransform.anchoredPosition, target, time);
+        moveTweenId = tween.uniqueId;
+        return tween;
+    }
+
+    // Called by HandLayout whenever the hand changes; a dragged card picks it up when it returns
+    public void SetHandHome(Vector2 home, float time)
+    {
+        baseAnchoredPos = home;
+        if (isDragging || rectTransform == null) return;
+        if (time <= 0f)
+            rectTransform.anchoredPosition = HandPosition;
+        else
+            TweenAnchored(HandPosition, time).setEaseOutQuad();
+    }
+
+    void RestoreHandOrder()
+    {
+        if (Hand != null && transform.parent == Hand.transform)
+            transform.SetSiblingIndex(Hand.IndexOf(this));
+    }
+
+    // The card is spent: frees its place in the hand so the rest close ranks
+    protected void LeaveHand()
+    {
+        if (GameManager.instance != null)
+            GameManager.instance.CurrentCardAmount--;
+        if (Hand != null)
+            Hand.Remove(this);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -200,6 +241,7 @@ public abstract class Card : MonoBehaviour,
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
         isDragging = true;
+        hovered = false;
         dragStartScreenPos = eventData.position;
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
@@ -217,8 +259,8 @@ public abstract class Card : MonoBehaviour,
             UIManager.instance.ShowTowerSlot = true;
             UIManager.instance.HideCardBox(this);
 
-            if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
-                UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
+            if (transform.parent != null)
+                UIManager.instance.ShowLastCardPosition(transform.parent.TransformPoint(baseAnchoredPos));
         }
         UpdatePlacementPreview();
 
@@ -286,10 +328,7 @@ public abstract class Card : MonoBehaviour,
 
         if (isTrash)
         {
-            if (dc != null && index() < dc.availableCardSlots.Length)
-                dc.availableCardSlots[index()] = true;
-            if (GameManager.instance != null)
-                GameManager.instance.CurrentCardAmount--;
+            LeaveHand();
             Destroy(gameObject);
             return;
         }
@@ -306,14 +345,11 @@ public abstract class Card : MonoBehaviour,
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
         bool hasObstacle = DetectObjectsBelow() || (UseGrid && PlacementGrid.IsOccupied(FootprintCell()));
 
-        if (!hasObstacle && d > dragThreshold && AllowPlacement())
+        if (!hasObstacle && d > dragThreshold && InTerritory && AllowPlacement())
         {
             OnPlacementAccepted();
             CameraShake.MicroShake();
-            if (dc != null && index() < dc.availableCardSlots.Length)
-                dc.availableCardSlots[index()] = true;
-            if (GameManager.instance != null)
-                GameManager.instance.CurrentCardAmount--;
+            LeaveHand();
 
             dropOrigin = worldDropPos;
             dropCell = UseGrid ? FootprintCell() : default;
@@ -360,16 +396,11 @@ public abstract class Card : MonoBehaviour,
     protected void ReturnToSlot()
     {
         if (originalParent != null)
-        {
             transform.SetParent(originalParent, true);
-            transform.SetSiblingIndex(index());
-        }
+        RestoreHandOrder();
 
         LeanTween.cancel(gameObject);
-        LeanTween.value(gameObject, pos => {
-            if (rectTransform != null)
-                rectTransform.anchoredPosition = pos;
-        }, rectTransform.anchoredPosition, baseAnchoredPos, 0.25f).setEaseOutBack();
+        TweenAnchored(baseAnchoredPos, 0.25f).setEaseOutBack();
         LeanTween.scale(gameObject, Vector3.one, 0.2f).setEaseOutBack();
         LeanTween.rotateZ(gameObject, 0f, 0.2f);
     }
@@ -378,7 +409,7 @@ public abstract class Card : MonoBehaviour,
 
     public void showCard()
     {
-        rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, baseAnchoredPos.y - 35f);
-        TweenAnchoredY(baseAnchoredPos.y, 0.25f).setEaseOutQuad();
+        rectTransform.anchoredPosition = baseAnchoredPos - new Vector2(0f, 35f);
+        TweenAnchored(baseAnchoredPos, 0.25f).setEaseOutQuad();
     }
 }

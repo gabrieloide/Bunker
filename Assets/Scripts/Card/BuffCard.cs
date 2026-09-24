@@ -63,12 +63,9 @@ public class BuffCard : Card
     {
         pendingTurret = FindTarget(out _);
 
-        if (pendingTurret != null && !pendingTurret.HaveBuff)
+        if (pendingTurret != null && !pendingTurret.HaveBuff && InTerritory)
         {
-            if (GameManager.instance != null)
-                GameManager.instance.CurrentCardAmount--;
-            if (dc != null && index() < dc.availableCardSlots.Length)
-                dc.availableCardSlots[index()] = true;
+            LeaveHand();
             CardBehaviour();
             Destroy(gameObject);
         }

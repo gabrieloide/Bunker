@@ -14,6 +14,7 @@ public class ViewRegistry
         public Enemy Enemy;
         public TurretCard TurretCard;
         public Bullet Bullet;
+        public AllyView Ally;
     }
 
     private readonly Dictionary<Entity, EntityView> views = new Dictionary<Entity, EntityView>();
@@ -78,7 +79,8 @@ public class ViewRegistry
             PrefabId = prefabId,
             Enemy = view.GetComponent<Enemy>(),
             TurretCard = view.GetComponent<TurretCard>(),
-            Bullet = view.GetComponent<Bullet>()
+            Bullet = view.GetComponent<Bullet>(),
+            Ally = view.GetComponent<AllyView>()
         };
         views[entity] = ev;
     }
