@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac9560ebb1cae346b274e487a078f1e, type: 3}
   m_Name: AllyGranade
   m_EditorClassIdentifier: Assembly-CSharp::AllyData
-  life: 35
-  damage: 6
-  bulletPen: 1
-  attackInterval: 0.8
+  life: 2
+  damage: 1
+  bulletPen: 0
+  attackInterval: 1.2
   attackRange: 1.2
   moveSpeed: 1.8

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac9560ebb1cae346b274e487a078f1e, type: 3}
   m_Name: AllyJeep
   m_EditorClassIdentifier: Assembly-CSharp::AllyData
-  life: 60
-  damage: 9
-  bulletPen: 3
-  attackInterval: 1
+  life: 4
+  damage: 1.5
+  bulletPen: 1
+  attackInterval: 1.4
   attackRange: 1.3
   moveSpeed: 2.6

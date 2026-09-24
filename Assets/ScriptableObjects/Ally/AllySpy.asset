@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac9560ebb1cae346b274e487a078f1e, type: 3}
   m_Name: AllySpy
   m_EditorClassIdentifier: Assembly-CSharp::AllyData
-  life: 25
-  damage: 4
+  life: 1.5
+  damage: 0.75
   bulletPen: 0
-  attackInterval: 0.5
+  attackInterval: 1
   attackRange: 1
   moveSpeed: 3

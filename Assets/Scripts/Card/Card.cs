@@ -71,7 +71,7 @@ public abstract class Card : MonoBehaviour,
 
     // Every card has to be played inside a flag's radius (see FlagTerritory)
     protected virtual Vector3 TerritoryPoint => UseGrid ? PlacementGrid.CellCenter(FootprintCell()) : PointerWorld();
-    protected bool InTerritory => FlagTerritory.Contains(TerritoryPoint);
+    protected virtual bool InTerritory => FlagTerritory.Contains(TerritoryPoint);
 
     // Captured on drop: placement resolves after the flip animation, when the pointer may have moved
     Vector3 dropOrigin;
@@ -114,8 +114,8 @@ public abstract class Card : MonoBehaviour,
             RangeIndicator.Hide();
     }
 
-    // Attack range of the tower this card places; 0 when it places nothing that shoots
-    float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
+    // Radius drawn around the placement preview: a tower's attack range; 0 draws nothing
+    protected virtual float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
 
     protected virtual void Awake()
     {
