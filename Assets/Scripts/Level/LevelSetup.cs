@@ -19,8 +19,18 @@ public class LevelSetup : MonoBehaviour
 
         foreach (var placement in Current.flags)
         {
-            var flag = Instantiate(flagPrefab, placement.position, Quaternion.identity);
+            // Same grid as the flag card: centred on a cell, which it occupies
+            Vector3 position = placement.position;
+            Vector3Int cell = default;
+            if (PlacementGrid.Available)
+            {
+                cell = PlacementGrid.WorldToCell(position);
+                position = PlacementGrid.CellCenter(cell);
+            }
+            var flag = Instantiate(flagPrefab, position, Quaternion.identity);
             flag.Radius = placement.radius;
+            if (PlacementGrid.Available)
+                PlacementGrid.Occupy(cell, flag.gameObject);
         }
     }
 
