@@ -16,6 +16,7 @@ public class FlagCard : Card
     }
 
     protected override float PlacedRange => Radius;
+    protected override bool BuiltBySoldier => true;
 
     protected override void CardBehaviour()
     {

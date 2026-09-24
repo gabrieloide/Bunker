@@ -7,6 +7,13 @@ public static class FlagTerritory
 {
     static readonly List<Flag> flags = new List<Flag>();
 
+    // Every flag circle is handed to the DottedRing shader so each ring hides the stretch that falls
+    // inside another flag: together they draw one outline around the whole territory
+    public const int MaxShaderCircles = 32;
+    static readonly int CirclesId = Shader.PropertyToID("_FlagCircles");
+    static readonly int CircleCountId = Shader.PropertyToID("_FlagCircleCount");
+    static readonly Vector4[] circles = new Vector4[MaxShaderCircles];
+
     public static event Action Changed;
     public static IReadOnlyList<Flag> Flags => flags;
 
@@ -17,20 +24,34 @@ public static class FlagTerritory
         Changed = null;
     }
 
+    static void RaiseChanged()
+    {
+        int count = 0;
+        foreach (var flag in flags)
+        {
+            if (flag == null || count >= MaxShaderCircles) continue;
+            Vector2 c = flag.Center;
+            circles[count++] = new Vector4(c.x, c.y, flag.Radius, 0f);
+        }
+        Shader.SetGlobalVectorArray(CirclesId, circles);
+        Shader.SetGlobalFloat(CircleCountId, count);
+        Changed?.Invoke();
+    }
+
     public static void Register(Flag flag)
     {
         if (flags.Contains(flag)) return;
         flags.Add(flag);
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     public static void Unregister(Flag flag)
     {
         if (flags.Remove(flag))
-            Changed?.Invoke();
+            RaiseChanged();
     }
 
-    public static void NotifyChanged() => Changed?.Invoke();
+    public static void NotifyChanged() => RaiseChanged();
 
     // A new flag has to overlap an existing one; a scene without flags accepts it anywhere
     public static bool IsConnected(Vector3 worldPosition, float radius)

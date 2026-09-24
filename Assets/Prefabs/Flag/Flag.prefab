@@ -107,6 +107,7 @@ MonoBehaviour:
   color: {r: 0.13333334, g: 0.13725491, b: 0.13725491, a: 1}
   sortingLayer: Background
   sortingOrder: 10
+  mergeWithFlags: 1
 --- !u!1 &7031208037778065838
 GameObject:
   m_ObjectHideFlags: 0
