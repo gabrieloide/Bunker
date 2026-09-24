@@ -17,8 +17,5 @@ MonoBehaviour:
   handPrefab: {fileID: -4628754941117444515, guid: 5d1e3839ee6ca2a44a5dafbcac64ea43, type: 3}
   placedPrefab: {fileID: 0}
   dropWeight: 5
-  damageMultiplier: 1
-  fireRateMultiplier: 1
-  rangeMultiplier: 1
-  lifeMultiplier: 1
-  bulletPenBonus: 6
+  stat: 2
+  value: 6
