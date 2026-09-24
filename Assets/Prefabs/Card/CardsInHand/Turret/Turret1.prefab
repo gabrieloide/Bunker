@@ -61,7 +61,7 @@ MonoBehaviour:
   offset: {x: 0, y: -0.5, z: 0}
   width: 1.2
   height: 1
-  CardFlipAnim: {fileID: 546763863824955450, guid: 3b92ffc65c6fa9f489d039d89530410a, type: 3}
+  CardFlipAnim: {fileID: 6503000784676966844, guid: 4c4f4d55c2bafba4ebdf487d2c84facb, type: 3}
   uiHoverHeight: 16
   dragThreshold: 20
   dragPointerGap: 4
@@ -77,7 +77,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HandIndex: 0
   CanDrop: 0
 --- !u!222 &8215913267972247343
 CanvasRenderer:
