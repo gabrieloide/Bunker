@@ -1,12 +1,5 @@
 using UnityEngine;
 
-public enum BuffType
-{
-    AttackBuff,
-    SpeedBuff,
-    BulletPenBuff
-}
-
 public class BuffCard : Card
 {
     [Header("Sound")]
@@ -83,6 +76,6 @@ public class BuffCard : Card
         if (buffSound != null && buffSound.IsValid())
             buffSound.Post(pendingTurret.gameObject);
         if (SimulationBridge.Instance != null && definition is BuffCardDefinition buff)
-            SimulationBridge.Instance.RequestBuff(pendingTurret.Entity, buff.buffType, buff.amount);
+            SimulationBridge.Instance.ApplyBuff(pendingTurret.Entity, buff);
     }
 }

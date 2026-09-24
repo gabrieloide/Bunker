@@ -375,7 +375,6 @@ public class SimulationBridge : MonoBehaviour
         }
         em.AddComponentData(entity, new Target { Value = Entity.Null });
         em.AddBuffer<DamageRequest>(entity);
-        em.AddBuffer<TowerBuffRequest>(entity);
 
         card.Entity = entity;
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
@@ -455,10 +454,23 @@ public class SimulationBridge : MonoBehaviour
         em.GetBuffer<DamageRequest>(entity).Add(new DamageRequest { Damage = damage, BulletPen = bulletPen });
     }
 
-    public void RequestBuff(Entity entity, BuffType type, float multiplier)
+    // A tower takes one buff card; its numbers are applied once
+    public void ApplyBuff(Entity entity, BuffCardDefinition buff)
     {
-        if (!ready || !em.Exists(entity) || !em.HasBuffer<TowerBuffRequest>(entity)) return;
-        em.GetBuffer<TowerBuffRequest>(entity).Add(new TowerBuffRequest { Kind = (TowerBuffKind)type, Multiplier = multiplier });
+        if (!ready || !em.Exists(entity) || !em.HasComponent<Weapon>(entity)) return;
+        var weapon = em.GetComponentData<Weapon>(entity);
+        if (weapon.HasBuff) return;
+        weapon.Damage *= buff.damageMultiplier;
+        weapon.FireInterval /= Mathf.Max(buff.fireRateMultiplier, 1e-3f);
+        weapon.Range *= buff.rangeMultiplier;
+        weapon.BulletPen += buff.bulletPenBonus;
+        weapon.HasBuff = true;
+        em.SetComponentData(entity, weapon);
+
+        var health = em.GetComponentData<Health>(entity);
+        health.Value *= buff.lifeMultiplier;
+        health.Max *= buff.lifeMultiplier;
+        em.SetComponentData(entity, health);
     }
 
     public void RequestBunkerHeal(float amount)
@@ -661,7 +673,12 @@ public class SimulationBridge : MonoBehaviour
             else if (view.Kind == (ViewKind)LocalViewKind.Tower)
             {
                 if (view.TurretCard != null)
-                    view.TurretCard.Life = em.GetComponentData<Health>(entity).Value;
+                {
+                    var health = em.GetComponentData<Health>(entity);
+                    view.TurretCard.Life = health.Value;
+                    view.TurretCard.MaxLife = health.Max;
+                    view.TurretCard.SetRange(em.GetComponentData<Weapon>(entity).Range);
+                }
             }
             view.Transform.position = position;
         }
