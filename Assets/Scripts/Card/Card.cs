@@ -353,21 +353,27 @@ public abstract class Card : MonoBehaviour,
 
             dropOrigin = worldDropPos;
             dropCell = UseGrid ? FootprintCell() : default;
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
 
-            float flipDuration = 0f;
-            if (CardFlipAnim != null)
+            if (BuiltBySoldier && BuilderSquad.Instance != null && BuilderSquad.Instance.Available)
             {
-                GameObject flip = Instantiate(CardFlipAnim, worldDropPos, Quaternion.identity);
-                if (flip.TryGetComponent(out OneShotEffect fx))
-                    flipDuration = fx.Duration;
-                else
-                    Destroy(flip, FallbackFlipDuration);
-                // The flip holds the cell until the real occupant takes it over, so nothing else drops there meanwhile
+                Vector3 site = UseGrid ? PlacementGrid.CellCenter(dropCell) : worldDropPos;
+                // The marker holds the cell while the soldier walks there, so nothing else drops on it
+                GameObject marker = BuilderSquad.MarkSite(site);
                 if (UseGrid)
-                    PlacementGrid.Occupy(dropCell, flip);
+                    PlacementGrid.Occupy(dropCell, marker);
+                BuilderSquad.Instance.Send(site, () =>
+                {
+                    Destroy(marker);
+                    // The card may be gone if the scene is unloading
+                    return this != null ? PlayFlipAndResolve() : 0f;
+                });
             }
-
-            StartCoroutine(ResolveAfter(flipDuration));
+            else
+            {
+                PlayFlipAndResolve();
+            }
         }
         else
         {
@@ -375,9 +381,32 @@ public abstract class Card : MonoBehaviour,
         }
     }
 
+    // Cards that put an object on the map send a soldier from the bunker to build it first
+    protected virtual bool BuiltBySoldier => false;
+
+    // Plays the flip where the object goes and resolves the card when it ends; returns the flip's length
+    float PlayFlipAndResolve()
+    {
+        float flipDuration = 0f;
+        if (CardFlipAnim != null)
+        {
+            GameObject flip = Instantiate(CardFlipAnim, dropOrigin, Quaternion.identity);
+            if (flip.TryGetComponent(out OneShotEffect fx))
+                flipDuration = fx.Duration;
+            else
+                Destroy(flip, FallbackFlipDuration);
+            // The flip holds the cell until the real occupant takes it over, so nothing else drops there meanwhile
+            if (UseGrid)
+                PlacementGrid.Occupy(dropCell, flip);
+        }
+
+        StartCoroutine(ResolveAfter(flipDuration));
+        return flipDuration;
+    }
+
     // Last say before a drop is accepted (e.g. the tower limit); false sends the card back to the hand
     protected virtual bool AllowPlacement() => true;
-    // The drop is accepted; CardBehaviour runs after the flip animation
+    // The drop is accepted; CardBehaviour runs after the flip animation (and the builder's walk)
     protected virtual void OnPlacementAccepted() { }
 
     const float FallbackFlipDuration = 0.46f;
@@ -385,8 +414,6 @@ public abstract class Card : MonoBehaviour,
     // The card is already spent (slot freed, count decremented); it stays alive, hidden, only to run CardBehaviour once the flip ends
     IEnumerator ResolveAfter(float delay)
     {
-        canvasGroup.alpha = 0f;
-        canvasGroup.blocksRaycasts = false;
         if (delay > 0f)
             yield return new WaitForSeconds(delay);
         CardBehaviour();
