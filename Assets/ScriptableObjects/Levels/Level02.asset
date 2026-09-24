@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Frente abierto
   description: Una sola bandera junto al bunker. Protege a tus aliados mientras avanzan.
   sceneName: SceneGame
-  enemyBaseLife: 700
+  enemyBaseLife: 100
   balance: {fileID: 0}
   allySpawnInterval: 6
   firstAllyDelay: 4

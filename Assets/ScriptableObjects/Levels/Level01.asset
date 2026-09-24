@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Primer contacto
   description: La base enemiga es debil. Tienes dos banderas para desplegar tus torres.
   sceneName: SceneGame
-  enemyBaseLife: 400
+  enemyBaseLife: 60
   balance: {fileID: 0}
   allySpawnInterval: 5
   firstAllyDelay: 4

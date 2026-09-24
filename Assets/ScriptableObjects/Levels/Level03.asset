@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Asedio
   description: La base enemiga esta fortificada y tu territorio es minimo.
   sceneName: SceneGame
-  enemyBaseLife: 1100
+  enemyBaseLife: 150
   balance: {fileID: 0}
   allySpawnInterval: 7
   firstAllyDelay: 4

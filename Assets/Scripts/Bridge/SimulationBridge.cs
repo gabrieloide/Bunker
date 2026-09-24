@@ -16,6 +16,7 @@ public class SimulationBridge : MonoBehaviour
     EntityManager em;
     Entity simEntity;
     EntityQuery needsViewQuery;
+    EntityQuery enemyQuery;
     bool ready;
 
     GameObject[] enemyPrefabs;
@@ -167,6 +168,7 @@ public class SimulationBridge : MonoBehaviour
         CreateAllySpawner(allySpawner);
 
         needsViewQuery = em.CreateEntityQuery(typeof(NeedsView), typeof(LocalTransform));
+        enemyQuery = em.CreateEntityQuery(typeof(EnemyTag), typeof(LocalTransform));
         MirrorWaveState(state.Wave, state.Buff);
         int initialScore = GameManager.instance != null ? GameManager.instance.ActualScore : 0;
         SimEventDispatcher.Seed(initialScore, state.Wave, state.Buff, playerStartLife, 100f);
@@ -434,6 +436,17 @@ public class SimulationBridge : MonoBehaviour
             TargetFaction = Faction.Enemy
         });
         em.AddComponentData(entity, new NeedsView { Kind = ViewKind.TowerProjectile, PrefabId = 0 });
+    }
+
+    public static bool AnyEnemyWithin(Vector3 center, float radius)
+    {
+        if (Instance == null || !Instance.ready) return false;
+        using var transforms = Instance.enemyQuery.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+        float2 c = new float2(center.x, center.y);
+        float r2 = radius * radius;
+        foreach (var t in transforms)
+            if (math.distancesq(t.Position.xy, c) <= r2) return true;
+        return false;
     }
 
     public void RequestDamage(Entity entity, float damage, float bulletPen)
