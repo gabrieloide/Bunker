@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy1
   m_EditorClassIdentifier: 
   _life: 40
-  _damage: 2
+  _damage: 30
   _attackInterval: 1.5
   _attackRange: 3
   _defense: 0

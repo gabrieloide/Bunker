@@ -18,11 +18,11 @@ MonoBehaviour:
   placedPrefab: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
   dropWeight: 24
   life: 120
-  damage: 6
+  damage: 30
   bulletPen: 1
   fireRate: 1.7
   burstCount: 1
   burstInterval: 0.12
-  range: 3.2
+  range: 3
   initialCooldown: 1.5
   maxOnField: 0

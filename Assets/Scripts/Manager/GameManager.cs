@@ -33,8 +33,16 @@ public class GameManager : MonoBehaviour
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         }
 
+<<<<<<< HEAD
         if (catalog != null)
             foreach (var card in catalog.startingHand)
+=======
+        var level = LevelSetup.Current;
+        var startingHand = level != null && level.startingHand.Count > 0 ? level.startingHand
+            : catalog != null ? catalog.startingHand : null;
+        if (startingHand != null)
+            foreach (var card in startingHand)
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
                 AddCardToHand(card);
     }
 

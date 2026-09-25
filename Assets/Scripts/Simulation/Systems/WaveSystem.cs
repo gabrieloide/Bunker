@@ -20,6 +20,9 @@ namespace Bunker.Simulation
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            if (SystemAPI.TryGetSingleton<GameSession>(out var session) && session.IsGameOver)
+                return;
+
             var config = SystemAPI.GetSingleton<WaveConfig>();
             ref var wave = ref SystemAPI.GetSingletonRW<WaveState>().ValueRW;
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();

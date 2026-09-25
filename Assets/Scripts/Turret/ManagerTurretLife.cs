@@ -29,6 +29,9 @@ public class ManagerTurretLife : MonoBehaviour
     {
         if (turretCard != null && LifeSlider != null)
         {
+            // A life buff raises the max as well
+            if (turretCard.MaxLife > 0f && !Mathf.Approximately(LifeSlider.maxValue, turretCard.MaxLife))
+                LifeSlider.maxValue = turretCard.MaxLife;
             float currentLife = turretCard.Life;
             if (!Mathf.Approximately(currentLife, lastLife))
             {

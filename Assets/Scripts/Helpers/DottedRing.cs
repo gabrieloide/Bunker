@@ -7,12 +7,21 @@ public class DottedRing : MonoBehaviour
 {
     static readonly int RadiusId = Shader.PropertyToID("_Radius");
     static readonly int ColorId = Shader.PropertyToID("_Color");
+<<<<<<< HEAD
+=======
+    static readonly int MergeId = Shader.PropertyToID("_MergeWithFlags");
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
 
     [SerializeField] Material material;
     // Dark tone of the game's two-colour palette
     [SerializeField] Color color = new Color32(34, 35, 35, 255);
     [SerializeField] string sortingLayer = "Background";
     [SerializeField] int sortingOrder = 10;
+<<<<<<< HEAD
+=======
+    [Tooltip("Hide the parts of the ring that fall inside another flag's radius (flag rings only)")]
+    [SerializeField] bool mergeWithFlags;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
 
     MeshRenderer meshRenderer;
     MaterialPropertyBlock block;
@@ -51,6 +60,10 @@ public class DottedRing : MonoBehaviour
         if (meshRenderer == null) return;
         block.SetFloat(RadiusId, radius);
         block.SetColor(ColorId, color);
+<<<<<<< HEAD
+=======
+        block.SetFloat(MergeId, mergeWithFlags ? 1f : 0f);
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         meshRenderer.SetPropertyBlock(block);
     }
 }

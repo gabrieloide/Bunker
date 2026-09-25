@@ -17,7 +17,7 @@ MonoBehaviour:
   handPrefab: {fileID: -213461620801725421, guid: accd407f48c24194b800df1472ec5053, type: 3}
   placedPrefab: {fileID: 6397520152180845838, guid: 767b7a347acb9b74f9f9dc8f41ae8460, type: 3}
   dropWeight: 4
-  damage: 15
+  damage: 40
   bulletPen: 8
-  shotCount: 5
+  shotCount: 10
   shotInterval: 0.37

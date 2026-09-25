@@ -16,12 +16,15 @@ public class SimulationBridge : MonoBehaviour
     EntityManager em;
     Entity simEntity;
     EntityQuery needsViewQuery;
+    EntityQuery enemyQuery;
     bool ready;
 
     GameObject[] enemyPrefabs;
     ObjectPooling pool;
     TowerPlayer player;
     LootBag lootBag;
+    AllyView[] allyPrefabs = new AllyView[0];
+    EnemyBaseView enemyBase;
 
     float towerBulletSpeed;
     float towerBulletLifetime;
@@ -31,6 +34,7 @@ public class SimulationBridge : MonoBehaviour
 
     BlobAssetReference<EnemyRosterBlob> rosterBlob;
     BlobAssetReference<EnemyBuffTableBlob> buffBlob;
+    BlobAssetReference<AllyRosterBlob> allyRosterBlob;
 
     public ViewRegistry Views => viewRegistry;
     private ViewRegistry viewRegistry;
@@ -74,6 +78,10 @@ public class SimulationBridge : MonoBehaviour
         pool = FindFirstObjectByType<ObjectPooling>();
         player = FindFirstObjectByType<TowerPlayer>();
         lootBag = FindFirstObjectByType<LootBag>();
+        enemyBase = FindFirstObjectByType<EnemyBaseView>();
+        var allySpawner = FindFirstObjectByType<AllySpawner>();
+        if (LevelSetup.Current != null && LevelSetup.Current.balance != null)
+            balance = LevelSetup.Current.balance;
 
         if (spawner == null || path == null || pool == null || balance == null)
         {
@@ -156,7 +164,11 @@ public class SimulationBridge : MonoBehaviour
             em.AddComponentData(bunkerEntity, new HitBox { HalfExtents = bunkerHalf, Offset = bunkerOffset });
         }
 
+        CreateEnemyBase();
+        CreateAllySpawner(allySpawner);
+
         needsViewQuery = em.CreateEntityQuery(typeof(NeedsView), typeof(LocalTransform));
+        enemyQuery = em.CreateEntityQuery(typeof(EnemyTag), typeof(LocalTransform));
         MirrorWaveState(state.Wave, state.Buff);
         int initialScore = GameManager.instance != null ? GameManager.instance.ActualScore : 0;
         SimEventDispatcher.Seed(initialScore, state.Wave, state.Buff, playerStartLife, 100f);
@@ -198,6 +210,63 @@ public class SimulationBridge : MonoBehaviour
             };
         }
         return builder.CreateBlobAssetReference<EnemyRosterBlob>(Allocator.Persistent);
+    }
+
+    void CreateEnemyBase()
+    {
+        if (enemyBase == null) return;
+        var entity = em.CreateEntity();
+        em.AddComponent<SimulationTag>(entity);
+        em.AddComponent<EnemyBaseTag>(entity);
+        em.AddComponentData(entity, LocalTransform.FromPosition(enemyBase.transform.position));
+        float life = enemyBase.StartLife;
+        em.AddComponentData(entity, new Health { Value = life, Max = life });
+        ColliderBox(enemyBase.gameObject, out var half, out var offset);
+        em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
+        em.AddBuffer<DamageRequest>(entity);
+        enemyBase.Entity = entity;
+    }
+
+    void CreateAllySpawner(AllySpawner spawner)
+    {
+        if (spawner == null || spawner.Allies == null || spawner.Allies.Length == 0) return;
+        allyPrefabs = spawner.Allies;
+
+        using var builder = new BlobBuilder(Allocator.Temp);
+        ref var root = ref builder.ConstructRoot<AllyRosterBlob>();
+        var types = builder.Allocate(ref root.Types, allyPrefabs.Length);
+        for (int i = 0; i < allyPrefabs.Length; i++)
+        {
+            var data = allyPrefabs[i].Data;
+            if (data == null)
+            {
+                Debug.LogError($"SimulationBridge: ally prefab '{allyPrefabs[i].name}' has no AllyData.", allyPrefabs[i]);
+                data = ScriptableObject.CreateInstance<AllyData>();
+            }
+            ColliderBox(allyPrefabs[i].gameObject, out var half, out var offset);
+            types[i] = new AllyTypeDef
+            {
+                Life = data.life,
+                Damage = data.damage,
+                BulletPen = data.bulletPen,
+                AttackInterval = data.attackInterval,
+                AttackRange = data.attackRange,
+                MoveSpeed = data.moveSpeed,
+                HitHalfExtents = half,
+                HitOffset = offset
+            };
+        }
+        allyRosterBlob = builder.CreateBlobAssetReference<AllyRosterBlob>(Allocator.Persistent);
+
+        var entity = em.CreateEntity();
+        em.AddComponent<SimulationTag>(entity);
+        em.AddComponentData(entity, new AllySpawnConfig
+        {
+            Interval = spawner.Interval,
+            SpawnPosition = spawner.transform.position,
+            Roster = allyRosterBlob
+        });
+        em.AddComponentData(entity, new AllySpawnState { Timer = spawner.FirstDelay, NextType = 0 });
     }
 
     BlobAssetReference<EnemyBuffTableBlob> BuildBuffTable()
@@ -306,7 +375,6 @@ public class SimulationBridge : MonoBehaviour
         }
         em.AddComponentData(entity, new Target { Value = Entity.Null });
         em.AddBuffer<DamageRequest>(entity);
-        em.AddBuffer<TowerBuffRequest>(entity);
 
         card.Entity = entity;
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
@@ -369,16 +437,41 @@ public class SimulationBridge : MonoBehaviour
         em.AddComponentData(entity, new NeedsView { Kind = ViewKind.TowerProjectile, PrefabId = 0 });
     }
 
+    public static bool AnyEnemyWithin(Vector3 center, float radius)
+    {
+        if (Instance == null || !Instance.ready) return false;
+        using var transforms = Instance.enemyQuery.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+        float2 c = new float2(center.x, center.y);
+        float r2 = radius * radius;
+        foreach (var t in transforms)
+            if (math.distancesq(t.Position.xy, c) <= r2) return true;
+        return false;
+    }
+
     public void RequestDamage(Entity entity, float damage, float bulletPen)
     {
         if (!ready || !em.Exists(entity) || !em.HasBuffer<DamageRequest>(entity)) return;
         em.GetBuffer<DamageRequest>(entity).Add(new DamageRequest { Damage = damage, BulletPen = bulletPen });
     }
 
-    public void RequestBuff(Entity entity, BuffType type, float multiplier)
+    // A tower takes one buff card; its numbers are applied once
+    public void ApplyBuff(Entity entity, BuffCardDefinition buff)
     {
-        if (!ready || !em.Exists(entity) || !em.HasBuffer<TowerBuffRequest>(entity)) return;
-        em.GetBuffer<TowerBuffRequest>(entity).Add(new TowerBuffRequest { Kind = (TowerBuffKind)type, Multiplier = multiplier });
+        if (!ready || !em.Exists(entity) || !em.HasComponent<Weapon>(entity)) return;
+        var weapon = em.GetComponentData<Weapon>(entity);
+        if (weapon.HasBuff) return;
+        var health = em.GetComponentData<Health>(entity);
+        switch (buff.stat)
+        {
+            case TowerStat.Damage: weapon.Damage *= buff.value; break;
+            case TowerStat.FireRate: weapon.FireInterval /= Mathf.Max(buff.value, 1e-3f); break;
+            case TowerStat.BulletPen: weapon.BulletPen += buff.value; break;
+            case TowerStat.Range: weapon.Range *= buff.value; break;
+            case TowerStat.Life: health.Value *= buff.value; health.Max *= buff.value; break;
+        }
+        weapon.HasBuff = true;
+        em.SetComponentData(entity, weapon);
+        em.SetComponentData(entity, health);
     }
 
     public void RequestBunkerHeal(float amount)
@@ -399,6 +492,13 @@ public class SimulationBridge : MonoBehaviour
     void LateUpdate()
     {
         if (!ready) return;
+        // Leaving play mode can dispose the ECS world before the last LateUpdate
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null || !world.IsCreated)
+        {
+            ready = false;
+            return;
+        }
         DrainEvents();
         CreateViews();
         SyncViews();
@@ -433,6 +533,30 @@ public class SimulationBridge : MonoBehaviour
                         hitView.Enemy.OnHit();
                     if ((Faction)ev.IntValue == Faction.Enemy)
                         ShowDamageText(ev.Position, ev.Amount);
+<<<<<<< HEAD
+=======
+                    break;
+
+                case SimEventKind.MeleeHit:
+                    if (viewRegistry.TryGetView(ev.Source, out var attacker) && attacker.Ally != null)
+                        attacker.Ally.OnAttack();
+                    if (viewRegistry.TryGetView(ev.Target, out var struck) && struck.Enemy != null)
+                        struck.Enemy.OnHit();
+                    ShowDamageText(ev.Position, ev.Amount);
+                    break;
+
+                case SimEventKind.AllyDied:
+                    if (viewRegistry.TryGetView(ev.Source, out var deadAlly) && deadAlly.Ally != null)
+                        deadAlly.Ally.OnDied();
+                    break;
+
+                case SimEventKind.EnemyBaseHit:
+                    if (enemyBase != null) enemyBase.OnHit(ev.IntValue);
+                    break;
+
+                case SimEventKind.Victory:
+                    if (enemyBase != null) enemyBase.OnDestroyed();
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
                     break;
 
                 case SimEventKind.EnemyDied:
@@ -469,7 +593,6 @@ public class SimulationBridge : MonoBehaviour
                     break;
 
                 case SimEventKind.GameOver:
-                    Debug.Log("SimulationBridge: Game Over triggered by ECS.");
                     if (WaveManager.instance != null && WaveManager.instance.winScreen != null)
                         WaveManager.instance.winScreen.SetActive(true);
                     break;
@@ -506,6 +629,13 @@ public class SimulationBridge : MonoBehaviour
                 case ViewKind.ArtilleryShell:
                     view = SpawnShellView(entity, request.PrefabId, position);
                     break;
+<<<<<<< HEAD
+=======
+                case ViewKind.Ally:
+                    if (request.PrefabId >= 0 && request.PrefabId < allyPrefabs.Length && allyPrefabs[request.PrefabId] != null)
+                        view = Instantiate(allyPrefabs[request.PrefabId], position, Quaternion.identity).gameObject;
+                    break;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
             }
 
             if (view == null) continue;
@@ -537,7 +667,7 @@ public class SimulationBridge : MonoBehaviour
             }
 
             Vector3 position = em.GetComponentData<LocalTransform>(entity).Position;
-            if (view.Kind == ViewKind.Enemy)
+            if (view.Kind == ViewKind.Enemy || view.Kind == ViewKind.Ally)
             {
                 float dx = position.x - view.Transform.position.x;
                 if (Mathf.Abs(dx) > 1e-4f)
@@ -550,7 +680,12 @@ public class SimulationBridge : MonoBehaviour
             else if (view.Kind == (ViewKind)LocalViewKind.Tower)
             {
                 if (view.TurretCard != null)
-                    view.TurretCard.Life = em.GetComponentData<Health>(entity).Value;
+                {
+                    var health = em.GetComponentData<Health>(entity);
+                    view.TurretCard.Life = health.Value;
+                    view.TurretCard.MaxLife = health.Max;
+                    view.TurretCard.SetRange(em.GetComponentData<Weapon>(entity).Range);
+                }
             }
             view.Transform.position = position;
         }
@@ -581,16 +716,16 @@ public class SimulationBridge : MonoBehaviour
     void OnDestroy()
     {
         if (Instance == this) Instance = null;
-        if (!ready) return;
 
         var world = World.DefaultGameObjectInjectionWorld;
-        if (world != null && world.IsCreated)
+        if (ready && world != null && world.IsCreated)
         {
             var query = em.CreateEntityQuery(typeof(SimulationTag));
             em.DestroyEntity(query);
         }
         if (rosterBlob.IsCreated) rosterBlob.Dispose();
         if (buffBlob.IsCreated) buffBlob.Dispose();
+        if (allyRosterBlob.IsCreated) allyRosterBlob.Dispose();
 
         if (viewRegistry != null)
         {
