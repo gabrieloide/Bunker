@@ -4,6 +4,10 @@ public class NormalCard : Card
 {
     LayerMask NormalCardLM() => LayerMask.GetMask("Decoration", "Path", "Limits");
     protected override bool SnapsToGrid => true;
+<<<<<<< HEAD
+=======
+    protected override bool BuiltBySoldier => true;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     protected override RaycastHit2D DetectObjectsBelow() => CastFootprint(NormalCardLM());
 
     TowerCardDefinition Tower => definition as TowerCardDefinition;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Jeep
   m_EditorClassIdentifier: 
   _life: 55
-  _damage: 2
+  _damage: 30
   _attackInterval: 1.2
   _attackRange: 4
   _defense: 5

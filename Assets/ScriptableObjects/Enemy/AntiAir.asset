@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AntiAir
   m_EditorClassIdentifier: 
   _life: 55
-  _damage: 3
+  _damage: 30
   _attackInterval: 1.5
   _attackRange: 5
   _defense: 2

@@ -25,8 +25,7 @@ public class CardDrop : MonoBehaviour
     }
     public void TakeCard()
     {
-        int cardsInHand = GameManager.instance.CurrentCardAmount;
-        if (cardsInHand < 5)
+        if (Deck.instance != null && Deck.instance.HasRoom)
         {
             if (cardsQueue.Count > 0)
             {

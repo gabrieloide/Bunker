@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Granade
   m_EditorClassIdentifier: 
   _life: 45
-  _damage: 3
+  _damage: 30
   _attackInterval: 2.2
   _attackRange: 4
   _defense: 0

@@ -92,6 +92,68 @@ namespace Bunker.Simulation
 
             foreach (var (health, requests, transform, entity) in
                      SystemAPI.Query<RefRW<Health>, DynamicBuffer<DamageRequest>, RefRO<LocalTransform>>()
+                         .WithAll<AllyTag>()
+                         .WithEntityAccess())
+            {
+                if (requests.Length == 0)
+                    continue;
+
+                float total = 0f;
+                for (int i = 0; i < requests.Length; i++)
+                    total += requests[i].Damage;
+                requests.Clear();
+
+                health.ValueRW.Value -= total;
+                if (health.ValueRO.Value > 0f)
+                    continue;
+
+                events.Add(new SimEvent { Kind = SimEventKind.AllyDied, Source = entity, Position = transform.ValueRO.Position });
+                ecb.DestroyEntity(entity);
+            }
+
+            foreach (var (health, requests, transform, entity) in
+                     SystemAPI.Query<RefRW<Health>, DynamicBuffer<DamageRequest>, RefRO<LocalTransform>>()
+                         .WithAll<EnemyBaseTag>()
+                         .WithEntityAccess())
+            {
+                if (requests.Length == 0 || health.ValueRO.Value <= 0f)
+                {
+                    requests.Clear();
+                    continue;
+                }
+
+                float total = 0f;
+                for (int i = 0; i < requests.Length; i++)
+                    total += requests[i].Damage;
+                requests.Clear();
+
+                float newHealth = math.clamp(health.ValueRO.Value - total, 0f, health.ValueRO.Max);
+                health.ValueRW.Value = newHealth;
+                events.Add(new SimEvent
+                {
+                    Kind = SimEventKind.EnemyBaseHit,
+                    Source = entity,
+                    Position = transform.ValueRO.Position,
+                    Amount = total,
+                    IntValue = (int)math.ceil(newHealth)
+                });
+
+                if (newHealth > 0f)
+                    continue;
+
+                // A bunker that fell the same frame already ended the match
+                if (hasSession)
+                {
+                    ref var session = ref SystemAPI.GetSingletonRW<GameSession>().ValueRW;
+                    if (session.IsGameOver)
+                        continue;
+                    session.IsGameOver = true;
+                }
+                events.Add(new SimEvent { Kind = SimEventKind.Victory, Source = entity, Position = transform.ValueRO.Position });
+            }
+
+            foreach (var (health, requests, transform, entity) in
+                     SystemAPI.Query<RefRW<Health>, DynamicBuffer<DamageRequest>, RefRO<LocalTransform>>()
                          .WithAll<BunkerTag>()
                          .WithEntityAccess())
             {
@@ -120,6 +182,8 @@ namespace Bunker.Simulation
                     if (hasSession)
                     {
                         ref var session = ref SystemAPI.GetSingletonRW<GameSession>().ValueRW;
+                        if (session.IsGameOver)
+                            continue;
                         session.IsGameOver = true;
                     }
                     events.Add(new SimEvent

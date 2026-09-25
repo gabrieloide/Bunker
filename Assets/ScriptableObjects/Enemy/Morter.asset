@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Morter
   m_EditorClassIdentifier: 
   _life: 45
-  _damage: 5
+  _damage: 30
   _attackInterval: 3.5
   _attackRange: 6
   _defense: 1

@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
+<<<<<<< HEAD
 // Every card, enemy and wave number in one window: Bunker > Balance.
 // Cells are bound to the real assets, so edits are undoable and saved like any inspector change.
 public class BalanceWindow : EditorWindow
@@ -17,6 +18,20 @@ public class BalanceWindow : EditorWindow
     const int WeightTotal = 1000;
 
     enum Section { Towers, Artillery, Buffs, Heals, Mines, AirStrikes, Enemies, Waves, Loot }
+=======
+// Every card, enemy, ally, level and wave number in one window: Bunker > Balance.
+// Cells are bound to the real assets, so edits are undoable and saved like any inspector change.
+// Cards and levels can be created from an existing one (copying its hand prefab too), duplicated,
+// renamed in place and deleted (to the system trash) from here.
+public class BalanceWindow : EditorWindow
+{
+    const string CardFolder = "Assets/ScriptableObjects/CardDefinitions";
+    const string LevelFolder = "Assets/ScriptableObjects/Levels";
+    // Drop % edits rewrite the weights so they add up to this (0.1% resolution)
+    const int WeightTotal = 1000;
+
+    enum Section { Towers, Artillery, Buffs, Heals, Mines, AirStrikes, Flags, Enemies, Allies, Waves, Loot, Levels }
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
 
     struct SectionInfo
     {
@@ -28,6 +43,7 @@ public class BalanceWindow : EditorWindow
     {
         { Section.Towers, new SectionInfo { Group = "CARDS", Title = "Towers", CardType = typeof(TowerCardDefinition), Subtitle = "Towers that shoot straight bullets. DPS = damage × burst × rate." } },
         { Section.Artillery, new SectionInfo { Group = "CARDS", Title = "Artillery", CardType = typeof(ArtilleryTowerCardDefinition), Subtitle = "Towers that lob shells with splash damage. The placed prefab needs an ArtilleryAuthoring." } },
+<<<<<<< HEAD
         { Section.Buffs, new SectionInfo { Group = "CARDS", Title = "Tower buffs", CardType = typeof(BuffCardDefinition), Subtitle = "Attack / Speed multiply the stat; Bullet Pen adds flat armor penetration." } },
         { Section.Heals, new SectionInfo { Group = "CARDS", Title = "Bunker heals", CardType = typeof(HealCardDefinition), Subtitle = "Restore bunker life when played." } },
         { Section.Mines, new SectionInfo { Group = "CARDS", Title = "Land mines", CardType = typeof(LandMineCardDefinition), Subtitle = "Explode on the first enemy that steps on them." } },
@@ -35,6 +51,18 @@ public class BalanceWindow : EditorWindow
         { Section.Enemies, new SectionInfo { Group = "ENEMIES", Title = "Enemies", Subtitle = "Roster order = unlock order (read from the open scene's EnemySpawner). DPS = damage ÷ shot interval." } },
         { Section.Waves, new SectionInfo { Group = "RULES", Title = "Waves", Subtitle = "Spawning, progression, bosses and the random enemy buff of each wave." } },
         { Section.Loot, new SectionInfo { Group = "RULES", Title = "Loot, hand & limits", Subtitle = "How often kills drop a card, which card comes out, the hand you start with and how many towers fit on the map." } },
+=======
+        { Section.Buffs, new SectionInfo { Group = "CARDS", Title = "Tower buffs", CardType = typeof(BuffCardDefinition), Subtitle = "Value multiplies the stat (1.3 = +30%); for Bullet Pen it is flat armor penetration added." } },
+        { Section.Heals, new SectionInfo { Group = "CARDS", Title = "Bunker heals", CardType = typeof(HealCardDefinition), Subtitle = "Restore bunker life when played." } },
+        { Section.Mines, new SectionInfo { Group = "CARDS", Title = "Land mines", CardType = typeof(LandMineCardDefinition), Subtitle = "Explode on the first enemy that steps on them." } },
+        { Section.AirStrikes, new SectionInfo { Group = "CARDS", Title = "Air strikes", CardType = typeof(AirStrikeCardDefinition), Subtitle = "A plane crosses the screen and fires a volley." } },
+        { Section.Flags, new SectionInfo { Group = "CARDS", Title = "Flags", CardType = typeof(FlagCardDefinition), Subtitle = "Plant a flag to win ground back. Its radius must touch another flag's and be clear of enemies." } },
+        { Section.Enemies, new SectionInfo { Group = "UNITS", Title = "Enemies", Subtitle = "Roster order = unlock order (read from the open scene's EnemySpawner). DPS = damage ÷ shot interval." } },
+        { Section.Allies, new SectionInfo { Group = "UNITS", Title = "Allies", Subtitle = "Soldiers that leave the bunker and walk to the enemy base. Keep them much weaker than enemies. DPS = damage ÷ hit interval." } },
+        { Section.Waves, new SectionInfo { Group = "RULES", Title = "Waves", Subtitle = "Spawning, progression, bosses and the random enemy buff of each wave." } },
+        { Section.Loot, new SectionInfo { Group = "RULES", Title = "Loot, hand & limits", Subtitle = "How often kills drop a card, which card comes out, the hand you start with and how many towers fit on the map." } },
+        { Section.Levels, new SectionInfo { Group = "LEVELS", Title = "Levels", Subtitle = "Play order of the level selector (arrows to reorder). Flags and starting hand: select a row to edit them in the Inspector." } },
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     };
 
     // Short headers; the field's tooltip is shown on hover
@@ -46,10 +74,22 @@ public class BalanceWindow : EditorWindow
         { "fireRate", ("Rate /s", 60) }, { "burstCount", ("Burst", 52) }, { "burstInterval", ("Burst gap", 70) },
         { "range", ("Range", 56) }, { "initialCooldown", ("1st shot", 62) }, { "maxOnField", ("Max", 50) },
         { "splashRadius", ("Splash", 60) }, { "riseTime", ("Rise", 56) }, { "fallTime", ("Fall", 56) }, { "height", ("Apex", 56) },
+<<<<<<< HEAD
         { "buffType", ("Stat", 130) }, { "amount", ("Amount", 70) }, { "healAmount", ("Heal", 70) },
         { "shotCount", ("Shots", 60) }, { "shotInterval", ("Shot gap", 70) },
         { "_life", ("Life", 64) }, { "_damage", ("Damage", 64) }, { "_attackInterval", ("Shot every", 80) },
         { "_attackRange", ("Range", 60) }, { "_defense", ("Armor", 60) }, { "_moveSpeed", ("Speed", 60) }, { "Score", ("Score", 60) },
+=======
+        { "healAmount", ("Heal", 70) },
+        { "shotCount", ("Shots", 60) }, { "shotInterval", ("Shot gap", 70) },
+        { "_life", ("Life", 64) }, { "_damage", ("Damage", 64) }, { "_attackInterval", ("Shot every", 80) },
+        { "_attackRange", ("Range", 60) }, { "_defense", ("Armor", 60) }, { "_moveSpeed", ("Speed", 60) }, { "Score", ("Score", 60) },
+        { "radius", ("Radius", 60) },
+        { "stat", ("Stat", 110) }, { "value", ("Value", 64) },
+        { "attackInterval", ("Hit every", 70) }, { "attackRange", ("Reach", 60) }, { "moveSpeed", ("Speed", 60) },
+        { "sceneName", ("Scene", 110) }, { "enemyBaseLife", ("Base life", 70) }, { "balance", ("Waves config", 150) },
+        { "allySpawnInterval", ("Ally every", 76) }, { "firstAllyDelay", ("1st ally", 64) },
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     };
 
     static readonly HashSet<string> HiddenFields = new HashSet<string> { "m_Script", "description" };
@@ -62,6 +102,17 @@ public class BalanceWindow : EditorWindow
         public int RosterIndex = -1;
     }
 
+<<<<<<< HEAD
+=======
+    // Small icon button shown at the end of every row
+    struct RowAction
+    {
+        public string Icon, Tooltip;
+        public Action<Row> Run;
+        public RowAction(string icon, string tooltip, Action<Row> run) { Icon = icon; Tooltip = tooltip; Run = run; }
+    }
+
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     [SerializeField] Section section = Section.Towers;
     [SerializeField] bool showPrefabs;
     string search = "";
@@ -151,7 +202,13 @@ public class BalanceWindow : EditorWindow
         {
             var info = Sections[pair.Key];
             int count = info.CardType != null ? cards.Count(c => c.GetType() == info.CardType)
+<<<<<<< HEAD
                 : pair.Key == Section.Enemies ? FindAssets<EnemyData>().Count : -1;
+=======
+                : pair.Key == Section.Enemies ? FindAssets<EnemyData>().Count
+                : pair.Key == Section.Allies ? FindAssets<AllyData>().Count
+                : pair.Key == Section.Levels ? FindAssets<LevelDefinition>().Count : -1;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
             var countLabel = pair.Value.Q<Label>("count");
             countLabel.text = count.ToString();
             countLabel.style.display = count >= 0 ? DisplayStyle.Flex : DisplayStyle.None;
@@ -178,6 +235,11 @@ public class BalanceWindow : EditorWindow
 
         if (info.CardType != null) BuildCardSection(info.CardType);
         else if (section == Section.Enemies) BuildEnemySection();
+<<<<<<< HEAD
+=======
+        else if (section == Section.Allies) BuildAllySection();
+        else if (section == Section.Levels) BuildLevelSection();
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         else if (section == Section.Waves) BuildWavesSection();
         else BuildLootSection();
     }
@@ -215,10 +277,21 @@ public class BalanceWindow : EditorWindow
         prefabs.AddToClassList("toolbar__toggle");
         prefabs.RegisterValueChangedCallback(e => { showPrefabs = e.newValue; RebuildTableOnly(); });
         bar.Add(prefabs);
+<<<<<<< HEAD
         bar.Add(Button("+ New card", () => CreateCard(cardType)));
         content.Add(bar);
 
         var catalog = Catalog();
+=======
+        content.Add(bar);
+
+        var catalog = Catalog();
+        var templates = FindAssets<CardDefinition>().Where(d => d.GetType() == cardType).Cast<Object>().ToList();
+        var create = CreateBar("card", templates, withPoolToggle: true,
+            (name, template, addToPool) => CreateCard(cardType, name, (CardDefinition)template, addToPool));
+        bar.Add(Button("+ New card", () => ToggleCreateBar(create), "Create a card, starting from a copy of an existing one"));
+        content.Add(create);
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         AddWarnings(CardWarnings(FindAssets<CardDefinition>(), catalog).Where(w => w.asset != null && w.asset.GetType() == cardType).ToList());
 
         tableHost = new VisualElement { style = { flexGrow = 1 } };
@@ -241,11 +314,25 @@ public class BalanceWindow : EditorWindow
                     row => { var a = (AirStrikeCardDefinition)row.Asset; return (a.damage * a.shotCount).ToString("0.#"); },
                     row => { var a = (AirStrikeCardDefinition)row.Asset; return a.damage * a.shotCount; }));
 
+<<<<<<< HEAD
             tableHost.Add(BuildTable(rows, first: DropColumn(catalog, rows), extra: extra));
+=======
+            var actions = new List<RowAction>
+            {
+                new RowAction("TreeEditor.Duplicate", "Duplicate this card (and its hand prefab)", row =>
+                {
+                    var def = (CardDefinition)row.Asset;
+                    CreateCard(cardType, $"{def.displayName} copy", def, catalog != null && catalog.cards.Contains(def));
+                }),
+                new RowAction("TreeEditor.Trash", "Delete this card", row => DeleteCard((CardDefinition)row.Asset)),
+            };
+            tableHost.Add(BuildTable(rows, first: DropColumn(catalog, rows), extra: extra, actions: actions));
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         };
         rebuildTable();
     }
 
+<<<<<<< HEAD
     void CreateCard(Type cardType)
     {
         if (!AssetDatabase.IsValidFolder(CardFolder))
@@ -256,6 +343,43 @@ public class BalanceWindow : EditorWindow
 
         var catalog = Catalog();
         if (catalog != null)
+=======
+    // A copy of `template` (hand prefab included, pointing at the new card) or, without one, an empty card
+    void CreateCard(Type cardType, string displayName, CardDefinition template, bool addToPool)
+    {
+        EnsureFolder(CardFolder);
+        string path = AssetDatabase.GenerateUniqueAssetPath($"{CardFolder}/{FileName(displayName)}.asset");
+        CardDefinition def;
+        if (template != null)
+        {
+            AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(template), path);
+            def = AssetDatabase.LoadAssetAtPath<CardDefinition>(path);
+            if (template.handPrefab != null)
+            {
+                string handSource = AssetDatabase.GetAssetPath(template.handPrefab);
+                string handPath = AssetDatabase.GenerateUniqueAssetPath($"{System.IO.Path.GetDirectoryName(handSource).Replace('\\', '/')}/{FileName(displayName)}.prefab");
+                AssetDatabase.CopyAsset(handSource, handPath);
+                var hand = AssetDatabase.LoadAssetAtPath<GameObject>(handPath);
+                var card = hand.GetComponent<Card>();
+                if (card != null)
+                {
+                    card.definition = def;
+                    PrefabUtility.SavePrefabAsset(hand);
+                }
+                def.handPrefab = hand.GetComponent<CardIndex>();
+            }
+        }
+        else
+        {
+            def = (CardDefinition)CreateInstance(cardType);
+            AssetDatabase.CreateAsset(def, path);
+        }
+        def.displayName = displayName;
+        EditorUtility.SetDirty(def);
+
+        var catalog = Catalog();
+        if (catalog != null && addToPool && !catalog.cards.Contains(def))
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         {
             Undo.RecordObject(catalog, "Add card to catalog");
             catalog.cards.Add(def);
@@ -266,6 +390,247 @@ public class BalanceWindow : EditorWindow
         Rebuild();
     }
 
+<<<<<<< HEAD
+=======
+    // Removes the card from every list that uses it, then moves it (and optionally its hand prefab) to the trash
+    void DeleteCard(CardDefinition def)
+    {
+        var hand = def.handPrefab != null ? def.handPrefab.gameObject : null;
+        bool handShared = hand != null && FindAssets<CardDefinition>().Any(d => d != def && d.handPrefab != null && d.handPrefab.gameObject == hand);
+        string message = $"Delete '{def.displayName}' ({def.name})?\n\nIt is removed from the drop pool, the starting hands and the levels, and moved to the system trash.";
+
+        bool deleteHand;
+        if (hand != null && !handShared)
+        {
+            int choice = EditorUtility.DisplayDialogComplex("Delete card", message + $"\n\nIts hand prefab '{hand.name}' is not used by any other card.",
+                "Delete card and hand prefab", "Cancel", "Delete card only");
+            if (choice == 1) return;
+            deleteHand = choice == 0;
+        }
+        else
+        {
+            if (!EditorUtility.DisplayDialog("Delete card", message, "Delete", "Cancel")) return;
+            deleteHand = false;
+        }
+
+        var catalog = Catalog();
+        if (catalog != null)
+        {
+            Undo.RecordObject(catalog, "Delete card");
+            catalog.cards.RemoveAll(c => c == def);
+            catalog.startingHand.RemoveAll(c => c == def);
+            EditorUtility.SetDirty(catalog);
+        }
+        foreach (var level in FindAssets<LevelDefinition>())
+        {
+            if (level.startingHand.RemoveAll(c => c == def) > 0)
+                EditorUtility.SetDirty(level);
+        }
+        AssetDatabase.SaveAssets();
+
+        if (deleteHand) AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(hand));
+        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(def));
+        Rebuild();
+    }
+
+    // ---------------------------------------------------------------- create bar
+
+    // Inline form: name + "based on" (copy an existing asset) + create. Hidden until "+ New" is pressed.
+    VisualElement CreateBar(string what, List<Object> templates, bool withPoolToggle, Action<string, Object, bool> create)
+    {
+        var bar = new VisualElement();
+        bar.AddToClassList("create-bar");
+        bar.style.display = DisplayStyle.None;
+
+        var nameField = new TextField("Name") { value = "" };
+        nameField.AddToClassList("create-bar__name");
+        bar.Add(nameField);
+
+        const string empty = "(empty)";
+        var choices = new List<string> { empty };
+        choices.AddRange(templates.Select(t => t.name));
+        var basedOn = new PopupField<string>("Based on", choices, templates.Count > 0 ? 1 : 0);
+        basedOn.tooltip = "Copies every value (and, for cards, the hand prefab with its art) from this one";
+        basedOn.AddToClassList("create-bar__based");
+        bar.Add(basedOn);
+
+        Toggle pool = null;
+        if (withPoolToggle)
+        {
+            pool = new Toggle("Drops") { value = true, tooltip = "Add it to the loot drop pool" };
+            pool.AddToClassList("create-bar__toggle");
+            bar.Add(pool);
+        }
+
+        bar.Add(Spacer());
+        Action submit = () =>
+        {
+            string name = string.IsNullOrWhiteSpace(nameField.value) ? $"New {what}" : nameField.value.Trim();
+            var template = basedOn.index > 0 ? templates[basedOn.index - 1] : null;
+            create(name, template, pool == null || pool.value);
+        };
+        var createButton = Button("Create", submit);
+        createButton.AddToClassList("create-bar__create");
+        bar.Add(createButton);
+        bar.Add(Button("Cancel", () => bar.style.display = DisplayStyle.None));
+
+        nameField.RegisterCallback<KeyDownEvent>(e =>
+        {
+            if (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter) submit();
+        });
+        return bar;
+    }
+
+    static void ToggleCreateBar(VisualElement bar)
+    {
+        bool show = bar.style.display == DisplayStyle.None;
+        bar.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+        if (show) bar.Q<TextField>()?.Focus();
+    }
+
+    // ---------------------------------------------------------------- allies
+
+    void BuildAllySection()
+    {
+        content.Add(Toolbar(true));
+        var spawner = FindFirstObjectByType<AllySpawner>();
+        var roster = spawner != null && spawner.Allies != null
+            ? spawner.Allies.Where(a => a != null && a.Data != null).Select(a => a.Data).ToList()
+            : new List<AllyData>();
+        if (spawner == null)
+            AddWarnings(new List<(string, Object)> { ("Open SceneGame to see which allies the bunker sends out.", null) });
+
+        tableHost = new VisualElement { style = { flexGrow = 1 } };
+        content.Add(tableHost);
+        rebuildTable = () =>
+        {
+            tableHost.Clear();
+            var rows = FindAssets<AllyData>()
+                .Where(Matches)
+                .Select(d => new Row { Asset = d, So = new SerializedObject(d), RosterIndex = roster.IndexOf(d) })
+                .ToList();
+
+            var sent = DerivedColumn(rows, "Sent", "Sent out by the open scene's AllySpawner (in this order)", 52,
+                row => row.RosterIndex >= 0 ? (row.RosterIndex + 1).ToString() : "–", row => row.RosterIndex);
+            var dps = DerivedColumn(rows, "DPS", "Damage per second before enemy armor (damage ÷ hit interval)", 56,
+                row => { var d = (AllyData)row.Asset; return d.attackInterval > 0 ? (d.damage / d.attackInterval).ToString("0.##") : "–"; },
+                row => { var d = (AllyData)row.Asset; return d.attackInterval > 0 ? d.damage / d.attackInterval : 0f; });
+            tableHost.Add(BuildTable(rows, first: sent, extra: new List<Column> { dps }));
+        };
+        rebuildTable();
+    }
+
+    // ---------------------------------------------------------------- levels
+
+    void BuildLevelSection()
+    {
+        var bar = Toolbar(true);
+        content.Add(bar);
+
+        var levelCatalog = FindAssets<LevelCatalog>().FirstOrDefault();
+        if (levelCatalog == null)
+            AddWarnings(new List<(string, Object)> { ("No LevelCatalog asset: the level selector shows nothing.", null) });
+        else
+            AddWarnings(FindAssets<LevelDefinition>().Where(l => !levelCatalog.levels.Contains(l))
+                .Select(l => ($"{l.name}: not in the LevelCatalog, the selector doesn't show it.", (Object)l)).ToList());
+
+        var templates = FindAssets<LevelDefinition>().Cast<Object>().ToList();
+        var create = CreateBar("level", templates, withPoolToggle: false,
+            (name, template, _) => CreateLevel(levelCatalog, name, (LevelDefinition)template));
+        bar.Add(Button("+ New level", () => ToggleCreateBar(create), "Create a level, starting from a copy of an existing one"));
+        content.Add(create);
+
+        tableHost = new VisualElement { style = { flexGrow = 1 } };
+        content.Add(tableHost);
+        rebuildTable = () =>
+        {
+            tableHost.Clear();
+            // Catalog order first (play order), then levels the catalog doesn't list
+            var ordered = levelCatalog != null ? levelCatalog.levels.Where(l => l != null).ToList() : new List<LevelDefinition>();
+            ordered.AddRange(FindAssets<LevelDefinition>().Where(l => !ordered.Contains(l)));
+            var rows = ordered.Where(Matches)
+                .Select(l => new Row { Asset = l, So = new SerializedObject(l), RosterIndex = levelCatalog != null ? levelCatalog.levels.IndexOf(l) : -1 })
+                .ToList();
+
+            var order = DerivedColumn(rows, "#", "Position in the level selector", 40,
+                row => row.RosterIndex >= 0 ? (row.RosterIndex + 1).ToString() : "–", row => row.RosterIndex);
+            var flags = DerivedColumn(rows, "Flags", "Flags planted at the start (edit them in the Inspector)", 50,
+                row => ((LevelDefinition)row.Asset).flags.Count.ToString(), row => ((LevelDefinition)row.Asset).flags.Count);
+            var actions = new List<RowAction>
+            {
+                new RowAction("scrollup", "Play earlier", row => MoveLevel(levelCatalog, (LevelDefinition)row.Asset, -1)),
+                new RowAction("scrolldown", "Play later", row => MoveLevel(levelCatalog, (LevelDefinition)row.Asset, +1)),
+                new RowAction("TreeEditor.Duplicate", "Duplicate this level", row =>
+                {
+                    var level = (LevelDefinition)row.Asset;
+                    CreateLevel(levelCatalog, $"{level.displayName} copy", level);
+                }),
+                new RowAction("TreeEditor.Trash", "Delete this level", row => DeleteLevel(levelCatalog, (LevelDefinition)row.Asset)),
+            };
+            tableHost.Add(BuildTable(rows, first: order, extra: new List<Column> { flags },
+                onlyFields: new[] { "displayName", "sceneName", "enemyBaseLife", "allySpawnInterval", "firstAllyDelay", "balance" }, actions: actions));
+        };
+        rebuildTable();
+    }
+
+    void CreateLevel(LevelCatalog levelCatalog, string displayName, LevelDefinition template)
+    {
+        EnsureFolder(LevelFolder);
+        string path = AssetDatabase.GenerateUniqueAssetPath($"{LevelFolder}/{FileName(displayName)}.asset");
+        LevelDefinition level;
+        if (template != null)
+        {
+            AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(template), path);
+            level = AssetDatabase.LoadAssetAtPath<LevelDefinition>(path);
+        }
+        else
+        {
+            level = CreateInstance<LevelDefinition>();
+            AssetDatabase.CreateAsset(level, path);
+        }
+        level.displayName = displayName;
+        EditorUtility.SetDirty(level);
+
+        if (levelCatalog != null)
+        {
+            Undo.RecordObject(levelCatalog, "Add level");
+            levelCatalog.levels.Add(level);
+            EditorUtility.SetDirty(levelCatalog);
+        }
+        AssetDatabase.SaveAssets();
+        Selection.activeObject = level;
+        Rebuild();
+    }
+
+    void DeleteLevel(LevelCatalog levelCatalog, LevelDefinition level)
+    {
+        if (!EditorUtility.DisplayDialog("Delete level",
+                $"Delete '{level.displayName}' ({level.name})?\n\nIt is removed from the level selector and moved to the system trash.", "Delete", "Cancel"))
+            return;
+        if (levelCatalog != null)
+        {
+            Undo.RecordObject(levelCatalog, "Delete level");
+            levelCatalog.levels.RemoveAll(l => l == level);
+            EditorUtility.SetDirty(levelCatalog);
+            AssetDatabase.SaveAssets();
+        }
+        AssetDatabase.MoveAssetToTrash(AssetDatabase.GetAssetPath(level));
+        Rebuild();
+    }
+
+    void MoveLevel(LevelCatalog levelCatalog, LevelDefinition level, int delta)
+    {
+        if (levelCatalog == null) return;
+        int index = levelCatalog.levels.IndexOf(level);
+        int target = index + delta;
+        if (index < 0 || target < 0 || target >= levelCatalog.levels.Count) return;
+        Undo.RecordObject(levelCatalog, "Reorder levels");
+        (levelCatalog.levels[index], levelCatalog.levels[target]) = (levelCatalog.levels[target], levelCatalog.levels[index]);
+        EditorUtility.SetDirty(levelCatalog);
+        RebuildTableOnly();
+    }
+
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     // ---------------------------------------------------------------- enemies
 
     void BuildEnemySection()
@@ -458,7 +823,11 @@ public class BalanceWindow : EditorWindow
 
     // ---------------------------------------------------------------- table
 
+<<<<<<< HEAD
     MultiColumnListView BuildTable(List<Row> rows, Column first, List<Column> extra, string[] onlyFields = null)
+=======
+    MultiColumnListView BuildTable(List<Row> rows, Column first, List<Column> extra, string[] onlyFields = null, List<RowAction> actions = null)
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     {
         var list = new MultiColumnListView
         {
@@ -478,21 +847,54 @@ public class BalanceWindow : EditorWindow
         list.style.height = 48 + rows.Count * 28;
 
         float nameWidth = Mathf.Clamp(24 + 7.5f * rows.Select(r => r.Asset.name.Length).DefaultIfEmpty(8).Max(), 90, 190);
+<<<<<<< HEAD
         var name = new Column { name = "asset", title = "Asset", width = nameWidth, minWidth = 90, stretchable = false, makeHeader = Header("Asset", "Asset file; click a row to select it", TextAnchor.MiddleLeft) };
         name.makeCell = () =>
         {
             var cell = CellRow();
             cell.Add(Label("", "cell--name"));
+=======
+        var name = new Column { name = "asset", title = "Asset", width = nameWidth, minWidth = 90, stretchable = false, makeHeader = Header("Asset", "Asset file name; type to rename it. Click a row to select it", TextAnchor.MiddleLeft) };
+        name.makeCell = () =>
+        {
+            var cell = CellRow();
+            var field = new TextField { isDelayed = true };
+            field.AddToClassList("cell");
+            field.AddToClassList("cell--name");
+            field.RegisterValueChangedCallback(e =>
+            {
+                if (!(field.userData is Object asset) || string.IsNullOrWhiteSpace(e.newValue) || e.newValue == asset.name) return;
+                string error = AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(asset), FileName(e.newValue));
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogWarning($"Balance: can't rename '{asset.name}': {error}");
+                    field.SetValueWithoutNotify(asset.name);
+                }
+            });
+            cell.Add(field);
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
             return cell;
         };
         name.bindCell = (e, i) =>
         {
+<<<<<<< HEAD
             var label = e.Q<Label>();
             label.text = rows[i].Asset.name;
             label.tooltip = "Click to select the asset (full inspector, description…)";
         };
         SetComparison(name, rows, r => r.Asset.name);
         list.columns.Add(name);
+=======
+            var field = e.Q<TextField>();
+            field.userData = rows[i].Asset;
+            field.SetValueWithoutNotify(rows[i].Asset.name);
+            field.tooltip = "Type to rename the asset file";
+        };
+        SetComparison(name, rows, r => r.Asset.name);
+        list.columns.Add(name);
+        // Right after the name so they stay visible when the table scrolls sideways
+        if (actions != null && actions.Count > 0) list.columns.Add(ActionsColumn(rows, actions));
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         if (first != null) list.columns.Add(first);
 
         if (rows.Count > 0)
@@ -528,6 +930,38 @@ public class BalanceWindow : EditorWindow
         return list;
     }
 
+<<<<<<< HEAD
+=======
+    static Column ActionsColumn(List<Row> rows, List<RowAction> actions)
+    {
+        var column = new Column
+        {
+            name = "actions", title = "", width = 8 + 26 * actions.Count, resizable = false, sortable = false,
+            makeHeader = () => new VisualElement(),
+        };
+        column.makeCell = () =>
+        {
+            var cell = CellRow();
+            cell.AddToClassList("row-actions");
+            foreach (var action in actions)
+            {
+                var run = action.Run;
+                var button = new Button { tooltip = action.Tooltip };
+                button.AddToClassList("row-action");
+                button.Add(new Image { image = EditorGUIUtility.IconContent(action.Icon).image });
+                button.clicked += () =>
+                {
+                    if (cell.userData is Row row) run(row);
+                };
+                cell.Add(button);
+            }
+            return cell;
+        };
+        column.bindCell = (e, i) => e.userData = rows[i];
+        return column;
+    }
+
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     Column FieldColumn(List<Row> rows, SerializedProperty template)
     {
         string path = template.propertyPath;
@@ -735,6 +1169,11 @@ public class BalanceWindow : EditorWindow
                 warnings.Add(($"{def.name}: the placed prefab needs an ArtilleryAuthoring.", def));
             if ((def is LandMineCardDefinition || def is AirStrikeCardDefinition) && def.placedPrefab == null)
                 warnings.Add(($"{def.name}: no placed prefab assigned.", def));
+<<<<<<< HEAD
+=======
+            if (def is FlagCardDefinition && (def.placedPrefab == null || def.placedPrefab.GetComponent<Flag>() == null))
+                warnings.Add(($"{def.name}: the placed prefab needs a Flag.", def));
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         }
         return warnings;
     }
@@ -850,6 +1289,23 @@ public class BalanceWindow : EditorWindow
 
     static CardCatalog Catalog() => FindAssets<CardCatalog>().FirstOrDefault();
 
+<<<<<<< HEAD
+=======
+    static string FileName(string name)
+    {
+        foreach (char c in System.IO.Path.GetInvalidFileNameChars()) name = name.Replace(c.ToString(), "");
+        return string.IsNullOrWhiteSpace(name) ? "New" : name.Trim();
+    }
+
+    static void EnsureFolder(string path)
+    {
+        if (AssetDatabase.IsValidFolder(path)) return;
+        string parent = System.IO.Path.GetDirectoryName(path).Replace('\\', '/');
+        EnsureFolder(parent);
+        AssetDatabase.CreateFolder(parent, System.IO.Path.GetFileName(path));
+    }
+
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     static List<T> FindAssets<T>() where T : Object =>
         AssetDatabase.FindAssets($"t:{typeof(T).Name}")
             .Select(guid => AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid)))

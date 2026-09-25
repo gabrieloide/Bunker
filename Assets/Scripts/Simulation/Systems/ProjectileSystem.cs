@@ -28,7 +28,7 @@ namespace Bunker.Simulation
             var enemyPositions = new NativeList<float3>(Allocator.Temp);
             var enemyBoxes = new NativeList<HitBox>(Allocator.Temp);
 
-            foreach (var (transform, box, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>>().WithAll<TowerTag, Health>().WithEntityAccess())
+            foreach (var (transform, box, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>>().WithAll<Health>().WithAny<TowerTag, AllyTag>().WithEntityAccess())
             {
                 towers.Add(entity);
                 towerPositions.Add(transform.ValueRO.Position);

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mecha
   m_EditorClassIdentifier: 
   _life: 350
-  _damage: 6
+  _damage: 30
   _attackInterval: 1.5
   _attackRange: 5
   _defense: 6

@@ -20,7 +20,7 @@ public abstract class Card : MonoBehaviour,
     [SerializeField] protected float height = 1;
     [SerializeField] GameObject CardFlipAnim;
 
-    [HideInInspector] public int index() => GetComponent<CardIndex>() != null ? GetComponent<CardIndex>().HandIndex : 0;
+    protected HandLayout Hand => dc != null ? dc.Hand : null;
 
     protected Image uiImage;
     protected RectTransform rectTransform;
@@ -33,6 +33,11 @@ public abstract class Card : MonoBehaviour,
 
     float currentTiltAngle = 0f;
     bool isDragging = false;
+<<<<<<< HEAD
+=======
+    bool hovered = false;
+    int moveTweenId = -1;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     Transform originalParent;
     Vector2 baseAnchoredPos;
     Vector2 dragStartScreenPos;
@@ -67,6 +72,13 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual RaycastHit2D DetectObjectsBelow() => CastFootprint(objectLayerMask);
 
+<<<<<<< HEAD
+=======
+    // Every card has to be played inside a flag's radius (see FlagTerritory)
+    protected virtual Vector3 TerritoryPoint => UseGrid ? PlacementGrid.CellCenter(FootprintCell()) : PointerWorld();
+    protected virtual bool InTerritory => FlagTerritory.Contains(TerritoryPoint);
+
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     // Captured on drop: placement resolves after the flip animation, when the pointer may have moved
     Vector3 dropOrigin;
     Vector3Int dropCell;
@@ -96,7 +108,11 @@ public abstract class Card : MonoBehaviour,
         if (!isDragging || UIManager.instance == null || UIManager.instance.TowerSlotAnimation == null)
             return;
 
+<<<<<<< HEAD
         bool visible = TryGetPreviewPosition(out Vector3 target);
+=======
+        bool visible = TryGetPreviewPosition(out Vector3 target) && InTerritory;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         UIManager.instance.ShowTowerSlot = visible;
         if (visible)
             UIManager.instance.TowerSlotAnimation.transform.position = target - UIManager.instance.offset;
@@ -108,8 +124,13 @@ public abstract class Card : MonoBehaviour,
             RangeIndicator.Hide();
     }
 
+<<<<<<< HEAD
     // Attack range of the tower this card places; 0 when it places nothing that shoots
     float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
+=======
+    // Radius drawn around the placement preview: a tower's attack range; 0 draws nothing
+    protected virtual float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
 
     protected virtual void Awake()
     {
@@ -131,6 +152,11 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual void OnDestroy()
     {
+<<<<<<< HEAD
+=======
+        if (Hand != null)
+            Hand.Remove(this);
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         if (UIManager.instance != null)
             UIManager.instance.HideCardBox(this);
         if (isDragging)
@@ -157,21 +183,34 @@ public abstract class Card : MonoBehaviour,
 
     void ElevateCard()
     {
+        hovered = true;
         LeanTween.cancel(gameObject);
+<<<<<<< HEAD
         TweenAnchoredY(baseAnchoredPos.y + uiHoverHeight, 0.12f).setEaseOutQuad();
+=======
+        TweenAnchored(HandPosition, 0.12f).setEaseOutQuad();
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         LeanTween.scale(gameObject, Vector3.one * 1.08f, 0.12f).setEaseOutQuad();
         transform.SetAsLastSibling();
     }
 
     void LowerCard()
     {
+        hovered = false;
         LeanTween.cancel(gameObject);
+<<<<<<< HEAD
         TweenAnchoredY(baseAnchoredPos.y, 0.12f).setEaseOutQuad();
+=======
+        TweenAnchored(HandPosition, 0.12f).setEaseOutQuad();
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         LeanTween.scale(gameObject, Vector3.one, 0.12f).setEaseOutQuad();
+        RestoreHandOrder();
 
-        if (originalParent != null)
-            transform.SetSiblingIndex(index());
+        if (UIManager.instance != null)
+            UIManager.instance.HideCardBox(this);
+    }
 
+<<<<<<< HEAD
         if (UIManager.instance != null)
             UIManager.instance.HideCardBox(this);
     }
@@ -182,6 +221,47 @@ public abstract class Card : MonoBehaviour,
             if (rectTransform != null)
                 rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, y);
         }, rectTransform.anchoredPosition.y, targetY, time);
+=======
+    // Home spot in the hand, raised while hovered
+    Vector2 HandPosition => baseAnchoredPos + (hovered ? Vector2.up * uiHoverHeight : Vector2.zero);
+
+    LTDescr TweenAnchored(Vector2 target, float time)
+    {
+        if (moveTweenId >= 0)
+            LeanTween.cancel(gameObject, moveTweenId);
+        var tween = LeanTween.value(gameObject, pos => {
+            if (rectTransform != null)
+                rectTransform.anchoredPosition = pos;
+        }, rectTransform.anchoredPosition, target, time);
+        moveTweenId = tween.uniqueId;
+        return tween;
+    }
+
+    // Called by HandLayout whenever the hand changes; a dragged card picks it up when it returns
+    public void SetHandHome(Vector2 home, float time)
+    {
+        baseAnchoredPos = home;
+        if (isDragging || rectTransform == null) return;
+        if (time <= 0f)
+            rectTransform.anchoredPosition = HandPosition;
+        else
+            TweenAnchored(HandPosition, time).setEaseOutQuad();
+    }
+
+    void RestoreHandOrder()
+    {
+        if (Hand != null && transform.parent == Hand.transform)
+            transform.SetSiblingIndex(Hand.IndexOf(this));
+    }
+
+    // The card is spent: frees its place in the hand so the rest close ranks
+    protected void LeaveHand()
+    {
+        if (GameManager.instance != null)
+            GameManager.instance.CurrentCardAmount--;
+        if (Hand != null)
+            Hand.Remove(this);
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -200,6 +280,10 @@ public abstract class Card : MonoBehaviour,
         if (eventData.button != PointerEventData.InputButton.Left) return;
 
         isDragging = true;
+<<<<<<< HEAD
+=======
+        hovered = false;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         dragStartScreenPos = eventData.position;
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
@@ -217,8 +301,8 @@ public abstract class Card : MonoBehaviour,
             UIManager.instance.ShowTowerSlot = true;
             UIManager.instance.HideCardBox(this);
 
-            if (dc != null && dc.cardSlots != null && index() < dc.cardSlots.Length && dc.cardSlots[index()] != null)
-                UIManager.instance.ShowLastCardPosition(dc.cardSlots[index()].position);
+            if (transform.parent != null)
+                UIManager.instance.ShowLastCardPosition(transform.parent.TransformPoint(baseAnchoredPos));
         }
         UpdatePlacementPreview();
 
@@ -286,10 +370,7 @@ public abstract class Card : MonoBehaviour,
 
         if (isTrash)
         {
-            if (dc != null && index() < dc.availableCardSlots.Length)
-                dc.availableCardSlots[index()] = true;
-            if (GameManager.instance != null)
-                GameManager.instance.CurrentCardAmount--;
+            LeaveHand();
             Destroy(gameObject);
             return;
         }
@@ -306,17 +387,19 @@ public abstract class Card : MonoBehaviour,
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
         bool hasObstacle = DetectObjectsBelow() || (UseGrid && PlacementGrid.IsOccupied(FootprintCell()));
 
+<<<<<<< HEAD
         if (!hasObstacle && d > dragThreshold && AllowPlacement())
+=======
+        if (!hasObstacle && d > dragThreshold && InTerritory && AllowPlacement())
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         {
             OnPlacementAccepted();
             CameraShake.MicroShake();
-            if (dc != null && index() < dc.availableCardSlots.Length)
-                dc.availableCardSlots[index()] = true;
-            if (GameManager.instance != null)
-                GameManager.instance.CurrentCardAmount--;
+            LeaveHand();
 
             dropOrigin = worldDropPos;
             dropCell = UseGrid ? FootprintCell() : default;
+<<<<<<< HEAD
 
             float flipDuration = 0f;
             if (CardFlipAnim != null)
@@ -332,6 +415,29 @@ public abstract class Card : MonoBehaviour,
             }
 
             StartCoroutine(ResolveAfter(flipDuration));
+=======
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+
+            if (BuiltBySoldier && BuilderSquad.Instance != null && BuilderSquad.Instance.Available)
+            {
+                Vector3 site = UseGrid ? PlacementGrid.CellCenter(dropCell) : worldDropPos;
+                // The marker holds the cell while the soldier walks there, so nothing else drops on it
+                GameObject marker = BuilderSquad.MarkSite(site);
+                if (UseGrid)
+                    PlacementGrid.Occupy(dropCell, marker);
+                BuilderSquad.Instance.Send(site, () =>
+                {
+                    Destroy(marker);
+                    // The card may be gone if the scene is unloading
+                    return this != null ? PlayFlipAndResolve() : 0f;
+                });
+            }
+            else
+            {
+                PlayFlipAndResolve();
+            }
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         }
         else
         {
@@ -339,9 +445,38 @@ public abstract class Card : MonoBehaviour,
         }
     }
 
+<<<<<<< HEAD
     // Last say before a drop is accepted (e.g. the tower limit); false sends the card back to the hand
     protected virtual bool AllowPlacement() => true;
     // The drop is accepted; CardBehaviour runs after the flip animation
+=======
+    // Cards that put an object on the map send a soldier from the bunker to build it first
+    protected virtual bool BuiltBySoldier => false;
+
+    // Plays the flip where the object goes and resolves the card when it ends; returns the flip's length
+    float PlayFlipAndResolve()
+    {
+        float flipDuration = 0f;
+        if (CardFlipAnim != null)
+        {
+            GameObject flip = Instantiate(CardFlipAnim, dropOrigin, Quaternion.identity);
+            if (flip.TryGetComponent(out OneShotEffect fx))
+                flipDuration = fx.Duration;
+            else
+                Destroy(flip, FallbackFlipDuration);
+            // The flip holds the cell until the real occupant takes it over, so nothing else drops there meanwhile
+            if (UseGrid)
+                PlacementGrid.Occupy(dropCell, flip);
+        }
+
+        StartCoroutine(ResolveAfter(flipDuration));
+        return flipDuration;
+    }
+
+    // Last say before a drop is accepted (e.g. the tower limit); false sends the card back to the hand
+    protected virtual bool AllowPlacement() => true;
+    // The drop is accepted; CardBehaviour runs after the flip animation (and the builder's walk)
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     protected virtual void OnPlacementAccepted() { }
 
     const float FallbackFlipDuration = 0.46f;
@@ -349,8 +484,11 @@ public abstract class Card : MonoBehaviour,
     // The card is already spent (slot freed, count decremented); it stays alive, hidden, only to run CardBehaviour once the flip ends
     IEnumerator ResolveAfter(float delay)
     {
+<<<<<<< HEAD
         canvasGroup.alpha = 0f;
         canvasGroup.blocksRaycasts = false;
+=======
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         if (delay > 0f)
             yield return new WaitForSeconds(delay);
         CardBehaviour();
@@ -360,6 +498,7 @@ public abstract class Card : MonoBehaviour,
     protected void ReturnToSlot()
     {
         if (originalParent != null)
+<<<<<<< HEAD
         {
             transform.SetParent(originalParent, true);
             transform.SetSiblingIndex(index());
@@ -370,6 +509,13 @@ public abstract class Card : MonoBehaviour,
             if (rectTransform != null)
                 rectTransform.anchoredPosition = pos;
         }, rectTransform.anchoredPosition, baseAnchoredPos, 0.25f).setEaseOutBack();
+=======
+            transform.SetParent(originalParent, true);
+        RestoreHandOrder();
+
+        LeanTween.cancel(gameObject);
+        TweenAnchored(baseAnchoredPos, 0.25f).setEaseOutBack();
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         LeanTween.scale(gameObject, Vector3.one, 0.2f).setEaseOutBack();
         LeanTween.rotateZ(gameObject, 0f, 0.2f);
     }
@@ -378,7 +524,12 @@ public abstract class Card : MonoBehaviour,
 
     public void showCard()
     {
+<<<<<<< HEAD
         rectTransform.anchoredPosition = new Vector2(baseAnchoredPos.x, baseAnchoredPos.y - 35f);
         TweenAnchoredY(baseAnchoredPos.y, 0.25f).setEaseOutQuad();
+=======
+        rectTransform.anchoredPosition = baseAnchoredPos - new Vector2(0f, 35f);
+        TweenAnchored(baseAnchoredPos, 0.25f).setEaseOutQuad();
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     }
 }

@@ -1,12 +1,5 @@
 using UnityEngine;
 
-public enum BuffType
-{
-    AttackBuff,
-    SpeedBuff,
-    BulletPenBuff
-}
-
 public class BuffCard : Card
 {
     [Header("Sound")]
@@ -63,12 +56,9 @@ public class BuffCard : Card
     {
         pendingTurret = FindTarget(out _);
 
-        if (pendingTurret != null && !pendingTurret.HaveBuff)
+        if (pendingTurret != null && !pendingTurret.HaveBuff && InTerritory)
         {
-            if (GameManager.instance != null)
-                GameManager.instance.CurrentCardAmount--;
-            if (dc != null && index() < dc.availableCardSlots.Length)
-                dc.availableCardSlots[index()] = true;
+            LeaveHand();
             CardBehaviour();
             Destroy(gameObject);
         }
@@ -86,6 +76,10 @@ public class BuffCard : Card
         if (buffSound != null && buffSound.IsValid())
             buffSound.Post(pendingTurret.gameObject);
         if (SimulationBridge.Instance != null && definition is BuffCardDefinition buff)
+<<<<<<< HEAD
             SimulationBridge.Instance.RequestBuff(pendingTurret.Entity, buff.buffType, buff.amount);
+=======
+            SimulationBridge.Instance.ApplyBuff(pendingTurret.Entity, buff);
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     }
 }

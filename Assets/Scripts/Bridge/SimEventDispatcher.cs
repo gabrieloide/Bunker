@@ -25,6 +25,10 @@ public static class SimEventDispatcher
     public static event Action<int, EnemyBuffKind> OnWaveChanged;
     public static event Action<int, int> OnScoreChanged; // currentScore, delta
     public static event Action OnGameOver;
+<<<<<<< HEAD
+=======
+    public static event Action OnVictory;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
     public static event Action<Vector3, float> OnShellImpact; // position, splashRadius
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -47,6 +51,10 @@ public static class SimEventDispatcher
         OnWaveChanged = null;
         OnScoreChanged = null;
         OnGameOver = null;
+<<<<<<< HEAD
+=======
+        OnVictory = null;
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
         OnShellImpact = null;
     }
 
@@ -113,6 +121,14 @@ public static class SimEventDispatcher
                 OnGameOver?.Invoke();
                 break;
 
+<<<<<<< HEAD
+=======
+            case SimEventKind.Victory:
+                IsGameOver = true;
+                OnVictory?.Invoke();
+                break;
+
+>>>>>>> 1b0f21870329b922747c317aa3561b86f80f1c88
             case SimEventKind.ShellImpact:
                 OnShellImpact?.Invoke((Vector3)ev.Position, ev.Amount);
                 break;
