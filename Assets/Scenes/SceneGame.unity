@@ -2326,7 +2326,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 43.63, y: 9.9, z: -10}
+  m_LocalPosition: {x: 15.31, y: 0.78, z: -37.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2415,7 +2415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RetroCRTFilter
   crtShader: {fileID: 4800000, guid: 808c0cf1b4816f148a479fab97c78797, type: 3}
-  curvature: 0.05
+  curvature: 0
   bezelSmoothness: 0.015
   scanlineIntensity: 0.32
   scanlineCount: 270
