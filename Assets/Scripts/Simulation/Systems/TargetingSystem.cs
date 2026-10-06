@@ -11,11 +11,14 @@ namespace Bunker.Simulation
     [UpdateAfter(typeof(EnemyMovementSystem))]
     public partial struct TargetingSystem : ISystem
     {
+        EntityQuery pathQuery;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<WaveConfig>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+            pathQuery = state.GetEntityQuery(ComponentType.ReadOnly<PathPoint>());
         }
 
         [BurstCompile]
@@ -45,7 +48,16 @@ namespace Bunker.Simulation
             var artilleryLookup = SystemAPI.GetComponentLookup<Artillery>(true);
             var followerLookup = SystemAPI.GetComponentLookup<PathFollower>(true);
             var speedLookup = SystemAPI.GetComponentLookup<MoveSpeed>(true);
-            bool hasPath = SystemAPI.TryGetSingletonBuffer<PathPoint>(out var path, true);
+            var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
+            Entity defaultPathEntity = Entity.Null;
+            if (SystemAPI.TryGetSingletonEntity<PrimaryPath>(out var primary))
+                defaultPathEntity = primary;
+            else if (!pathQuery.IsEmpty)
+            {
+                var ents = pathQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+                defaultPathEntity = ents[0];
+                ents.Dispose();
+            }
 
             foreach (var (transform, weapon, target, entity) in
                      SystemAPI.Query<RefRO<LocalTransform>, RefRW<Weapon>, RefRW<Target>>()
@@ -91,8 +103,16 @@ namespace Bunker.Simulation
                 {
                     // Shells take a while to land: aim where the target will be, not where it is
                     float3 impact = targetPos;
-                    if (hasPath && followerLookup.TryGetComponent(newTarget, out var follower) && speedLookup.TryGetComponent(newTarget, out var speed))
-                        impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, path, speed.Value, artillery.RiseTime + artillery.FallTime);
+                    if (followerLookup.TryGetComponent(newTarget, out var follower) && speedLookup.TryGetComponent(newTarget, out var speed))
+                    {
+                        Entity targetPathEntity = follower.PathEntity != Entity.Null ? follower.PathEntity : defaultPathEntity;
+                        if (targetPathEntity != Entity.Null && pathLookup.HasBuffer(targetPathEntity))
+                        {
+                            var targetPath = pathLookup[targetPathEntity];
+                            if (targetPath.Length > 0)
+                                impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, targetPath, speed.Value, artillery.RiseTime + artillery.FallTime);
+                        }
+                    }
 
                     var shell = ecb.CreateEntity();
                     ecb.AddComponent(shell, LocalTransform.FromPosition(origin));

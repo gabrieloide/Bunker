@@ -57,9 +57,19 @@ namespace Bunker.Simulation
     public struct MoveSpeed : IComponentData { public float Value; }
     public struct ScoreValue : IComponentData { public int Value; }
 
-    public struct PathFollower : IComponentData { public int NextIndex; }
+    public struct PathFollower : IComponentData
+    {
+        public int NextIndex;
+        public Entity PathEntity;
+    }
     public struct AtPathEnd : IComponentData { public float AttackTimer; }
     public struct PathPoint : IBufferElementData { public float3 Value; }
+    public struct PrimaryPath : IComponentData { }
+    public struct SpawnerPoint : IBufferElementData
+    {
+        public float3 Position;
+        public Entity PathEntity;
+    }
 
     public struct HitBox : IComponentData
     {
@@ -99,7 +109,11 @@ namespace Bunker.Simulation
     }
 
     // Walks the PathPoint buffer from the end towards the start; below 0 it heads for the enemy base
-    public struct AllyPathFollower : IComponentData { public int NextIndex; }
+    public struct AllyPathFollower : IComponentData
+    {
+        public int NextIndex;
+        public Entity PathEntity;
+    }
 
     public struct Projectile : IComponentData
     {

@@ -16,6 +16,8 @@ namespace Bunker.Simulation
     {
         const float ArriveDistance = 0.01f;
 
+        EntityQuery pathQuery;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
@@ -23,6 +25,7 @@ namespace Bunker.Simulation
             state.RequireForUpdate<AllySpawnState>();
             state.RequireForUpdate<SimEvent>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+            pathQuery = state.GetEntityQuery(ComponentType.ReadOnly<PathPoint>());
         }
 
         [BurstCompile]
@@ -36,7 +39,21 @@ namespace Bunker.Simulation
                 .CreateCommandBuffer(state.WorldUnmanaged);
             float dt = SystemAPI.Time.DeltaTime;
 
-            bool hasPath = SystemAPI.TryGetSingletonBuffer<PathPoint>(out var path, true);
+            var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
+            Entity defaultPathEntity = Entity.Null;
+            if (SystemAPI.TryGetSingletonEntity<PrimaryPath>(out var primary))
+                defaultPathEntity = primary;
+            else if (!pathQuery.IsEmpty)
+            {
+                var ents = pathQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+                defaultPathEntity = ents[0];
+                ents.Dispose();
+            }
+
+            int lastPathIndex = -1;
+            if (defaultPathEntity != Entity.Null && pathLookup.HasBuffer(defaultPathEntity))
+                lastPathIndex = pathLookup[defaultPathEntity].Length - 1;
+
             var config = SystemAPI.GetSingleton<AllySpawnConfig>();
             ref var spawn = ref SystemAPI.GetSingletonRW<AllySpawnState>().ValueRW;
             if (config.Interval > 0f && config.Roster.IsCreated && config.Roster.Value.Types.Length > 0)
@@ -47,7 +64,7 @@ namespace Bunker.Simulation
                     spawn.Timer += config.Interval;
                     int typeIndex = spawn.NextType % config.Roster.Value.Types.Length;
                     spawn.NextType = typeIndex + 1;
-                    SpawnAlly(typeIndex, hasPath ? path.Length - 1 : -1, in config, ecb);
+                    SpawnAlly(typeIndex, lastPathIndex, in config, ecb);
                 }
             }
 
@@ -123,9 +140,14 @@ namespace Bunker.Simulation
                     continue;
                 }
 
+                Entity targetPathEntity = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
+                DynamicBuffer<PathPoint> allyPath = default;
+                if (targetPathEntity != Entity.Null && pathLookup.HasBuffer(targetPathEntity))
+                    allyPath = pathLookup[targetPathEntity];
+
                 float3 waypoint;
-                if (hasPath && follower.ValueRO.NextIndex >= 0 && follower.ValueRO.NextIndex < path.Length)
-                    waypoint = path[follower.ValueRO.NextIndex].Value;
+                if (allyPath.IsCreated && allyPath.Length > 0 && follower.ValueRO.NextIndex >= 0 && follower.ValueRO.NextIndex < allyPath.Length)
+                    waypoint = allyPath[follower.ValueRO.NextIndex].Value;
                 else if (hasBase)
                     waypoint = basePos;
                 else

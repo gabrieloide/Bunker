@@ -69,6 +69,14 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual RaycastHit2D DetectObjectsBelow() => CastFootprint(objectLayerMask);
 
+    // Checks whether the tile is blocked (no ground, on an obstacle tile, or occupied) via PlacementGrid without colliders
+    protected virtual bool HasObstacleBelow()
+    {
+        if (UseGrid && PlacementGrid.Available)
+            return !PlacementGrid.CanPlaceAt(FootprintCell());
+        return (bool)DetectObjectsBelow();
+    }
+
     // Every card has to be played inside a flag's radius (see FlagTerritory)
     protected virtual Vector3 TerritoryPoint => UseGrid ? PlacementGrid.CellCenter(FootprintCell()) : PointerWorld();
     protected virtual bool InTerritory => FlagTerritory.Contains(TerritoryPoint);
@@ -102,7 +110,7 @@ public abstract class Card : MonoBehaviour,
         if (!isDragging || UIManager.instance == null || UIManager.instance.TowerSlotAnimation == null)
             return;
 
-        bool visible = TryGetPreviewPosition(out Vector3 target) && InTerritory;
+        bool visible = TryGetPreviewPosition(out Vector3 target) && InTerritory && !HasObstacleBelow();
         UIManager.instance.ShowTowerSlot = visible;
         if (visible)
             UIManager.instance.TowerSlotAnimation.transform.position = target - UIManager.instance.offset;
@@ -343,7 +351,7 @@ public abstract class Card : MonoBehaviour,
         Vector3 worldDropPos = GetRaycastOrigin();
         // Measured in screen space: anchoredPosition is relative to the root canvas while dragging, not the slot
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
-        bool hasObstacle = DetectObjectsBelow() || (UseGrid && PlacementGrid.IsOccupied(FootprintCell()));
+        bool hasObstacle = HasObstacleBelow();
 
         if (!hasObstacle && d > dragThreshold && InTerritory && AllowPlacement())
         {

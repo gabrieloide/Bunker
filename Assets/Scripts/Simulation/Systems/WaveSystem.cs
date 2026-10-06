@@ -43,10 +43,11 @@ namespace Bunker.Simulation
                     break;
 
                 case WavePhase.Spawning:
+                    bool hasSpawners = SystemAPI.TryGetSingletonBuffer<SpawnerPoint>(out var spawners, true);
                     wave.Timer -= dt;
                     while (wave.Timer <= 0f && wave.SpawnedThisWave < wave.EnemyAmount)
                     {
-                        SpawnEnemy(ref wave, in config, ecb);
+                        SpawnEnemy(ref wave, in config, ecb, spawners, hasSpawners);
                         wave.SpawnedThisWave++;
                         wave.Timer += config.SpawnInterval;
                     }
@@ -72,7 +73,7 @@ namespace Bunker.Simulation
             }
         }
 
-        static void SpawnEnemy(ref WaveState wave, in WaveConfig config, EntityCommandBuffer ecb)
+        static void SpawnEnemy(ref WaveState wave, in WaveConfig config, EntityCommandBuffer ecb, DynamicBuffer<SpawnerPoint> spawners, bool hasSpawners)
         {
             ref var roster = ref config.Roster.Value;
             int typeCount = math.clamp(wave.UnlockedTypes, 1, roster.Types.Length);
@@ -88,15 +89,24 @@ namespace Bunker.Simulation
             var def = BalanceMath.ApplyBuff(roster.Types[typeIndex], wave.Buff, ref config.BuffTable.Value);
             def.Life *= BalanceMath.WaveLifeMultiplier(wave.Wave, config.LifeGrowthPerWave);
 
+            float3 spawnPos = config.SpawnPosition;
+            Entity pathEntity = Entity.Null;
+            if (hasSpawners && spawners.Length > 0)
+            {
+                int spawnerIndex = wave.SpawnedThisWave % spawners.Length;
+                spawnPos = spawners[spawnerIndex].Position;
+                pathEntity = spawners[spawnerIndex].PathEntity;
+            }
+
             var e = ecb.CreateEntity();
-            ecb.AddComponent(e, LocalTransform.FromPosition(config.SpawnPosition));
+            ecb.AddComponent(e, LocalTransform.FromPosition(spawnPos));
             ecb.AddComponent<EnemyTag>(e);
             ecb.AddComponent<SimulationTag>(e);
             ecb.AddComponent(e, new Health { Value = def.Life, Max = def.Life });
             ecb.AddComponent(e, new Defense { Value = def.Defense });
             ecb.AddComponent(e, new MoveSpeed { Value = def.MoveSpeed });
             ecb.AddComponent(e, new ScoreValue { Value = def.Score });
-            ecb.AddComponent(e, new PathFollower { NextIndex = 0 });
+            ecb.AddComponent(e, new PathFollower { NextIndex = 0, PathEntity = pathEntity });
             ecb.AddComponent(e, new HitBox { HalfExtents = def.HitHalfExtents, Offset = def.HitOffset });
             ecb.AddComponent(e, new Weapon
             {
