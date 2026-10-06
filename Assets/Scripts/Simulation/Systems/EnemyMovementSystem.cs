@@ -12,19 +12,29 @@ namespace Bunker.Simulation
     {
         const float ArriveDistance = 0.01f;
 
+        EntityQuery pathQuery;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<WaveConfig>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+            pathQuery = state.GetEntityQuery(ComponentType.ReadOnly<PathPoint>());
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var path = SystemAPI.GetSingletonBuffer<PathPoint>(true);
-            if (path.Length == 0)
-                return;
+            var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
+            Entity defaultPathEntity = Entity.Null;
+            if (SystemAPI.TryGetSingletonEntity<PrimaryPath>(out var primary))
+                defaultPathEntity = primary;
+            else if (!pathQuery.IsEmpty)
+            {
+                var ents = pathQuery.ToEntityArray(Unity.Collections.Allocator.Temp);
+                defaultPathEntity = ents[0];
+                ents.Dispose();
+            }
 
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
@@ -37,6 +47,14 @@ namespace Bunker.Simulation
                          .WithNone<AtPathEnd>()
                          .WithEntityAccess())
             {
+                Entity targetPathEntity = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
+                if (targetPathEntity == Entity.Null || !pathLookup.HasBuffer(targetPathEntity))
+                    continue;
+
+                var path = pathLookup[targetPathEntity];
+                if (path.Length == 0)
+                    continue;
+
                 if (follower.ValueRO.NextIndex >= path.Length)
                 {
                     ecb.AddComponent(entity, new AtPathEnd { AttackTimer = 0f });

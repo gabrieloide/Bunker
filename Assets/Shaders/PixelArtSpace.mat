@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: PixelArtSpace
+  m_Shader: {fileID: 4800000, guid: 4f41e65e5fd936741ad95f2773fd4c71, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _ENABLENEBULA_ON
+  - _ENABLESHOOTINGSTARS_ON
+  - _PIXELLOCKMOVEMENT_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _DensityFar: 0.4
+    - _DensityMid: 0.22
+    - _DensityNear: 0.1
+    - _EnableNebula: 1
+    - _EnableShootingStars: 1
+    - _MoveSpeed: 4
+    - _NebulaScale: 0.02
+    - _NebulaSpeed: 0.5
+    - _PixelLockMovement: 1
+    - _ShootingStarInterval: 5
+    - _ShootingStarSpeed: 120
+    - _TwinkleFPS: 4
+    - _TwinkleIntensity: 0.6
+    m_Colors:
+    - _MoveDirection: {r: -1, g: -0.3, b: 0, a: 0}
+    - _NebulaColor: {r: 0.09, g: 0.04, b: 0.18, a: 1}
+    - _PixelResolution: {r: 320, g: 180, b: 0, a: 0}
+    - _SpaceColor: {r: 0.02, g: 0.02, b: 0.06, a: 1}
+    - _StarColorFar: {r: 0.55, g: 0.65, b: 0.85, a: 1}
+    - _StarColorMid: {r: 0.85, g: 0.9, b: 1, a: 1}
+    - _StarColorNear: {r: 1, g: 1, b: 0.9, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

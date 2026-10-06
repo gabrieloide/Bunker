@@ -20,5 +20,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelSelector.unity
     guid: a38b3009196d536429524a7a557f59c4
+  - enabled: 1
+    path: Assets/Scenes/Scene Templates/Template_Level.unity
+    guid: 924056467cc8e1e4f9ebae95b9383ea4
+  - enabled: 1
+    path: Assets/Scenes/Level04_DoubleFront.unity
+    guid: 7100a8a396d2331488edd37525978f3d
+  - enabled: 1
+    path: Assets/Scenes/CoreManagers.unity
+    guid: 18b0a1b1f6842304fb0e26740f57ec51
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

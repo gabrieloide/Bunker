@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc434dc6a2a250e4bb9bfb5f0be17717, type: 3}
   m_Name: LandMine
   m_EditorClassIdentifier: Assembly-CSharp::LandMineCardDefinition
-  displayName: LandMines
+  displayName: Land Mines
   description: lorem
   handPrefab: {fileID: -8057555976105955795, guid: 4b67ed70786e6494aab744314bd092ee, type: 3}
   placedPrefab: {fileID: 4053484846176422300, guid: fc6a67f9128a01349abed2ff9210c337, type: 3}

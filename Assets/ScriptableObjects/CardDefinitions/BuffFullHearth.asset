@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3884f0b80523e94081ceff3a983e1a2, type: 3}
   m_Name: BuffFullHearth
   m_EditorClassIdentifier: Assembly-CSharp::HealCardDefinition
-  displayName: BuffFullHearth
+  displayName: Buff Full Hearth
   description: 
   handPrefab: {fileID: -3690923982419404029, guid: 8830a52488ff7024ea875b3cfd946168, type: 3}
   placedPrefab: {fileID: 0}

@@ -129,6 +129,11 @@ public class UIManager : MonoBehaviour
 
     private void SetLifeNormalized(float normalizedHP)
     {
+        if (LifeSlider == null)
+        {
+            var tower = FindFirstObjectByType<TowerPlayer>();
+            if (tower != null) LifeSlider = tower.GetComponentInChildren<Slider>(true);
+        }
         if (LifeSlider != null && !Mathf.Approximately(normalizedHP, lastLife))
         {
             lastLife = normalizedHP;

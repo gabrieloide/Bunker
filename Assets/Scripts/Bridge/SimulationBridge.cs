@@ -73,8 +73,9 @@ public class SimulationBridge : MonoBehaviour
         }
         em = world.EntityManager;
 
-        var spawner = FindFirstObjectByType<EnemySpawner>();
-        var path = FindFirstObjectByType<EnemyMovement>();
+        var spawners = FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
+        var spawner = spawners.Length > 0 ? spawners[0] : FindFirstObjectByType<EnemySpawner>();
+        var path = spawner != null && spawner.path != null ? spawner.path : FindFirstObjectByType<EnemyMovement>();
         pool = FindFirstObjectByType<ObjectPooling>();
         player = FindFirstObjectByType<TowerPlayer>();
         lootBag = FindFirstObjectByType<LootBag>();
@@ -144,7 +145,37 @@ public class SimulationBridge : MonoBehaviour
             IsGameOver = false
         });
         em.AddBuffer<SimEvent>(simEntity);
+
+        // Multi-spawner and per-spawner path entities
+        var spawnerBuffer = em.AddBuffer<SpawnerPoint>(simEntity);
+        var pathEntities = new Dictionary<EnemyMovement, Entity>();
+
+        foreach (var spawnerComp in spawners)
+        {
+            var assignedPath = spawnerComp.path != null ? spawnerComp.path : path;
+            Entity pathEntity = Entity.Null;
+            if (assignedPath != null)
+            {
+                if (!pathEntities.TryGetValue(assignedPath, out pathEntity))
+                {
+                    pathEntity = em.CreateEntity();
+                    em.AddComponent<SimulationTag>(pathEntity);
+                    var buf = em.AddBuffer<PathPoint>(pathEntity);
+                    foreach (var pt in assignedPath.points)
+                        buf.Add(new PathPoint { Value = pt });
+                    pathEntities[assignedPath] = pathEntity;
+                }
+            }
+
+            spawnerBuffer.Add(new SpawnerPoint
+            {
+                Position = spawnerComp.transform.position,
+                PathEntity = pathEntity
+            });
+        }
+
         var pathBuffer = em.AddBuffer<PathPoint>(simEntity);
+        em.AddComponent<PrimaryPath>(simEntity);
         foreach (var point in path.points)
             pathBuffer.Add(new PathPoint { Value = point });
 
