@@ -1,0 +1,268 @@
+{
+    "fileName": "Untitled",
+    "screens": [
+        {
+            "assetName": "Frame-44",
+            "rootNodeId": "457:20",
+            "contentHash": "d04c9946c16a7da6",
+            "generated": [
+                "Frame-44.uss",
+                "Frame-44.uxml"
+            ],
+            "tokens": [],
+            "nodes": [
+                {
+                    "figmaNodeId": "457:20",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1",
+                    "tag": "VisualElement",
+                    "classes": "",
+                    "props": [
+                        {
+                            "k": "display",
+                            "v": "flex"
+                        },
+                        {
+                            "k": "width",
+                            "v": "1920px"
+                        },
+                        {
+                            "k": "height",
+                            "v": "1080px"
+                        },
+                        {
+                            "k": "justify-content",
+                            "v": "center"
+                        },
+                        {
+                            "k": "align-items",
+                            "v": "center"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "457:19",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1",
+                    "tag": "VisualElement",
+                    "classes": "",
+                    "props": [
+                        {
+                            "k": "width",
+                            "v": "1920px"
+                        },
+                        {
+                            "k": "height",
+                            "v": "1080px"
+                        },
+                        {
+                            "k": "flex-shrink",
+                            "v": "0"
+                        },
+                        {
+                            "k": "position",
+                            "v": "absolute"
+                        },
+                        {
+                            "k": "left",
+                            "v": "0px"
+                        },
+                        {
+                            "k": "top",
+                            "v": "0px"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "391:5",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1/1",
+                    "tag": "VisualElement",
+                    "classes": "",
+                    "props": [
+                        {
+                            "k": "width",
+                            "v": "1920px"
+                        },
+                        {
+                            "k": "height",
+                            "v": "1080px"
+                        },
+                        {
+                            "k": "background-color",
+                            "v": "#000"
+                        },
+                        {
+                            "k": "position",
+                            "v": "absolute"
+                        },
+                        {
+                            "k": "left",
+                            "v": "0px"
+                        },
+                        {
+                            "k": "top",
+                            "v": "0px"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "457:21",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1/2",
+                    "tag": "VisualElement",
+                    "classes": "",
+                    "props": [
+                        {
+                            "k": "display",
+                            "v": "flex"
+                        },
+                        {
+                            "k": "width",
+                            "v": "1421px"
+                        },
+                        {
+                            "k": "flex-direction",
+                            "v": "column"
+                        },
+                        {
+                            "k": "align-items",
+                            "v": "flex-start"
+                        },
+                        {
+                            "k": "position",
+                            "v": "absolute"
+                        },
+                        {
+                            "k": "left",
+                            "v": "249px"
+                        },
+                        {
+                            "k": "top",
+                            "v": "240px"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "391:9",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1/2/1",
+                    "tag": "Label",
+                    "classes": "unity-label",
+                    "props": [
+                        {
+                            "k": "align-self",
+                            "v": "stretch"
+                        },
+                        {
+                            "k": "color",
+                            "v": "#FFF"
+                        },
+                        {
+                            "k": "font-size",
+                            "v": "145px"
+                        },
+                        {
+                            "k": "white-space",
+                            "v": "normal"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "391:10",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1/2/2",
+                    "tag": "Label",
+                    "classes": "unity-label",
+                    "props": [
+                        {
+                            "k": "align-self",
+                            "v": "stretch"
+                        },
+                        {
+                            "k": "color",
+                            "v": "#FFF"
+                        },
+                        {
+                            "k": "font-size",
+                            "v": "145px"
+                        },
+                        {
+                            "k": "white-space",
+                            "v": "normal"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "391:11",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1/2/3",
+                    "tag": "Label",
+                    "classes": "unity-label",
+                    "props": [
+                        {
+                            "k": "align-self",
+                            "v": "stretch"
+                        },
+                        {
+                            "k": "color",
+                            "v": "#FFF"
+                        },
+                        {
+                            "k": "font-size",
+                            "v": "145px"
+                        },
+                        {
+                            "k": "white-space",
+                            "v": "normal"
+                        }
+                    ]
+                },
+                {
+                    "figmaNodeId": "391:12",
+                    "cssClass": "",
+                    "styleClass": "",
+                    "doc": "Frame-44",
+                    "path": "1/1/2/4",
+                    "tag": "Label",
+                    "classes": "unity-label",
+                    "props": [
+                        {
+                            "k": "align-self",
+                            "v": "stretch"
+                        },
+                        {
+                            "k": "color",
+                            "v": "#FFF"
+                        },
+                        {
+                            "k": "font-size",
+                            "v": "145px"
+                        },
+                        {
+                            "k": "white-space",
+                            "v": "normal"
+                        }
+                    ]
+                }
+            ],
+            "components": [],
+            "states": []
+        }
+    ],
+    "matchedMappings": []
+}
