@@ -28,12 +28,27 @@ namespace Bunker.Simulation
             var enemyPositions = new NativeList<float3>(Allocator.Temp);
             var enemyBoxes = new NativeList<HitBox>(Allocator.Temp);
             var enemyDefense = new NativeList<float>(Allocator.Temp);
-            foreach (var (transform, box, defense, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>, RefRO<Defense>>().WithAll<EnemyTag, Health>().WithEntityAccess())
+            var defenseLookup = SystemAPI.GetComponentLookup<Defense>(true);
+
+            foreach (var (transform, box, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>, RefRO<Health>>().WithAll<EnemyTag>().WithEntityAccess())
             {
-                enemies.Add(entity);
-                enemyPositions.Add(transform.ValueRO.Position);
-                enemyBoxes.Add(box.ValueRO);
-                enemyDefense.Add(defense.ValueRO.Value);
+                if (health.ValueRO.Value > 0f)
+                {
+                    enemies.Add(entity);
+                    enemyPositions.Add(transform.ValueRO.Position);
+                    enemyBoxes.Add(box.ValueRO);
+                    enemyDefense.Add(defenseLookup.TryGetComponent(entity, out var defense) ? defense.Value : 0f);
+                }
+            }
+            foreach (var (transform, box, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>, RefRO<Health>>().WithAll<EnemyBaseTag>().WithEntityAccess())
+            {
+                if (health.ValueRO.Value > 0f)
+                {
+                    enemies.Add(entity);
+                    enemyPositions.Add(transform.ValueRO.Position);
+                    enemyBoxes.Add(box.ValueRO);
+                    enemyDefense.Add(defenseLookup.TryGetComponent(entity, out var defense) ? defense.Value : 0f);
+                }
             }
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
