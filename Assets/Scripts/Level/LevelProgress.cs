@@ -11,8 +11,11 @@ public static class LevelProgress
     public static LevelDefinition Selected { get; private set; }
     public static int SelectedIndex => Catalog != null && Selected != null ? Catalog.IndexOf(Selected) : -1;
 
+    const string CompletedKeyPrefix = "Bunker.LevelCompleted.";
+
     public static int UnlockedCount => Mathf.Max(1, PlayerPrefs.GetInt(UnlockedKey, 1));
     public static bool IsUnlocked(int index) => index < UnlockedCount;
+    public static bool IsCompleted(int index) => PlayerPrefs.GetInt(CompletedKeyPrefix + index, 0) == 1 || index < UnlockedCount - 1;
 
     public static LevelDefinition Next => Catalog != null ? Catalog.At(SelectedIndex + 1) : null;
 
@@ -29,13 +32,21 @@ public static class LevelProgress
         Catalog = catalog;
         Selected = level;
         Time.timeScale = 1f;
-        SceneManager.LoadScene(level.sceneName);
+        CRTTransition.LoadScene(level.sceneName);
     }
 
     public static void MarkSelectedCompleted()
     {
         int index = SelectedIndex;
-        if (index < 0 || index + 2 <= UnlockedCount) return;
+        if (index >= 0)
+        {
+            PlayerPrefs.SetInt(CompletedKeyPrefix + index, 1);
+        }
+        if (index < 0 || index + 2 <= UnlockedCount)
+        {
+            PlayerPrefs.Save();
+            return;
+        }
         PlayerPrefs.SetInt(UnlockedKey, index + 2);
         PlayerPrefs.Save();
     }
@@ -43,12 +54,12 @@ public static class LevelProgress
     public static void BackToSelector()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SelectorScene);
+        CRTTransition.LoadScene(SelectorScene);
     }
 
     public static void Retry()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        CRTTransition.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

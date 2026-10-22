@@ -157,5 +157,32 @@ namespace Bunker.Tests
 
             foreach (var ev in Events) Assert.AreNotEqual(SimEventKind.Victory, ev.Kind);
         }
+
+        [Test]
+        public void AllySpawner_WaitsDuringPreparationPhaseAndSpawnsInCombatPhase()
+        {
+            var configQuery = em.CreateEntityQuery(typeof(AllySpawnConfig), typeof(AllySpawnState));
+            var configEntity = configQuery.GetSingletonEntity();
+            em.SetComponentData(configEntity, new AllySpawnConfig { Interval = 1f, Roster = roster });
+            em.SetComponentData(configEntity, new AllySpawnState { Timer = 0.5f, NextType = 0 });
+
+            // Preparation phase: WaitingToStart
+            em.SetComponentData(simEntity, new WaveState { Phase = WavePhase.WaitingToStart, Timer = 10f });
+
+            world.SetTime(new Unity.Core.TimeData(1.0, 1.0f));
+            allySystem.Update(world.Unmanaged);
+            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
+
+            var allyQuery = em.CreateEntityQuery(typeof(AllyTag));
+            Assert.AreEqual(0, allyQuery.CalculateEntityCount(), "No ally should spawn during preparation phase");
+
+            // Combat phase: Spawning
+            em.SetComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning, Timer = 0f });
+            world.SetTime(new Unity.Core.TimeData(2.0, 1.0f));
+            allySystem.Update(world.Unmanaged);
+            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
+
+            Assert.AreEqual(1, allyQuery.CalculateEntityCount(), "Ally should spawn once combat phase starts");
+        }
     }
 }

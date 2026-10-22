@@ -11,6 +11,6 @@ public class CreditsManager : MonoBehaviour
     }
     public void PlayMainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        CRTTransition.LoadScene("MainMenu 2");
     }
 }

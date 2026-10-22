@@ -29,7 +29,9 @@ namespace Bunker.Simulation
         MeleeHit,
         // Amount = damage taken, IntValue = remaining life rounded
         EnemyBaseHit,
-        Victory
+        Victory,
+        // IntValue = (int)WavePhase, Amount = current wave number
+        WavePhaseChanged
     }
 
     public struct SimulationTag : IComponentData { }

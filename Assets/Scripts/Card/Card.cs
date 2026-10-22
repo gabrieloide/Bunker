@@ -34,10 +34,16 @@ public abstract class Card : MonoBehaviour,
     float currentTiltAngle = 0f;
     bool isDragging = false;
     bool hovered = false;
+    bool isResolving = false;
     int moveTweenId = -1;
     Transform originalParent;
     Vector2 baseAnchoredPos;
     Vector2 dragStartScreenPos;
+
+    public static int PendingResolveCount { get; private set; }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStaticResolveCount() => PendingResolveCount = 0;
 
     // Cards that place an object on the map snap its footprint (origin + offset) to a grid cell
     protected virtual bool SnapsToGrid => false;
@@ -137,14 +143,27 @@ public abstract class Card : MonoBehaviour,
         baseAnchoredPos = rectTransform.anchoredPosition;
     }
 
+    protected virtual void OnEnable()
+    {
+        SimEventDispatcher.OnWavePhaseChanged += HandleWavePhaseChanged;
+        RefreshPhaseInteractivity();
+    }
+
+    protected virtual void OnDisable()
+    {
+        SimEventDispatcher.OnWavePhaseChanged -= HandleWavePhaseChanged;
+    }
+
     protected virtual void Start()
     {
         dc = Deck.instance != null ? Deck.instance : FindAnyObjectByType<Deck>();
         showCard();
+        RefreshPhaseInteractivity();
     }
 
     protected virtual void OnDestroy()
     {
+        EndPendingResolve();
         if (Hand != null)
             Hand.Remove(this);
         if (UIManager.instance != null)
@@ -153,10 +172,68 @@ public abstract class Card : MonoBehaviour,
             RangeIndicator.Hide();
     }
 
+    void BeginPendingResolve()
+    {
+        if (isResolving) return;
+        isResolving = true;
+        PendingResolveCount++;
+    }
+
+    void EndPendingResolve()
+    {
+        if (!isResolving) return;
+        isResolving = false;
+        PendingResolveCount = Mathf.Max(0, PendingResolveCount - 1);
+    }
+
+    void HandleWavePhaseChanged(Bunker.Simulation.WavePhase phase)
+    {
+        if (phase != Bunker.Simulation.WavePhase.WaitingToStart)
+        {
+            if (isDragging)
+                CancelDrag();
+            else if (hovered)
+                LowerCard();
+        }
+        RefreshPhaseInteractivity();
+    }
+
+    void RefreshPhaseInteractivity()
+    {
+        if (isResolving || isDragging || canvasGroup == null) return;
+        canvasGroup.alpha = SimulationBridge.IsPreparationPhase ? 1f : 0.55f;
+    }
+
+    public void CancelDrag()
+    {
+        if (!isDragging) return;
+        isDragging = false;
+
+        transform.rotation = Quaternion.identity;
+
+        if (defaultCard != null)
+            uiImage.sprite = defaultCard;
+
+        if (GameManager.instance != null)
+            GameManager.instance.onDrag = false;
+
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.ShowTowerSlot = false;
+            UIManager.instance.ShowLastCardPosition(transform.position);
+        }
+        RangeIndicator.Hide();
+
+        ReturnToSlot();
+        RefreshPhaseInteractivity();
+    }
+
     // ------------------------------------------------ UI EventSystem Handlers
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (!SimulationBridge.IsPreparationPhase)
+            return;
         if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
 
@@ -247,6 +324,7 @@ public abstract class Card : MonoBehaviour,
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
+        if (!SimulationBridge.IsPreparationPhase) return;
 
         isDragging = true;
         hovered = false;
@@ -282,6 +360,11 @@ public abstract class Card : MonoBehaviour,
     public void OnDrag(PointerEventData eventData)
     {
         if (!isDragging) return;
+        if (!SimulationBridge.IsPreparationPhase)
+        {
+            CancelDrag();
+            return;
+        }
 
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
             transform.position = worldPoint + DragLift();
@@ -331,6 +414,13 @@ public abstract class Card : MonoBehaviour,
         }
         RangeIndicator.Hide();
 
+        if (!SimulationBridge.IsPreparationPhase)
+        {
+            ReturnToSlot();
+            RefreshPhaseInteractivity();
+            return;
+        }
+
         var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
         bool isTrash = (trash != null && (trash.hit2D || trash.IsPointerOver()));
 
@@ -348,6 +438,13 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual void spawnCard()
     {
+        if (!SimulationBridge.IsPreparationPhase)
+        {
+            ReturnToSlot();
+            RefreshPhaseInteractivity();
+            return;
+        }
+
         Vector3 worldDropPos = GetRaycastOrigin();
         // Measured in screen space: anchoredPosition is relative to the root canvas while dragging, not the slot
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
@@ -358,6 +455,7 @@ public abstract class Card : MonoBehaviour,
             OnPlacementAccepted();
             CameraShake.MicroShake();
             LeaveHand();
+            BeginPendingResolve();
 
             dropOrigin = worldDropPos;
             dropCell = UseGrid ? FootprintCell() : default;
@@ -425,6 +523,7 @@ public abstract class Card : MonoBehaviour,
         if (delay > 0f)
             yield return new WaitForSeconds(delay);
         CardBehaviour();
+        EndPendingResolve();
         Destroy(gameObject);
     }
 

@@ -9,6 +9,9 @@ public static class SimEventDispatcher
     public static int Score { get; private set; }
     public static int Wave { get; private set; } = 1;
     public static EnemyBuffKind CurrentBuff { get; private set; } = EnemyBuffKind.None;
+    public static WavePhase CurrentPhase { get; private set; } = WavePhase.WaitingToStart;
+    public static float PhaseTimer { get; private set; }
+    public static bool IsPreparationPhase => CurrentPhase == WavePhase.WaitingToStart;
     public static float Health { get; private set; } = 100f;
     public static float MaxHealth { get; private set; } = 100f;
     public static float Health01 => MaxHealth > 0f ? Mathf.Clamp01(Health / MaxHealth) : 0f;
@@ -23,6 +26,7 @@ public static class SimEventDispatcher
     public static event Action<float, int, float> OnPlayerHit; // damage, remainingHP, normalizedHP
     public static event Action<float, int, float> OnBunkerHealed;
     public static event Action<int, EnemyBuffKind> OnWaveChanged;
+    public static event Action<WavePhase> OnWavePhaseChanged;
     public static event Action<int, int> OnScoreChanged; // currentScore, delta
     public static event Action OnGameOver;
     public static event Action OnVictory;
@@ -34,6 +38,8 @@ public static class SimEventDispatcher
         Score = 0;
         Wave = 1;
         CurrentBuff = EnemyBuffKind.None;
+        CurrentPhase = WavePhase.WaitingToStart;
+        PhaseTimer = 0f;
         Health = 100f;
         MaxHealth = 100f;
         IsGameOver = false;
@@ -46,20 +52,33 @@ public static class SimEventDispatcher
         OnPlayerHit = null;
         OnBunkerHealed = null;
         OnWaveChanged = null;
+        OnWavePhaseChanged = null;
         OnScoreChanged = null;
         OnGameOver = null;
         OnVictory = null;
         OnShellImpact = null;
     }
 
-    public static void Seed(int initialScore, int initialWave, EnemyBuffKind initialBuff, float currentHealth, float maxHealth)
+    public static void Seed(int initialScore, int initialWave, EnemyBuffKind initialBuff, float currentHealth, float maxHealth, WavePhase initialPhase = WavePhase.WaitingToStart, float initialTimer = 0f)
     {
         Score = initialScore;
         Wave = initialWave;
         CurrentBuff = initialBuff;
+        CurrentPhase = initialPhase;
+        PhaseTimer = initialTimer;
         Health = currentHealth;
         MaxHealth = maxHealth > 0f ? maxHealth : 100f;
         IsGameOver = false;
+    }
+
+    public static void UpdatePhaseTimer(WavePhase phase, float timer)
+    {
+        PhaseTimer = timer;
+        if (CurrentPhase != phase)
+        {
+            CurrentPhase = phase;
+            OnWavePhaseChanged?.Invoke(phase);
+        }
     }
 
     public static void RecordHeal(float amount)
@@ -102,6 +121,15 @@ public static class SimEventDispatcher
                 Wave = ev.IntValue;
                 CurrentBuff = (EnemyBuffKind)(int)ev.Amount;
                 OnWaveChanged?.Invoke(Wave, CurrentBuff);
+                break;
+
+            case SimEventKind.WavePhaseChanged:
+                var newPhase = (WavePhase)ev.IntValue;
+                if (CurrentPhase != newPhase)
+                {
+                    CurrentPhase = newPhase;
+                    OnWavePhaseChanged?.Invoke(CurrentPhase);
+                }
                 break;
 
             case SimEventKind.ScoreChanged:
