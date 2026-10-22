@@ -40,8 +40,13 @@ public class GameManager : MonoBehaviour
         var startingHand = level != null && level.startingHand.Count > 0 ? level.startingHand
             : catalog != null ? catalog.startingHand : null;
         if (startingHand != null)
+        {
             foreach (var card in startingHand)
                 AddCardToHand(card);
+
+            if (cardDrop != null)
+                cardDrop.DealInitialHand();
+        }
         StartingHandDealt = true;
     }
 
@@ -68,7 +73,7 @@ public class GameManager : MonoBehaviour
 
         if (cardDrop != null)
         {
-            cardDrop.cardsQueue.Enqueue(card);
+            cardDrop.EnqueueCard(card);
         }
     }
 }
