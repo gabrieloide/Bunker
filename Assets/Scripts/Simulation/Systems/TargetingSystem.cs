@@ -40,6 +40,20 @@ namespace Bunker.Simulation
                 enemyPositions.Add(transform.ValueRO.Position);
             }
 
+            Entity baseEntity = Entity.Null;
+            float3 basePos = float3.zero;
+            float baseReach = 0f;
+            foreach (var (transform, health, box, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Health>, RefRO<HitBox>>().WithAll<EnemyBaseTag>().WithEntityAccess())
+            {
+                if (health.ValueRO.Value > 0f)
+                {
+                    baseEntity = entity;
+                    basePos = transform.ValueRO.Position + new float3(box.ValueRO.Offset, 0f);
+                    baseReach = math.cmax(box.ValueRO.HalfExtents);
+                    break;
+                }
+            }
+
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -85,6 +99,14 @@ namespace Bunker.Simulation
                 }
 
                 Entity newTarget = best >= 0 && bestDist <= w.Range ? candidates[best] : Entity.Null;
+                float3 targetPos = best >= 0 ? candidatePositions[best] : float3.zero;
+
+                if (targetsEnemies && newTarget == Entity.Null && baseEntity != Entity.Null && math.distance(pos.xy, basePos.xy) <= w.Range + baseReach)
+                {
+                    newTarget = baseEntity;
+                    targetPos = basePos;
+                }
+
                 target.ValueRW.Value = newTarget;
 
                 if (newTarget == Entity.Null || w.Cooldown > 0f)
@@ -97,7 +119,6 @@ namespace Bunker.Simulation
                 w.Cooldown = w.ShotsLeftInBurst > 0 ? w.BurstInterval : w.FireInterval;
 
                 float3 origin = pos + w.MuzzleOffset;
-                float3 targetPos = candidatePositions[best];
 
                 if (artilleryLookup.TryGetComponent(entity, out var artillery))
                 {
@@ -145,7 +166,7 @@ namespace Bunker.Simulation
                 {
                     Damage = w.Damage,
                     BulletPen = w.BulletPen,
-                    Lifetime = w.ProjectileLifetime,
+                    Lifetime = newTarget == baseEntity ? math.max(w.ProjectileLifetime, (len / math.max(0.01f, w.ProjectileSpeed)) + 0.15f) : w.ProjectileLifetime,
                     Velocity = dir * w.ProjectileSpeed,
                     HalfExtents = w.ProjectileHalfExtents,
                     TargetFaction = w.TargetFaction

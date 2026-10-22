@@ -9,6 +9,7 @@ namespace Bunker.Simulation
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(TargetingSystem))]
+    [UpdateBefore(typeof(DamageSystem))]
     public partial struct ProjectileSystem : ISystem
     {
         [BurstCompile]
@@ -39,6 +40,15 @@ namespace Bunker.Simulation
                 enemies.Add(entity);
                 enemyPositions.Add(transform.ValueRO.Position);
                 enemyBoxes.Add(box.ValueRO);
+            }
+            foreach (var (transform, box, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<HitBox>, RefRO<Health>>().WithAll<EnemyBaseTag>().WithEntityAccess())
+            {
+                if (health.ValueRO.Value > 0f)
+                {
+                    enemies.Add(entity);
+                    enemyPositions.Add(transform.ValueRO.Position);
+                    enemyBoxes.Add(box.ValueRO);
+                }
             }
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
