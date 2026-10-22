@@ -147,36 +147,41 @@ public class SimulationBridge : MonoBehaviour
         });
         em.AddBuffer<SimEvent>(simEntity);
 
-        // Multi-spawner and per-spawner path entities
-        var spawnerBuffer = em.AddBuffer<SpawnerPoint>(simEntity);
+        // 1. Create per-spawner path entities first (structural changes must not interleave buffer writes)
         var pathEntities = new Dictionary<EnemyMovement, Entity>();
-
         foreach (var spawnerComp in spawners)
         {
             var assignedPath = spawnerComp.path != null ? spawnerComp.path : path;
-            Entity pathEntity = Entity.Null;
-            if (assignedPath != null)
+            if (assignedPath != null && !pathEntities.ContainsKey(assignedPath))
             {
-                if (!pathEntities.TryGetValue(assignedPath, out pathEntity))
-                {
-                    pathEntity = em.CreateEntity();
-                    em.AddComponent<SimulationTag>(pathEntity);
-                    var buf = em.AddBuffer<PathPoint>(pathEntity);
-                    foreach (var pt in assignedPath.points)
-                        buf.Add(new PathPoint { Value = pt });
-                    pathEntities[assignedPath] = pathEntity;
-                }
+                Entity pEntity = em.CreateEntity();
+                em.AddComponent<SimulationTag>(pEntity);
+                var buf = em.AddBuffer<PathPoint>(pEntity);
+                foreach (var pt in assignedPath.points)
+                    buf.Add(new PathPoint { Value = pt });
+                pathEntities[assignedPath] = pEntity;
             }
+        }
+
+        // 2. Configure simEntity primary path tag and buffers
+        em.AddComponent<PrimaryPath>(simEntity);
+
+        var spawnerBuffer = em.AddBuffer<SpawnerPoint>(simEntity);
+        foreach (var spawnerComp in spawners)
+        {
+            var assignedPath = spawnerComp.path != null ? spawnerComp.path : path;
+            Entity pEntity = Entity.Null;
+            if (assignedPath != null)
+                pathEntities.TryGetValue(assignedPath, out pEntity);
 
             spawnerBuffer.Add(new SpawnerPoint
             {
                 Position = spawnerComp.transform.position,
-                PathEntity = pathEntity
+                PathEntity = pEntity
             });
         }
 
         var pathBuffer = em.AddBuffer<PathPoint>(simEntity);
-        em.AddComponent<PrimaryPath>(simEntity);
         foreach (var point in path.points)
             pathBuffer.Add(new PathPoint { Value = point });
 
