@@ -30,6 +30,8 @@ public abstract class Card : MonoBehaviour,
     [SerializeField] float dragThreshold = 20f;
     [Tooltip("Gap between the pointer and the dragged card's bottom edge, in canvas units, so the placement preview stays visible")]
     [SerializeField] float dragPointerGap = 4f;
+    [Tooltip("Scale applied to the card while being dragged above the hand")]
+    [SerializeField] float dragScale = 0.5f;
 
     float currentTiltAngle = 0f;
     bool isDragging = false;
@@ -299,6 +301,7 @@ public abstract class Card : MonoBehaviour,
         dragStartScreenPos = eventData.position;
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
+        LeanTween.scale(gameObject, Vector3.one * dragScale, 0.08f).setEaseOutQuad();
 
         if (backCard != null)
             uiImage.sprite = backCard;
