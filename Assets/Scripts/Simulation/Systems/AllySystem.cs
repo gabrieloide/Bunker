@@ -54,9 +54,12 @@ namespace Bunker.Simulation
             if (defaultPathEntity != Entity.Null && pathLookup.HasBuffer(defaultPathEntity))
                 lastPathIndex = pathLookup[defaultPathEntity].Length - 1;
 
+            bool isPreparation = SystemAPI.TryGetSingleton<WaveState>(out var waveState)
+                && waveState.Phase == WavePhase.WaitingToStart;
+
             var config = SystemAPI.GetSingleton<AllySpawnConfig>();
             ref var spawn = ref SystemAPI.GetSingletonRW<AllySpawnState>().ValueRW;
-            if (config.Interval > 0f && config.Roster.IsCreated && config.Roster.Value.Types.Length > 0)
+            if (!isPreparation && config.Interval > 0f && config.Roster.IsCreated && config.Roster.Value.Types.Length > 0)
             {
                 spawn.Timer -= dt;
                 if (spawn.Timer <= 0f)

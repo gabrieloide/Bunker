@@ -9,6 +9,8 @@ public class DeckUpAnim : MonoBehaviour
     }
     public void InitializedAnimation(GameObject rectTransform)
     {
+        if (rectTransform == null) return;
+        LeanTween.cancel(rectTransform);
         LeanTween.moveLocalY(rectTransform,
             0,
             0.7f).

@@ -10,6 +10,7 @@ using EntityView = ViewRegistry.EntityView;
 public class SimulationBridge : MonoBehaviour
 {
     public static SimulationBridge Instance { get; private set; }
+    public static bool IsPreparationPhase => Instance == null || !Instance.ready || SimEventDispatcher.IsPreparationPhase;
 
     [SerializeField] WaveBalanceConfig balance;
 
@@ -202,7 +203,7 @@ public class SimulationBridge : MonoBehaviour
         enemyQuery = em.CreateEntityQuery(typeof(EnemyTag), typeof(LocalTransform));
         MirrorWaveState(state.Wave, state.Buff);
         int initialScore = GameManager.instance != null ? GameManager.instance.ActualScore : 0;
-        SimEventDispatcher.Seed(initialScore, state.Wave, state.Buff, playerStartLife, 100f);
+        SimEventDispatcher.Seed(initialScore, state.Wave, state.Buff, playerStartLife, 100f, state.Phase, state.Timer);
         ready = true;
     }
 
@@ -531,8 +532,36 @@ public class SimulationBridge : MonoBehaviour
             return;
         }
         DrainEvents();
+        SyncPhaseAndCheckEarlyStart();
         CreateViews();
         SyncViews();
+    }
+
+    void SyncPhaseAndCheckEarlyStart()
+    {
+        if (!em.Exists(simEntity) || !em.HasComponent<WaveState>(simEntity))
+            return;
+
+        var state = em.GetComponentData<WaveState>(simEntity);
+        if (state.Phase == WavePhase.WaitingToStart && state.Timer > 0f && AllCardsSpent())
+        {
+            state.Timer = 0f;
+            em.SetComponentData(simEntity, state);
+        }
+        SimEventDispatcher.UpdatePhaseTimer(state.Phase, math.max(0f, state.Timer));
+    }
+
+    static bool AllCardsSpent()
+    {
+        if (GameManager.instance == null || !GameManager.instance.StartingHandDealt || GameManager.instance.onDrag)
+            return false;
+        if (Card.PendingResolveCount > 0)
+            return false;
+        if (CardDrop.instance != null && CardDrop.instance.cardsQueue.Count > 0)
+            return false;
+        if (Deck.instance != null && Deck.instance.Hand != null && Deck.instance.Hand.Count > 0)
+            return false;
+        return true;
     }
 
     void DrainEvents()

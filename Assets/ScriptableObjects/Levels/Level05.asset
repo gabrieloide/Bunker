@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
+  m_Name: Level05
+  m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
+  displayName: Fortaleza Final
+  description: La base suprema enemiga. Destruyela para liberar el sector.
+  sceneName: SceneGame
+  enemyBaseLife: 350
+  balance: {fileID: 11400000, guid: 5ca20aa320004bf6a8b39f76fa59a3f3, type: 2}
+  allySpawnInterval: 6
+  firstAllyDelay: 3
+  flags:
+  - position: {x: 8, y: 0}
+    radius: 8
+  startingHand: []

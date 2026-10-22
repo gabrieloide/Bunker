@@ -4,8 +4,8 @@ using UnityEngine;
 public class WaveBalanceConfig : ScriptableObject
 {
     [Header("Spawning")]
-    [Tooltip("Seconds before the first enemy of the run")]
-    [Min(0f)] public float startDelay = 3f;
+    [Tooltip("Seconds of preparation phase to place cards before each wave starts")]
+    [Min(0f)] public float startDelay = 25f;
     [Tooltip("Seconds between two spawns inside a wave")]
     [Min(0.05f)] public float spawnInterval = 1f;
     [Tooltip("Enemies in the first wave")]

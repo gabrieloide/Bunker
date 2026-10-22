@@ -8,10 +8,13 @@ public class CardDrop : MonoBehaviour
     [SerializeField] RectTransform deckSliceAnimation;
     [SerializeField] GameObject DeckGameObject;
     public LeanTweenType TweenDeck;
+    private bool isHidingDeck;
+
     public float TimeMove()
     {
-        return UIManager.instance.TimeMovement;
+        return UIManager.instance != null ? UIManager.instance.TimeMovement : 0.4f;
     }
+
     private void Awake()
     {
         if (instance == null)
@@ -23,8 +26,12 @@ public class CardDrop : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     public void TakeCard()
     {
+        if (!SimulationBridge.IsPreparationPhase)
+            return;
+
         if (Deck.instance != null && Deck.instance.HasRoom)
         {
             if (cardsQueue.Count > 0)
@@ -38,16 +45,30 @@ public class CardDrop : MonoBehaviour
             }
             if (cardsQueue.Count <= 0)
             {
-                LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove())
-                    .setOnComplete(DeactivateDeck)
-                        .setEase(UIManager.instance.TweenDeckOut);
+                HideDeck();
             }
         }
     }
+
+    public void HideDeck()
+    {
+        if (DeckGameObject == null || !DeckGameObject.activeSelf || isHidingDeck)
+            return;
+
+        isHidingDeck = true;
+        LeanTween.cancel(DeckGameObject);
+        LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove())
+            .setOnComplete(DeactivateDeck)
+            .setEase(UIManager.instance != null ? UIManager.instance.TweenDeckOut : LeanTweenType.easeOutQuad);
+    }
+
     void DeactivateDeck()
     {
-        DeckGameObject.SetActive(false);
+        isHidingDeck = false;
+        if (DeckGameObject != null)
+            DeckGameObject.SetActive(false);
     }
+
     void ResetTweenAnim()
     {
         LeanTween.moveY(deckSliceAnimation, 1.7895f, 0);

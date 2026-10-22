@@ -36,6 +36,8 @@ public class UIManager : MonoBehaviour
 
     private int lastScore = -1;
     private int lastWave = -1;
+    private int lastPrepSeconds = -1;
+    private bool wasPrepPhase;
     private float lastLife = -1f;
     private ChangeCardText cardPanel;
 
@@ -110,10 +112,33 @@ public class UIManager : MonoBehaviour
 
     private void SetWave(int newWave, Bunker.Simulation.EnemyBuffKind buff)
     {
-        if (waveText != null && newWave != lastWave)
+        if (waveText != null && !SimulationBridge.IsPreparationPhase && (newWave != lastWave || wasPrepPhase))
         {
             lastWave = newWave;
+            wasPrepPhase = false;
             waveText.SetText("Wave: {0:000000}", newWave);
+        }
+    }
+
+    private void UpdateWaveDisplay()
+    {
+        if (waveText == null) return;
+
+        if (SimulationBridge.IsPreparationPhase)
+        {
+            int secondsLeft = Mathf.CeilToInt(SimEventDispatcher.PhaseTimer);
+            if (!wasPrepPhase || secondsLeft != lastPrepSeconds)
+            {
+                wasPrepPhase = true;
+                lastPrepSeconds = secondsLeft;
+                waveText.SetText("Prep: {0:00}s", secondsLeft);
+            }
+        }
+        else if (wasPrepPhase || SimEventDispatcher.Wave != lastWave)
+        {
+            wasPrepPhase = false;
+            lastWave = SimEventDispatcher.Wave;
+            waveText.SetText("Wave: {0:000000}", lastWave);
         }
     }
 
@@ -145,6 +170,7 @@ public class UIManager : MonoBehaviour
     {
         showTowerSlotAnimation();
         ShowDeck();
+        UpdateWaveDisplay();
     }
 
     void showTowerSlotAnimation()
@@ -207,9 +233,18 @@ public class UIManager : MonoBehaviour
 
     public void ShowDeck()
     {
-        if (this.Deck != null && !this.Deck.activeSelf && CardDrop.instance != null && CardDrop.instance.cardsQueue.Count > 0)
+        if (this.Deck == null || CardDrop.instance == null) return;
+
+        if (SimulationBridge.IsPreparationPhase)
         {
-            this.Deck.SetActive(true);
+            if (!this.Deck.activeSelf && CardDrop.instance.cardsQueue.Count > 0)
+            {
+                this.Deck.SetActive(true);
+            }
+        }
+        else if (this.Deck.activeSelf)
+        {
+            CardDrop.instance.HideDeck();
         }
     }
 }

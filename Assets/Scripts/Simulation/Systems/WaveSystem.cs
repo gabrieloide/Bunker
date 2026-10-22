@@ -39,6 +39,7 @@ namespace Bunker.Simulation
                         wave.Phase = WavePhase.Spawning;
                         wave.SpawnedThisWave = 0;
                         wave.Timer = 0f;
+                        events.Add(new SimEvent { Kind = SimEventKind.WavePhaseChanged, IntValue = (int)wave.Phase, Amount = wave.Wave });
                     }
                     break;
 
@@ -52,7 +53,10 @@ namespace Bunker.Simulation
                         wave.Timer += config.SpawnInterval;
                     }
                     if (wave.SpawnedThisWave >= wave.EnemyAmount && wave.Timer <= 0f)
+                    {
                         wave.Phase = WavePhase.WaitingForClear;
+                        events.Add(new SimEvent { Kind = SimEventKind.WavePhaseChanged, IntValue = (int)wave.Phase, Amount = wave.Wave });
+                    }
                     break;
 
                 case WavePhase.WaitingForClear:
@@ -68,6 +72,7 @@ namespace Bunker.Simulation
                         wave.Phase = WavePhase.WaitingToStart;
                         wave.Timer = config.StartDelay;
                         events.Add(new SimEvent { Kind = SimEventKind.WaveChanged, IntValue = wave.Wave, Amount = (int)wave.Buff });
+                        events.Add(new SimEvent { Kind = SimEventKind.WavePhaseChanged, IntValue = (int)wave.Phase, Amount = wave.Wave });
                     }
                     break;
             }

@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     public bool onDrag;
     public int ActualScore;
     [HideInInspector]public int CurrentCardAmount;
+    public bool StartingHandDealt { get; private set; }
     [Tooltip("Starting hand is dealt from here")]
     [SerializeField] CardCatalog catalog;
     public CardCatalog Catalog => catalog;
@@ -23,6 +24,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        CurrentCardAmount = 0;
+        StartingHandDealt = false;
         cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
     }
 
@@ -39,6 +42,7 @@ public class GameManager : MonoBehaviour
         if (startingHand != null)
             foreach (var card in startingHand)
                 AddCardToHand(card);
+        StartingHandDealt = true;
     }
 
     private void Update()

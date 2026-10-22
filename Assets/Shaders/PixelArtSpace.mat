@@ -22,7 +22,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
+  m_LockedProperties: _TwinkleFPS
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs: []
@@ -43,11 +43,11 @@ Material:
     - _TwinkleIntensity: 0.6
     m_Colors:
     - _MoveDirection: {r: -1, g: -0.3, b: 0, a: 0}
-    - _NebulaColor: {r: 0.09, g: 0.04, b: 0.18, a: 1}
-    - _PixelResolution: {r: 320, g: 180, b: 0, a: 0}
-    - _SpaceColor: {r: 0.02, g: 0.02, b: 0.06, a: 1}
-    - _StarColorFar: {r: 0.55, g: 0.65, b: 0.85, a: 1}
-    - _StarColorMid: {r: 0.85, g: 0.9, b: 1, a: 1}
-    - _StarColorNear: {r: 1, g: 1, b: 0.9, a: 1}
+    - _NebulaColor: {r: 0, g: 0, b: 0, a: 1}
+    - _PixelResolution: {r: 640, g: 360, b: 0, a: 0}
+    - _SpaceColor: {r: 0, g: 0, b: 0, a: 1}
+    - _StarColorFar: {r: 1, g: 1, b: 1, a: 1}
+    - _StarColorMid: {r: 1, g: 1, b: 1, a: 1}
+    - _StarColorNear: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
