@@ -49,6 +49,6 @@ public class LootBag : MonoBehaviour
         if (cardDrop == null)
             cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
         if (cardDrop != null)
-            cardDrop.cardsQueue.Enqueue(dropItem);
+            cardDrop.EnqueueCard(dropItem);
     }
 }

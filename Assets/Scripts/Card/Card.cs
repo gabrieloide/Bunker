@@ -143,22 +143,10 @@ public abstract class Card : MonoBehaviour,
         baseAnchoredPos = rectTransform.anchoredPosition;
     }
 
-    protected virtual void OnEnable()
-    {
-        SimEventDispatcher.OnWavePhaseChanged += HandleWavePhaseChanged;
-        RefreshPhaseInteractivity();
-    }
-
-    protected virtual void OnDisable()
-    {
-        SimEventDispatcher.OnWavePhaseChanged -= HandleWavePhaseChanged;
-    }
-
     protected virtual void Start()
     {
         dc = Deck.instance != null ? Deck.instance : FindAnyObjectByType<Deck>();
         showCard();
-        RefreshPhaseInteractivity();
     }
 
     protected virtual void OnDestroy()
@@ -186,23 +174,7 @@ public abstract class Card : MonoBehaviour,
         PendingResolveCount = Mathf.Max(0, PendingResolveCount - 1);
     }
 
-    void HandleWavePhaseChanged(Bunker.Simulation.WavePhase phase)
-    {
-        if (phase != Bunker.Simulation.WavePhase.WaitingToStart)
-        {
-            if (isDragging)
-                CancelDrag();
-            else if (hovered)
-                LowerCard();
-        }
-        RefreshPhaseInteractivity();
-    }
 
-    void RefreshPhaseInteractivity()
-    {
-        if (isResolving || isDragging || canvasGroup == null) return;
-        canvasGroup.alpha = SimulationBridge.IsPreparationPhase ? 1f : 0.55f;
-    }
 
     public void CancelDrag()
     {
@@ -225,15 +197,12 @@ public abstract class Card : MonoBehaviour,
         RangeIndicator.Hide();
 
         ReturnToSlot();
-        RefreshPhaseInteractivity();
     }
 
     // ------------------------------------------------ UI EventSystem Handlers
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!SimulationBridge.IsPreparationPhase)
-            return;
         if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
 
@@ -324,7 +293,6 @@ public abstract class Card : MonoBehaviour,
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
-        if (!SimulationBridge.IsPreparationPhase) return;
 
         isDragging = true;
         hovered = false;
@@ -360,11 +328,6 @@ public abstract class Card : MonoBehaviour,
     public void OnDrag(PointerEventData eventData)
     {
         if (!isDragging) return;
-        if (!SimulationBridge.IsPreparationPhase)
-        {
-            CancelDrag();
-            return;
-        }
 
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
             transform.position = worldPoint + DragLift();
@@ -414,13 +377,6 @@ public abstract class Card : MonoBehaviour,
         }
         RangeIndicator.Hide();
 
-        if (!SimulationBridge.IsPreparationPhase)
-        {
-            ReturnToSlot();
-            RefreshPhaseInteractivity();
-            return;
-        }
-
         var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
         bool isTrash = (trash != null && (trash.hit2D || trash.IsPointerOver()));
 
@@ -438,13 +394,6 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual void spawnCard()
     {
-        if (!SimulationBridge.IsPreparationPhase)
-        {
-            ReturnToSlot();
-            RefreshPhaseInteractivity();
-            return;
-        }
-
         Vector3 worldDropPos = GetRaycastOrigin();
         // Measured in screen space: anchoredPosition is relative to the root canvas while dragging, not the slot
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
