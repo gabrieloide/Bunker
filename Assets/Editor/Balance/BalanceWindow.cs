@@ -19,7 +19,7 @@ public class BalanceWindow : EditorWindow
     // Drop % edits rewrite the weights so they add up to this (0.1% resolution)
     const int WeightTotal = 1000;
 
-    enum Section { Towers, Artillery, Buffs, Heals, Mines, AirStrikes, Flags, Enemies, Allies, Waves, Loot, Levels }
+    enum Section { Towers, Artillery, Buffs, Heals, Mines, AirStrikes, Flags, AllyCards, Enemies, Allies, Waves, Loot, Levels }
 
     struct SectionInfo
     {
@@ -36,6 +36,7 @@ public class BalanceWindow : EditorWindow
         { Section.Mines, new SectionInfo { Group = "CARDS", Title = "Land mines", CardType = typeof(LandMineCardDefinition), Subtitle = "Explode on the first enemy that steps on them." } },
         { Section.AirStrikes, new SectionInfo { Group = "CARDS", Title = "Air strikes", CardType = typeof(AirStrikeCardDefinition), Subtitle = "A plane crosses the screen and fires a volley." } },
         { Section.Flags, new SectionInfo { Group = "CARDS", Title = "Flags", CardType = typeof(FlagCardDefinition), Subtitle = "Plant a flag to win ground back. Its radius must touch another flag's and be clear of enemies." } },
+        { Section.AllyCards, new SectionInfo { Group = "CARDS", Title = "Ally cards", CardType = typeof(AllyCardDefinition), Subtitle = "Played during a wave: the ally leaves the bunker and marches to the enemy base. Its stats are in Allies." } },
         { Section.Enemies, new SectionInfo { Group = "UNITS", Title = "Enemies", Subtitle = "Roster order = unlock order (read from the open scene's EnemySpawner). DPS = damage ÷ shot interval." } },
         { Section.Allies, new SectionInfo { Group = "UNITS", Title = "Allies", Subtitle = "Soldiers that leave the bunker and walk to the enemy base. Keep them much weaker than enemies. DPS = damage ÷ hit interval." } },
         { Section.Waves, new SectionInfo { Group = "RULES", Title = "Waves", Subtitle = "Spawning, progression, bosses and the random enemy buff of each wave." } },
@@ -60,7 +61,6 @@ public class BalanceWindow : EditorWindow
         { "stat", ("Stat", 110) }, { "value", ("Value", 64) },
         { "attackInterval", ("Hit every", 70) }, { "attackRange", ("Reach", 60) }, { "moveSpeed", ("Speed", 60) },
         { "sceneName", ("Scene", 110) }, { "enemyBaseLife", ("Base life", 70) }, { "balance", ("Waves config", 150) },
-        { "allySpawnInterval", ("Ally every", 76) }, { "firstAllyDelay", ("1st ally", 64) },
     };
 
     static readonly HashSet<string> HiddenFields = new HashSet<string> { "m_Script", "description" };
@@ -445,7 +445,7 @@ public class BalanceWindow : EditorWindow
                 .Select(d => new Row { Asset = d, So = new SerializedObject(d), RosterIndex = roster.IndexOf(d) })
                 .ToList();
 
-            var sent = DerivedColumn(rows, "Sent", "Sent out by the open scene's AllySpawner (in this order)", 52,
+            var sent = DerivedColumn(rows, "Roster", "Listed in the open scene's AllySpawner (ally cards can only send these)", 52,
                 row => row.RosterIndex >= 0 ? (row.RosterIndex + 1).ToString() : "–", row => row.RosterIndex);
             var dps = DerivedColumn(rows, "DPS", "Damage per second before enemy armor (damage ÷ hit interval)", 56,
                 row => { var d = (AllyData)row.Asset; return d.attackInterval > 0 ? (d.damage / d.attackInterval).ToString("0.##") : "–"; },
@@ -503,7 +503,7 @@ public class BalanceWindow : EditorWindow
                 new RowAction("TreeEditor.Trash", "Delete this level", row => DeleteLevel(levelCatalog, (LevelDefinition)row.Asset)),
             };
             tableHost.Add(BuildTable(rows, first: order, extra: new List<Column> { flags },
-                onlyFields: new[] { "displayName", "sceneName", "enemyBaseLife", "allySpawnInterval", "firstAllyDelay", "balance" }, actions: actions));
+                onlyFields: new[] { "displayName", "sceneName", "enemyBaseLife", "balance" }, actions: actions));
         };
         rebuildTable();
     }

@@ -15,6 +15,7 @@ namespace Bunker.Tests
         SystemHandle allySystem;
         SystemHandle damageSystem;
         Entity simEntity;
+        Entity configEntity;
         BlobAssetReference<AllyRosterBlob> roster;
 
         [SetUp]
@@ -39,8 +40,9 @@ namespace Bunker.Tests
             roster = builder.CreateBlobAssetReference<AllyRosterBlob>(Allocator.Persistent);
 
             var config = em.CreateEntity();
-            em.AddComponentData(config, new AllySpawnConfig { Interval = 0f, Roster = roster });
-            em.AddComponentData(config, new AllySpawnState());
+            em.AddComponentData(config, new AllySpawnConfig { Roster = roster });
+            em.AddBuffer<AllySpawnRequest>(config);
+            configEntity = config;
 
             allySystem = world.GetOrCreateSystem<AllySystem>();
             damageSystem = world.GetOrCreateSystem<DamageSystem>();
@@ -159,30 +161,26 @@ namespace Bunker.Tests
         }
 
         [Test]
-        public void AllySpawner_WaitsDuringPreparationPhaseAndSpawnsInCombatPhase()
+        public void AllySpawner_SpawnsOnlyOnRequest()
         {
-            var configQuery = em.CreateEntityQuery(typeof(AllySpawnConfig), typeof(AllySpawnState));
-            var configEntity = configQuery.GetSingletonEntity();
-            em.SetComponentData(configEntity, new AllySpawnConfig { Interval = 1f, Roster = roster });
-            em.SetComponentData(configEntity, new AllySpawnState { Timer = 0.5f, NextType = 0 });
-
-            // Preparation phase: WaitingToStart
-            em.SetComponentData(simEntity, new WaveState { Phase = WavePhase.WaitingToStart, Timer = 10f });
+            em.SetComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
+            var allyQuery = em.CreateEntityQuery(typeof(AllyTag));
+            var ecbSystem = world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             world.SetTime(new Unity.Core.TimeData(1.0, 1.0f));
             allySystem.Update(world.Unmanaged);
-            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
+            ecbSystem.Update(world.Unmanaged);
+            Assert.AreEqual(0, allyQuery.CalculateEntityCount(), "no card played, no ally");
 
-            var allyQuery = em.CreateEntityQuery(typeof(AllyTag));
-            Assert.AreEqual(0, allyQuery.CalculateEntityCount(), "No ally should spawn during preparation phase");
-
-            // Combat phase: Spawning
-            em.SetComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning, Timer = 0f });
-            world.SetTime(new Unity.Core.TimeData(2.0, 1.0f));
+            var requests = em.GetBuffer<AllySpawnRequest>(configEntity);
+            requests.Add(new AllySpawnRequest { TypeIndex = 0 });
+            requests.Add(new AllySpawnRequest { TypeIndex = 7 });
+            world.SetTime(new Unity.Core.TimeData(2.0, 0.01f));
             allySystem.Update(world.Unmanaged);
-            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
+            ecbSystem.Update(world.Unmanaged);
 
-            Assert.AreEqual(1, allyQuery.CalculateEntityCount(), "Ally should spawn once combat phase starts");
+            Assert.AreEqual(1, allyQuery.CalculateEntityCount(), "one ally per valid request; out-of-roster index ignored");
+            Assert.AreEqual(0, em.GetBuffer<AllySpawnRequest>(configEntity).Length, "requests are consumed");
         }
     }
 }

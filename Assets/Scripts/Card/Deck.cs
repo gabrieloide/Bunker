@@ -10,7 +10,8 @@ public class Deck : MonoBehaviour
     public static Deck instance;
 
     public HandLayout Hand => hand;
-    public bool HasRoom => hand != null && hand.Count < maxCards;
+    // Only cards playable in this phase count: towers held during a wave don't block ally draws
+    public bool HasRoom => hand != null && hand.VisibleCount < maxCards;
 
     private void Awake()
     {

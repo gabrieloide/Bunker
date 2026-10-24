@@ -6,7 +6,7 @@ using Unity.Transforms;
 
 namespace Bunker.Simulation
 {
-    // Sends allies out of the bunker on a timer. They walk the enemy path backwards, stop to hit any enemy
+    // Sends allies out of the bunker when an ally card is played (AllySpawnRequest). They walk the enemy path backwards, stop to hit any enemy
     // in melee range, and once past the path start they hit the enemy base until it falls.
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -22,7 +22,7 @@ namespace Bunker.Simulation
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<AllySpawnConfig>();
-            state.RequireForUpdate<AllySpawnState>();
+            state.RequireForUpdate<AllySpawnRequest>();
             state.RequireForUpdate<SimEvent>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             pathQuery = state.GetEntityQuery(ComponentType.ReadOnly<PathPoint>());
@@ -54,22 +54,13 @@ namespace Bunker.Simulation
             if (defaultPathEntity != Entity.Null && pathLookup.HasBuffer(defaultPathEntity))
                 lastPathIndex = pathLookup[defaultPathEntity].Length - 1;
 
-            bool isPreparation = SystemAPI.TryGetSingleton<WaveState>(out var waveState)
-                && waveState.Phase == WavePhase.WaitingToStart;
-
             var config = SystemAPI.GetSingleton<AllySpawnConfig>();
-            ref var spawn = ref SystemAPI.GetSingletonRW<AllySpawnState>().ValueRW;
-            if (!isPreparation && config.Interval > 0f && config.Roster.IsCreated && config.Roster.Value.Types.Length > 0)
-            {
-                spawn.Timer -= dt;
-                if (spawn.Timer <= 0f)
-                {
-                    spawn.Timer += config.Interval;
-                    int typeIndex = spawn.NextType % config.Roster.Value.Types.Length;
-                    spawn.NextType = typeIndex + 1;
-                    SpawnAlly(typeIndex, lastPathIndex, in config, ecb);
-                }
-            }
+            var requests = SystemAPI.GetSingletonBuffer<AllySpawnRequest>();
+            int typeCount = config.Roster.IsCreated ? config.Roster.Value.Types.Length : 0;
+            for (int i = 0; i < requests.Length; i++)
+                if (requests[i].TypeIndex >= 0 && requests[i].TypeIndex < typeCount)
+                    SpawnAlly(requests[i].TypeIndex, lastPathIndex, in config, ecb);
+            requests.Clear();
 
             var enemies = new NativeList<Entity>(Allocator.Temp);
             var enemyPositions = new NativeList<float3>(Allocator.Temp);
