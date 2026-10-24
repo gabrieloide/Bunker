@@ -23050,6 +23050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuilderSquad
   builderPrefab: {fileID: 5267304205897182278, guid: 3b0bef1efeef9154c9f15e39320f9520, type: 3}
+  flagBearerPrefab: {fileID: 5267304205897182278, guid: 09dffcb3eeee65940bad2d47181f62f8, type: 3}
 --- !u!4 &1149688533
 Transform:
   m_ObjectHideFlags: 0

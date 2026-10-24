@@ -128,3 +128,5 @@ MonoBehaviour:
   uiHoverHeight: 16
   dragThreshold: 20
   dragPointerGap: 4
+  dragScale: 0.5
+  previewPrefab: {fileID: 7681619379101785184, guid: 1aaa40c10d8609a409b0eec04c257be4, type: 3}
