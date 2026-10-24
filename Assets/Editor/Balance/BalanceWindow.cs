@@ -662,7 +662,7 @@ public class BalanceWindow : EditorWindow
         scroll.AddToClassList("scroll");
         content.Add(scroll);
 
-        var chance = Panel("Drop chance", "Chance that a kill drops a card. It grows as the bunker loses life, so a struggling player gets more cards.");
+        var chance = Panel("Drop chance", "Average chance that a kill drops a card. It grows as the bunker loses life, so a struggling player gets more cards. Each kill without a drop raises the next one's chance (pseudo-random), so there are no long droughts.");
         chance.Add(Bound(new Slider("At full life", 0f, 1f) { showInputField = true }, so, "baseDropChance"));
         chance.Add(Bound(new Slider("Extra per 10 life lost", 0f, 0.2f) { showInputField = true }, so, "dropChancePerMissingTenLife"));
         var example = Label("", "panel__hint");
