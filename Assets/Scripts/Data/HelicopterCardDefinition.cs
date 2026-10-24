@@ -11,8 +11,13 @@ public class HelicopterCardDefinition : CardDefinition
     [Min(0f)] public float bulletPen = 2f;
     [Tooltip("Shots per second while hovering")]
     [Min(0f)] public float fireRate = 3f;
+    [Tooltip("Shooting range")]
     [Range(1f, 20f)] public float range = 4f;
-    [Tooltip("Seconds it stays over the drop point before flying home")]
+    [Tooltip("Radius of the zone it patrols around the drop point; it chases enemies inside it")]
+    [Min(0.5f)] public float patrolRadius = 3f;
+    [Tooltip("Speed while patrolling the zone")]
+    [Min(0.1f)] public float patrolSpeed = 2f;
+    [Tooltip("Seconds it patrols the zone before flying home")]
     [Min(0.5f)] public float hoverTime = 8f;
     [Tooltip("Flight speed to and from the drop point")]
     [Min(0.1f)] public float flySpeed = 6f;

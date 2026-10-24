@@ -2,9 +2,10 @@ using System.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-// Placed prefab of the helicopter card: flies from the bunker to the drop point, hovers there as a
-// shooting tower for the card's hover time, then flies home and disappears. If it is shot down the
-// bridge removes this view like any destroyed tower.
+// Placed prefab of the helicopter card: flies from the bunker to the drop point, then patrols a zone
+// around it as a shooting tower for the card's hover time (chasing the nearest enemy inside the zone,
+// wandering when there is none), then flies home and disappears. If it is shot down the bridge removes
+// this view like any destroyed tower.
 public class Helicopter : MonoBehaviour
 {
     HelicopterCardDefinition definition;
@@ -22,12 +23,33 @@ public class Helicopter : MonoBehaviour
 
         var bridge = SimulationBridge.Instance;
         Entity entity = bridge != null ? bridge.StartHovering(definition, gameObject, site) : Entity.Null;
-        yield return new WaitForSeconds(definition.hoverTime);
+        yield return Patrol(bridge, entity, site);
         if (bridge != null)
             bridge.StopHovering(entity);
 
         yield return FlyTo(home);
         Destroy(gameObject);
+    }
+
+    IEnumerator Patrol(SimulationBridge bridge, Entity entity, Vector3 site)
+    {
+        float end = Time.time + definition.hoverTime;
+        Vector3 waypoint = site;
+        while (Time.time < end)
+        {
+            Vector3 position = transform.position;
+            if (SimulationBridge.TryGetNearestEnemy(site, definition.patrolRadius, position, out Vector3 enemy))
+                waypoint = new Vector3(enemy.x, enemy.y, position.z);
+            else if ((position - waypoint).sqrMagnitude < 0.01f)
+                waypoint = site + (Vector3)(Random.insideUnitCircle * definition.patrolRadius);
+
+            Face(waypoint.x - position.x);
+            position = Vector3.MoveTowards(position, waypoint, definition.patrolSpeed * Time.deltaTime);
+            transform.position = position;
+            if (bridge != null)
+                bridge.MoveHovering(entity, position);
+            yield return null;
+        }
     }
 
     IEnumerator FlyTo(Vector3 target)
