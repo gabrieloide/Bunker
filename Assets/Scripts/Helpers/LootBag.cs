@@ -52,7 +52,7 @@ public class LootBag : MonoBehaviour
         }
         killsSinceDrop = 0;
 
-        // Allies and effect cards; towers come from the wave-clear reward instead
+        // Allies and effect cards; towers and flags come from the wave-clear reward instead
         dropBag ??= new CardBag(catalog, CardCatalog.DropsOnKill);
         CardDefinition dropItem = dropBag.Draw();
         if (dropItem == null)

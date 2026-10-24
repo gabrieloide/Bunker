@@ -677,13 +677,13 @@ public class BalanceWindow : EditorWindow
         limit.Add(Bound(new IntegerField("Max towers on the map"), so, "maxTowers"));
         scroll.Add(limit);
 
-        var towers = Panel("Towers", "Towers never drop from kills: they are dealt at random (by Drop %, among towers) at the start and each time a wave is cleared. What doesn't fit in the hand goes to the draw pile.");
+        var towers = Panel("Towers", "Towers and flags never drop from kills: towers are dealt at random (by Drop %, among towers) at the start and each time a wave is cleared, flags only when a wave is cleared. What doesn't fit in the hand goes to the draw pile.");
         towers.Add(Bound(new IntegerField("Towers at level start"), so, "startingTowers"));
         towers.Add(Bound(new IntegerField("Towers per wave cleared"), so, "towersPerWave"));
         towers.Add(Bound(new IntegerField("Flags per wave cleared"), so, "flagsPerWave"));
         scroll.Add(towers);
 
-        var table = Panel("Which card drops", "Two pools: kills drop everything but towers; towers come from the wave reward. Drop % is the share within the card's own pool. Type one and the rest of that pool rescales to keep their proportions.");
+        var table = Panel("Which card drops", "Three pools: kills drop everything but towers and flags; towers and flags come from the wave reward. Drop % is the share within the card's own pool. Type one and the rest of that pool rescales to keep their proportions.");
         var actions = new VisualElement();
         actions.AddToClassList("panel__row");
         actions.Add(Button("Split evenly", () => EqualizeWeights(catalog), "Give every card the same chance within its pool"));
@@ -707,7 +707,7 @@ public class BalanceWindow : EditorWindow
         var all = catalog.cards.Where(c => c != null).Distinct().ToList();
         if (all.Count == 0) return;
         Undo.RecordObjects(all.Cast<Object>().ToArray(), "Split drop chance evenly");
-        foreach (var pool in all.GroupBy(CardCatalog.IsTower))
+        foreach (var pool in all.GroupBy(c => CardCatalog.IsTower(c) ? 0 : CardCatalog.IsFlag(c) ? 1 : 2))
         {
             int count = pool.Count();
             foreach (var card in pool)

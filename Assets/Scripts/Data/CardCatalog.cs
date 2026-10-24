@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Every card in the game plus the rules for handing them out. Two pools share the list:
-// kills drop everything but towers (allies, buffs, mines...), and towers come only from the
-// random starting hand and the reward for clearing a wave. Weights compare within a pool.
+// Every card in the game plus the rules for handing them out. Three pools share the list:
+// kills drop everything but towers and flags (allies, buffs, mines...); towers come only from the
+// random starting hand and the reward for clearing a wave; flags only from that reward.
+// Weights compare within a pool.
 [CreateAssetMenu(fileName = "CardCatalog", menuName = "Bunker/Card Catalog")]
 public class CardCatalog : ScriptableObject
 {
@@ -30,10 +31,11 @@ public class CardCatalog : ScriptableObject
 
     public static bool IsTower(CardDefinition card) => card is TowerCardDefinition;
     public static bool IsFlag(CardDefinition card) => card is FlagCardDefinition;
-    public static bool DropsOnKill(CardDefinition card) => !IsTower(card);
+    public static bool DropsOnKill(CardDefinition card) => !IsTower(card) && !IsFlag(card);
 
-    // The pool a card is rolled from: towers among towers, the rest among kill drops
-    public static System.Predicate<CardDefinition> PoolOf(CardDefinition card) => IsTower(card) ? IsTower : DropsOnKill;
+    // The pool a card is rolled from: towers among towers, flags among flags, the rest among kill drops
+    public static System.Predicate<CardDefinition> PoolOf(CardDefinition card) =>
+        IsTower(card) ? IsTower : IsFlag(card) ? IsFlag : DropsOnKill;
 
     public int TotalWeight(System.Predicate<CardDefinition> pool)
     {
