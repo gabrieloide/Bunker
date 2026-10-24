@@ -44,12 +44,13 @@ public abstract class Card : MonoBehaviour,
 
     public static int PendingResolveCount { get; private set; }
 
-    // Towers are built between waves; allies only march while a wave is on; everything else plays any time.
-    // The hand hides cards that can't be played now and loot only drops cards that can.
+    // Towers are built between waves; allies and air support only act while a wave is on; everything else
+    // plays any time. The hand hides cards that can't be played now and the draw pile holds them back.
     public static bool PlayableIn(CardDefinition card, bool preparation) => card switch
     {
         TowerCardDefinition => preparation,
         AllyCardDefinition => !preparation,
+        HelicopterCardDefinition => !preparation,
         _ => true
     };
 
@@ -129,7 +130,13 @@ public abstract class Card : MonoBehaviour,
         if (!isDragging || UIManager.instance == null || UIManager.instance.TowerSlotAnimation == null)
             return;
 
-        bool visible = TryGetPreviewPosition(out Vector3 target) && InTerritory && !HasObstacleBelow();
+        bool hasPosition = TryGetPreviewPosition(out Vector3 target);
+        bool valid = InTerritory && !HasObstacleBelow();
+        bool visible = hasPosition && valid;
+        if (hasPosition)
+            ShowPlacementFeedback(valid);
+        else
+            HidePlacementFeedback();
         UIManager.instance.ShowTowerSlot = visible;
         if (visible)
             UIManager.instance.TowerSlotAnimation.transform.position = target - UIManager.instance.offset;
@@ -140,6 +147,10 @@ public abstract class Card : MonoBehaviour,
         else
             RangeIndicator.Hide();
     }
+
+    // Extra feedback while dragging, e.g. the flag's check/cross; valid = dropping here would be accepted
+    protected virtual void ShowPlacementFeedback(bool valid) { }
+    protected virtual void HidePlacementFeedback() { }
 
     // Radius drawn around the placement preview: a tower's attack range; 0 draws nothing
     protected virtual float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
@@ -210,6 +221,7 @@ public abstract class Card : MonoBehaviour,
             UIManager.instance.ShowLastCardPosition(transform.position);
         }
         RangeIndicator.Hide();
+        HidePlacementFeedback();
 
         ReturnToSlot();
     }
@@ -392,6 +404,7 @@ public abstract class Card : MonoBehaviour,
             UIManager.instance.ShowLastCardPosition(transform.position);
         }
         RangeIndicator.Hide();
+        HidePlacementFeedback();
 
         var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
         bool isTrash = (trash != null && (trash.hit2D || trash.IsPointerOver()));
@@ -439,7 +452,7 @@ public abstract class Card : MonoBehaviour,
                     Destroy(marker);
                     // The card may be gone if the scene is unloading
                     return this != null ? PlayFlipAndResolve() : 0f;
-                });
+                }, CarriesFlag);
             }
             else
             {
@@ -454,6 +467,8 @@ public abstract class Card : MonoBehaviour,
 
     // Cards that put an object on the map send a soldier from the bunker to build it first
     protected virtual bool BuiltBySoldier => false;
+    // The soldier walks out carrying a flag (the flag bearer) instead of as a plain builder
+    protected virtual bool CarriesFlag => false;
 
     // Plays the flip where the object goes and resolves the card when it ends; returns the flip's length
     float PlayFlipAndResolve()

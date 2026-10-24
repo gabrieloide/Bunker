@@ -8,6 +8,8 @@ public class BuilderSquad : MonoBehaviour
     public static BuilderSquad Instance { get; private set; }
 
     [SerializeField] Builder builderPrefab;
+    [Tooltip("Sent instead of the builder to plant a flag; empty = the builder plants it")]
+    [SerializeField] Builder flagBearerPrefab;
 
     void Awake() => Instance = this;
 
@@ -19,9 +21,10 @@ public class BuilderSquad : MonoBehaviour
     public bool Available => builderPrefab != null;
 
     // onArrive builds and returns how long the building takes
-    public void Send(Vector3 site, Func<float> onArrive)
+    public void Send(Vector3 site, Func<float> onArrive, bool carriesFlag = false)
     {
-        var builder = Instantiate(builderPrefab, transform.position, Quaternion.identity);
+        var prefab = carriesFlag && flagBearerPrefab != null ? flagBearerPrefab : builderPrefab;
+        var builder = Instantiate(prefab, transform.position, Quaternion.identity);
         builder.Go(transform.position, site, onArrive);
     }
 

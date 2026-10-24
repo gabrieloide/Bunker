@@ -372,6 +372,8 @@ public class SimulationBridge : MonoBehaviour
         if (definition is TowerCardDefinition tower && tower.placedPrefab.GetComponent<TurretCard>() != null
             && Instance != null && Instance.ready)
             return Instance.SpawnTower(tower, position);
+        if (definition is HelicopterCardDefinition heli && Instance != null && Instance.ready)
+            return Instance.SpawnHelicopter(heli, position);
 
         var spawned = Instantiate(definition.placedPrefab, position, Quaternion.identity);
         foreach (var configurable in spawned.GetComponentsInChildren<ICardConfigurable>())
@@ -394,22 +396,8 @@ public class SimulationBridge : MonoBehaviour
         em.AddComponentData(entity, LocalTransform.FromPosition(position));
         em.AddComponentData(entity, new Health { Value = def.life, Max = def.life });
         em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
-        em.AddComponentData(entity, new Weapon
-        {
-            Damage = def.damage,
-            BulletPen = def.bulletPen,
-            FireInterval = def.fireRate > 0f ? 1f / def.fireRate : float.MaxValue,
-            BurstCount = def.burstCount,
-            BurstInterval = def.burstInterval,
-            Range = def.range,
-            Cooldown = def.initialCooldown,
-            ProjectileSpeed = towerBulletSpeed,
-            ProjectileLifetime = towerBulletLifetime,
-            ProjectileHalfExtents = towerBulletHalfExtents,
-            MuzzleOffset = (float3)(card.MuzzlePosition - position),
-            TargetFaction = Faction.Enemy,
-            HasBuff = false
-        });
+        em.AddComponentData(entity, PlayerWeapon(def.damage, def.bulletPen, def.fireRate, def.range, def.initialCooldown,
+            (float3)(card.MuzzlePosition - position), def.burstCount, def.burstInterval));
         if (def is ArtilleryTowerCardDefinition shellStats)
         {
             if (!view.TryGetComponent(out ArtilleryAuthoring artillery))
@@ -429,6 +417,67 @@ public class SimulationBridge : MonoBehaviour
         card.Entity = entity;
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
         return view;
+    }
+
+    // A player-side gun shooting enemies with the standard tower bullet
+    Weapon PlayerWeapon(float damage, float bulletPen, float fireRate, float range, float cooldown, float3 muzzleOffset,
+        int burstCount = 1, float burstInterval = 0.12f)
+    {
+        return new Weapon
+        {
+            Damage = damage,
+            BulletPen = bulletPen,
+            FireInterval = fireRate > 0f ? 1f / fireRate : float.MaxValue,
+            BurstCount = burstCount,
+            BurstInterval = burstInterval,
+            Range = range,
+            Cooldown = cooldown,
+            ProjectileSpeed = towerBulletSpeed,
+            ProjectileLifetime = towerBulletLifetime,
+            ProjectileHalfExtents = towerBulletHalfExtents,
+            MuzzleOffset = muzzleOffset,
+            TargetFaction = Faction.Enemy,
+            HasBuff = false
+        };
+    }
+
+    // Leaves from the bunker (where the builders come from) and flies to the drop point
+    public GameObject SpawnHelicopter(HelicopterCardDefinition def, Vector3 site)
+    {
+        Vector3 home = BuilderSquad.Instance != null ? BuilderSquad.Instance.transform.position : site;
+        var view = Instantiate(def.placedPrefab, home, Quaternion.identity);
+        if (view.TryGetComponent(out Helicopter heli))
+            heli.Launch(def, home, site);
+        else
+            Debug.LogError($"SimulationBridge: helicopter card '{def.name}' needs a Helicopter on its placed prefab.", view);
+        return view;
+    }
+
+    // While it hovers the helicopter is a tower: it shoots enemies in range and they can shoot it down
+    public Entity StartHovering(HelicopterCardDefinition def, GameObject view, Vector3 position)
+    {
+        if (!ready) return Entity.Null;
+        ColliderBox(view, out var half, out var offset);
+
+        var entity = em.CreateEntity();
+        em.AddComponent<SimulationTag>(entity);
+        em.AddComponent<TowerTag>(entity);
+        em.AddComponentData(entity, LocalTransform.FromPosition(position));
+        em.AddComponentData(entity, new Health { Value = def.life, Max = def.life });
+        em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
+        em.AddComponentData(entity, PlayerWeapon(def.damage, def.bulletPen, def.fireRate, def.range, 0f, float3.zero));
+        em.AddComponentData(entity, new Target { Value = Entity.Null });
+        em.AddBuffer<DamageRequest>(entity);
+        viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
+        return entity;
+    }
+
+    // Hover time is over: the tower goes away but the view keeps flying (home)
+    public void StopHovering(Entity entity)
+    {
+        viewRegistry.Forget(entity);
+        if (ready && em.Exists(entity))
+            em.DestroyEntity(entity);
     }
 
     int RegisterArtillery(ArtilleryAuthoring artillery)

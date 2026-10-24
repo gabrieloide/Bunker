@@ -85,6 +85,9 @@ public class ViewRegistry
         views[entity] = ev;
     }
 
+    // Stops syncing the view but leaves the GameObject alone (e.g. a helicopter flying home)
+    public void Forget(Entity entity) => views.Remove(entity);
+
     public void RemoveView(Entity entity)
     {
         if (views.TryGetValue(entity, out var view))
