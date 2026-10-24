@@ -36,6 +36,7 @@ public class SimulationBridge : MonoBehaviour
     BlobAssetReference<EnemyRosterBlob> rosterBlob;
     BlobAssetReference<EnemyBuffTableBlob> buffBlob;
     BlobAssetReference<AllyRosterBlob> allyRosterBlob;
+    Entity allySpawnerEntity;
 
     public ViewRegistry Views => viewRegistry;
     private ViewRegistry viewRegistry;
@@ -295,15 +296,27 @@ public class SimulationBridge : MonoBehaviour
         }
         allyRosterBlob = builder.CreateBlobAssetReference<AllyRosterBlob>(Allocator.Persistent);
 
-        var entity = em.CreateEntity();
-        em.AddComponent<SimulationTag>(entity);
-        em.AddComponentData(entity, new AllySpawnConfig
+        allySpawnerEntity = em.CreateEntity();
+        em.AddComponent<SimulationTag>(allySpawnerEntity);
+        em.AddComponentData(allySpawnerEntity, new AllySpawnConfig
         {
-            Interval = spawner.Interval,
             SpawnPosition = spawner.transform.position,
             Roster = allyRosterBlob
         });
-        em.AddComponentData(entity, new AllySpawnState { Timer = spawner.FirstDelay, NextType = 0 });
+        em.AddBuffer<AllySpawnRequest>(allySpawnerEntity);
+    }
+
+    // An ally card was played: the ally leaves the bunker on the next simulation step
+    public void RequestAlly(AllyView prefab)
+    {
+        int index = prefab != null ? System.Array.IndexOf(allyPrefabs, prefab) : -1;
+        if (index < 0)
+        {
+            Debug.LogError($"SimulationBridge: ally '{(prefab != null ? prefab.name : "null")}' is not in the scene's AllySpawner roster.", prefab);
+            return;
+        }
+        if (!ready || !em.Exists(allySpawnerEntity)) return;
+        em.GetBuffer<AllySpawnRequest>(allySpawnerEntity).Add(new AllySpawnRequest { TypeIndex = index });
     }
 
     BlobAssetReference<EnemyBuffTableBlob> BuildBuffTable()
@@ -564,7 +577,7 @@ public class SimulationBridge : MonoBehaviour
             return false;
         if (CardDrop.instance != null && CardDrop.instance.cardsQueue.Count > 0)
             return false;
-        if (Deck.instance != null && Deck.instance.Hand != null && Deck.instance.Hand.Count > 0)
+        if (Deck.instance != null && Deck.instance.Hand != null && Deck.instance.Hand.VisibleCount > 0)
             return false;
         return true;
     }

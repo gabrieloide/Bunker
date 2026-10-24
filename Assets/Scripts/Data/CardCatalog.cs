@@ -20,23 +20,24 @@ public class CardCatalog : ScriptableObject
     [Tooltip("Extra drop chance per 10 bunker life missing")]
     [Range(0f, 0.2f)] public float dropChancePerMissingTenLife = 0.02f;
 
-    public int TotalWeight()
+    public int TotalWeight(System.Predicate<CardDefinition> allowed = null)
     {
         int total = 0;
         foreach (var card in cards)
-            if (card != null) total += card.dropWeight;
+            if (card != null && (allowed == null || allowed(card))) total += card.dropWeight;
         return total;
     }
 
-    public CardDefinition PickWeighted()
+    // `allowed` narrows the pool (e.g. only cards playable in the current phase); weights stay relative within it
+    public CardDefinition PickWeighted(System.Predicate<CardDefinition> allowed = null)
     {
-        int total = TotalWeight();
+        int total = TotalWeight(allowed);
         if (total <= 0) return null;
 
         int roll = Random.Range(0, total);
         foreach (var card in cards)
         {
-            if (card == null) continue;
+            if (card == null || (allowed != null && !allowed(card))) continue;
             roll -= card.dropWeight;
             if (roll < 0) return card;
         }

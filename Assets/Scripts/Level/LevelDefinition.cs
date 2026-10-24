@@ -21,12 +21,6 @@ public class LevelDefinition : ScriptableObject
     [Tooltip("Empty = the scene's own WaveBalanceConfig")]
     public WaveBalanceConfig balance;
 
-    [Header("Allies")]
-    [Tooltip("Seconds between two allies leaving the bunker; 0 = no allies")]
-    [Min(0f)] public float allySpawnInterval = 6f;
-    [Tooltip("Seconds before the first ally")]
-    [Min(0f)] public float firstAllyDelay = 4f;
-
     [Header("Flags")]
     [Tooltip("Flags planted when the level starts; cards can only be played inside their radius")]
     public List<FlagPlacement> flags = new List<FlagPlacement>();

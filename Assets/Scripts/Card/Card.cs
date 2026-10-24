@@ -44,6 +44,17 @@ public abstract class Card : MonoBehaviour,
 
     public static int PendingResolveCount { get; private set; }
 
+    // Towers are built between waves; allies only march while a wave is on; everything else plays any time.
+    // The hand hides cards that can't be played now and loot only drops cards that can.
+    public static bool PlayableIn(CardDefinition card, bool preparation) => card switch
+    {
+        TowerCardDefinition => preparation,
+        AllyCardDefinition => !preparation,
+        _ => true
+    };
+
+    public bool PlayableNow => PlayableIn(definition, SimulationBridge.IsPreparationPhase);
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStaticResolveCount() => PendingResolveCount = 0;
 
@@ -187,6 +198,8 @@ public abstract class Card : MonoBehaviour,
 
         if (defaultCard != null)
             uiImage.sprite = defaultCard;
+
+        canvasGroup.alpha = 1f;
 
         if (GameManager.instance != null)
             GameManager.instance.onDrag = false;
@@ -402,7 +415,7 @@ public abstract class Card : MonoBehaviour,
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
         bool hasObstacle = HasObstacleBelow();
 
-        if (!hasObstacle && d > dragThreshold && InTerritory && AllowPlacement())
+        if (!hasObstacle && d > dragThreshold && PlayableNow && InTerritory && AllowPlacement())
         {
             OnPlacementAccepted();
             CameraShake.MicroShake();

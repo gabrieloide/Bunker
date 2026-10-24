@@ -220,16 +220,14 @@ namespace Bunker.Simulation
 
     public struct AllySpawnConfig : IComponentData
     {
-        // Seconds between two allies; <= 0 disables them
-        public float Interval;
         public float3 SpawnPosition;
         public BlobAssetReference<AllyRosterBlob> Roster;
     }
 
-    public struct AllySpawnState : IComponentData
+    // One ally card played; AllySystem sends that roster type out of the bunker
+    public struct AllySpawnRequest : IBufferElementData
     {
-        public float Timer;
-        public int NextType;
+        public int TypeIndex;
     }
 
     public struct WaveConfig : IComponentData

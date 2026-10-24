@@ -235,16 +235,10 @@ public class UIManager : MonoBehaviour
     {
         if (this.Deck == null || CardDrop.instance == null) return;
 
-        if (SimulationBridge.IsPreparationPhase)
+        // Drawable in both phases: kills during a wave drop ally cards
+        if (!this.Deck.activeSelf && CardDrop.instance.cardsQueue.Count > 0)
         {
-            if (!this.Deck.activeSelf && CardDrop.instance.cardsQueue.Count > 0)
-            {
-                this.Deck.SetActive(true);
-            }
-        }
-        else if (this.Deck.activeSelf)
-        {
-            CardDrop.instance.HideDeck();
+            this.Deck.SetActive(true);
         }
     }
 }
