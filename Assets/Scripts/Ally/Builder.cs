@@ -9,6 +9,8 @@ public class Builder : MonoBehaviour
     [Min(0.1f)] [SerializeField] float speed = 5f;
     [Tooltip("Stops this far from the site, on the side it came from, so it doesn't stand on the build")]
     [Min(0f)] [SerializeField] float standOff = 0.7f;
+    [Tooltip("Walks back as this one instead, e.g. the flag bearer returns as a plain builder once the flag is planted")]
+    [SerializeField] Builder returnsAs;
 
     // onArrive builds and returns how long the building takes
     public void Go(Vector3 home, Vector3 site, Func<float> onArrive)
@@ -27,6 +29,18 @@ public class Builder : MonoBehaviour
         float buildTime = onArrive != null ? onArrive() : 0f;
         if (buildTime > 0f)
             yield return new WaitForSeconds(buildTime);
+        if (returnsAs != null)
+        {
+            var back = Instantiate(returnsAs, transform.position, Quaternion.identity);
+            back.StartCoroutine(back.ReturnHome(home));
+            Destroy(gameObject);
+            yield break;
+        }
+        yield return ReturnHome(home);
+    }
+
+    IEnumerator ReturnHome(Vector3 home)
+    {
         yield return WalkTo(home);
         Destroy(gameObject);
     }

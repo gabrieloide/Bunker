@@ -19,7 +19,7 @@ public class BalanceWindow : EditorWindow
     // Drop % edits rewrite the weights so they add up to this (0.1% resolution)
     const int WeightTotal = 1000;
 
-    enum Section { Towers, Artillery, Buffs, Heals, Mines, AirStrikes, Flags, AllyCards, Enemies, Allies, Waves, Loot, Levels }
+    enum Section { Towers, Artillery, Buffs, Heals, Mines, AirStrikes, Flags, AllyCards, Helicopters, Enemies, Allies, Waves, Loot, Levels }
 
     struct SectionInfo
     {
@@ -37,6 +37,7 @@ public class BalanceWindow : EditorWindow
         { Section.AirStrikes, new SectionInfo { Group = "CARDS", Title = "Air strikes", CardType = typeof(AirStrikeCardDefinition), Subtitle = "A plane crosses the screen and fires a volley." } },
         { Section.Flags, new SectionInfo { Group = "CARDS", Title = "Flags", CardType = typeof(FlagCardDefinition), Subtitle = "Plant a flag to win ground back. Its radius must touch another flag's and be clear of enemies." } },
         { Section.AllyCards, new SectionInfo { Group = "CARDS", Title = "Ally cards", CardType = typeof(AllyCardDefinition), Subtitle = "Played during a wave: the ally leaves the bunker and marches to the enemy base. Its stats are in Allies." } },
+        { Section.Helicopters, new SectionInfo { Group = "CARDS", Title = "Helicopters", CardType = typeof(HelicopterCardDefinition), Subtitle = "Played during a wave: flies to the drop point, hovers shooting enemies in range for Hover time, then flies home. Enemies can shoot it down." } },
         { Section.Enemies, new SectionInfo { Group = "UNITS", Title = "Enemies", Subtitle = "Roster order = unlock order (read from the open scene's EnemySpawner). DPS = damage ÷ shot interval." } },
         { Section.Allies, new SectionInfo { Group = "UNITS", Title = "Allies", Subtitle = "Soldiers that leave the bunker and walk to the enemy base. Keep them much weaker than enemies. DPS = damage ÷ hit interval." } },
         { Section.Waves, new SectionInfo { Group = "RULES", Title = "Waves", Subtitle = "Spawning, progression, bosses and the random enemy buff of each wave." } },
@@ -1077,6 +1078,8 @@ public class BalanceWindow : EditorWindow
                 warnings.Add(($"{def.name}: the placed prefab needs a TurretCard.", def));
             if (def is ArtilleryTowerCardDefinition && def.placedPrefab != null && def.placedPrefab.GetComponent<ArtilleryAuthoring>() == null)
                 warnings.Add(($"{def.name}: the placed prefab needs an ArtilleryAuthoring.", def));
+            if (def is HelicopterCardDefinition && (def.placedPrefab == null || def.placedPrefab.GetComponent<Helicopter>() == null))
+                warnings.Add(($"{def.name}: the placed prefab needs a Helicopter component.", def));
             if ((def is LandMineCardDefinition || def is AirStrikeCardDefinition) && def.placedPrefab == null)
                 warnings.Add(($"{def.name}: no placed prefab assigned.", def));
             if (def is FlagCardDefinition && (def.placedPrefab == null || def.placedPrefab.GetComponent<Flag>() == null))
