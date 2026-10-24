@@ -680,6 +680,7 @@ public class BalanceWindow : EditorWindow
         var towers = Panel("Towers", "Towers never drop from kills: they are dealt at random (by Drop %, among towers) at the start and each time a wave is cleared. What doesn't fit in the hand goes to the draw pile.");
         towers.Add(Bound(new IntegerField("Towers at level start"), so, "startingTowers"));
         towers.Add(Bound(new IntegerField("Towers per wave cleared"), so, "towersPerWave"));
+        towers.Add(Bound(new IntegerField("Flags per wave cleared"), so, "flagsPerWave"));
         scroll.Add(towers);
 
         var table = Panel("Which card drops", "Two pools: kills drop everything but towers; towers come from the wave reward. Drop % is the share within the card's own pool. Type one and the rest of that pool rescales to keep their proportions.");

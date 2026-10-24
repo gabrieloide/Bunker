@@ -19,12 +19,12 @@ public class LevelSetup : MonoBehaviour
 
         foreach (var placement in Current.flags)
         {
-            // Same grid as the flag card: centred on a cell, which it occupies
+            // Same grid as the flag card: centred on a free cell (never on the path or scenery), which it occupies
             Vector3 position = placement.position;
             Vector3Int cell = default;
             if (PlacementGrid.Available)
             {
-                cell = PlacementGrid.WorldToCell(position);
+                cell = PlacementGrid.NearestFreeCell(PlacementGrid.WorldToCell(position));
                 position = PlacementGrid.CellCenter(cell);
             }
             var flag = Instantiate(flagPrefab, position, Quaternion.identity);

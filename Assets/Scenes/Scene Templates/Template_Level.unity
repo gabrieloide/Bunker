@@ -713,8 +713,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee19d815e9715e4db0063365da39e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  posInCamera: -93.4
-  posOutCamera: -151
+  posInCamera: 0
+  posOutCamera: -57.6
   deckSliceAnimation: {fileID: 1524835839}
   DeckGameObject: {fileID: 827480856}
   TweenDeck: 6

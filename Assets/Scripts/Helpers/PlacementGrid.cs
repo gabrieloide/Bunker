@@ -131,6 +131,33 @@ public static class PlacementGrid
         return true;
     }
 
+    // The free cell closest to `cell` (itself when free), searching rings up to `maxRings` away;
+    // `cell` itself when none is free
+    public static Vector3Int NearestFreeCell(Vector3Int cell, int maxRings = 8)
+    {
+        for (int ring = 0; ring <= maxRings; ring++)
+        {
+            bool found = false;
+            Vector3Int best = cell;
+            float bestDist = float.MaxValue;
+            for (int dx = -ring; dx <= ring; dx++)
+                for (int dy = -ring; dy <= ring; dy++)
+                {
+                    if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) != ring) continue;
+                    var candidate = new Vector3Int(cell.x + dx, cell.y + dy, cell.z);
+                    float dist = dx * dx + dy * dy;
+                    if (dist < bestDist && CanPlaceAt(candidate))
+                    {
+                        best = candidate;
+                        bestDist = dist;
+                        found = true;
+                    }
+                }
+            if (found) return best;
+        }
+        return cell;
+    }
+
     public static PlacementStatus GetPlacementStatus(Vector3Int cell)
     {
         if (!Available) return PlacementStatus.Valid;

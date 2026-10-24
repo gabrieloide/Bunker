@@ -15,6 +15,8 @@ public class CardCatalog : ScriptableObject
     [Min(0)] public int startingTowers = 3;
     [Tooltip("Random towers dealt each time a wave is cleared; what doesn't fit in the hand waits in the draw pile")]
     [Min(0)] public int towersPerWave = 3;
+    [Tooltip("Flag cards dealt each time a wave is cleared (before the towers, so they get a hand slot first)")]
+    [Min(0)] public int flagsPerWave = 1;
 
     [Header("Placement")]
     [Tooltip("Towers allowed on the map at the same time; 0 = no limit. Each tower card can also set its own Max On Field")]
@@ -27,6 +29,7 @@ public class CardCatalog : ScriptableObject
     [Range(0f, 0.2f)] public float dropChancePerMissingTenLife = 0.02f;
 
     public static bool IsTower(CardDefinition card) => card is TowerCardDefinition;
+    public static bool IsFlag(CardDefinition card) => card is FlagCardDefinition;
     public static bool DropsOnKill(CardDefinition card) => !IsTower(card);
 
     // The pool a card is rolled from: towers among towers, the rest among kill drops
