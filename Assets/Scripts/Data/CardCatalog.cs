@@ -23,6 +23,12 @@ public class CardCatalog : ScriptableObject
     [Tooltip("Towers allowed on the map at the same time; 0 = no limit. Each tower card can also set its own Max On Field")]
     [Min(0)] public int maxTowers = 8;
 
+    [Header("Demolition")]
+    [Tooltip("Ruins left where a tower was torn down (they stay all match); empty = the tower's own sprite, greyed out")]
+    public Sprite ruinsSprite;
+    [Tooltip("Marks the free neighbouring cells the ruins block; empty = blocked but unmarked")]
+    public Sprite blockedCellSprite;
+
     [Header("Kill drops")]
     [Tooltip("Average chance that a kill drops a card at full bunker life (each kill without a drop raises the next one's chance)")]
     [Range(0f, 1f)] public float baseDropChance = 0.25f;

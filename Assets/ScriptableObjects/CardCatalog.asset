@@ -33,5 +33,7 @@ MonoBehaviour:
   startingTowers: 3
   towersPerWave: 3
   maxTowers: 8
+  ruinsSprite: {fileID: 0}
+  blockedCellSprite: {fileID: 5839820706974066888, guid: a800bb1e6b9629748a0d3ce44a994118, type: 3}
   baseDropChance: 0.25
   dropChancePerMissingTenLife: 0.02
