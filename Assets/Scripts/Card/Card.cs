@@ -71,7 +71,7 @@ public abstract class Card : MonoBehaviour,
         return worldPos;
     }
 
-    Vector3Int FootprintCell() => PlacementGrid.WorldToCell(PointerWorld() + offset);
+    protected Vector3Int FootprintCell() => PlacementGrid.WorldToCell(PointerWorld() + offset);
 
     public virtual Vector3 GetRaycastOrigin()
     {
@@ -109,10 +109,13 @@ public abstract class Card : MonoBehaviour,
     {
         GameObject spawned = SimulationBridge.SpawnFromCard(definition, dropOrigin);
         if (spawned == null) return null;
-        if (UseGrid)
+        if (UseGrid && OccupiesCell)
             PlacementGrid.Occupy(dropCell, spawned);
         return spawned;
     }
+
+    // Whether the placed object keeps its cell (false for things that move away, like the helicopter)
+    protected virtual bool OccupiesCell => true;
 
     // Where the drag preview goes; false hides it (e.g. a buff with no valid target under the pointer).
     // Grid cards mark the footprint cell; free cards mark the pointer.

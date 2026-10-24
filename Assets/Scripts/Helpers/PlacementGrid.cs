@@ -19,6 +19,8 @@ public static class PlacementGrid
 
     static Tilemap groundTilemap;
     static readonly List<Tilemap> obstacleTilemaps = new List<Tilemap>();
+    // The enemy path: an obstacle for towers, the only valid ground for mines
+    static readonly List<Tilemap> pathTilemaps = new List<Tilemap>();
     static bool tilemapsCached;
 
     public static Grid Grid
@@ -53,6 +55,7 @@ public static class PlacementGrid
         if (Grid == null) return;
 
         obstacleTilemaps.Clear();
+        pathTilemaps.Clear();
         groundTilemap = null;
 
         var tilemaps = Grid.GetComponentsInChildren<Tilemap>(true);
@@ -62,6 +65,8 @@ public static class PlacementGrid
             if (n.Contains("path") || n.Contains("limit") || n.Contains("decoration") || n.Contains("obstacle"))
             {
                 obstacleTilemaps.Add(tm);
+                if (n.Contains("path"))
+                    pathTilemaps.Add(tm);
             }
             else if (n.Contains("background") || n.Contains("ground") || n.Contains("floor") || n.Contains("terrain"))
             {
@@ -114,6 +119,18 @@ public static class PlacementGrid
         for (int i = 0; i < obstacleTilemaps.Count; i++)
         {
             var tm = obstacleTilemaps[i];
+            if (tm != null && tm.HasTile(cell))
+                return true;
+        }
+        return false;
+    }
+
+    public static bool IsPath(Vector3Int cell)
+    {
+        EnsureTilemapsCached();
+        for (int i = 0; i < pathTilemaps.Count; i++)
+        {
+            var tm = pathTilemaps[i];
             if (tm != null && tm.HasTile(cell))
                 return true;
         }
@@ -197,6 +214,7 @@ public static class PlacementGrid
     {
         occupants.Clear();
         obstacleTilemaps.Clear();
+        pathTilemaps.Clear();
         groundTilemap = null;
         grid = null;
         tilemapsCached = false;

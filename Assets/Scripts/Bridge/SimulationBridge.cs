@@ -472,6 +472,13 @@ public class SimulationBridge : MonoBehaviour
         return entity;
     }
 
+    // The patrolling helicopter drags its tower along
+    public void MoveHovering(Entity entity, Vector3 position)
+    {
+        if (!ready || !em.Exists(entity)) return;
+        em.SetComponentData(entity, LocalTransform.FromPosition(position));
+    }
+
     // Hover time is over: the tower goes away but the view keeps flying (home)
     public void StopHovering(Entity entity)
     {
@@ -545,6 +552,29 @@ public class SimulationBridge : MonoBehaviour
         foreach (var t in transforms)
             if (math.distancesq(t.Position.xy, c) <= r2) return true;
         return false;
+    }
+
+    // Closest enemy to `from` among those within `radius` of `center`
+    public static bool TryGetNearestEnemy(Vector3 center, float radius, Vector3 from, out Vector3 position)
+    {
+        position = default;
+        if (Instance == null || !Instance.ready) return false;
+        using var transforms = Instance.enemyQuery.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+        float2 c = new float2(center.x, center.y), f = new float2(from.x, from.y);
+        float r2 = radius * radius, best = float.MaxValue;
+        bool found = false;
+        foreach (var t in transforms)
+        {
+            if (math.distancesq(t.Position.xy, c) > r2) continue;
+            float d = math.distancesq(t.Position.xy, f);
+            if (d < best)
+            {
+                best = d;
+                position = t.Position;
+                found = true;
+            }
+        }
+        return found;
     }
 
     public void RequestDamage(Entity entity, float damage, float bulletPen)
