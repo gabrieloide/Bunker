@@ -96,6 +96,8 @@ namespace Bunker.Simulation
         public float3 MuzzleOffset;
         public Faction TargetFaction;
         public bool HasBuff;
+        // Share of the damage the enemy base does NOT take (0 = full damage)
+        public float BaseDamageCut;
     }
 
     public struct Target : IComponentData { public Entity Value; }
@@ -125,6 +127,7 @@ namespace Bunker.Simulation
         public float3 Velocity;
         public float2 HalfExtents;
         public Faction TargetFaction;
+        public float BaseDamageCut;
     }
 
     // Tower lobs shells (straight up, then free fall onto the predicted impact) instead of firing straight projectiles

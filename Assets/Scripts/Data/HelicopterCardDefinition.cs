@@ -13,6 +13,8 @@ public class HelicopterCardDefinition : CardDefinition
     [Min(0f)] public float fireRate = 3f;
     [Tooltip("Shooting range")]
     [Range(1f, 20f)] public float range = 4f;
+    [Tooltip("Damage multiplier against the enemy base (0.2 = 20%), so it cannot solo it")]
+    [Range(0f, 1f)] public float baseDamageMultiplier = 0.2f;
     [Tooltip("Radius of the zone it patrols around the drop point; it chases enemies inside it")]
     [Min(0.5f)] public float patrolRadius = 3f;
     [Tooltip("Speed while patrolling the zone")]

@@ -53,6 +53,7 @@ namespace Bunker.Simulation
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
             var defenseLookup = SystemAPI.GetComponentLookup<Defense>(true);
+            var baseLookup = SystemAPI.GetComponentLookup<EnemyBaseTag>(true);
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -83,8 +84,9 @@ namespace Bunker.Simulation
                     if (!BalanceMath.BoxesOverlap(candidatePositions[i], box.Offset, box.HalfExtents, pos, p.HalfExtents))
                         continue;
 
+                    float damage = baseLookup.HasComponent(candidates[i]) ? p.Damage * (1f - p.BaseDamageCut) : p.Damage;
                     if (damageLookup.HasBuffer(candidates[i]))
-                        damageLookup[candidates[i]].Add(new DamageRequest { Damage = p.Damage, BulletPen = p.BulletPen });
+                        damageLookup[candidates[i]].Add(new DamageRequest { Damage = damage, BulletPen = p.BulletPen });
 
                     events.Add(new SimEvent
                     {
@@ -94,8 +96,8 @@ namespace Bunker.Simulation
                         Position = pos,
                         // What the target actually loses, so the floating number matches the health bar
                         Amount = defenseLookup.TryGetComponent(candidates[i], out var defense)
-                            ? BalanceMath.EnemyDamageTaken(p.Damage, p.BulletPen, defense.Value)
-                            : p.Damage,
+                            ? BalanceMath.EnemyDamageTaken(damage, p.BulletPen, defense.Value)
+                            : damage,
                         IntValue = (int)p.TargetFaction
                     });
                     ecb.DestroyEntity(entity);

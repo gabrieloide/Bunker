@@ -23,5 +23,6 @@ MonoBehaviour:
   bulletPen: 2
   fireRate: 3
   range: 4
+  baseDamageMultiplier: 0.2
   hoverTime: 8
   flySpeed: 6
