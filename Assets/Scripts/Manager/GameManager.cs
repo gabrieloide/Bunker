@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public CardCatalog Catalog => catalog;
     private CardDrop cardDrop;
     private CardBag towerBag;
+    private CardBag flagBag;
 
     private void Awake()
     {
@@ -51,11 +52,24 @@ public class GameManager : MonoBehaviour
         SimEventDispatcher.OnWavePhaseChanged -= OnWavePhaseChanged;
     }
 
-    // Clearing a wave is what earns towers (kills only drop allies and effect cards)
+    // Clearing a wave earns a flag to win ground back and new towers (kills only drop allies and effect cards)
     void OnWavePhaseChanged(Bunker.Simulation.WavePhase phase)
     {
-        if (phase == Bunker.Simulation.WavePhase.WaitingToStart && !SimEventDispatcher.IsGameOver && catalog != null)
-            DealTowers(catalog.towersPerWave);
+        if (phase != Bunker.Simulation.WavePhase.WaitingToStart || SimEventDispatcher.IsGameOver || catalog == null)
+            return;
+        DealFlags(catalog.flagsPerWave);
+        DealTowers(catalog.towersPerWave);
+    }
+
+    void DealFlags(int count)
+    {
+        if (cardDrop == null)
+            cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
+        if (cardDrop == null) return;
+
+        flagBag ??= new CardBag(catalog, CardCatalog.IsFlag);
+        for (int i = 0; i < count; i++)
+            cardDrop.Deal(flagBag.Draw());
     }
 
     // Random towers from a weighted bag, all different when the pool allows it:
