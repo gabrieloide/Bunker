@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] CardCatalog catalog;
     public CardCatalog Catalog => catalog;
     private CardDrop cardDrop;
+    private CardBag towerBag;
 
     private void Awake()
     {
@@ -57,15 +58,23 @@ public class GameManager : MonoBehaviour
             DealTowers(catalog.towersPerWave);
     }
 
-    // Random towers by weight: into the hand while it has room, the rest to the draw pile
+    // Random towers from a weighted bag, all different when the pool allows it:
+    // into the hand while it has room, the rest to the draw pile
     void DealTowers(int count)
     {
         if (cardDrop == null)
             cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
         if (cardDrop == null) return;
 
+        towerBag ??= new CardBag(catalog, CardCatalog.IsTower);
+        var dealt = new System.Collections.Generic.List<CardDefinition>(count);
         for (int i = 0; i < count; i++)
-            cardDrop.Deal(catalog.PickTower());
+        {
+            CardDefinition tower = towerBag.Draw(dealt);
+            if (tower == null) break;
+            dealt.Add(tower);
+            cardDrop.Deal(tower);
+        }
     }
 
     private void Update()

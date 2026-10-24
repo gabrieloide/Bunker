@@ -1,14 +1,18 @@
-using System.Collections.Generic;
+using Bunker.Simulation;
 using UnityEngine;
 
-// Kill drops: first roll whether a card drops at all, then pick one by weight from the CardCatalog.
-// The drop chance rises as the bunker loses life, so a struggling player gets more cards.
+// Kill drops: first roll whether a card drops at all, then draw one from a bag weighted by the CardCatalog.
+// The drop chance rises as the bunker loses life, so a struggling player gets more cards. It is a
+// pseudo-random distribution: each kill without a drop raises the next one's chance, so the average
+// stays at CurrentDropChance but long droughts and streaks don't happen.
 public class LootBag : MonoBehaviour
 {
     public static LootBag instance;
     [SerializeField] CardCatalog catalog;
 
     private CardDrop cardDrop;
+    private CardBag dropBag;
+    private int killsSinceDrop;
 
     private void Awake()
     {
@@ -39,11 +43,18 @@ public class LootBag : MonoBehaviour
 
     public void InstantiateLoot()
     {
-        if (catalog == null || Random.value >= CurrentDropChance())
+        if (catalog == null)
             return;
+        if (Random.value >= BalanceMath.PrdChance(CurrentDropChance(), killsSinceDrop))
+        {
+            killsSinceDrop++;
+            return;
+        }
+        killsSinceDrop = 0;
 
         // Allies and effect cards; towers come from the wave-clear reward instead
-        CardDefinition dropItem = catalog.PickKillDrop();
+        dropBag ??= new CardBag(catalog, CardCatalog.DropsOnKill);
+        CardDefinition dropItem = dropBag.Draw();
         if (dropItem == null)
             return;
 

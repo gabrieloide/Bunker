@@ -21,7 +21,7 @@ public class CardCatalog : ScriptableObject
     [Min(0)] public int maxTowers = 8;
 
     [Header("Kill drops")]
-    [Tooltip("Chance that a kill drops a card at full bunker life")]
+    [Tooltip("Average chance that a kill drops a card at full bunker life (each kill without a drop raises the next one's chance)")]
     [Range(0f, 1f)] public float baseDropChance = 0.25f;
     [Tooltip("Extra drop chance per 10 bunker life missing")]
     [Range(0f, 0.2f)] public float dropChancePerMissingTenLife = 0.02f;
@@ -32,29 +32,11 @@ public class CardCatalog : ScriptableObject
     // The pool a card is rolled from: towers among towers, the rest among kill drops
     public static System.Predicate<CardDefinition> PoolOf(CardDefinition card) => IsTower(card) ? IsTower : DropsOnKill;
 
-    public CardDefinition PickKillDrop() => PickWeighted(DropsOnKill);
-    public CardDefinition PickTower() => PickWeighted(IsTower);
-
     public int TotalWeight(System.Predicate<CardDefinition> pool)
     {
         int total = 0;
         foreach (var card in cards)
             if (card != null && pool(card)) total += card.dropWeight;
         return total;
-    }
-
-    CardDefinition PickWeighted(System.Predicate<CardDefinition> pool)
-    {
-        int total = TotalWeight(pool);
-        if (total <= 0) return null;
-
-        int roll = Random.Range(0, total);
-        foreach (var card in cards)
-        {
-            if (card == null || !pool(card)) continue;
-            roll -= card.dropWeight;
-            if (roll < 0) return card;
-        }
-        return null;
     }
 }

@@ -48,6 +48,43 @@ namespace Bunker.Simulation
             return completedWave % wavesPerTier == 0 && unlockedTypes < maxUnlockedTypes;
         }
 
+        // Pseudo-random distribution (as in Dota): the n-th try since the last success succeeds with chance C·n.
+        // Same long-run average as a flat `chance`, but no long droughts and fewer streaks.
+        public static float PrdChance(float chance, int triesSinceSuccess)
+        {
+            return math.min(1f, PrdConstant(chance) * (triesSinceSuccess + 1));
+        }
+
+        // The C whose PRD averages `chance`, found by bisection (the average grows with C)
+        public static float PrdConstant(float chance)
+        {
+            if (chance <= 0f) return 0f;
+            if (chance >= 1f) return 1f;
+            float lo = 0f, hi = chance;
+            for (int i = 0; i < 32; i++)
+            {
+                float mid = (lo + hi) * 0.5f;
+                if (PrdAverage(mid) > chance) hi = mid;
+                else lo = mid;
+            }
+            return (lo + hi) * 0.5f;
+        }
+
+        // Long-run success rate of a PRD with constant c: one over the expected tries per success
+        public static float PrdAverage(float c)
+        {
+            if (c <= 0f) return 0f;
+            double noSuccessYet = 1.0, expectedTries = 0.0;
+            int maxTries = (int)math.ceil(1f / c);
+            for (int n = 1; n <= maxTries; n++)
+            {
+                double p = math.min(1.0, (double)c * n);
+                expectedTries += n * noSuccessYet * p;
+                noSuccessYet *= 1.0 - p;
+            }
+            return (float)(1.0 / expectedTries);
+        }
+
         public static EnemyBuffKind PickWeighted(ref BlobArray<float> weights, ref Random rng)
         {
             float total = 0f;
