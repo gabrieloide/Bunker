@@ -24,10 +24,6 @@ public class LevelDefinition : ScriptableObject
     [Header("Flags")]
     [Tooltip("Flags planted when the level starts; cards can only be played inside their radius")]
     public List<FlagPlacement> flags = new List<FlagPlacement>();
-
-    [Header("Cards")]
-    [Tooltip("Empty = the CardCatalog's starting hand")]
-    public List<CardDefinition> startingHand = new List<CardDefinition>();
 }
 
 [Serializable]

@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public int ActualScore;
     [HideInInspector]public int CurrentCardAmount;
     public bool StartingHandDealt { get; private set; }
-    [Tooltip("Starting hand is dealt from here")]
+    [Tooltip("Towers for the starting hand and the wave-clear reward are dealt from here")]
     [SerializeField] CardCatalog catalog;
     public CardCatalog Catalog => catalog;
     private CardDrop cardDrop;
@@ -36,18 +36,36 @@ public class GameManager : MonoBehaviour
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         }
 
-        var level = LevelSetup.Current;
-        var startingHand = level != null && level.startingHand.Count > 0 ? level.startingHand
-            : catalog != null ? catalog.startingHand : null;
-        if (startingHand != null)
-        {
-            foreach (var card in startingHand)
-                AddCardToHand(card);
-
-            if (cardDrop != null)
-                cardDrop.DealInitialHand();
-        }
+        if (catalog != null)
+            DealTowers(catalog.startingTowers);
+        if (cardDrop != null && !cardDrop.HasPlayableCard)
+            cardDrop.HideDeck();
         StartingHandDealt = true;
+
+        SimEventDispatcher.OnWavePhaseChanged += OnWavePhaseChanged;
+    }
+
+    private void OnDestroy()
+    {
+        SimEventDispatcher.OnWavePhaseChanged -= OnWavePhaseChanged;
+    }
+
+    // Clearing a wave is what earns towers (kills only drop allies and effect cards)
+    void OnWavePhaseChanged(Bunker.Simulation.WavePhase phase)
+    {
+        if (phase == Bunker.Simulation.WavePhase.WaitingToStart && !SimEventDispatcher.IsGameOver && catalog != null)
+            DealTowers(catalog.towersPerWave);
+    }
+
+    // Random towers by weight: into the hand while it has room, the rest to the draw pile
+    void DealTowers(int count)
+    {
+        if (cardDrop == null)
+            cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
+        if (cardDrop == null) return;
+
+        for (int i = 0; i < count; i++)
+            cardDrop.Deal(catalog.PickTower());
     }
 
     private void Update()
@@ -61,19 +79,6 @@ public class GameManager : MonoBehaviour
         else if (Input.GetMouseButtonUp(0))
         {
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
-        }
-    }
-
-    public void AddCardToHand(CardDefinition card)
-    {
-        if (cardDrop == null)
-        {
-            cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
-        }
-
-        if (cardDrop != null)
-        {
-            cardDrop.EnqueueCard(card);
         }
     }
 }

@@ -235,10 +235,15 @@ public class UIManager : MonoBehaviour
     {
         if (this.Deck == null || CardDrop.instance == null) return;
 
-        // Drawable in both phases: kills during a wave drop ally cards
-        if (!this.Deck.activeSelf && CardDrop.instance.cardsQueue.Count > 0)
+        // Shown while it holds something playable in this phase (towers in preparation, allies during a wave)
+        bool playable = CardDrop.instance.HasPlayableCard;
+        if (!this.Deck.activeSelf && playable)
         {
-            this.Deck.SetActive(true);
+            CardDrop.instance.ShowDeck();
+        }
+        else if (this.Deck.activeSelf && !playable)
+        {
+            CardDrop.instance.HideDeck();
         }
     }
 }
