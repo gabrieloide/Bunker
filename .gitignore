@@ -169,3 +169,6 @@ WwiseUnityIntegration_*_Src.zip
 *.slnx
 .vscode/
 
+
+# Unity Pipeline (CLI) runtime port file, rewritten every Editor session
+.unity-pipeline-runtime-port
