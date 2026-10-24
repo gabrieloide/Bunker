@@ -575,7 +575,7 @@ public class SimulationBridge : MonoBehaviour
             return false;
         if (Card.PendingResolveCount > 0)
             return false;
-        if (CardDrop.instance != null && CardDrop.instance.cardsQueue.Count > 0)
+        if (CardDrop.instance != null && CardDrop.instance.HasPlayableCard)
             return false;
         if (Deck.instance != null && Deck.instance.Hand != null && Deck.instance.Hand.VisibleCount > 0)
             return false;

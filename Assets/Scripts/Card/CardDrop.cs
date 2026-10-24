@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// The draw pile, shared by every card type. Drawing takes the oldest card playable in the current
+// phase (towers in preparation, allies during a wave), so cards for the other phase wait their turn.
 public class CardDrop : MonoBehaviour
 {
     public static CardDrop instance;
-    public Queue<CardDefinition> cardsQueue = new Queue<CardDefinition>();
+    [System.NonSerialized] public List<CardDefinition> cardsQueue = new List<CardDefinition>();
     public float posInCamera, posOutCamera;
     [SerializeField] RectTransform deckSliceAnimation;
     [SerializeField] GameObject DeckGameObject;
@@ -28,38 +30,43 @@ public class CardDrop : MonoBehaviour
         }
     }
 
+    public bool HasPlayableCard => NextPlayableIndex() >= 0;
+
+    int NextPlayableIndex()
+    {
+        bool preparation = SimulationBridge.IsPreparationPhase;
+        return cardsQueue.FindIndex(c => Card.PlayableIn(c, preparation));
+    }
+
     public void EnqueueCard(CardDefinition card)
     {
         if (card == null) return;
-        cardsQueue.Enqueue(card);
-        ShowDeck();
+        cardsQueue.Add(card);
+        if (HasPlayableCard)
+            ShowDeck();
     }
 
-    public void DealInitialHand()
+    // Straight into the hand while it has room; the rest wait in the draw pile
+    public void Deal(CardDefinition card)
     {
-        while (Deck.instance != null && Deck.instance.HasRoom && cardsQueue.Count > 0)
-        {
-            Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
-        }
-
-        if (cardsQueue.Count <= 0)
-        {
-            HideDeck();
-        }
+        if (card == null) return;
+        if (Deck.instance != null && Deck.instance.HasRoom && Card.PlayableIn(card, SimulationBridge.IsPreparationPhase))
+            Deck.instance.SearchAviableSlots(card);
         else
-        {
-            ShowDeck();
-        }
+            EnqueueCard(card);
     }
 
     public void TakeCard()
     {
         if (Deck.instance != null && Deck.instance.HasRoom)
         {
-            if (cardsQueue.Count > 0)
+            int index = NextPlayableIndex();
+            if (index >= 0)
             {
                 // Tomar carta del deck
-                Deck.instance.SearchAviableSlots(cardsQueue.Dequeue());
+                CardDefinition card = cardsQueue[index];
+                cardsQueue.RemoveAt(index);
+                Deck.instance.SearchAviableSlots(card);
                 if (deckSliceAnimation != null)
                 {
                     LeanTween.moveY(deckSliceAnimation, -82, TimeMove())
@@ -67,7 +74,7 @@ public class CardDrop : MonoBehaviour
                         .setOnComplete(ResetTweenAnim);
                 }
             }
-            if (cardsQueue.Count <= 0)
+            if (!HasPlayableCard)
             {
                 HideDeck();
             }

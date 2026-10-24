@@ -42,9 +42,8 @@ public class LootBag : MonoBehaviour
         if (catalog == null || Random.value >= CurrentDropChance())
             return;
 
-        // During a wave this drops allies (and effect cards), never towers
-        bool preparation = SimulationBridge.IsPreparationPhase;
-        CardDefinition dropItem = catalog.PickWeighted(card => Card.PlayableIn(card, preparation));
+        // Allies and effect cards; towers come from the wave-clear reward instead
+        CardDefinition dropItem = catalog.PickKillDrop();
         if (dropItem == null)
             return;
 

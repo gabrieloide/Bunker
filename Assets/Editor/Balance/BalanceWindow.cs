@@ -353,13 +353,7 @@ public class BalanceWindow : EditorWindow
         {
             Undo.RecordObject(catalog, "Delete card");
             catalog.cards.RemoveAll(c => c == def);
-            catalog.startingHand.RemoveAll(c => c == def);
             EditorUtility.SetDirty(catalog);
-        }
-        foreach (var level in FindAssets<LevelDefinition>())
-        {
-            if (level.startingHand.RemoveAll(c => c == def) > 0)
-                EditorUtility.SetDirty(level);
         }
         AssetDatabase.SaveAssets();
 
@@ -658,7 +652,7 @@ public class BalanceWindow : EditorWindow
         var catalog = Catalog();
         if (catalog == null)
         {
-            AddWarnings(new List<(string, Object)> { ("No CardCatalog asset: kills drop nothing and there is no starting hand.", null) });
+            AddWarnings(new List<(string, Object)> { ("No CardCatalog asset: no cards are handed out at all.", null) });
             return;
         }
         AddWarnings(CardWarnings(FindAssets<CardDefinition>(), catalog).Where(w => w.asset is CardDefinition d && !catalog.cards.Contains(d)).ToList());
@@ -682,10 +676,15 @@ public class BalanceWindow : EditorWindow
         limit.Add(Bound(new IntegerField("Max towers on the map"), so, "maxTowers"));
         scroll.Add(limit);
 
-        var table = Panel("Which card drops", "Type a Drop % and the other cards rescale to keep their proportions. Weight is the raw value behind it.");
+        var towers = Panel("Towers", "Towers never drop from kills: they are dealt at random (by Drop %, among towers) at the start and each time a wave is cleared. What doesn't fit in the hand goes to the draw pile.");
+        towers.Add(Bound(new IntegerField("Towers at level start"), so, "startingTowers"));
+        towers.Add(Bound(new IntegerField("Towers per wave cleared"), so, "towersPerWave"));
+        scroll.Add(towers);
+
+        var table = Panel("Which card drops", "Two pools: kills drop everything but towers; towers come from the wave reward. Drop % is the share within the card's own pool. Type one and the rest of that pool rescales to keep their proportions.");
         var actions = new VisualElement();
         actions.AddToClassList("panel__row");
-        actions.Add(Button("Split evenly", () => EqualizeWeights(catalog), "Give every card in the pool the same drop chance"));
+        actions.Add(Button("Split evenly", () => EqualizeWeights(catalog), "Give every card the same chance within its pool"));
         actions.Add(Button("Add missing cards", () => SyncCatalog(catalog), "Add every CardDefinition in the project to the drop pool"));
         actions.Add(Spacer());
         table.Add(actions);
@@ -699,21 +698,21 @@ public class BalanceWindow : EditorWindow
         table.Add(list);
         scroll.Add(table);
 
-        var hand = Panel("Starting hand", "Dealt in this order when a run starts.");
-        hand.Add(new PropertyField(so.FindProperty("startingHand"), "Cards"));
-        hand.Bind(so);
-        scroll.Add(hand);
     }
 
     void EqualizeWeights(CardCatalog catalog)
     {
-        var pool = catalog.cards.Where(c => c != null).Distinct().ToList();
-        if (pool.Count == 0) return;
-        Undo.RecordObjects(pool.Cast<Object>().ToArray(), "Split drop chance evenly");
-        foreach (var card in pool)
+        var all = catalog.cards.Where(c => c != null).Distinct().ToList();
+        if (all.Count == 0) return;
+        Undo.RecordObjects(all.Cast<Object>().ToArray(), "Split drop chance evenly");
+        foreach (var pool in all.GroupBy(CardCatalog.IsTower))
         {
-            card.dropWeight = WeightTotal / pool.Count;
-            EditorUtility.SetDirty(card);
+            int count = pool.Count();
+            foreach (var card in pool)
+            {
+                card.dropWeight = WeightTotal / count;
+                EditorUtility.SetDirty(card);
+            }
         }
     }
 
@@ -727,10 +726,11 @@ public class BalanceWindow : EditorWindow
         Rebuild();
     }
 
-    // Sets one card's share of the drops and rescales the rest so their proportions stay the same
+    // Sets one card's share of its pool and rescales the rest of that pool so their proportions stay the same
     static void SetDropPercent(CardCatalog catalog, CardDefinition target, float percent)
     {
-        var pool = catalog.cards.Where(c => c != null).Distinct().ToList();
+        var inPool = CardCatalog.PoolOf(target);
+        var pool = catalog.cards.Where(c => c != null && inPool(c)).Distinct().ToList();
         if (!pool.Contains(target)) return;
         percent = Mathf.Clamp(percent, 0f, 100f);
 
@@ -1005,7 +1005,7 @@ public class BalanceWindow : EditorWindow
     {
         var field = cell.Q<FloatField>();
         bool inPool = catalog != null && catalog.cards.Contains(def);
-        int total = catalog != null ? catalog.TotalWeight() : 0;
+        int total = catalog != null ? catalog.TotalWeight(CardCatalog.PoolOf(def)) : 0;
         float percent = inPool && total > 0 ? 100f * def.dropWeight / total : 0f;
 
         field.SetEnabled(inPool);
@@ -1065,7 +1065,7 @@ public class BalanceWindow : EditorWindow
     static List<(string message, Object asset)> CardWarnings(List<CardDefinition> all, CardCatalog catalog)
     {
         var warnings = new List<(string, Object)>();
-        if (catalog == null) warnings.Add(("No CardCatalog asset: kills drop nothing and there is no starting hand.", null));
+        if (catalog == null) warnings.Add(("No CardCatalog asset: no cards are handed out at all.", null));
         foreach (var def in all)
         {
             if (def.handPrefab == null) { warnings.Add(($"{def.name}: no hand prefab assigned.", def)); continue; }
