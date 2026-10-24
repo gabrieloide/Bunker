@@ -466,7 +466,9 @@ public class SimulationBridge : MonoBehaviour
         em.AddComponentData(entity, LocalTransform.FromPosition(position));
         em.AddComponentData(entity, new Health { Value = def.life, Max = def.life });
         em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
-        em.AddComponentData(entity, PlayerWeapon(def.damage, def.bulletPen, def.fireRate, def.range, 0f, float3.zero));
+        var weapon = PlayerWeapon(def.damage, def.bulletPen, def.fireRate, def.range, 0f, float3.zero);
+        weapon.BaseDamageCut = 1f - def.baseDamageMultiplier;
+        em.AddComponentData(entity, weapon);
         em.AddComponentData(entity, new Target { Value = Entity.Null });
         em.AddBuffer<DamageRequest>(entity);
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);

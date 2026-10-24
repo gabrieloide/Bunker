@@ -169,7 +169,8 @@ namespace Bunker.Simulation
                     Lifetime = newTarget == baseEntity ? math.max(w.ProjectileLifetime, (len / math.max(0.01f, w.ProjectileSpeed)) + 0.15f) : w.ProjectileLifetime,
                     Velocity = dir * w.ProjectileSpeed,
                     HalfExtents = w.ProjectileHalfExtents,
-                    TargetFaction = w.TargetFaction
+                    TargetFaction = w.TargetFaction,
+                    BaseDamageCut = w.BaseDamageCut
                 });
                 ecb.AddComponent(projectile, new NeedsView
                 {
