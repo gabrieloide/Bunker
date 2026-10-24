@@ -29,14 +29,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ef879f461aa24df4ab37fa4deeb3a371, type: 2}
   - {fileID: 11400000, guid: ac87583c96024157affb5755e7112969, type: 2}
   - {fileID: 11400000, guid: 9f1c02d1c6d1454199dc59dcb45ea507, type: 2}
-  startingHand:
-  - {fileID: 11400000, guid: 2dcbdd902de794148b3c9135956b976f, type: 2}
-  - {fileID: 11400000, guid: 2dcbdd902de794148b3c9135956b976f, type: 2}
-  - {fileID: 11400000, guid: 2dcbdd902de794148b3c9135956b976f, type: 2}
-  - {fileID: 11400000, guid: 5615dfbfbad058343857b022a321302c, type: 2}
-  - {fileID: 11400000, guid: 5615dfbfbad058343857b022a321302c, type: 2}
-  - {fileID: 11400000, guid: 5615dfbfbad058343857b022a321302c, type: 2}
-  - {fileID: 11400000, guid: 9e02f8a8bf8d00940b593e007e962e37, type: 2}
+  - {fileID: 11400000, guid: 78190ecb89d8645439805b1bfbcaaa7f, type: 2}
+  startingTowers: 3
+  towersPerWave: 3
   maxTowers: 8
   baseDropChance: 0.25
   dropChancePerMissingTenLife: 0.02

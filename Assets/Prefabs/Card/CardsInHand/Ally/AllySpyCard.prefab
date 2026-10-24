@@ -56,7 +56,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   definition: {fileID: 11400000, guid: ac87583c96024157affb5755e7112969, type: 2}
-  defaultCard: {fileID: 21300000, guid: 9735567277ea5b344b29d5ae54f313ea, type: 3}
+  defaultCard: {fileID: 21300000, guid: e69cb7d500ea80045876291e8567969b, type: 3}
   backCard: {fileID: 21300000, guid: 550ab54b903af0c4f966f067a854dac2, type: 3}
   offset: {x: 0, y: -0.5, z: 0}
   width: 1.2
@@ -65,6 +65,7 @@ MonoBehaviour:
   uiHoverHeight: 16
   dragThreshold: 20
   dragPointerGap: 4
+  dragScale: 0.5
 --- !u!114 &-3690923982419404029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +78,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8edf61d8546024b4582f7ed0961c452c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HandIndex: 0
   CanDrop: 0
 --- !u!222 &1271586248109556789
 CanvasRenderer:
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9735567277ea5b344b29d5ae54f313ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e69cb7d500ea80045876291e8567969b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
