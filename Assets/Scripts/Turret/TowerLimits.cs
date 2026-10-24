@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Caps how many towers can stand on the map at once: CardCatalog.maxTowers for all of them and
-// TowerCardDefinition.maxOnField per card. Towers still in their card-flip animation count too.
+// TowerCardDefinition.maxOnField per card. Towers still in their card-flip animation count too, and so do
+// the ruins of demolished towers (against the global cap only), for the rest of the match.
 public static class TowerLimits
 {
     static readonly List<TurretCard> alive = new List<TurretCard>();
     static readonly Dictionary<TowerCardDefinition, int> pending = new Dictionary<TowerCardDefinition, int>();
     static int pendingTotal;
+    static int ruins;
 
     public static event Action Changed;
 
-    public static int Count => alive.Count + pendingTotal;
+    public static int Count => alive.Count + pendingTotal + ruins;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
@@ -20,6 +22,7 @@ public static class TowerLimits
         alive.Clear();
         pending.Clear();
         pendingTotal = 0;
+        ruins = 0;
         Changed = null;
     }
 
@@ -34,6 +37,12 @@ public static class TowerLimits
     {
         if (alive.Remove(tower))
             Changed?.Invoke();
+    }
+
+    public static void AddRuins(int delta)
+    {
+        ruins = Mathf.Max(0, ruins + delta);
+        Changed?.Invoke();
     }
 
     public static int CountOf(TowerCardDefinition card)

@@ -416,6 +416,7 @@ public class SimulationBridge : MonoBehaviour
 
         card.Entity = entity;
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
+        view.AddComponent<TowerDemolition>();
         return view;
     }
 
@@ -470,6 +471,18 @@ public class SimulationBridge : MonoBehaviour
         em.AddBuffer<DamageRequest>(entity);
         viewRegistry.RegisterView(entity, view, (ViewKind)LocalViewKind.Tower);
         return entity;
+    }
+
+    // Torn down by the player: the view and its tower entity go away together
+    public void DemolishTower(Entity entity, GameObject view)
+    {
+        if (ready && em.Exists(entity))
+        {
+            viewRegistry.RemoveView(entity);
+            em.DestroyEntity(entity);
+        }
+        if (view != null)
+            Destroy(view);
     }
 
     // The patrolling helicopter drags its tower along
