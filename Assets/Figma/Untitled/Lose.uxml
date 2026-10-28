@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="Lose.uss" />
+    <ui:VisualElement style="display: flex; width: 1920px; height: 1080px; justify-content: center; align-items: center;">
+        <ui:VisualElement style="width: 1920px; height: 1080px; flex-shrink: 0; position: absolute; left: 0px; top: 0px;">
+            <ui:VisualElement style="width: 1920px; height: 1080px; background-color: rgba(0, 0, 0, 0.00); position: absolute; left: 0px; top: 0px;" />
+            <ui:VisualElement style="display: flex; width: 554px; flex-direction: column; justify-content: center; align-items: center; position: absolute; left: 683px; top: 240px;">
+                <ui:Label text="YOU LOSE" class="unity-label" style="width: 1112px; color: #FFF; -unity-text-align: middle-center; font-size: 296px; white-space: normal;" />
+                <ui:Label text="RESET" class="unity-label" style="align-self: stretch; color: #FFF; -unity-text-align: middle-center; font-size: 145px; white-space: normal;" />
+                <ui:Label text="QUIT" class="unity-label" style="align-self: stretch; color: #FFF; -unity-text-align: middle-center; font-size: 145px; white-space: normal;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
