@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="HUD.uss" />
+    <ui:VisualElement style="width: 1920px; height: 1080px;">
+        <ui:VisualElement style="width: 1920px; height: 1080px; position: absolute; left: 0px; top: 0px;">
+            <ui:VisualElement style="width: 1920px; height: 1080px; background-color: rgba(0, 0, 0, 0.00); position: absolute; left: 0px; top: 0px;" />
+            <ui:VisualElement style="width: 1421px; height: 601px; position: absolute; left: 249px; top: 240px;" />
+        </ui:VisualElement>
+        <ui:Label text="SCORE&#10;00000" class="unity-label" style="width: 278px; color: #FFF; font-size: 94px; white-space: normal; position: absolute; left: 58px; top: 40px;" />
+        <ui:Label text="WAVE&#10;00000" class="unity-label" style="width: 278px; color: #FFF; font-size: 94px; white-space: normal; position: absolute; left: 1597px; top: 40px;" />
+        <ui:Label text="TOWERS&#10;0/8" class="unity-label" style="width: 278px; color: #FFF; font-size: 94px; white-space: normal; position: absolute; left: 821px; top: 40px;" />
+    </ui:VisualElement>
+</ui:UXML>
