@@ -66,6 +66,7 @@ public class WorldLifeBar : MonoBehaviour
 
     void OnEnable()
     {
+        initialized = false;
         if (bar != null) bar.style.display = DisplayStyle.Flex;
     }
 
@@ -73,11 +74,13 @@ public class WorldLifeBar : MonoBehaviour
     {
         if (bar != null) bar.style.display = DisplayStyle.None;
         ClearChunks();
+        initialized = false;
     }
 
     void OnDestroy()
     {
         ClearChunks();
+        initialized = false;
         bar?.RemoveFromHierarchy();
     }
 
