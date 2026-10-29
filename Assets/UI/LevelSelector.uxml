@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Bunker.uss" />
+    <ui:VisualElement class="screen" picking-mode="Ignore">
+        <ui:Label text="SELECCIONA UN SECTOR" class="selector-title" picking-mode="Ignore" />
+        <ui:Label name="description" class="text selector-description" picking-mode="Ignore" />
+        <ui:Button name="back" text="VOLVER" class="menu-button selector-back" />
+    </ui:VisualElement>
+</ui:UXML>

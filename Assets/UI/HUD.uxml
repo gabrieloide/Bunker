@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Bunker.uss" />
+    <ui:VisualElement name="hud" class="screen" picking-mode="Ignore">
+        <ui:VisualElement class="hud-bar" picking-mode="Ignore">
+            <ui:Label name="score" text="SCORE&#10;000000" class="hud-stat" picking-mode="Ignore" />
+            <ui:VisualElement class="hud-life" picking-mode="Ignore">
+                <ui:VisualElement class="lifebar" picking-mode="Ignore">
+                    <ui:VisualElement name="life-fill" class="lifebar-fill" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label text="LIFE" class="hud-stat" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="towers" text="TOWERS&#10;0/0" class="hud-stat" picking-mode="Ignore" />
+            <ui:Label name="wave" text="WAVE&#10;000000" class="hud-stat" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Bunker.uss" />
+    <ui:VisualElement class="screen credits" picking-mode="Ignore">
+        <ui:Label text="Credits" class="credits-title" />
+        <ui:VisualElement class="credits-columns">
+            <ui:Label text="Programmers&#10;&#10;&#10;Art&#10;&#10;Music/SFX" class="credits-text credits-jobs" />
+            <ui:Label text="Gabriel Fuentes&#10;Javier Hernandez&#10;&#10;Marco&#10;&#10;Carlos" class="credits-text" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Bunker.uss" />
+    <ui:VisualElement name="result" class="screen dim hidden">
+        <ui:VisualElement class="menu-list menu-list--center">
+            <ui:Label name="title" text="YOU WON" class="title" />
+            <ui:Button name="next" text="NEXT" class="menu-button" />
+            <ui:Button name="retry" text="RESET" class="menu-button" />
+            <ui:Button name="levels" text="QUIT" class="menu-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

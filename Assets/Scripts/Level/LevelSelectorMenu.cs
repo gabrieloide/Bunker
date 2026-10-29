@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 // Level selector scene: manages 5 world level nodes (interactive turrets),
-// handling hover zoom, destroyed sprite states, and loading levels.
+// handling hover zoom, destroyed sprite states, and loading levels. Text and Back live in UI/LevelSelector.uxml.
+[RequireComponent(typeof(UIDocument))]
 public class LevelSelectorMenu : MonoBehaviour
 {
     [Header("Data")]
@@ -16,14 +16,17 @@ public class LevelSelectorMenu : MonoBehaviour
     [SerializeField] Sprite[] customTurretSprites;
     [SerializeField] Sprite destroyedSprite;
 
-    [Header("UI Feedback")]
-    [Tooltip("Shows the description of the level under the pointer")]
-    [SerializeField] TMP_Text descriptionText;
     [SerializeField] string backScene = "MainMenu 2";
 
-    [Header("Legacy Fallback (Optional)")]
-    [SerializeField] LevelButton buttonTemplate;
-    [SerializeField] Transform buttonContainer;
+    Label descriptionText;
+
+    void OnEnable()
+    {
+        var root = GetComponent<UIDocument>().rootVisualElement;
+        root.pickingMode = PickingMode.Ignore; // the level nodes are world objects behind the panel
+        descriptionText = root.Q<Label>("description");
+        root.Q<Button>("back").clicked += Back;
+    }
 
     void Start()
     {
@@ -37,46 +40,22 @@ public class LevelSelectorMenu : MonoBehaviour
             worldNodes.Sort((a, b) => a.levelIndex.CompareTo(b.levelIndex));
         }
 
-        // Setup World Nodes if present
-        if (worldNodes != null && worldNodes.Count > 0)
+        for (int i = 0; i < worldNodes.Count; i++)
         {
-            // Disable old button UI container if present
-            if (buttonContainer != null) buttonContainer.gameObject.SetActive(false);
-            if (buttonTemplate != null) buttonTemplate.gameObject.SetActive(false);
+            var node = worldNodes[i];
+            if (node == null) continue;
 
-            for (int i = 0; i < worldNodes.Count; i++)
-            {
-                var node = worldNodes[i];
-                if (node == null) continue;
+            LevelDefinition level = (catalog != null && i < catalog.levels.Count) ? catalog.levels[i] : node.levelDefinition;
+            Sprite turretSprite = (customTurretSprites != null && i < customTurretSprites.Length) ? customTurretSprites[i] : null;
 
-                LevelDefinition level = (catalog != null && i < catalog.levels.Count) ? catalog.levels[i] : node.levelDefinition;
-                Sprite turretSprite = (customTurretSprites != null && i < customTurretSprites.Length) ? customTurretSprites[i] : null;
-
-                node.Setup(
-                    i,
-                    level,
-                    turretSprite,
-                    destroyedSprite,
-                    OnNodeSelected,
-                    ShowDescription
-                );
-            }
-        }
-        else if (catalog != null && buttonTemplate != null)
-        {
-            // Legacy button fallback
-            buttonTemplate.gameObject.SetActive(false);
-            Transform parent = buttonContainer != null ? buttonContainer : buttonTemplate.transform.parent;
-            for (int i = 0; i < catalog.levels.Count; i++)
-            {
-                var level = catalog.levels[i];
-                if (level == null) continue;
-
-                var button = Instantiate(buttonTemplate, parent);
-                button.name = $"Level_{i + 1:00}";
-                button.gameObject.SetActive(true);
-                button.Bind(i, level, LevelProgress.IsUnlocked(i), () => LevelProgress.Play(catalog, level), ShowDescription);
-            }
+            node.Setup(
+                i,
+                level,
+                turretSprite,
+                destroyedSprite,
+                OnNodeSelected,
+                ShowDescription
+            );
         }
     }
 

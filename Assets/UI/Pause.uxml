@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Template src="Options.uxml" name="Options" />
+    <Style src="Bunker.uss" />
+    <ui:VisualElement name="pause" class="screen dim hidden">
+        <ui:VisualElement name="main" class="menu-list">
+            <ui:Button name="resume" text="RESUME" class="menu-button" />
+            <ui:Button name="settings" text="SETTINGS" class="menu-button" />
+            <ui:Button name="credits" text="CREDITS" class="menu-button" />
+            <ui:Button name="quit" text="QUIT" class="menu-button" />
+        </ui:VisualElement>
+        <ui:Instance template="Options" name="options" class="screen hidden" />
+    </ui:VisualElement>
+</ui:UXML>

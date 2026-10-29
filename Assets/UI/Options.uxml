@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Bunker.uss" />
+    <ui:VisualElement class="menu-list">
+        <ui:Label text="SETTINGS" class="title" />
+        <ui:VisualElement class="option-row">
+            <ui:Label text="BRIGHTNESS" />
+            <ui:Slider name="brightness" low-value="0" high-value="0.9" />
+        </ui:VisualElement>
+        <ui:Button name="back" text="BACK" class="menu-button" />
+    </ui:VisualElement>
+</ui:UXML>
