@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Game.uss" />
+    <ui:VisualElement name="world" class="layer" picking-mode="Ignore" />
+    <ui:VisualElement class="deck-anchor" picking-mode="Ignore">
+        <ui:VisualElement name="deck" class="deck">
+            <ui:VisualElement name="deck-slice" class="deck-slice" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="hand" class="hand" picking-mode="Ignore">
+        <ui:VisualElement name="slot-ghost" class="slot-ghost" picking-mode="Ignore" />
+    </ui:VisualElement>
+    <ui:VisualElement name="card-info" class="card-info" picking-mode="Ignore">
+        <ui:VisualElement class="card-info__content" picking-mode="Ignore">
+            <ui:Label name="card-name" class="card-info__name" picking-mode="Ignore" />
+            <ui:Label name="card-description" class="card-info__description" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,138 @@
+/* Play-field UI (GamePanelSettings). One unit = one unit of the old hand canvas (16/245 world units, see GameUIPanel);
+   the origin of .hand and .deck-anchor is the screen centre, like the canvas that hung from the camera. */
+.layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Hand: cards are centred on the hand origin and moved with translate (Card.LateUpdate) */
+.hand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    translate: -35px 93.4px;
+}
+
+.card {
+    position: absolute;
+    width: 36px;
+    height: 52px;
+    left: -18px;
+    top: -26px;
+}
+
+.slot-ghost {
+    position: absolute;
+    width: 28.6px;
+    height: 42.9px;
+    left: -14.3px;
+    top: -21.45px;
+    background-image: url("project://database/Assets/Sprites/32x48/MiniCard.png");
+    scale: 0 0;
+    transition-property: scale;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-back;
+}
+
+.slot-ghost--shown {
+    scale: 1 1;
+}
+
+/* Draw pile */
+.deck-anchor {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    translate: 101.61px 93.4px;
+}
+
+.deck {
+    position: absolute;
+    width: 28.52px;
+    height: 46.34px;
+    left: -14.26px;
+    top: -23.17px;
+    background-image: url("project://database/Assets/Sprites/32x48/DeckInitial.png");
+}
+
+.deck-slice {
+    position: absolute;
+    width: 28.52px;
+    height: 42.76px;
+    left: 0;
+    top: 1.79px;
+    background-image: url("project://database/Assets/Sprites/32x48/MiniCard.png");
+}
+
+/* Card detail (ChangeCardText): the panel clips its content while it opens */
+.card-info {
+    position: absolute;
+    width: 83px;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.card-info__content {
+    width: 83px;
+    height: 70.6px;
+    flex-shrink: 0;
+    background-image: url("project://database/Assets/Sprites/32x48/Info.png");
+    -unity-background-image-tint-color: #000000;
+    -unity-font: url("project://database/Assets/Fonts/pixel_maz.ttf");
+    -unity-font-definition: initial;
+    color: #FFFFFF;
+}
+
+.card-info__name {
+    position: absolute;
+    top: 0.3px;
+    left: 0;
+    right: 0;
+    height: 19.5px;
+    margin: 0;
+    padding: 0;
+    font-size: 17.5px;
+    -unity-text-align: middle-center;
+}
+
+.card-info__description {
+    position: absolute;
+    top: 14.9px;
+    left: 0;
+    width: 83px;
+    height: 49.3px;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    -unity-text-align: upper-left;
+    white-space: normal;
+}
+
+/* Over world objects (WorldLifeBar, DisableTextDamage); positions and sizes come from code */
+.world-bar {
+    position: absolute;
+}
+
+.world-bar__fill {
+    height: 100%;
+}
+
+.damage-text {
+    position: absolute;
+    translate: -50% -50%;
+    margin: 0;
+    padding: 0;
+    -unity-font: url("project://database/Assets/Fonts/deltarune.ttf");
+    -unity-font-definition: initial;
+    color: #000000;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}

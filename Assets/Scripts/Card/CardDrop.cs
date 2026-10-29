@@ -1,17 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 // The draw pile, shared by every card type. Drawing takes the oldest card playable in the current
 // phase (towers in preparation, allies during a wave), so cards for the other phase wait their turn.
+// The pile is the "deck" element of UI/Game.uxml; clicking it draws.
 public class CardDrop : MonoBehaviour
 {
     public static CardDrop instance;
     [System.NonSerialized] public List<CardDefinition> cardsQueue = new List<CardDefinition>();
+    [Tooltip("Deck height when shown and when tucked away, panel units (y up)")]
     public float posInCamera, posOutCamera;
-    [SerializeField] RectTransform deckSliceAnimation;
-    [SerializeField] GameObject DeckGameObject;
     public LeanTweenType TweenDeck;
     private bool isHidingDeck;
+
+    VisualElement deck, deckSlice;
+    float deckY, sliceY = SliceRestY;
+    int deckTween = -1;
+    const float SliceRestY = 1.79f, SliceTakenY = -82f;
+
+    public bool DeckShown { get; private set; }
 
     public float TimeMove()
     {
@@ -28,6 +36,23 @@ public class CardDrop : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void Start()
+    {
+        var root = GameUIPanel.Instance.Root;
+        deck = root.Q("deck");
+        deckSlice = root.Q("deck-slice");
+        deck.RegisterCallback<ClickEvent>(_ => TakeCard());
+        deckY = posOutCamera;
+        deck.style.display = DisplayStyle.None;
+    }
+
+    void LateUpdate()
+    {
+        if (deck == null) return;
+        deck.style.translate = new Translate(0f, -deckY);
+        deckSlice.style.translate = new Translate(0f, -sliceY);
     }
 
     public bool HasPlayableCard => NextPlayableIndex() >= 0;
@@ -67,12 +92,9 @@ public class CardDrop : MonoBehaviour
                 CardDefinition card = cardsQueue[index];
                 cardsQueue.RemoveAt(index);
                 Deck.instance.SearchAviableSlots(card);
-                if (deckSliceAnimation != null)
-                {
-                    LeanTween.moveY(deckSliceAnimation, -82, TimeMove())
-                        .setEase(UIManager.instance != null ? UIManager.instance.TweenDeckOut : LeanTweenType.easeOutQuad)
-                        .setOnComplete(ResetTweenAnim);
-                }
+                LeanTween.value(gameObject, y => sliceY = y, SliceRestY, SliceTakenY, TimeMove())
+                    .setEase(UIManager.instance != null ? UIManager.instance.TweenDeckOut : LeanTweenType.easeOutQuad)
+                    .setOnComplete(() => sliceY = SliceRestY);
             }
             if (!HasPlayableCard)
             {
@@ -83,38 +105,37 @@ public class CardDrop : MonoBehaviour
 
     public void ShowDeck()
     {
-        if (DeckGameObject == null) return;
+        if (deck == null) return;
         isHidingDeck = false;
-        if (!DeckGameObject.activeSelf)
-            DeckGameObject.SetActive(true);
+        DeckShown = true;
+        deck.style.display = DisplayStyle.Flex;
 
-        LeanTween.cancel(DeckGameObject);
-        LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posInCamera, TimeMove())
-            .setEase(TweenDeck != LeanTweenType.notUsed ? TweenDeck : LeanTweenType.easeOutQuad);
+        MoveDeck(posInCamera).setEase(TweenDeck != LeanTweenType.notUsed ? TweenDeck : LeanTweenType.easeOutQuad);
     }
 
     public void HideDeck()
     {
-        if (DeckGameObject == null || !DeckGameObject.activeSelf || isHidingDeck)
+        if (deck == null || !DeckShown || isHidingDeck)
             return;
 
         isHidingDeck = true;
-        LeanTween.cancel(DeckGameObject);
-        LeanTween.moveY(DeckGameObject.GetComponent<RectTransform>(), posOutCamera, TimeMove())
+        MoveDeck(posOutCamera)
             .setOnComplete(DeactivateDeck)
             .setEase(UIManager.instance != null ? UIManager.instance.TweenDeckOut : LeanTweenType.easeOutQuad);
+    }
+
+    LTDescr MoveDeck(float y)
+    {
+        if (deckTween >= 0) LeanTween.cancel(gameObject, deckTween);
+        var tween = LeanTween.value(gameObject, v => deckY = v, deckY, y, TimeMove());
+        deckTween = tween.uniqueId;
+        return tween;
     }
 
     void DeactivateDeck()
     {
         isHidingDeck = false;
-        if (DeckGameObject != null)
-            DeckGameObject.SetActive(false);
-    }
-
-    void ResetTweenAnim()
-    {
-        if (deckSliceAnimation != null)
-            LeanTween.moveY(deckSliceAnimation, 1.7895f, 0);
+        DeckShown = false;
+        deck.style.display = DisplayStyle.None;
     }
 }

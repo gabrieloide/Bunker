@@ -1,43 +1,25 @@
 using UnityEngine;
-using UnityEngine.UI;
 
+// Feeds the turret's life into its bar
+[RequireComponent(typeof(WorldLifeBar))]
 public class ManagerTurretLife : MonoBehaviour
 {
-    Canvas canvas;
-    Camera camera;
-    public Slider LifeSlider;
+    WorldLifeBar lifeBar;
     private TurretCard turretCard;
-    private float lastLife = -1f;
+    private float startLife;
 
     private void Start()
     {
-        camera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
-        canvas = GetComponent<Canvas>();
-        if (canvas != null)
-            canvas.worldCamera = camera;
-
+        lifeBar = GetComponent<WorldLifeBar>();
         turretCard = GetComponentInParent<TurretCard>();
-        if (turretCard != null && LifeSlider != null)
-        {
-            LifeSlider.maxValue = turretCard.Life;
-            LifeSlider.value = turretCard.Life;
-            lastLife = turretCard.Life;
-        }
+        if (turretCard != null)
+            startLife = turretCard.Life;
     }
 
     void Update()
     {
-        if (turretCard != null && LifeSlider != null)
-        {
-            // A life buff raises the max as well
-            if (turretCard.MaxLife > 0f && !Mathf.Approximately(LifeSlider.maxValue, turretCard.MaxLife))
-                LifeSlider.maxValue = turretCard.MaxLife;
-            float currentLife = turretCard.Life;
-            if (!Mathf.Approximately(currentLife, lastLife))
-            {
-                lastLife = currentLife;
-                LifeSlider.value = currentLife;
-            }
-        }
+        // A life buff raises the max as well
+        if (turretCard != null)
+            lifeBar.SetValue(turretCard.Life, turretCard.MaxLife > 0f ? turretCard.MaxLife : startLife);
     }
 }
