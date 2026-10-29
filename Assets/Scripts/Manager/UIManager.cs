@@ -103,6 +103,9 @@ public class UIManager : MonoBehaviour
             lifeFill = root.Q("life-fill");
         }
 
+        lifeInitialized = false;
+        lastLife = -1f;
+
         SetScore(SimEventDispatcher.Score, 0);
         SetWave(SimEventDispatcher.Wave, SimEventDispatcher.CurrentBuff);
         SetLifeNormalized(SimEventDispatcher.Health01);
@@ -123,15 +126,22 @@ public class UIManager : MonoBehaviour
         SimEventDispatcher.OnWaveChanged -= SetWave;
         SimEventDispatcher.OnPlayerHit -= OnPlayerHit;
         SimEventDispatcher.OnBunkerHealed -= OnBunkerHealed;
-        TowerLimits.Changed += UpdateTowerCount;
+        TowerLimits.Changed -= UpdateTowerCount;
 
         ClearDamageChunks();
+        lifeInitialized = false;
+        lastLife = -1f;
     }
 
     private void OnDestroy()
     {
+        if (instance == this)
+            instance = null;
+
         Camera.onPostRender -= CompositeHud;
         ClearDamageChunks();
+        lifeInitialized = false;
+        lastLife = -1f;
         if (hudTarget != null)
         {
             hudTarget.Release();
