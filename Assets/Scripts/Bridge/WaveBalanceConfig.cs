@@ -10,12 +10,20 @@ public class WaveBalanceConfig : ScriptableObject
     [Min(0.05f)] public float spawnInterval = 1f;
     [Tooltip("Enemies in the first wave")]
     [Min(1)] public int initialEnemyAmount = 15;
+    [Tooltip("Enemies spawned back to back as one group; spawnInterval is the wait between groups")]
+    [Min(1)] public int groupSize = 1;
+    [Tooltip("Seconds between the members of one group (0 = all on the same frame, stacked)")]
+    [Min(0f)] public float groupGap = 0.2f;
+    [Tooltip("Every enemy walks at its own speed times this (2 = twice as fast)")]
+    [Min(0.05f)] public float enemySpeedMultiplier = 1f;
 
     [Header("Wave progression")]
     public int wavesPerTier = 10;
     public int initialUnlockedTypes = 2;
     public int maxUnlockedTypes = 9;
     public int amountIncreasePerTier = 5;
+    [Tooltip("Extra enemies added after every wave, on top of the per-tier increase")]
+    [Min(0)] public int amountIncreasePerWave = 0;
     [Tooltip("Enemy life grows by this fraction every wave (0.1 = +10% per wave, linear)")]
     [Min(0f)] public float lifeGrowthPerWave = 0.1f;
 

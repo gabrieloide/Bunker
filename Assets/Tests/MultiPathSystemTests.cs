@@ -93,32 +93,8 @@ namespace Bunker.Tests
             spawners.Add(new SpawnerPoint { Position = new float3(20f, 0f, 0f), PathEntity = secondaryPathEntity });
 
             var waveSystem = world.GetOrCreateSystem<WaveSystem>();
-
-            using var builder = new BlobBuilder(Unity.Collections.Allocator.Temp);
-            ref var root = ref builder.ConstructRoot<EnemyRosterBlob>();
-            var types = builder.Allocate(ref root.Types, 1);
-            types[0] = new EnemyTypeDef
-            {
-                Life = 10f,
-                MoveSpeed = 1f,
-                Damage = 1f,
-                FireInterval = 1f,
-                AttackRange = 1f,
-                Score = 1,
-                HitHalfExtents = new float2(0.5f, 0.5f)
-            };
-            var roster = builder.CreateBlobAssetReference<EnemyRosterBlob>(Unity.Collections.Allocator.Persistent);
-
-            using var buffBuilder = new BlobBuilder(Unity.Collections.Allocator.Temp);
-            ref var buffRoot = ref buffBuilder.ConstructRoot<EnemyBuffTableBlob>();
-            var weights = buffBuilder.Allocate(ref buffRoot.Weights, 6);
-            for (int i = 0; i < 6; i++) weights[i] = i == 0 ? 100f : 0f;
-            buffRoot.LifeMultiplier = 1f;
-            buffRoot.DamageMultiplier = 1f;
-            buffRoot.FireRateMultiplier = 1f;
-            buffRoot.DefenseMultiplier = 1f;
-            buffRoot.SpeedMultiplier = 1f;
-            var buffTable = buffBuilder.CreateBlobAssetReference<EnemyBuffTableBlob>(Unity.Collections.Allocator.Persistent);
+            var roster = CreateRoster();
+            var buffTable = CreateNeutralBuffTable();
 
             em.SetComponentData(simEntity, new WaveConfig
             {
@@ -172,6 +148,87 @@ namespace Bunker.Tests
             query.Dispose();
             roster.Dispose();
             buffTable.Dispose();
+        }
+
+        [Test]
+        public void WaveSystem_WithGroupSize_SpawnsTheWholeGroupAtOnceWithScaledSpeed()
+        {
+            var waveSystem = world.GetOrCreateSystem<WaveSystem>();
+            var roster = CreateRoster();
+            var buffTable = CreateNeutralBuffTable();
+
+            em.SetComponentData(simEntity, new WaveConfig
+            {
+                SpawnInterval = 5f,
+                GroupSize = 3,
+                GroupGap = 0f,
+                EnemySpeedMultiplier = 2f,
+                InitialEnemyAmount = 6,
+                WavesPerTier = 10,
+                InitialUnlockedTypes = 1,
+                MaxUnlockedTypes = 1,
+                SpawnPosition = new float3(0f, 20f, 0f),
+                Roster = roster,
+                BuffTable = buffTable
+            });
+            em.SetComponentData(simEntity, new WaveState
+            {
+                Wave = 1,
+                Phase = WavePhase.Spawning,
+                EnemyAmount = 6,
+                UnlockedTypes = 1,
+                Rng = new Unity.Mathematics.Random(1234)
+            });
+
+            // One short frame: the first group of 3 appears together, the next waits SpawnInterval
+            world.SetTime(new Unity.Core.TimeData(0.1, 0.1f));
+            waveSystem.Update(world.Unmanaged);
+            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
+
+            var query = em.CreateEntityQuery(ComponentType.ReadOnly<EnemyTag>(), ComponentType.ReadOnly<MoveSpeed>());
+            var speeds = query.ToComponentDataArray<MoveSpeed>(Unity.Collections.Allocator.Temp);
+
+            Assert.AreEqual(3, speeds.Length);
+            foreach (var speed in speeds)
+                Assert.AreEqual(2f, speed.Value, 0.001f);
+            Assert.AreEqual(3, em.GetComponentData<WaveState>(simEntity).SpawnedThisWave);
+
+            speeds.Dispose();
+            query.Dispose();
+            roster.Dispose();
+            buffTable.Dispose();
+        }
+
+        static BlobAssetReference<EnemyRosterBlob> CreateRoster()
+        {
+            using var builder = new BlobBuilder(Unity.Collections.Allocator.Temp);
+            ref var root = ref builder.ConstructRoot<EnemyRosterBlob>();
+            var types = builder.Allocate(ref root.Types, 1);
+            types[0] = new EnemyTypeDef
+            {
+                Life = 10f,
+                MoveSpeed = 1f,
+                Damage = 1f,
+                FireInterval = 1f,
+                AttackRange = 1f,
+                Score = 1,
+                HitHalfExtents = new float2(0.5f, 0.5f)
+            };
+            return builder.CreateBlobAssetReference<EnemyRosterBlob>(Unity.Collections.Allocator.Persistent);
+        }
+
+        static BlobAssetReference<EnemyBuffTableBlob> CreateNeutralBuffTable()
+        {
+            using var builder = new BlobBuilder(Unity.Collections.Allocator.Temp);
+            ref var root = ref builder.ConstructRoot<EnemyBuffTableBlob>();
+            var weights = builder.Allocate(ref root.Weights, 6);
+            for (int i = 0; i < 6; i++) weights[i] = i == 0 ? 100f : 0f;
+            root.LifeMultiplier = 1f;
+            root.DamageMultiplier = 1f;
+            root.FireRateMultiplier = 1f;
+            root.DefenseMultiplier = 1f;
+            root.SpeedMultiplier = 1f;
+            return builder.CreateBlobAssetReference<EnemyBuffTableBlob>(Unity.Collections.Allocator.Persistent);
         }
     }
 }
