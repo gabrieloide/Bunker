@@ -26,6 +26,8 @@ public class SimulationBridge : MonoBehaviour
     LootBag lootBag;
     AllyView[] allyPrefabs = new AllyView[0];
     EnemyBaseView enemyBase;
+    EnemySpawner spawnerComp;
+    EnemyMovement pathComp;
 
     float towerBulletSpeed;
     float towerBulletLifetime;
@@ -102,6 +104,12 @@ public class SimulationBridge : MonoBehaviour
         var enemyBullet = pool.EnemyBulletPrefab.GetComponent<Bullet>();
         ColliderBox(pool.EnemyBulletPrefab, out var enemyBulletHalf, out _);
 
+        spawnerComp = spawner;
+        pathComp = path;
+        float flagDistance = (spawner != null && path != null)
+            ? CalculateFlagZoneDistance(spawner.transform.position, path.points)
+            : 0f;
+
         var config = new WaveConfig
         {
             StartDelay = balance.startDelay,
@@ -120,7 +128,8 @@ public class SimulationBridge : MonoBehaviour
             EnemyProjectileHalfExtents = enemyBulletHalf,
             SpawnPosition = spawner.transform.position,
             Roster = rosterBlob,
-            BuffTable = buffBlob
+            BuffTable = buffBlob,
+            FlagZoneDistanceAlongPath = flagDistance
         };
 
         var rng = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(1, int.MaxValue));
@@ -210,6 +219,7 @@ public class SimulationBridge : MonoBehaviour
         MirrorWaveState(state.Wave, state.Buff);
         int initialScore = GameManager.instance != null ? GameManager.instance.ActualScore : 0;
         SimEventDispatcher.Seed(initialScore, state.Wave, state.Buff, playerStartLife, 100f, state.Phase, state.Timer);
+        FlagTerritory.Changed += OnFlagTerritoryChanged;
         ready = true;
     }
 
@@ -532,7 +542,9 @@ public class SimulationBridge : MonoBehaviour
         if (viewId < 0 || viewId >= artilleryVisuals.Count) return;
         var visuals = artilleryVisuals[viewId];
         if (visuals.ImpactEffect == null) return;
-        var fx = Instantiate(visuals.ImpactEffect, position, Quaternion.identity);
+        Vector3 pos = new Vector3(position.x, position.y, 0f);
+        var fx = Instantiate(visuals.ImpactEffect, pos, Quaternion.identity);
+        OneShotEffect.EnsureFrontSorting(fx);
         if (visuals.ImpactSound != null && visuals.ImpactSound.IsValid())
             visuals.ImpactSound.Post(fx);
     }
@@ -655,10 +667,23 @@ public class SimulationBridge : MonoBehaviour
             return;
 
         var state = em.GetComponentData<WaveState>(simEntity);
-        if (state.Phase == WavePhase.WaitingToStart && state.Timer > 0f && AllCardsSpent())
+        if (state.Phase == WavePhase.WaitingToStart && state.SpawnedThisWave >= 1 && AllCardsSpent())
         {
-            state.Timer = 0f;
+            float spawnInterval = em.HasComponent<WaveConfig>(simEntity)
+                ? em.GetComponentData<WaveConfig>(simEntity).SpawnInterval
+                : 0f;
+            state.Phase = WavePhase.Spawning;
+            state.Timer = spawnInterval;
             em.SetComponentData(simEntity, state);
+            if (em.HasBuffer<SimEvent>(simEntity))
+            {
+                em.GetBuffer<SimEvent>(simEntity).Add(new SimEvent
+                {
+                    Kind = SimEventKind.WavePhaseChanged,
+                    IntValue = (int)state.Phase,
+                    Amount = state.Wave
+                });
+            }
         }
         SimEventDispatcher.UpdatePhaseTimer(state.Phase, math.max(0f, state.Timer));
     }
@@ -732,7 +757,11 @@ public class SimulationBridge : MonoBehaviour
                     if (viewRegistry.TryGetView(ev.Source, out var deadView) && deadView.Enemy != null)
                     {
                         if (deadView.Enemy.ExplosionParticle != null)
-                            Instantiate(deadView.Enemy.ExplosionParticle, (Vector3)ev.Position, Quaternion.identity);
+                        {
+                            Vector3 pos = new Vector3(ev.Position.x, ev.Position.y, 0f);
+                            var fx = Instantiate(deadView.Enemy.ExplosionParticle, pos, Quaternion.identity);
+                            OneShotEffect.EnsureFrontSorting(fx);
+                        }
                         deadView.Enemy.OnDied();
                     }
                     if (lootBag != null) lootBag.InstantiateLoot();
@@ -879,8 +908,83 @@ public class SimulationBridge : MonoBehaviour
         WaveManager.instance.buffEnemyType = (BuffEnemyType)(int)buff;
     }
 
+    void OnFlagTerritoryChanged()
+    {
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null || !world.IsCreated)
+            return;
+
+        if (!ready || !em.Exists(simEntity) || !em.HasComponent<WaveConfig>(simEntity))
+            return;
+
+        if (spawnerComp == null || pathComp == null)
+            return;
+
+        float dist = CalculateFlagZoneDistance(spawnerComp.transform.position, pathComp.points);
+        var config = em.GetComponentData<WaveConfig>(simEntity);
+        config.FlagZoneDistanceAlongPath = dist;
+        em.SetComponentData(simEntity, config);
+    }
+
+    public static float CalculateFlagZoneDistance(Vector3 spawnPos, Vector3[] pathPoints)
+    {
+        if (!FlagTerritory.HasTerritory)
+            return 0f;
+
+        if (FlagTerritory.Contains(spawnPos))
+            return 0f;
+
+        if (pathPoints == null || pathPoints.Length == 0)
+            return 0f;
+
+        float accumulatedDistance = 0f;
+        Vector3 current = spawnPos;
+
+        for (int i = 0; i < pathPoints.Length; i++)
+        {
+            Vector3 target = pathPoints[i];
+            float segmentLength = Vector3.Distance(current, target);
+            if (segmentLength > 0.0001f)
+            {
+                const float step = 0.05f;
+                int steps = Mathf.CeilToInt(segmentLength / step);
+                float prevDistOnSegment = 0f;
+
+                for (int s = 1; s <= steps; s++)
+                {
+                    float distOnSegment = Mathf.Min(s * step, segmentLength);
+                    Vector3 samplePoint = Vector3.Lerp(current, target, distOnSegment / segmentLength);
+
+                    if (FlagTerritory.Contains(samplePoint))
+                    {
+                        float low = prevDistOnSegment;
+                        float high = distOnSegment;
+                        for (int iter = 0; iter < 8; iter++)
+                        {
+                            float mid = (low + high) * 0.5f;
+                            Vector3 midPt = Vector3.Lerp(current, target, mid / segmentLength);
+                            if (FlagTerritory.Contains(midPt))
+                                high = mid;
+                            else
+                                low = mid;
+                        }
+                        return accumulatedDistance + high;
+                    }
+
+                    prevDistOnSegment = distOnSegment;
+                }
+            }
+
+            accumulatedDistance += segmentLength;
+            current = target;
+        }
+
+        return accumulatedDistance;
+    }
+
     void OnDestroy()
     {
+        FlagTerritory.Changed -= OnFlagTerritoryChanged;
         if (Instance == this) Instance = null;
 
         var world = World.DefaultGameObjectInjectionWorld;

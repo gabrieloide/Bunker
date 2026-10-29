@@ -252,6 +252,7 @@ namespace Bunker.Simulation
         public float3 SpawnPosition;
         public BlobAssetReference<EnemyRosterBlob> Roster;
         public BlobAssetReference<EnemyBuffTableBlob> BuffTable;
+        public float FlagZoneDistanceAlongPath;
     }
 
     public struct WaveState : IComponentData

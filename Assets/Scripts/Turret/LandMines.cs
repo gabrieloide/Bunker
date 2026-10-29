@@ -13,9 +13,14 @@ public class LandMines : MonoBehaviour, ICardConfigurable
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            //Explosion de mina de tierra
             ExplotionLandMine.Post(gameObject);
-            Instantiate(ExplosionParticle, transform.position, Quaternion.identity);
+            if (ExplosionParticle != null)
+            {
+                var pos = new Vector3(transform.position.x, transform.position.y, 0f);
+                var fx = Instantiate(ExplosionParticle, pos, Quaternion.identity);
+                OneShotEffect.EnsureFrontSorting(fx);
+            }
+
             if (definition != null)
                 collision.GetComponent<Enemy>().Damage(definition.damage, definition.bulletPen, gameObject);
             else
