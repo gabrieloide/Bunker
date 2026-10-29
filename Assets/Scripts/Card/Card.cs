@@ -1,13 +1,10 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-[RequireComponent(typeof(RectTransform), typeof(Image), typeof(CanvasGroup))]
-public abstract class Card : MonoBehaviour,
-    IPointerEnterHandler, IPointerExitHandler,
-    IPointerDownHandler,
-    IBeginDragHandler, IDragHandler, IEndDragHandler
+// A card in the hand. Its picture is a UI Toolkit element in the hand of the game UI panel (see HandLayout);
+// LeanTween animates this transform's scale and rotation and the hand position, LateUpdate copies them onto the element.
+public abstract class Card : MonoBehaviour
 {
     [SerializeField] protected LayerMask objectLayerMask;
     [Tooltip("Name, description, stats and drop weight of this card")]
@@ -22,13 +19,15 @@ public abstract class Card : MonoBehaviour,
 
     protected HandLayout Hand => dc != null ? dc.Hand : null;
 
-    protected Image uiImage;
-    protected RectTransform rectTransform;
-    protected CanvasGroup canvasGroup;
+    protected VisualElement view;
+    public VisualElement View => view;
+    // Position in the hand, panel units, y up
+    Vector2 handPosition;
+    float alpha = 1f;
 
     [SerializeField] float uiHoverHeight = 16f;
     [SerializeField] float dragThreshold = 20f;
-    [Tooltip("Gap between the pointer and the dragged card's bottom edge, in canvas units, so the placement preview stays visible")]
+    [Tooltip("Gap between the pointer and the dragged card's bottom edge, in panel units, so the placement preview stays visible")]
     [SerializeField] float dragPointerGap = 4f;
     [Tooltip("Scale applied to the card while being dragged above the hand")]
     [SerializeField] float dragScale = 0.5f;
@@ -38,9 +37,14 @@ public abstract class Card : MonoBehaviour,
     bool hovered = false;
     bool isResolving = false;
     int moveTweenId = -1;
-    Transform originalParent;
     Vector2 baseAnchoredPos;
     Vector2 dragStartScreenPos;
+    bool pressed;
+    Vector2 pressPosition;
+    float lastPointerX;
+
+    // Pointer travel (panel units) before a press becomes a drag, like the EventSystem's drag threshold
+    const float BeginDragDistance = 2f;
 
     public static int PendingResolveCount { get; private set; }
 
@@ -160,14 +164,31 @@ public abstract class Card : MonoBehaviour,
 
     protected virtual void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
-        uiImage = GetComponent<Image>();
-        canvasGroup = GetComponent<CanvasGroup>();
+        view = new VisualElement { name = name };
+        view.AddToClassList("card");
+        view.style.backgroundImage = new StyleBackground(defaultCard);
+        view.RegisterCallback<PointerEnterEvent>(_ => OnPointerEnter());
+        view.RegisterCallback<PointerLeaveEvent>(_ => OnPointerExit());
+        view.RegisterCallback<PointerDownEvent>(OnPointerDown);
+        view.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+        view.RegisterCallback<PointerUpEvent>(OnPointerUp);
+        view.RegisterCallback<PointerCaptureOutEvent>(_ => { pressed = false; if (isDragging) OnEndDrag(); });
 
-        if (GetComponentInParent<Canvas>() == null)
-            Debug.LogError($"[Card] {name} must be instantiated under a Canvas.", this);
+        if (GameUIPanel.Instance != null)
+            GameUIPanel.Instance.Hand.Add(view);
+        else
+            Debug.LogError($"[Card] {name} needs a GameUIPanel in the scene.", this);
+    }
 
-        baseAnchoredPos = rectTransform.anchoredPosition;
+    void OnEnable() => view.style.display = DisplayStyle.Flex;
+    void OnDisable() => view.style.display = DisplayStyle.None;
+
+    void LateUpdate()
+    {
+        view.style.translate = new Translate(handPosition.x, -handPosition.y);
+        view.style.scale = new Scale(transform.localScale);
+        view.style.rotate = new Rotate(-transform.eulerAngles.z);
+        view.style.opacity = alpha;
     }
 
     protected virtual void Start()
@@ -184,7 +205,11 @@ public abstract class Card : MonoBehaviour,
         if (UIManager.instance != null)
             UIManager.instance.HideCardBox(this);
         if (isDragging)
+        {
             RangeIndicator.Hide();
+            if (Hand != null) Hand.HideGhost();
+        }
+        view.RemoveFromHierarchy();
     }
 
     void BeginPendingResolve()
@@ -210,28 +235,25 @@ public abstract class Card : MonoBehaviour,
 
         transform.rotation = Quaternion.identity;
 
-        if (defaultCard != null)
-            uiImage.sprite = defaultCard;
-
-        canvasGroup.alpha = 1f;
+        view.style.backgroundImage = new StyleBackground(defaultCard);
+        alpha = 1f;
 
         if (GameManager.instance != null)
             GameManager.instance.onDrag = false;
 
         if (UIManager.instance != null)
-        {
             UIManager.instance.ShowTowerSlot = false;
-            UIManager.instance.ShowLastCardPosition(transform.position);
-        }
+        if (Hand != null)
+            Hand.HideGhost();
         RangeIndicator.Hide();
         HidePlacementFeedback();
 
         ReturnToSlot();
     }
 
-    // ------------------------------------------------ UI EventSystem Handlers
+    // ------------------------------------------------ Pointer Handlers
 
-    public void OnPointerEnter(PointerEventData eventData)
+    void OnPointerEnter()
     {
         if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
@@ -239,7 +261,7 @@ public abstract class Card : MonoBehaviour,
         ElevateCard();
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    void OnPointerExit()
     {
         if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
@@ -253,7 +275,7 @@ public abstract class Card : MonoBehaviour,
         LeanTween.cancel(gameObject);
         TweenAnchored(HandPosition, 0.12f).setEaseOutQuad();
         LeanTween.scale(gameObject, Vector3.one * 1.08f, 0.12f).setEaseOutQuad();
-        transform.SetAsLastSibling();
+        view.BringToFront();
     }
 
     void LowerCard()
@@ -275,10 +297,7 @@ public abstract class Card : MonoBehaviour,
     {
         if (moveTweenId >= 0)
             LeanTween.cancel(gameObject, moveTweenId);
-        var tween = LeanTween.value(gameObject, pos => {
-            if (rectTransform != null)
-                rectTransform.anchoredPosition = pos;
-        }, rectTransform.anchoredPosition, target, time);
+        var tween = LeanTween.value(gameObject, pos => handPosition = pos, handPosition, target, time);
         moveTweenId = tween.uniqueId;
         return tween;
     }
@@ -287,17 +306,30 @@ public abstract class Card : MonoBehaviour,
     public void SetHandHome(Vector2 home, float time)
     {
         baseAnchoredPos = home;
-        if (isDragging || rectTransform == null) return;
+        if (isDragging) return;
         if (time <= 0f)
-            rectTransform.anchoredPosition = HandPosition;
+            handPosition = HandPosition;
         else
             TweenAnchored(HandPosition, time).setEaseOutQuad();
     }
 
     void RestoreHandOrder()
     {
-        if (Hand != null && transform.parent == Hand.transform)
-            transform.SetSiblingIndex(Hand.IndexOf(this));
+        int index = Hand != null ? Hand.IndexOf(this) : -1;
+        if (index >= 0)
+        {
+            transform.SetSiblingIndex(index);
+            SetDrawOrder(index);
+        }
+    }
+
+    // Cards are drawn in hand order, after the slot placeholder (the hand element's first child)
+    public void SetDrawOrder(int index)
+    {
+        var hand = view.parent;
+        if (hand == null) return;
+        view.RemoveFromHierarchy();
+        hand.Insert(Mathf.Min(index + 1, hand.childCount), view);
     }
 
     // The card is spent: frees its place in the hand so the rest close ranks
@@ -309,32 +341,56 @@ public abstract class Card : MonoBehaviour,
             Hand.Remove(this);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    void OnPointerDown(PointerDownEvent evt)
     {
-        if (eventData.button == PointerEventData.InputButton.Right)
+        if (evt.button == 1)
         {
             if (UIManager.instance != null && definition != null && GameManager.instance != null && !GameManager.instance.onDrag)
             {
                 UIManager.instance.ToggleCardBox(this, definition.displayName, definition.description);
             }
         }
+        else if (evt.button == 0)
+        {
+            pressed = true;
+            pressPosition = evt.position;
+            view.CapturePointer(evt.pointerId);
+        }
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
+    void OnPointerMove(PointerMoveEvent evt)
     {
-        if (eventData.button != PointerEventData.InputButton.Left) return;
+        if (!pressed) return;
+        if (!isDragging && Vector2.Distance(evt.position, pressPosition) > BeginDragDistance)
+            OnBeginDrag();
+        if (isDragging)
+            OnDrag(evt.position);
+    }
 
+    void OnPointerUp(PointerUpEvent evt)
+    {
+        if (evt.button != 0) return;
+        pressed = false;
+        if (isDragging)
+            OnEndDrag();
+        if (view.HasPointerCapture(evt.pointerId))
+            view.ReleasePointer(evt.pointerId);
+    }
+
+    void OnBeginDrag()
+    {
         isDragging = true;
         hovered = false;
-        dragStartScreenPos = eventData.position;
+        dragStartScreenPos = Input.mousePosition;
+        lastPointerX = Input.mousePosition.x;
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
         LeanTween.scale(gameObject, Vector3.one * dragScale, 0.08f).setEaseOutQuad();
 
         if (backCard != null)
-            uiImage.sprite = backCard;
+            view.style.backgroundImage = new StyleBackground(backCard);
 
-        canvasGroup.alpha = 0.85f;
+        alpha = 0.85f;
 
         if (GameManager.instance != null)
             GameManager.instance.onDrag = true;
@@ -343,30 +399,24 @@ public abstract class Card : MonoBehaviour,
         {
             UIManager.instance.ShowTowerSlot = true;
             UIManager.instance.HideCardBox(this);
-
-            if (transform.parent != null)
-                UIManager.instance.ShowLastCardPosition(transform.parent.TransformPoint(baseAnchoredPos));
         }
+        if (Hand != null)
+            Hand.ShowGhost(baseAnchoredPos);
         UpdatePlacementPreview();
 
-        originalParent = transform.parent;
-        Canvas rootCanvas = GetComponentInParent<Canvas>();
-        if (rootCanvas != null)
-            transform.SetParent(rootCanvas.transform, true);
-        transform.SetAsLastSibling();
+        view.BringToFront();
     }
 
-    public void OnDrag(PointerEventData eventData)
+    void OnDrag(Vector2 pointer)
     {
         if (!isDragging) return;
 
-        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
-            transform.position = worldPoint + DragLift();
-        else
-            transform.position = eventData.position;
+        Vector2 local = view.parent.WorldToLocal(pointer);
+        handPosition = new Vector2(local.x, -local.y) + DragLift();
 
-        // Dynamic tilt based on horizontal mouse movement
-        float deltaX = eventData.delta.x;
+        // Dynamic tilt based on horizontal mouse movement (screen pixels)
+        float deltaX = Input.mousePosition.x - lastPointerX;
+        lastPointerX = Input.mousePosition.x;
         float targetAngle = Mathf.Clamp(-deltaX * 1.5f, -22f, 22f);
         currentTiltAngle = Mathf.Lerp(currentTiltAngle, targetAngle, Time.deltaTime * 18f);
         transform.rotation = Quaternion.Euler(0f, 0f, currentTiltAngle);
@@ -375,37 +425,31 @@ public abstract class Card : MonoBehaviour,
     }
 
     // Card floats above the pointer (bottom edge + gap) so the tile under the pointer is not covered
-    Vector3 DragLift()
+    Vector2 DragLift()
     {
-        Transform canvasSpace = transform.parent != null ? transform.parent : transform;
-        float canvasUnits = rectTransform.rect.height * rectTransform.pivot.y * transform.localScale.y + dragPointerGap;
-        Vector3 lift = canvasSpace.TransformVector(Vector3.up * canvasUnits);
+        float units = view.resolvedStyle.height * 0.5f * transform.localScale.y + dragPointerGap;
         // Constant clearance (not per-cell) so the card doesn't jump while the preview snaps
-        lift.y += PreviewClearance;
-        return lift;
+        units += PreviewClearance * GameUIPanel.Instance.UnitsPerWorld;
+        return Vector2.up * units;
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    void OnEndDrag()
     {
         if (!isDragging) return;
         isDragging = false;
 
         transform.rotation = Quaternion.identity;
 
-        if (defaultCard != null)
-            uiImage.sprite = defaultCard;
-
-        canvasGroup.alpha = 1f;
+        view.style.backgroundImage = new StyleBackground(defaultCard);
+        alpha = 1f;
 
         if (GameManager.instance != null)
             GameManager.instance.onDrag = false;
 
         if (UIManager.instance != null)
-        {
             UIManager.instance.ShowTowerSlot = false;
-            // onDrag is already false: hides the slot placeholder shown in OnBeginDrag
-            UIManager.instance.ShowLastCardPosition(transform.position);
-        }
+        if (Hand != null)
+            Hand.HideGhost();
         RangeIndicator.Hide();
         HidePlacementFeedback();
 
@@ -427,7 +471,7 @@ public abstract class Card : MonoBehaviour,
     protected virtual void spawnCard()
     {
         Vector3 worldDropPos = GetRaycastOrigin();
-        // Measured in screen space: anchoredPosition is relative to the root canvas while dragging, not the slot
+        // Measured in screen space, from where the drag started
         float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
         bool hasObstacle = HasObstacleBelow();
 
@@ -440,8 +484,8 @@ public abstract class Card : MonoBehaviour,
 
             dropOrigin = worldDropPos;
             dropCell = UseGrid ? FootprintCell() : default;
-            canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
+            alpha = 0f;
+            view.pickingMode = PickingMode.Ignore;
 
             if (BuiltBySoldier && BuilderSquad.Instance != null && BuilderSquad.Instance.Available)
             {
@@ -512,8 +556,6 @@ public abstract class Card : MonoBehaviour,
 
     protected void ReturnToSlot()
     {
-        if (originalParent != null)
-            transform.SetParent(originalParent, true);
         RestoreHandOrder();
 
         LeanTween.cancel(gameObject);
@@ -526,7 +568,7 @@ public abstract class Card : MonoBehaviour,
 
     public void showCard()
     {
-        rectTransform.anchoredPosition = baseAnchoredPos - new Vector2(0f, 35f);
+        handPosition = baseAnchoredPos - new Vector2(0f, 35f);
         TweenAnchored(baseAnchoredPos, 0.25f).setEaseOutQuad();
     }
 }

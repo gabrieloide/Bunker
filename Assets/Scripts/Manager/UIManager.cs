@@ -17,19 +17,12 @@ public class UIManager : MonoBehaviour
     public GameObject TowerSlotAnimation;
     public Vector3 offset;
     [Space]
-    public GameObject CardStats;
-    public GameObject Canvas2;
-    [Space]
-    [Header("Last Card")]
-    public GameObject LastPosCard;
-    public float TimeLastPosCard;
-    [Space]
     [Header("Life Turret")]
-    [SerializeField] UnityEngine.UI.Slider LifeSlider;
+    [Tooltip("Bar over the bunker; found on the TowerPlayer when empty")]
+    [SerializeField] WorldLifeBar LifeSlider;
     [Space]
     [Header("Deck")]
     public LeanTweenType TweenDeckOut;
-    public GameObject Deck;
     public float TimeMovement;
 
     private int lastScore = -1;
@@ -167,12 +160,12 @@ public class UIManager : MonoBehaviour
         if (LifeSlider == null)
         {
             var tower = FindFirstObjectByType<TowerPlayer>();
-            if (tower != null) LifeSlider = tower.GetComponentInChildren<UnityEngine.UI.Slider>(true);
+            if (tower != null) LifeSlider = tower.GetComponentInChildren<WorldLifeBar>(true);
         }
         if (LifeSlider != null && !Mathf.Approximately(normalizedHP, lastLife))
         {
             lastLife = normalizedHP;
-            LifeSlider.value = normalizedHP;
+            LifeSlider.SetValue(normalizedHP, 1f);
         }
     }
 
@@ -204,7 +197,7 @@ public class UIManager : MonoBehaviour
         }
 
         ShowBoxText.Post(gameObject);
-        cardPanel.Show(card, _name, _description, card.transform as RectTransform);
+        cardPanel.Show(card, _name, _description, card.View);
     }
 
     public void HideCardBox(Card card = null)
@@ -213,45 +206,25 @@ public class UIManager : MonoBehaviour
             cardPanel.Hide(card);
     }
 
+    // The panel lives next to GameUIPanel (UI/Game.uxml)
     bool EnsureCardPanel()
     {
-        if (cardPanel != null) return true;
-        if (CardStats == null || Canvas2 == null) return false;
-
-        cardPanel = Instantiate(CardStats, Canvas2.transform).GetComponent<ChangeCardText>();
+        if (cardPanel == null)
+            cardPanel = FindAnyObjectByType<ChangeCardText>();
         return cardPanel != null;
-    }
-
-    public void ShowLastCardPosition(Vector3 CardPosition)
-    {
-        bool isNotDragging = GameManager.instance == null || !GameManager.instance.onDrag;
-
-        if (LastPosCard != null)
-        {
-            LastPosCard.SetActive(!isNotDragging);
-
-            if (isNotDragging)
-            {
-                LastPosCard.transform.localScale = Vector2.zero;
-            }
-            else
-            {
-                LastPosCard.transform.position = CardPosition;
-            }
-        }
     }
 
     public void ShowDeck()
     {
-        if (this.Deck == null || CardDrop.instance == null) return;
+        if (CardDrop.instance == null) return;
 
         // Shown while it holds something playable in this phase (towers in preparation, allies during a wave)
         bool playable = CardDrop.instance.HasPlayableCard;
-        if (!this.Deck.activeSelf && playable)
+        if (!CardDrop.instance.DeckShown && playable)
         {
             CardDrop.instance.ShowDeck();
         }
-        else if (this.Deck.activeSelf && !playable)
+        else if (CardDrop.instance.DeckShown && !playable)
         {
             CardDrop.instance.HideDeck();
         }

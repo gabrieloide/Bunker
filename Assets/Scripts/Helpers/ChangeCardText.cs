@@ -1,74 +1,43 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.UIElements;
 
-// Card detail panel (right click on a hand card). Single reusable instance owned by UIManager.
-// 1-bit friendly: opens top-down in discrete pixel steps (RectMask2D clip, no scaling), then types the description.
-[RequireComponent(typeof(RectTransform))]
+// Card detail panel (right click on a hand card), the "card-info" element of UI/Game.uxml. Lives next to GameUIPanel.
+// 1-bit friendly: opens top-down in discrete pixel steps (clipped, no scaling), then types the description.
 public class ChangeCardText : MonoBehaviour
 {
-    public TMP_Text CardName;
-    public TMP_Text CardDescription;
-
-    [SerializeField] float panelScale = 0.25f;
     [SerializeField] int revealSteps = 4;
     [SerializeField] float stepInterval = 0.035f;
     [SerializeField] float charsPerSecond = 90f;
-    [Tooltip("Gap between the card's top edge and the panel, in canvas units")]
+    [Tooltip("Gap between the card's top edge and the panel, in panel units")]
     [SerializeField] float gapAboveCard = 3f;
 
-    RectTransform rectTransform;
-    RectMask2D mask;
-    Vector4 basePadding;
-    Vector2 contentMin, contentMax; // union of children, in panel-local units
+    VisualElement panel, content;
+    Label cardName, cardDescription;
+    string description = "";
     Coroutine routine;
 
     public Card Owner { get; private set; }
     public bool IsOpen => Owner != null;
 
-    void Awake()
+    void Start()
     {
-        rectTransform = (RectTransform)transform;
-        rectTransform.localScale = Vector3.one * panelScale;
-
-        mask = GetComponent<RectMask2D>();
-        if (mask == null) mask = gameObject.AddComponent<RectMask2D>();
-        CacheContentBounds();
-
-        gameObject.SetActive(false);
+        var root = GameUIPanel.Instance.Root;
+        panel = root.Q("card-info");
+        content = panel.Q(className: "card-info__content");
+        cardName = panel.Q<Label>("card-name");
+        cardDescription = panel.Q<Label>("card-description");
     }
 
-    // Mask covers the union of all children (the background image is taller than the root rect)
-    void CacheContentBounds()
+    public void Show(Card owner, string textName, string textDescription, VisualElement anchor)
     {
-        Rect root = rectTransform.rect;
-        Vector2 min = root.min, max = root.max;
-        var corners = new Vector3[4];
-        foreach (RectTransform child in rectTransform)
-        {
-            child.GetWorldCorners(corners);
-            for (int i = 0; i < 4; i++)
-            {
-                Vector2 p = rectTransform.InverseTransformPoint(corners[i]);
-                min = Vector2.Min(min, p);
-                max = Vector2.Max(max, p);
-            }
-        }
-        contentMin = min;
-        contentMax = max;
-        // RectMask2D padding: (left, bottom, right, top), positive shrinks
-        basePadding = new Vector4(min.x - root.xMin, min.y - root.yMin, root.xMax - max.x, root.yMax - max.y);
-    }
-
-    public void Show(Card owner, string textName, string textDescription, RectTransform anchor)
-    {
+        if (panel == null) return;
         Owner = owner;
-        CardName.text = textName;
-        CardDescription.text = textDescription;
+        cardName.text = textName;
+        description = textDescription ?? "";
 
-        gameObject.SetActive(true);
-        transform.SetAsLastSibling();
+        panel.visible = true;
+        panel.BringToFront();
         PlaceAbove(anchor);
 
         Restart(Open());
@@ -78,8 +47,7 @@ public class ChangeCardText : MonoBehaviour
     {
         if (!IsOpen || (owner != null && owner != Owner)) return;
         Owner = null;
-        if (gameObject.activeInHierarchy)
-            Restart(Close());
+        Restart(Close());
     }
 
     void Restart(IEnumerator next)
@@ -90,10 +58,8 @@ public class ChangeCardText : MonoBehaviour
 
     IEnumerator Open()
     {
-        CardDescription.ForceMeshUpdate();
-        int totalChars = CardDescription.textInfo.characterCount;
-        CardDescription.maxVisibleCharacters = 0;
-        CardName.enabled = false;
+        SetTyped(0);
+        cardName.visible = false;
 
         for (int step = 1; step <= revealSteps; step++)
         {
@@ -101,12 +67,12 @@ public class ChangeCardText : MonoBehaviour
             yield return new WaitForSecondsRealtime(stepInterval);
         }
 
-        CardName.enabled = true;
+        cardName.visible = true;
         float visible = 0f;
-        while (visible < totalChars)
+        while (visible < description.Length)
         {
             visible += charsPerSecond * Time.unscaledDeltaTime;
-            CardDescription.maxVisibleCharacters = Mathf.Min(totalChars, Mathf.FloorToInt(visible));
+            SetTyped(Mathf.Min(description.Length, Mathf.FloorToInt(visible)));
             yield return null;
         }
         routine = null;
@@ -114,45 +80,35 @@ public class ChangeCardText : MonoBehaviour
 
     IEnumerator Close()
     {
-        CardName.enabled = false;
-        CardDescription.maxVisibleCharacters = 0;
+        cardName.visible = false;
+        SetTyped(0);
         for (int step = revealSteps - 1; step >= 0; step--)
         {
             SetReveal(step / (float)revealSteps);
             yield return new WaitForSecondsRealtime(stepInterval);
         }
-        gameObject.SetActive(false);
+        panel.visible = false;
         routine = null;
     }
 
+    // The untyped rest stays in place but transparent, so the wrapping doesn't jump while typing
+    void SetTyped(int chars) =>
+        cardDescription.text = chars >= description.Length ? description : description.Substring(0, chars) + "<alpha=#00>" + description.Substring(chars);
+
     // Reveals the panel from the top edge down; hidden rows are clipped from the bottom, snapped to whole units
-    void SetReveal(float t)
+    void SetReveal(float t) => panel.style.height = Mathf.Round(content.resolvedStyle.height * t);
+
+    // Content bottom sits gapAboveCard over the card's top edge, centred on it and clamped inside the panel
+    void PlaceAbove(VisualElement anchor)
     {
-        float hiddenCanvasUnits = Mathf.Round((contentMax.y - contentMin.y) * panelScale * (1f - t));
-        float hidden = hiddenCanvasUnits / panelScale;
-        mask.padding = new Vector4(basePadding.x, basePadding.y + hidden, basePadding.z, basePadding.w);
-    }
+        if (anchor == null) return;
+        Rect card = anchor.worldBound;
+        Rect bounds = panel.parent.worldBound;
+        float width = content.resolvedStyle.width, height = content.resolvedStyle.height;
 
-    // Content bottom sits gapAboveCard over the card's top edge, centred on it and clamped inside the canvas
-    void PlaceAbove(RectTransform anchor)
-    {
-        var parent = rectTransform.parent as RectTransform;
-        if (parent == null || anchor == null) return;
-
-        var corners = new Vector3[4];
-        anchor.GetWorldCorners(corners);
-        // corners[1] = top-left, corners[2] = top-right
-        // Keep the card's depth: this canvas sits on the camera, so z = 0 would fall inside the near clip plane
-        Vector3 cardTop = parent.InverseTransformPoint((corners[1] + corners[2]) * 0.5f);
-
-        float s = panelScale;
-        float x = cardTop.x - (contentMin.x + contentMax.x) * 0.5f * s;
-        float y = cardTop.y + gapAboveCard - contentMin.y * s;
-
-        Rect bounds = parent.rect;
-        x = Mathf.Clamp(x, bounds.xMin - contentMin.x * s, bounds.xMax - contentMax.x * s);
-        y = Mathf.Min(y, bounds.yMax - contentMax.y * s);
-
-        rectTransform.localPosition = new Vector3(Mathf.Round(x), Mathf.Round(y), cardTop.z);
+        float x = Mathf.Clamp(card.center.x - width * 0.5f, bounds.xMin, bounds.xMax - width);
+        float y = Mathf.Max(card.yMin - gapAboveCard - height, bounds.yMin);
+        panel.style.left = Mathf.Round(x);
+        panel.style.top = Mathf.Round(y);
     }
 }

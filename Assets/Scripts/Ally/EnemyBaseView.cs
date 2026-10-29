@@ -1,13 +1,12 @@
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.UI;
 
 // Presentation of the enemy base the allies attack. Its life lives in the simulation; destroying it wins.
 public class EnemyBaseView : MonoBehaviour
 {
     [Tooltip("Used when no LevelDefinition sets the base life")]
     [Min(1f)] [SerializeField] float defaultLife = 500f;
-    [SerializeField] Slider lifeBar;
+    [SerializeField] WorldLifeBar lifeBar;
     [SerializeField] GameObject hitParticle;
     [SerializeField] GameObject destroyedParticle;
 
@@ -16,15 +15,12 @@ public class EnemyBaseView : MonoBehaviour
 
     void Start()
     {
-        if (lifeBar == null) return;
-        lifeBar.minValue = 0f;
-        lifeBar.maxValue = StartLife;
-        lifeBar.value = StartLife;
+        if (lifeBar != null) lifeBar.SetValue(StartLife, StartLife);
     }
 
     public void OnHit(float remainingLife)
     {
-        if (lifeBar != null) lifeBar.value = remainingLife;
+        if (lifeBar != null) lifeBar.SetValue(remainingLife, StartLife);
         if (hitParticle != null)
             Instantiate(hitParticle, transform.position, Quaternion.identity);
     }
