@@ -4,8 +4,10 @@
         <ui:VisualElement class="hud-bar" picking-mode="Ignore">
             <ui:Label name="score" text="SCORE&#10;000000" class="hud-stat" picking-mode="Ignore" />
             <ui:VisualElement class="hud-life" picking-mode="Ignore">
-                <ui:VisualElement class="lifebar" picking-mode="Ignore">
-                    <ui:VisualElement name="life-fill" class="lifebar-fill" picking-mode="Ignore" />
+                <ui:VisualElement name="lifebar" class="lifebar" picking-mode="Ignore">
+                    <ui:VisualElement name="lifebar-track" class="lifebar-track" picking-mode="Ignore">
+                        <ui:VisualElement name="life-fill" class="lifebar-fill" picking-mode="Ignore" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:Label text="LIFE" class="hud-stat" picking-mode="Ignore" />
             </ui:VisualElement>

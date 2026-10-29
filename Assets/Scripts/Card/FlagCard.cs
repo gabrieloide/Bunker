@@ -15,6 +15,7 @@ public class FlagCard : Card
 
     protected override void ShowPlacementFeedback(bool valid)
     {
+        PlacementCrossIndicator.Hide();
         if (dragCursor != null && !cursorSwapped)
         {
             Cursor.SetCursor(dragCursor, new Vector2(dragCursor.width * 0.5f, dragCursor.height * 0.5f), CursorMode.Auto);
@@ -29,6 +30,7 @@ public class FlagCard : Card
     {
         RestoreCursor();
         if (preview != null) preview.Hide();
+        base.HidePlacementFeedback();
     }
 
     void RestoreCursor()

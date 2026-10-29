@@ -38,17 +38,19 @@ public class HandLayout : MonoBehaviour
     // Centre of slot `index` (y up); the row is centred on the hand element
     public Vector2 SlotPosition(int index) => new Vector2((index - (slotCount - 1) * 0.5f) * slotSpacing, 0f);
 
-    public VisualElement Container => GameUIPanel.Instance.Hand;
+    // Null while the scene is being torn down (the panel may go first)
+    public VisualElement Container => GameUIPanel.Instance != null ? GameUIPanel.Instance.Hand : null;
 
     // Placeholder left in the slot of the card being dragged
     public void ShowGhost(Vector2 slot)
     {
-        var ghost = Container.Q("slot-ghost");
+        var ghost = Container?.Q("slot-ghost");
+        if (ghost == null) return;
         ghost.style.translate = new Translate(slot.x, -slot.y);
         ghost.AddToClassList("slot-ghost--shown");
     }
 
-    public void HideGhost() => Container.Q("slot-ghost").RemoveFromClassList("slot-ghost--shown");
+    public void HideGhost() => Container?.Q("slot-ghost")?.RemoveFromClassList("slot-ghost--shown");
 
     void Update()
     {

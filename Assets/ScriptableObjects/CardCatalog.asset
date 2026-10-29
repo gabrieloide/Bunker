@@ -30,8 +30,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ac87583c96024157affb5755e7112969, type: 2}
   - {fileID: 11400000, guid: 9f1c02d1c6d1454199dc59dcb45ea507, type: 2}
   - {fileID: 11400000, guid: 78190ecb89d8645439805b1bfbcaaa7f, type: 2}
-  startingTowers: 3
+  startingFlags: 1
+  startingTowers: 4
   towersPerWave: 3
+  flagsPerWave: 1
   maxTowers: 8
   ruinsSprite: {fileID: 0}
   blockedCellSprite: {fileID: 5839820706974066888, guid: a800bb1e6b9629748a0d3ce44a994118, type: 3}

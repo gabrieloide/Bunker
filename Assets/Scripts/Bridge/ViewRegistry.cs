@@ -15,6 +15,7 @@ public class ViewRegistry
         public TurretCard TurretCard;
         public Bullet Bullet;
         public AllyView Ally;
+        public Vector3 VisualOffset;
     }
 
     private readonly Dictionary<Entity, EntityView> views = new Dictionary<Entity, EntityView>();
@@ -71,6 +72,18 @@ public class ViewRegistry
     {
         if (view == null) return;
 
+        Vector3 offset = Vector3.zero;
+        if (kind == ViewKind.Enemy || kind == ViewKind.Ally)
+        {
+            // Subtle deterministic offset (-0.15 to +0.15 in X, -0.10 to +0.10 in Y)
+            // so overlapping units in waves/squads do not stack on the exact same pixel
+            int h = (entity.Index * 374761393) ^ (entity.Version * 668265263);
+            float ox = (((h & 0xFF) % 7) - 3) * 0.05f;
+            float oy = ((((h >> 8) & 0xFF) % 5) - 2) * 0.05f;
+            offset = new Vector3(ox, oy, 0f);
+            view.transform.position += offset;
+        }
+
         var ev = new EntityView
         {
             GameObject = view,
@@ -80,7 +93,8 @@ public class ViewRegistry
             Enemy = view.GetComponent<Enemy>(),
             TurretCard = view.GetComponent<TurretCard>(),
             Bullet = view.GetComponent<Bullet>(),
-            Ally = view.GetComponent<AllyView>()
+            Ally = view.GetComponent<AllyView>(),
+            VisualOffset = offset
         };
         views[entity] = ev;
     }

@@ -34,74 +34,11 @@ namespace Bunker.Simulation
             switch (wave.Phase)
             {
                 case WavePhase.WaitingToStart:
-                    if (wave.SpawnedThisWave == 0 && wave.EnemyAmount > 0)
+                    // Preparation: no enemy until the countdown ends or the player has spent every card (the bridge zeroes Timer)
+                    wave.Timer -= dt;
+                    if (wave.Timer <= 0f)
                     {
-                        float firstEnemySpeed = SpawnEnemy(ref wave, in config, ecb, spawners, hasSpawners);
-                        wave.SpawnedThisWave = 1;
-                        if (config.FlagZoneDistanceAlongPath > 0.05f)
-                        {
-                            wave.Timer = config.FlagZoneDistanceAlongPath / math.max(0.01f, firstEnemySpeed);
-                        }
-                        else
-                        {
-                            wave.Timer = config.StartDelay;
-                        }
-                    }
-
-                    var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
-                    Entity defaultPathEntity = Entity.Null;
-                    if (SystemAPI.TryGetSingletonEntity<PrimaryPath>(out var primary))
-                        defaultPathEntity = primary;
-
-                    float maxDistanceTraveled = -1f;
-                    float leadSpeed = 0f;
-                    bool foundLeadEnemy = false;
-
-                    foreach (var (transform, follower, speed) in
-                             SystemAPI.Query<RefRO<LocalTransform>, RefRO<PathFollower>, RefRO<MoveSpeed>>()
-                                 .WithAll<EnemyTag>())
-                    {
-                        Entity targetPathEntity = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
-                        if (targetPathEntity == Entity.Null || !pathLookup.HasBuffer(targetPathEntity))
-                            continue;
-
-                        var path = pathLookup[targetPathEntity];
-                        float3 spawnerPos = GetSpawnerPosition(targetPathEntity, spawners, hasSpawners, config.SpawnPosition);
-                        float dist = CalculateDistanceTraveled(spawnerPos, path, follower.ValueRO.NextIndex, transform.ValueRO.Position);
-                        if (dist > maxDistanceTraveled)
-                        {
-                            maxDistanceTraveled = dist;
-                            leadSpeed = speed.ValueRO.Value;
-                            foundLeadEnemy = true;
-                        }
-                    }
-
-                    if (config.FlagZoneDistanceAlongPath > 0.05f)
-                    {
-                        if (foundLeadEnemy)
-                        {
-                            float distanceRemaining = config.FlagZoneDistanceAlongPath - maxDistanceTraveled;
-                            if (distanceRemaining <= 0.05f || (wave.SpawnedThisWave >= 1 && wave.EnemiesAlive <= 0))
-                            {
-                                StartSpawningPhase(ref wave, in config, events);
-                            }
-                            else
-                            {
-                                wave.Timer = distanceRemaining / math.max(0.01f, leadSpeed);
-                            }
-                        }
-                        else if (wave.SpawnedThisWave >= 1 && wave.EnemiesAlive <= 0)
-                        {
-                            StartSpawningPhase(ref wave, in config, events);
-                        }
-                    }
-                    else
-                    {
-                        wave.Timer -= dt;
-                        if (wave.Timer <= 0f || (wave.SpawnedThisWave >= 1 && wave.EnemiesAlive <= 0))
-                        {
-                            StartSpawningPhase(ref wave, in config, events);
-                        }
+                        StartSpawningPhase(ref wave, in config, events);
                     }
                     break;
 
@@ -145,7 +82,8 @@ namespace Bunker.Simulation
         static void StartSpawningPhase(ref WaveState wave, in WaveConfig config, DynamicBuffer<SimEvent> events)
         {
             wave.Phase = WavePhase.Spawning;
-            wave.Timer = config.SpawnInterval;
+            wave.Timer = 0f;
+            wave.SpawnedThisWave = 0;
             events.Add(new SimEvent { Kind = SimEventKind.WavePhaseChanged, IntValue = (int)wave.Phase, Amount = wave.Wave });
         }
 

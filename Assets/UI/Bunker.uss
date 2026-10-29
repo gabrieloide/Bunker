@@ -84,14 +84,14 @@
 .hud-stat {
     font-size: 48px;
     -unity-text-align: upper-left;
-    background-color: #FFFFFF;
+    color: #000000;
+    text-shadow: 2px 2px 0px #F0F6F0;
     padding: 2px 8px;
 }
 
 .hud-life {
     flex-direction: row;
     align-items: center;
-    background-color: #FFFFFF;
     padding-left: 8px;
 }
 
@@ -102,6 +102,15 @@
     border-width: 4px;
     border-color: #000000;
     padding: 4px;
+    background-color: #F0F6F0;
+    overflow: visible;
+}
+
+.lifebar-track {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: visible;
 }
 
 .lifebar-fill {
@@ -110,8 +119,15 @@
     background-color: #000000;
 }
 
-.hud-stat--flash {
-    scale: 1.35 1.35;
+.lifebar-chunk {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    background-color: #000000;
+    border-width: 1px;
+    border-color: #F0F6F0;
+    overflow: visible;
 }
 
 /* Sliders (options) */
@@ -130,10 +146,6 @@
     width: 700px;
 }
 
-.hud-stat {
-    transition-property: scale;
-    transition-duration: 0.08s;
-}
 
 /* Title */
 .title-screen {

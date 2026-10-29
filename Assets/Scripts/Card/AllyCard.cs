@@ -13,6 +13,15 @@ public class AllyCard : Card
     protected override bool InTerritory => true;
     protected override bool HasObstacleBelow() => false;
 
+    protected override void ShowPlacementFeedback(bool valid)
+    {
+        // Allies can be dropped anywhere on the map during wave, so only show X if not playable now
+        if (!PlayableNow)
+            PlacementCrossIndicator.Show(PointerWorld());
+        else
+            PlacementCrossIndicator.Hide();
+    }
+
     protected override void CardBehaviour()
     {
         if (SimulationBridge.Instance != null && definition is AllyCardDefinition card)

@@ -12,8 +12,10 @@ public class CardCatalog : ScriptableObject
     public List<CardDefinition> cards = new List<CardDefinition>();
 
     [Header("Towers")]
+    [Tooltip("Flag cards dealt when a level starts (before the towers, so they get a hand slot first)")]
+    [Min(0)] public int startingFlags = 1;
     [Tooltip("Random towers dealt when a level starts")]
-    [Min(0)] public int startingTowers = 3;
+    [Min(0)] public int startingTowers = 4;
     [Tooltip("Random towers dealt each time a wave is cleared; what doesn't fit in the hand waits in the draw pile")]
     [Min(0)] public int towersPerWave = 3;
     [Tooltip("Flag cards dealt each time a wave is cleared (before the towers, so they get a hand slot first)")]
