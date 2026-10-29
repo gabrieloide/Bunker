@@ -16,6 +16,7 @@ public static class FlagTerritory
 
     public static event Action Changed;
     public static IReadOnlyList<Flag> Flags => flags;
+    public static bool HasTerritory => flags.Count > 0;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
