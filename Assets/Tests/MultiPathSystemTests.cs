@@ -199,6 +199,71 @@ namespace Bunker.Tests
             buffTable.Dispose();
         }
 
+        // Preparation phase: nothing spawns while the countdown runs; at zero the wave starts immediately in Spawning phase
+        [Test]
+        public void WaveSystem_Preparation_WaitsForTheCountdownThenStartsSpawning()
+        {
+            var waveSystem = world.GetOrCreateSystem<WaveSystem>();
+            var ecbSystem = world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+            var roster = CreateRoster();
+            var buffTable = CreateNeutralBuffTable();
+
+            em.SetComponentData(simEntity, new WaveConfig
+            {
+                StartDelay = 30f,
+                SpawnInterval = 1f,
+                InitialEnemyAmount = 3,
+                WavesPerTier = 10,
+                InitialUnlockedTypes = 1,
+                MaxUnlockedTypes = 1,
+                SpawnPosition = new float3(0f, 20f, 0f),
+                FlagZoneDistanceAlongPath = 10f,
+                Roster = roster,
+                BuffTable = buffTable
+            });
+            em.SetComponentData(simEntity, new WaveState
+            {
+                Wave = 1,
+                Phase = WavePhase.WaitingToStart,
+                Timer = 30f,
+                EnemyAmount = 3,
+                UnlockedTypes = 1,
+                Rng = new Unity.Mathematics.Random(1234)
+            });
+            var enemies = em.CreateEntityQuery(ComponentType.ReadOnly<EnemyTag>());
+
+            world.SetTime(new Unity.Core.TimeData(1.0, 1f));
+            waveSystem.Update(world.Unmanaged);
+            ecbSystem.Update(world.Unmanaged);
+            Assert.AreEqual(0, enemies.CalculateEntityCount(), "no enemy during the countdown");
+
+            // Advance 10 more seconds: timer decreases but still zero enemies
+            world.SetTime(new Unity.Core.TimeData(11.0, 10f));
+            waveSystem.Update(world.Unmanaged);
+            ecbSystem.Update(world.Unmanaged);
+            Assert.AreEqual(0, enemies.CalculateEntityCount(), "still zero enemies during countdown");
+            Assert.AreEqual(19f, em.GetComponentData<WaveState>(simEntity).Timer, 0.001f);
+
+            // The player spent every card or countdown reaches zero: the bridge zeroes the timer
+            var state = em.GetComponentData<WaveState>(simEntity);
+            state.Timer = 0f;
+            em.SetComponentData(simEntity, state);
+            waveSystem.Update(world.Unmanaged);
+            ecbSystem.Update(world.Unmanaged);
+
+            Assert.AreEqual(WavePhase.Spawning, em.GetComponentData<WaveState>(simEntity).Phase, "wave starts immediately");
+
+            // On next update during Spawning, enemies spawn
+            world.SetTime(new Unity.Core.TimeData(1.1, 0.1f));
+            waveSystem.Update(world.Unmanaged);
+            ecbSystem.Update(world.Unmanaged);
+            Assert.GreaterOrEqual(enemies.CalculateEntityCount(), 1, "enemies spawn once wave starts");
+
+            enemies.Dispose();
+            roster.Dispose();
+            buffTable.Dispose();
+        }
+
         static BlobAssetReference<EnemyRosterBlob> CreateRoster()
         {
             using var builder = new BlobBuilder(Unity.Collections.Allocator.Temp);

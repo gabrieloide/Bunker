@@ -15,6 +15,9 @@ public class BuffCard : Card
 
     protected override RaycastHit2D DetectObjectsBelow() => CastFootprint(NormalCardLM());
 
+    // Buffs apply to existing towers, so obstacles and ground occupancy do not block placement
+    protected override bool HasObstacleBelow() => false;
+
     // Towers are 1x2 with their occupied cell at the base, so the pointer may be over the base cell or the one above it
     protected override float PreviewClearance => PlacementGrid.Available ? PlacementGrid.CellSize.y : 0f;
 

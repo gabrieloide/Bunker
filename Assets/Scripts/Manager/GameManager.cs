@@ -39,7 +39,10 @@ public class GameManager : MonoBehaviour
         }
 
         if (catalog != null)
+        {
+            DealFlags(catalog.startingFlags);
             DealTowers(catalog.startingTowers);
+        }
         if (cardDrop != null && !cardDrop.HasPlayableCard)
             cardDrop.HideDeck();
         StartingHandDealt = true;

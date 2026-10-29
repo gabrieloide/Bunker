@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="HUD.uss" />
-    <ui:VisualElement style="display: flex; width: 1920px; height: 1080px; padding: 19px 0; flex-direction: column; align-items: center; background-color: #FFF;">
+    <ui:VisualElement style="display: flex; width: 1920px; height: 1080px; padding: 19px 0; flex-direction: column; align-items: center; background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement style="display: flex; width: 1802px; justify-content: space-between; align-items: center; flex-direction: row;">
             <ui:Label text="SCORE&#10;00000" class="unity-label" style="width: 147px; flex-shrink: 0; color: #FFF; font-size: 94px; white-space: normal;" />
             <ui:VisualElement style="display: flex; width: 668px; justify-content: center; align-items: center; flex-shrink: 0; flex-direction: row;">

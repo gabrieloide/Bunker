@@ -132,18 +132,30 @@ public abstract class Card : MonoBehaviour
     // How far the preview can reach above the pointer, so the dragged card never covers it
     protected virtual float PreviewClearance => UseGrid ? Mathf.Max(0f, PlacementGrid.CellSize.y + offset.y) : 0f;
 
+    public virtual bool CanPlaceNow => PlayableNow && InTerritory && !HasObstacleBelow();
+
     void UpdatePlacementPreview()
     {
         if (!isDragging || UIManager.instance == null || UIManager.instance.TowerSlotAnimation == null)
             return;
 
-        bool hasPosition = TryGetPreviewPosition(out Vector3 target);
-        bool valid = InTerritory && !HasObstacleBelow();
-        bool visible = hasPosition && valid;
-        if (hasPosition)
-            ShowPlacementFeedback(valid);
-        else
+        var trash = Trash.Instance != null ? Trash.Instance : FindAnyObjectByType<Trash>();
+        bool isTrash = (trash != null && (trash.hit2D || trash.IsPointerOver()));
+
+        if (isTrash)
+        {
+            UIManager.instance.ShowTowerSlot = false;
+            RangeIndicator.Hide();
             HidePlacementFeedback();
+            return;
+        }
+
+        bool hasPosition = TryGetPreviewPosition(out Vector3 target);
+        bool valid = hasPosition && CanPlaceNow;
+        bool visible = hasPosition && valid;
+
+        ShowPlacementFeedback(valid);
+
         UIManager.instance.ShowTowerSlot = visible;
         if (visible)
             UIManager.instance.TowerSlotAnimation.transform.position = target - UIManager.instance.offset;
@@ -156,8 +168,23 @@ public abstract class Card : MonoBehaviour
     }
 
     // Extra feedback while dragging, e.g. the flag's check/cross; valid = dropping here would be accepted
-    protected virtual void ShowPlacementFeedback(bool valid) { }
-    protected virtual void HidePlacementFeedback() { }
+    protected virtual void ShowPlacementFeedback(bool valid)
+    {
+        if (!valid)
+        {
+            Vector3 crossPos = TryGetPreviewPosition(out Vector3 target) ? target : PointerWorld();
+            PlacementCrossIndicator.Show(crossPos);
+        }
+        else
+        {
+            PlacementCrossIndicator.Hide();
+        }
+    }
+
+    protected virtual void HidePlacementFeedback()
+    {
+        PlacementCrossIndicator.Hide();
+    }
 
     // Radius drawn around the placement preview: a tower's attack range; 0 draws nothing
     protected virtual float PlacedRange => SnapsToGrid && definition is TowerCardDefinition tower ? tower.range : 0f;
@@ -208,8 +235,9 @@ public abstract class Card : MonoBehaviour
         {
             RangeIndicator.Hide();
             if (Hand != null) Hand.HideGhost();
+            HidePlacementFeedback();
         }
-        view.RemoveFromHierarchy();
+        view?.RemoveFromHierarchy();
     }
 
     void BeginPendingResolve()

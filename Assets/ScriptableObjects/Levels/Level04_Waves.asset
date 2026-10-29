@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad2ca9a1a96df82458fb469e36b56ba9, type: 3}
   m_Name: Level04_Waves
   m_EditorClassIdentifier: Assembly-CSharp::WaveBalanceConfig
-  startDelay: 25
+  startDelay: 30
   spawnInterval: 1.4
   initialEnemyAmount: 12
   wavesPerTier: 3

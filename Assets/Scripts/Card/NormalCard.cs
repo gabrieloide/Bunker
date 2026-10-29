@@ -12,12 +12,7 @@ public class NormalCard : Card
 
     bool UnderLimit => Tower == null || TowerLimits.CanPlace(Tower, GameManager.instance != null ? GameManager.instance.Catalog : null);
 
-    // At the tower limit the preview hides, so the drop reads as invalid before letting go
-    protected override bool TryGetPreviewPosition(out Vector3 position)
-    {
-        bool visible = base.TryGetPreviewPosition(out position);
-        return visible && UnderLimit;
-    }
+    public override bool CanPlaceNow => base.CanPlaceNow && UnderLimit;
 
     protected override bool AllowPlacement()
     {

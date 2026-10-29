@@ -671,23 +671,11 @@ public class SimulationBridge : MonoBehaviour
             return;
 
         var state = em.GetComponentData<WaveState>(simEntity);
-        if (state.Phase == WavePhase.WaitingToStart && state.SpawnedThisWave >= 1 && AllCardsSpent())
+        // Every card played: start wave now instead of waiting out the countdown
+        if (state.Phase == WavePhase.WaitingToStart && state.SpawnedThisWave == 0 && state.Timer > 0f && AllCardsSpent())
         {
-            float spawnInterval = em.HasComponent<WaveConfig>(simEntity)
-                ? em.GetComponentData<WaveConfig>(simEntity).SpawnInterval
-                : 0f;
-            state.Phase = WavePhase.Spawning;
-            state.Timer = spawnInterval;
+            state.Timer = 0f;
             em.SetComponentData(simEntity, state);
-            if (em.HasBuffer<SimEvent>(simEntity))
-            {
-                em.GetBuffer<SimEvent>(simEntity).Add(new SimEvent
-                {
-                    Kind = SimEventKind.WavePhaseChanged,
-                    IntValue = (int)state.Phase,
-                    Amount = state.Wave
-                });
-            }
         }
         SimEventDispatcher.UpdatePhaseTimer(state.Phase, math.max(0f, state.Timer));
     }
@@ -696,11 +684,11 @@ public class SimulationBridge : MonoBehaviour
     {
         if (GameManager.instance == null || !GameManager.instance.StartingHandDealt || GameManager.instance.onDrag)
             return false;
-        if (Card.PendingResolveCount > 0)
+        if (Deck.instance == null || Deck.instance.Hand == null)
             return false;
         if (CardDrop.instance != null && CardDrop.instance.HasPlayableCard)
             return false;
-        if (Deck.instance != null && Deck.instance.Hand != null && Deck.instance.Hand.VisibleCount > 0)
+        if (Deck.instance.Hand.VisibleCount > 0)
             return false;
         return true;
     }
@@ -868,13 +856,15 @@ public class SimulationBridge : MonoBehaviour
             Vector3 position = em.GetComponentData<LocalTransform>(entity).Position;
             if (view.Kind == ViewKind.Enemy || view.Kind == ViewKind.Ally)
             {
-                float dx = position.x - view.Transform.position.x;
+                Vector3 targetPos = position + view.VisualOffset;
+                float dx = targetPos.x - view.Transform.position.x;
                 if (Mathf.Abs(dx) > 1e-4f)
                 {
                     var scale = view.Transform.localScale;
                     scale.x = Mathf.Abs(scale.x) * (dx < 0f ? -1f : 1f);
                     view.Transform.localScale = scale;
                 }
+                view.Transform.position = targetPos;
             }
             else if (view.Kind == (ViewKind)LocalViewKind.Tower)
             {
@@ -885,8 +875,12 @@ public class SimulationBridge : MonoBehaviour
                     view.TurretCard.MaxLife = health.Max;
                     view.TurretCard.SetRange(em.GetComponentData<Weapon>(entity).Range);
                 }
+                view.Transform.position = position;
             }
-            view.Transform.position = position;
+            else
+            {
+                view.Transform.position = position;
+            }
         }
 
         foreach (var entity in removals)
