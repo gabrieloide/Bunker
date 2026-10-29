@@ -111,7 +111,8 @@ namespace Bunker.Simulation
                     {
                         SpawnEnemy(ref wave, in config, ecb, spawners, hasSpawners);
                         wave.SpawnedThisWave++;
-                        wave.Timer += config.SpawnInterval;
+                        bool groupDone = config.GroupSize <= 1 || wave.SpawnedThisWave % config.GroupSize == 0;
+                        wave.Timer += groupDone ? config.SpawnInterval : config.GroupGap;
                     }
                     if (wave.SpawnedThisWave >= wave.EnemyAmount && wave.Timer <= 0f)
                     {
@@ -128,6 +129,7 @@ namespace Bunker.Simulation
                             wave.UnlockedTypes++;
                             wave.EnemyAmount += config.AmountIncreasePerTier;
                         }
+                        wave.EnemyAmount += config.AmountIncreasePerWave;
                         wave.Buff = BalanceMath.PickWeighted(ref config.BuffTable.Value.Weights, ref wave.Rng);
                         wave.Wave++;
                         wave.Phase = WavePhase.WaitingToStart;
@@ -200,6 +202,8 @@ namespace Bunker.Simulation
 
             var def = BalanceMath.ApplyBuff(roster.Types[typeIndex], wave.Buff, ref config.BuffTable.Value);
             def.Life *= BalanceMath.WaveLifeMultiplier(wave.Wave, config.LifeGrowthPerWave);
+            if (config.EnemySpeedMultiplier > 0f) // a default-initialised config keeps the base speed
+                def.MoveSpeed *= config.EnemySpeedMultiplier;
 
             float3 spawnPos = config.SpawnPosition;
             Entity pathEntity = Entity.Null;

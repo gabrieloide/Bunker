@@ -239,6 +239,10 @@ namespace Bunker.Simulation
         public float SpawnInterval;
         public int InitialEnemyAmount;
         public int AmountIncreasePerTier;
+        public int AmountIncreasePerWave;
+        public int GroupSize;
+        public float GroupGap;
+        public float EnemySpeedMultiplier;
         public int WavesPerTier;
         public int InitialUnlockedTypes;
         public int MaxUnlockedTypes;

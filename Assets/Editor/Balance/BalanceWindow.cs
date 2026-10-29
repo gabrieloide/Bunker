@@ -626,8 +626,8 @@ public class BalanceWindow : EditorWindow
 
     void BuildWavesSection()
     {
-        var wave = FindAssets<WaveBalanceConfig>().FirstOrDefault();
-        if (wave == null)
+        var waves = FindAssets<WaveBalanceConfig>();
+        if (waves.Count == 0)
         {
             AddWarnings(new List<(string, Object)> { ("No WaveBalanceConfig asset found.", null) });
             return;
@@ -637,13 +637,17 @@ public class BalanceWindow : EditorWindow
         scroll.AddToClassList("scroll");
         content.Add(scroll);
 
-        var panel = Panel("Wave Balance Config", "Every field has a tooltip. Enemy life per wave = base × (1 + growth × (wave − 1)).");
-        var so = new SerializedObject(wave);
-        var it = so.GetIterator();
-        for (bool enter = true; it.NextVisible(enter); enter = false)
-            if (it.name != "m_Script") panel.Add(new PropertyField(it.Copy()));
-        panel.Bind(so);
-        scroll.Add(panel);
+        // One panel per asset: each level points at its own config (Levels section, "Waves config" column)
+        foreach (var wave in waves)
+        {
+            var panel = Panel(wave.name, "Every field has a tooltip. Enemy life per wave = base × (1 + growth × (wave − 1)).");
+            var so = new SerializedObject(wave);
+            var it = so.GetIterator();
+            for (bool enter = true; it.NextVisible(enter); enter = false)
+                if (it.name != "m_Script") panel.Add(new PropertyField(it.Copy()));
+            panel.Bind(so);
+            scroll.Add(panel);
+        }
     }
 
     // ---------------------------------------------------------------- loot
