@@ -22,7 +22,7 @@ public class Ruin : MonoBehaviour
     {
         var catalog = GameManager.instance != null ? GameManager.instance.Catalog : null;
 
-        var main = Spawn("Ruins", towerPosition, cell, towerBody);
+        var main = Spawn("Ruins", towerPosition, cell, towerBody, holdsSlot: true);
         var sr = main.GetComponent<SpriteRenderer>();
         if (catalog != null && catalog.ruinsSprite != null)
             sr.sprite = catalog.ruinsSprite;
@@ -32,24 +32,22 @@ public class Ruin : MonoBehaviour
             sr.color = new Color(0.45f, 0.45f, 0.45f, 0.85f);
             main.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
         }
-        var ruin = main.GetComponent<Ruin>();
-        ruin.holdsSlot = true;
-        TowerLimits.AddRuins(1);
 
         foreach (var offset in neighbours)
         {
             Vector3Int next = cell + offset;
             if (!PlacementGrid.CanPlaceAt(next)) continue;
-            var blocked = Spawn("Rubble", PlacementGrid.CellCenter(next), next, towerBody);
+            var blocked = Spawn("Rubble", PlacementGrid.CellCenter(next), next, towerBody, holdsSlot: false);
             var marker = blocked.GetComponent<SpriteRenderer>();
             marker.sprite = catalog != null ? catalog.blockedCellSprite : null;
             marker.color = new Color(1f, 1f, 1f, 0.35f);
         }
     }
 
-    static GameObject Spawn(string name, Vector3 position, Vector3Int cell, SpriteRenderer towerBody)
+    static GameObject Spawn(string name, Vector3 position, Vector3Int cell, SpriteRenderer towerBody, bool holdsSlot)
     {
         var go = new GameObject(name);
+        go.SetActive(false);
         go.transform.position = position;
         var sr = go.AddComponent<SpriteRenderer>();
         if (towerBody != null)
@@ -58,7 +56,9 @@ public class Ruin : MonoBehaviour
             sr.sortingLayerID = towerBody.sortingLayerID;
             sr.sortingOrder = towerBody.sortingOrder - 1;
         }
-        go.AddComponent<Ruin>();
+        var ruin = go.AddComponent<Ruin>();
+        ruin.holdsSlot = holdsSlot;
+        go.SetActive(true);
         PlacementGrid.Occupy(cell, go);
         return go;
     }

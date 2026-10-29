@@ -26,6 +26,10 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        TowerLimits.ResetStatics();
+        PlacementGrid.Clear();
+        Card.ResetPendingResolveCount();
+
         CurrentCardAmount = 0;
         StartingHandDealt = false;
         cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();

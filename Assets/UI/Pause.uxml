@@ -4,6 +4,7 @@
     <ui:VisualElement name="pause" class="screen dim hidden">
         <ui:VisualElement name="main" class="menu-list">
             <ui:Button name="resume" text="RESUME" class="menu-button" />
+            <ui:Button name="restart" text="RESET" class="menu-button" />
             <ui:Button name="settings" text="SETTINGS" class="menu-button" />
             <ui:Button name="credits" text="CREDITS" class="menu-button" />
             <ui:Button name="quit" text="QUIT" class="menu-button" />

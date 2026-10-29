@@ -64,10 +64,13 @@ public class SimulationBridge : MonoBehaviour
             return;
         }
         Instance = this;
+        Card.ResetPendingResolveCount();
     }
 
     void Start()
     {
+        TowerLimits.ResetStatics();
+        PlacementGrid.Clear();
         var world = World.DefaultGameObjectInjectionWorld;
         if (world == null || !world.IsCreated)
         {
@@ -982,6 +985,7 @@ public class SimulationBridge : MonoBehaviour
 
     void OnDestroy()
     {
+        PlacementGrid.Clear();
         FlagTerritory.Changed -= OnFlagTerritoryChanged;
         if (Instance == this) Instance = null;
 
