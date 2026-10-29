@@ -1,6 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,9 +10,8 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public Texture2D cursorDefault, cursorTexture;
     [Space]
-    public TMP_Text waveText, scoreText;
-    [Tooltip("Shows towers on the map / the limit; flashes when a drop is refused")]
-    public TMP_Text towerCountText;
+    [Tooltip("UI Toolkit HUD (UI/HUD.uxml): score, wave, towers and bunker life")]
+    [SerializeField] UIDocument hud;
     [Space]
     public bool ShowTowerSlot;
     public GameObject TowerSlotAnimation;
@@ -27,7 +25,7 @@ public class UIManager : MonoBehaviour
     public float TimeLastPosCard;
     [Space]
     [Header("Life Turret")]
-    [SerializeField] Slider LifeSlider;
+    [SerializeField] UnityEngine.UI.Slider LifeSlider;
     [Space]
     [Header("Deck")]
     public LeanTweenType TweenDeckOut;
@@ -40,6 +38,8 @@ public class UIManager : MonoBehaviour
     private bool wasPrepPhase;
     private float lastLife = -1f;
     private ChangeCardText cardPanel;
+    private Label waveText, scoreText, towerCountText;
+    private VisualElement lifeFill;
 
     void Awake()
     {
@@ -57,6 +57,16 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         if (instance != null && instance != this) return;
+
+        if (hud != null)
+        {
+            var root = hud.rootVisualElement;
+            root.pickingMode = PickingMode.Ignore; // cards and towers below must keep receiving clicks
+            scoreText = root.Q<Label>("score");
+            waveText = root.Q<Label>("wave");
+            towerCountText = root.Q<Label>("towers");
+            lifeFill = root.Q("life-fill");
+        }
 
         SetScore(SimEventDispatcher.Score, 0);
         SetWave(SimEventDispatcher.Wave, SimEventDispatcher.CurrentBuff);
@@ -86,18 +96,15 @@ public class UIManager : MonoBehaviour
     {
         if (towerCountText == null) return;
         int max = GameManager.instance != null && GameManager.instance.Catalog != null ? GameManager.instance.Catalog.maxTowers : 0;
-        if (max > 0) towerCountText.SetText("Towers: {0}/{1}", TowerLimits.Count, max);
-        else towerCountText.SetText("Towers: {0}", TowerLimits.Count);
+        towerCountText.text = max > 0 ? $"TOWERS\n{TowerLimits.Count}/{max}" : $"TOWERS\n{TowerLimits.Count}";
     }
 
     // Punch the counter so a refused tower drop has visible feedback
     public void FlashTowerLimit()
     {
         if (towerCountText == null) return;
-        var go = towerCountText.gameObject;
-        LeanTween.cancel(go);
-        go.transform.localScale = Vector3.one;
-        LeanTween.scale(go, Vector3.one * 1.35f, 0.08f).setEaseOutQuad().setLoopPingPong(2);
+        towerCountText.AddToClassList("hud-stat--flash");
+        towerCountText.schedule.Execute(() => towerCountText.RemoveFromClassList("hud-stat--flash")).StartingIn(160);
         CameraShake.MicroShake();
     }
 
@@ -106,7 +113,7 @@ public class UIManager : MonoBehaviour
         if (scoreText != null && newScore != lastScore)
         {
             lastScore = newScore;
-            scoreText.SetText("Score: {0:000000}", newScore);
+            scoreText.text = $"SCORE\n{newScore:000000}";
         }
     }
 
@@ -116,7 +123,7 @@ public class UIManager : MonoBehaviour
         {
             lastWave = newWave;
             wasPrepPhase = false;
-            waveText.SetText("Wave: {0:000000}", newWave);
+            waveText.text = $"WAVE\n{newWave:000000}";
         }
     }
 
@@ -131,14 +138,14 @@ public class UIManager : MonoBehaviour
             {
                 wasPrepPhase = true;
                 lastPrepSeconds = secondsLeft;
-                waveText.SetText("Prep: {0:00}s", secondsLeft);
+                waveText.text = $"PREP\n{secondsLeft:00}s";
             }
         }
         else if (wasPrepPhase || SimEventDispatcher.Wave != lastWave)
         {
             wasPrepPhase = false;
             lastWave = SimEventDispatcher.Wave;
-            waveText.SetText("Wave: {0:000000}", lastWave);
+            waveText.text = $"WAVE\n{lastWave:000000}";
         }
     }
 
@@ -154,10 +161,13 @@ public class UIManager : MonoBehaviour
 
     private void SetLifeNormalized(float normalizedHP)
     {
+        if (lifeFill != null)
+            lifeFill.style.width = Length.Percent(Mathf.Clamp01(normalizedHP) * 100f);
+
         if (LifeSlider == null)
         {
             var tower = FindFirstObjectByType<TowerPlayer>();
-            if (tower != null) LifeSlider = tower.GetComponentInChildren<Slider>(true);
+            if (tower != null) LifeSlider = tower.GetComponentInChildren<UnityEngine.UI.Slider>(true);
         }
         if (LifeSlider != null && !Mathf.Approximately(normalizedHP, lastLife))
         {

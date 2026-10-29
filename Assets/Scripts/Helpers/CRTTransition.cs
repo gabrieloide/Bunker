@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 // Global CRT CCTV Channel Switch & Beam Snap Transition:
 // Operates across all scene changes with zero setup required via DontDestroyOnLoad.
@@ -22,9 +21,8 @@ public class CRTTransition : MonoBehaviour
     [Header("Material")]
     [SerializeField] Material transitionMaterial;
 
-    Canvas transitionCanvas;
-    Image transitionImage;
     Material matInstance;
+    bool overlayVisible;
     AudioSource audioSource;
     bool isTransitioning;
 
@@ -54,30 +52,7 @@ public class CRTTransition : MonoBehaviour
 
     void SetupOverlay()
     {
-        // 1. High-priority Overlay Canvas
-        transitionCanvas = gameObject.AddComponent<Canvas>();
-        transitionCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        transitionCanvas.sortingOrder = 32767;
-
-        var scaler = gameObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1024, 768);
-
-        // 2. Fullscreen Image
-        var imgObj = new GameObject("TransitionImage");
-        imgObj.transform.SetParent(transform, false);
-
-        var rt = imgObj.AddComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.offsetMin = Vector2.zero;
-        rt.offsetMax = Vector2.zero;
-
-        transitionImage = imgObj.AddComponent<Image>();
-        transitionImage.color = Color.white;
-        transitionImage.raycastTarget = false;
-
-        // Load shader material if missing
+        // 1. Load shader material if missing
         if (transitionMaterial == null)
         {
             transitionMaterial = Resources.Load<Material>("CRTChannelSwitch");
@@ -89,17 +64,21 @@ public class CRTTransition : MonoBehaviour
         }
 
         if (transitionMaterial != null)
-        {
             matInstance = new Material(transitionMaterial);
-            transitionImage.material = matInstance;
-        }
 
-        // 3. Audio Source for click
+        // 2. Audio Source for click
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 0f;
+    }
 
-        imgObj.SetActive(false);
+    // Drawn last over the game and every UI Toolkit panel
+    void OnGUI()
+    {
+        if (!overlayVisible || matInstance == null || Event.current.type != EventType.Repaint) return;
+        GUI.depth = -1000;
+        Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture,
+            new Rect(0, 0, 1, 1), 0, 0, 0, 0, Color.white, matInstance);
     }
 
     public static void LoadScene(string sceneName)
@@ -143,11 +122,7 @@ public class CRTTransition : MonoBehaviour
         isTransitioning = true;
         Time.timeScale = 1f;
 
-        if (transitionImage != null)
-        {
-            transitionImage.raycastTarget = true;
-            transitionImage.gameObject.SetActive(true);
-        }
+        overlayVisible = true;
 
         PlaySwitchAudio();
 
@@ -202,12 +177,7 @@ public class CRTTransition : MonoBehaviour
 
         if (matInstance != null) matInstance.SetFloat("_Progress", 1f);
 
-        // Deactivate overlay
-        if (transitionImage != null)
-        {
-            transitionImage.raycastTarget = false;
-            transitionImage.gameObject.SetActive(false);
-        }
+        overlayVisible = false;
 
         isTransitioning = false;
     }

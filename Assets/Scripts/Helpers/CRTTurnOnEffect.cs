@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 // Simulates the physical power-on of a vintage CRT cathode ray tube television:
 // 1. Black screen -> 2. Central electron beam ignition -> 3. Vertical slit opening -> 4. Phosphor settle.
-[RequireComponent(typeof(Image))]
+// Drawn full screen over the game and the UI Toolkit panels.
 public class CRTTurnOnEffect : MonoBehaviour
 {
     [Header("Animation Settings")]
@@ -22,8 +21,8 @@ public class CRTTurnOnEffect : MonoBehaviour
     [Header("References")]
     [SerializeField] Material crtTurnOnMaterial;
 
-    Image image;
     Material matInstance;
+    bool visible;
     AudioSource audioSource;
 
     public event Action OnTurnOnComplete;
@@ -31,18 +30,11 @@ public class CRTTurnOnEffect : MonoBehaviour
 
     void Awake()
     {
-        image = GetComponent<Image>();
-
-        if (crtTurnOnMaterial == null && image != null && image.material != null)
-        {
-            crtTurnOnMaterial = image.material;
-        }
-
         if (crtTurnOnMaterial != null)
         {
             matInstance = new Material(crtTurnOnMaterial);
-            image.material = matInstance;
             matInstance.SetFloat("_Progress", 0f);
+            visible = true;
         }
 
         if (playSynthSound)
@@ -65,6 +57,7 @@ public class CRTTurnOnEffect : MonoBehaviour
     {
         if (IsPlaying) return;
         gameObject.SetActive(true);
+        visible = matInstance != null;
         StartCoroutine(TurnOnRoutine());
     }
 
@@ -103,8 +96,15 @@ public class CRTTurnOnEffect : MonoBehaviour
         IsPlaying = false;
         OnTurnOnComplete?.Invoke();
 
-        // Deactivate overlay so it doesn't block UI input or take drawcalls
-        gameObject.SetActive(false);
+        visible = false;
+    }
+
+    void OnGUI()
+    {
+        if (!visible || Event.current.type != EventType.Repaint) return;
+        GUI.depth = -900;
+        Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture,
+            new Rect(0, 0, 1, 1), 0, 0, 0, 0, Color.white, matInstance);
     }
 
     void PlayPowerOnAudio()

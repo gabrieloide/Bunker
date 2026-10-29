@@ -1,14 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+// Title screen (UI/Title.uxml): any key moves on to the main menu once the CRT power-on finishes
 public class TitleScreen : MonoBehaviour
 {
-    [SerializeField] float timeToFade;
-    [SerializeField] RectTransform objectToFade;
-    [SerializeField] string SceneName;
-    [SerializeField] Vector3 sizeWidthHeight;
-    [SerializeField] LeanTweenType leanTweenType;
+    [SerializeField] string SceneName = "MainMenu 2";
     [SerializeField] CRTTurnOnEffect turnOnEffect;
 
     bool isTransitioning;
@@ -23,7 +18,7 @@ public class TitleScreen : MonoBehaviour
         if (Input.anyKeyDown)
         {
             isTransitioning = true;
-            StartCoroutine(Transitions.FadeInTran(timeToFade, objectToFade, SceneName, sizeWidthHeight, leanTweenType, true));
-        }        
+            CRTTransition.LoadScene(SceneName);
+        }
     }
 }

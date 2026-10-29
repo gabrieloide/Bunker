@@ -1,23 +1,30 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-// End-of-match panel: victory when the enemy base falls, defeat when the bunker does. Freezes the game.
+// End-of-match panel (UI/MatchResult.uxml): victory when the enemy base falls, defeat when the bunker does. Freezes the game.
+[RequireComponent(typeof(UIDocument))]
 public class MatchResultScreen : MonoBehaviour
 {
-    [SerializeField] GameObject panel;
-    [SerializeField] TMP_Text titleText;
-    [Tooltip("Only offered after a victory when there is a next level")]
-    [SerializeField] GameObject nextLevelButton;
-    [SerializeField] string victoryTitle = "VICTORIA";
-    [SerializeField] string defeatTitle = "DERROTA";
+    [SerializeField] string victoryTitle = "YOU WON";
+    [SerializeField] string defeatTitle = "YOU LOSE";
 
-    void Awake()
-    {
-        if (panel != null) panel.SetActive(false);
-    }
+    VisualElement panel;
+    Label titleText;
+    Button nextLevelButton; // only offered after a victory when there is a next level
 
     void OnEnable()
     {
+        var root = GetComponent<UIDocument>().rootVisualElement;
+        // Nested under the HUD document: fill the screen without catching clicks meant for the game
+        root.StretchToParentSize();
+        root.pickingMode = PickingMode.Ignore;
+        panel = root.Q("result");
+        titleText = root.Q<Label>("title");
+        nextLevelButton = root.Q<Button>("next");
+        nextLevelButton.clicked += NextLevel;
+        root.Q<Button>("retry").clicked += Retry;
+        root.Q<Button>("levels").clicked += Levels;
+
         SimEventDispatcher.OnVictory += ShowVictory;
         SimEventDispatcher.OnGameOver += ShowDefeat;
     }
@@ -38,10 +45,10 @@ public class MatchResultScreen : MonoBehaviour
 
     void Show(string title, bool offerNext)
     {
-        if (panel == null || panel.activeSelf) return;
-        if (titleText != null) titleText.text = title;
-        if (nextLevelButton != null) nextLevelButton.SetActive(offerNext);
-        panel.SetActive(true);
+        if (!panel.ClassListContains("hidden")) return;
+        titleText.text = title;
+        nextLevelButton.EnableInClassList("hidden", !offerNext);
+        panel.RemoveFromClassList("hidden");
 
         // The pause menu would unfreeze the game underneath
         var pause = FindAnyObjectByType<PauseMenu>();

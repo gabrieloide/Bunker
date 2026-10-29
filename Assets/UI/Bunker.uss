@@ -1,0 +1,199 @@
+/* Shared look for every runtime screen. Reference resolution is 1920x1080 (BunkerPanelSettings). */
+:root {
+    -unity-font: url("project://database/Assets/Fonts/WINDOWS_COMMAND_PROMPT.TTF");
+    -unity-font-definition: initial;
+    color: #FFFFFF;
+}
+
+.screen {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.dim {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Text-only buttons: white text, inverted (black on white) under the pointer */
+.menu-button {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+    margin: 0;
+    padding: 0 16px;
+    color: #FFFFFF;
+    font-size: 110px;
+    -unity-text-align: middle-left;
+}
+
+.menu-button:hover {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.menu-button:active {
+    background-color: #BBBBBB;
+}
+
+.menu-list {
+    position: absolute;
+    left: 249px;
+    top: 240px;
+    align-items: flex-start;
+}
+
+.menu-list--center {
+    left: 0;
+    right: 0;
+    align-items: center;
+}
+
+.menu-list--center > .menu-button {
+    -unity-text-align: middle-center;
+}
+
+.title {
+    font-size: 220px;
+    -unity-text-align: middle-center;
+}
+
+.text {
+    font-size: 48px;
+    white-space: normal;
+}
+
+/* HUD */
+.hud-bar {
+    position: absolute;
+    left: 59px;
+    right: 59px;
+    top: 19px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: #000000;
+}
+
+.hud-stat {
+    font-size: 48px;
+    -unity-text-align: upper-left;
+    background-color: #FFFFFF;
+    padding: 2px 8px;
+}
+
+.hud-life {
+    flex-direction: row;
+    align-items: center;
+    background-color: #FFFFFF;
+    padding-left: 8px;
+}
+
+.lifebar {
+    width: 544px;
+    height: 34px;
+    margin-right: 16px;
+    border-width: 4px;
+    border-color: #000000;
+    padding: 4px;
+}
+
+.lifebar-fill {
+    height: 100%;
+    width: 100%;
+    background-color: #000000;
+}
+
+.hud-stat--flash {
+    scale: 1.35 1.35;
+}
+
+/* Sliders (options) */
+.option-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.option-row > Label {
+    font-size: 64px;
+    width: 520px;
+}
+
+.option-row > Slider {
+    width: 700px;
+}
+
+.hud-stat {
+    transition-property: scale;
+    transition-duration: 0.08s;
+}
+
+/* Title */
+.title-screen {
+    justify-content: center;
+    align-items: center;
+}
+
+.title-image {
+    width: 1400px;
+    height: 300px;
+    background-image: url("project://database/Assets/Sprites/MainTitle/Title.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Credits */
+.credits {
+    -unity-font: url("project://database/Assets/Fonts/pixel_maz.ttf");
+    align-items: center;
+    justify-content: center;
+}
+
+.credits-title {
+    font-size: 280px;
+    margin-bottom: 40px;
+}
+
+.credits-columns {
+    flex-direction: row;
+}
+
+.credits-text {
+    font-size: 120px;
+    margin: 0 100px;
+}
+
+.credits-jobs {
+    -unity-text-align: upper-right;
+}
+
+/* Level selector */
+.selector-title {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    font-size: 96px;
+    -unity-text-align: middle-center;
+}
+
+.selector-description {
+    position: absolute;
+    bottom: 60px;
+    left: 200px;
+    right: 200px;
+    -unity-text-align: middle-center;
+}
+
+.selector-back {
+    position: absolute;
+    left: 40px;
+    bottom: 40px;
+    font-size: 64px;
+}

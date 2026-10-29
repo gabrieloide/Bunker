@@ -1,35 +1,42 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
+// Main menu (UI/MainMenu.uxml)
+[RequireComponent(typeof(UIDocument))]
 public class MenuManager : MonoBehaviour
 {
-    public static MenuManager instance;
-    [SerializeField] RectTransform objectToFade;
-    [SerializeField] float timeTofade;
-    [SerializeField] string SceneName;
-    [SerializeField] LeanTweenType easeTransitionOut;
-    [SerializeField] LeanTweenType easeTransitionIn;
-    [SerializeField] Vector3 WitdhHeight;
+    [SerializeField] string SceneName = "LevelSelector";
+    [SerializeField] string creditsScene = "Credits";
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-    private void Start()
-    {
-        StartCoroutine(Transitions.FadeInTran(timeTofade, objectToFade, SceneName,
-    Vector3.zero, easeTransitionIn, false));
+    VisualElement main, options;
 
-    }
-    public void PlayButton()
+    void OnEnable()
     {
-        StartCoroutine(Transitions.FadeInTran(timeTofade, objectToFade, SceneName,
-            WitdhHeight, easeTransitionOut, true));
+        var root = GetComponent<UIDocument>().rootVisualElement;
+        main = root.Q("main");
+        options = root.Q("options");
+
+        root.Q<Button>("start").clicked += PlayButton;
+        root.Q<Button>("settings").clicked += () => ShowOptions(true);
+        root.Q<Button>("credits").clicked += () => CRTTransition.LoadScene(creditsScene);
+        root.Q<Button>("quit").clicked += Quit;
+        OptionSettings.Bind(options, () => ShowOptions(false));
+    }
+
+    public void PlayButton() => CRTTransition.LoadScene(SceneName);
+
+    void ShowOptions(bool show)
+    {
+        main.EnableInClassList("hidden", show);
+        options.EnableInClassList("hidden", !show);
+    }
+
+    void Quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
