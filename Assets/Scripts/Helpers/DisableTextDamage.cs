@@ -34,10 +34,8 @@ public class DisableTextDamage : MonoBehaviour
         Vector3 spawnPos = startPos + new Vector3(scatterX, 0.25f, 0f);
         transform.position = spawnPos;
 
-        // Punch scale pop
-        transform.localScale = Vector3.one * 1.5f;
+        transform.localScale = Vector3.one;
         LeanTween.cancel(gameObject);
-        LeanTween.scale(gameObject, Vector3.one, 0.15f).setEaseOutBack();
 
         // Float upwards
         Vector3 targetPos = spawnPos + new Vector3(0f, floatDistance, 0f);

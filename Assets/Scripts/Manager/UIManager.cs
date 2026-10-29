@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     [Space]
     [Tooltip("UI Toolkit HUD (UI/HUD.uxml): score, wave, towers and bunker life")]
     [SerializeField] UIDocument hud;
+    public UIDocument HudDocument => hud;
+    public PanelSettings HudPanelSettings => hud != null ? hud.panelSettings : null;
     [Space]
     [Header("CRT Compositing")]
     [Tooltip("UIComposite shader: composites HUD texture into camera backbuffer before RetroCRTFilter")]
@@ -174,6 +176,12 @@ public class UIManager : MonoBehaviour
         ResizeHudTexture();
         Camera.onPostRender -= CompositeHud;
         Camera.onPostRender += CompositeHud;
+
+        var pause = FindAnyObjectByType<PauseMenu>(FindObjectsInactive.Include);
+        if (pause != null) pause.EnsureCompositedSettings();
+
+        var matchResult = FindAnyObjectByType<MatchResultScreen>(FindObjectsInactive.Include);
+        if (matchResult != null) matchResult.EnsureCompositedSettings();
     }
 
     void ResizeHudTexture()

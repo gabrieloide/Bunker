@@ -17,14 +17,16 @@ public static class TowerLimits
     public static int Count => alive.Count + pendingTotal + ruins;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetStatics()
+    public static void ResetStatics()
     {
         alive.Clear();
         pending.Clear();
         pendingTotal = 0;
         ruins = 0;
-        Changed = null;
+        Changed?.Invoke();
     }
+
+    public static void ResetForNewMatch() => ResetStatics();
 
     public static void Register(TurretCard tower)
     {
