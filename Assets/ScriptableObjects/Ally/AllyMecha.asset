@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac9560ebb1cae346b274e487a078f1e, type: 3}
   m_Name: AllyMecha
   m_EditorClassIdentifier: Assembly-CSharp::AllyData
-  life: 8
+  life: 4
   damage: 3
   bulletPen: 2
   attackInterval: 1.8

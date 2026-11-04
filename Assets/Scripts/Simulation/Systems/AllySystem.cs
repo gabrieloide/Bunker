@@ -64,7 +64,8 @@ namespace Bunker.Simulation
 
             var enemies = new NativeList<Entity>(Allocator.Temp);
             var enemyPositions = new NativeList<float3>(Allocator.Temp);
-            foreach (var (transform, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<EnemyTag, Health>().WithEntityAccess())
+            // Enemies already hitting the bunker fight nobody else: allies spawning on top of them would get free hits with no retaliation
+            foreach (var (transform, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<EnemyTag, Health>().WithNone<AtPathEnd>().WithEntityAccess())
             {
                 enemies.Add(entity);
                 enemyPositions.Add(transform.ValueRO.Position);
@@ -79,6 +80,28 @@ namespace Bunker.Simulation
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
             var defenseLookup = SystemAPI.GetComponentLookup<Defense>(true);
+
+            // Snapshot of every ally's progress, so "who is ahead of me" does not depend on iteration order
+            float spacing = SystemAPI.TryGetSingleton<WaveConfig>(out var waveConfig) ? waveConfig.UnitSpacing : 0f;
+            var walkers = new NativeList<Walker>(Allocator.Temp);
+            if (spacing > 0f)
+            {
+                foreach (var (transform, follower, entity) in
+                         SystemAPI.Query<RefRO<LocalTransform>, RefRO<AllyPathFollower>>().WithAll<AllyTag>().WithEntityAccess())
+                {
+                    Entity walkerPath = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
+                    if (!TryWaypoint(follower.ValueRO.NextIndex, walkerPath, in pathLookup, hasBase, basePos, out float3 walkerWaypoint))
+                        continue;
+                    walkers.Add(new Walker
+                    {
+                        Entity = entity,
+                        Position = transform.ValueRO.Position.xy,
+                        PathEntity = walkerPath,
+                        NextIndex = follower.ValueRO.NextIndex,
+                        DistanceToWaypoint = math.distance(transform.ValueRO.Position, walkerWaypoint)
+                    });
+                }
+            }
 
             foreach (var (transform, melee, follower, speed, entity) in
                      SystemAPI.Query<RefRW<LocalTransform>, RefRW<Melee>, RefRW<AllyPathFollower>, RefRO<MoveSpeed>>()
@@ -135,16 +158,10 @@ namespace Bunker.Simulation
                 }
 
                 Entity targetPathEntity = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
-                DynamicBuffer<PathPoint> allyPath = default;
-                if (targetPathEntity != Entity.Null && pathLookup.HasBuffer(targetPathEntity))
-                    allyPath = pathLookup[targetPathEntity];
+                if (!TryWaypoint(follower.ValueRO.NextIndex, targetPathEntity, in pathLookup, hasBase, basePos, out float3 waypoint))
+                    continue;
 
-                float3 waypoint;
-                if (allyPath.IsCreated && allyPath.Length > 0 && follower.ValueRO.NextIndex >= 0 && follower.ValueRO.NextIndex < allyPath.Length)
-                    waypoint = allyPath[follower.ValueRO.NextIndex].Value;
-                else if (hasBase)
-                    waypoint = basePos;
-                else
+                if (spacing > 0f && IsBlockedByAhead(entity, pos.xy, targetPathEntity, follower.ValueRO.NextIndex, math.distance(pos, waypoint), spacing, walkers))
                     continue;
 
                 float3 delta = waypoint - pos;
@@ -159,6 +176,53 @@ namespace Bunker.Simulation
 
             enemies.Dispose();
             enemyPositions.Dispose();
+            walkers.Dispose();
+        }
+
+        struct Walker
+        {
+            public Entity Entity;
+            public float2 Position;
+            public Entity PathEntity;
+            public int NextIndex;
+            public float DistanceToWaypoint;
+        }
+
+        // The point an ally walks to: the path point it is heading for, or the enemy base once past the path start
+        static bool TryWaypoint(int nextIndex, Entity pathEntity, in BufferLookup<PathPoint> pathLookup, bool hasBase, float3 basePos, out float3 waypoint)
+        {
+            if (nextIndex >= 0 && pathEntity != Entity.Null && pathLookup.HasBuffer(pathEntity))
+            {
+                var path = pathLookup[pathEntity];
+                if (nextIndex < path.Length)
+                {
+                    waypoint = path[nextIndex].Value;
+                    return true;
+                }
+            }
+            waypoint = basePos;
+            return hasBase;
+        }
+
+        // Ahead = fewer path points left (allies walk the path backwards); a full tie is broken by entity index
+        static bool IsBlockedByAhead(Entity self, float2 pos, Entity pathEntity, int nextIndex, float distToWaypoint, float spacing, NativeList<Walker> walkers)
+        {
+            for (int i = 0; i < walkers.Length; i++)
+            {
+                var other = walkers[i];
+                if (other.Entity == self || other.PathEntity != pathEntity)
+                    continue;
+                if (math.distance(pos, other.Position) >= spacing)
+                    continue;
+
+                bool ahead = other.NextIndex < nextIndex
+                    || (other.NextIndex == nextIndex
+                        && (other.DistanceToWaypoint < distToWaypoint
+                            || (other.DistanceToWaypoint == distToWaypoint && other.Entity.Index < self.Index)));
+                if (ahead)
+                    return true;
+            }
+            return false;
         }
 
         static void SpawnAlly(int typeIndex, int lastPathIndex, in AllySpawnConfig config, EntityCommandBuffer ecb)

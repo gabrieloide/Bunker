@@ -136,7 +136,9 @@ public class SimulationBridge : MonoBehaviour
             SpawnPosition = spawner.transform.position,
             Roster = rosterBlob,
             BuffTable = buffBlob,
-            FlagZoneDistanceAlongPath = flagDistance
+            FlagZoneDistanceAlongPath = flagDistance,
+            ContactDistance = balance.contactDistance,
+            UnitSpacing = balance.unitSpacing
         };
 
         var rng = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(1, int.MaxValue));
@@ -728,11 +730,21 @@ public class SimulationBridge : MonoBehaviour
                     break;
 
                 case SimEventKind.MeleeHit:
-                    if (viewRegistry.TryGetView(ev.Source, out var attacker) && attacker.Ally != null)
-                        attacker.Ally.OnAttack();
+                    // Ally hits show numbers on enemies and the base; enemy hits on allies play the enemy's attack animation only
+                    bool enemyAttacker = false;
+                    if (viewRegistry.TryGetView(ev.Source, out var attacker))
+                    {
+                        if (attacker.Ally != null) attacker.Ally.OnAttack();
+                        else if (attacker.Enemy != null)
+                        {
+                            enemyAttacker = true;
+                            attacker.Enemy.OnFired();
+                        }
+                    }
                     if (viewRegistry.TryGetView(ev.Target, out var struck) && struck.Enemy != null)
                         struck.Enemy.OnHit();
-                    ShowDamageText(ev.Position, ev.Amount);
+                    if (!enemyAttacker)
+                        ShowDamageText(ev.Position, ev.Amount);
                     break;
 
                 case SimEventKind.AllyDied:

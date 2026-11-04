@@ -134,6 +134,24 @@ namespace Bunker.Tests
         }
 
         [Test]
+        public void Ally_IgnoresEnemyAlreadyHittingTheBunker()
+        {
+            var ally = CreateAlly(float3.zero, 1);
+            var enemy = em.CreateEntity();
+            em.AddComponent<EnemyTag>(enemy);
+            em.AddComponentData(enemy, new AtPathEnd());
+            em.AddComponentData(enemy, LocalTransform.FromPosition(new float3(0.5f, 0f, 0f)));
+            em.AddComponentData(enemy, new Health { Value = 50f, Max = 50f });
+            em.AddBuffer<DamageRequest>(enemy);
+
+            world.SetTime(new Unity.Core.TimeData(0, 0.01f));
+            allySystem.Update(world.Unmanaged);
+
+            Assert.AreEqual(0, em.GetBuffer<DamageRequest>(enemy).Length, "no free hits on bunker campers");
+            Assert.AreEqual(0, em.GetComponentData<AllyPathFollower>(ally).NextIndex, "keeps walking");
+        }
+
+        [Test]
         public void Ally_LethalDamage_DiesWithEvent()
         {
             var ally = CreateAlly(float3.zero, 1);
