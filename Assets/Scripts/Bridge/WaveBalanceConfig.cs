@@ -17,6 +17,12 @@ public class WaveBalanceConfig : ScriptableObject
     [Tooltip("Every enemy walks at its own speed times this (2 = twice as fast)")]
     [Min(0.05f)] public float enemySpeedMultiplier = 1f;
 
+    [Header("Soldier contact")]
+    [Tooltip("An enemy and an ally closer than this stop and fight in melee; 0 lets them walk through each other")]
+    [Min(0f)] public float contactDistance = 0.6f;
+    [Tooltip("Minimum distance a soldier keeps from the one ahead of it on its own side; 0 lets them overlap")]
+    [Min(0f)] public float unitSpacing = 0.45f;
+
     [Header("Wave progression")]
     public int wavesPerTier = 10;
     public int initialUnlockedTypes = 2;

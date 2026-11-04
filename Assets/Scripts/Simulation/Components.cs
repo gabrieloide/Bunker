@@ -63,6 +63,8 @@ namespace Bunker.Simulation
     {
         public int NextIndex;
         public Entity PathEntity;
+        // Seconds until this enemy can hit the ally blocking it again
+        public float ContactCooldown;
     }
     public struct AtPathEnd : IComponentData { public float AttackTimer; }
     public struct PathPoint : IBufferElementData { public float3 Value; }
@@ -257,6 +259,10 @@ namespace Bunker.Simulation
         public BlobAssetReference<EnemyRosterBlob> Roster;
         public BlobAssetReference<EnemyBuffTableBlob> BuffTable;
         public float FlagZoneDistanceAlongPath;
+        // Enemy and ally closer than this stop and trade melee blows (0 = soldiers walk through each other)
+        public float ContactDistance;
+        // Soldiers of one side keep at least this far from the one ahead (0 = they may overlap)
+        public float UnitSpacing;
     }
 
     public struct WaveState : IComponentData
