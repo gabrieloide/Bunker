@@ -15,10 +15,14 @@ MonoBehaviour:
   startDelay: 30
   spawnInterval: 1.4
   initialEnemyAmount: 12
+  groupSize: 1
+  groupGap: 0.2
+  enemySpeedMultiplier: 20
   wavesPerTier: 3
   initialUnlockedTypes: 3
   maxUnlockedTypes: 9
   amountIncreasePerTier: 3
+  amountIncreasePerWave: 0
   lifeGrowthPerWave: 0.08
   bossEveryWaves: 5
   bossTypeIndex: 9
