@@ -132,7 +132,7 @@ namespace Bunker.Simulation
                         {
                             var targetPath = pathLookup[targetPathEntity];
                             if (targetPath.Length > 0)
-                                impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, targetPath, speed.Value, artillery.RiseTime + artillery.FallTime);
+                                impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, targetPath, speed.Value, artillery.RiseTime + artillery.FallTime, follower.Slot);
                         }
                     }
 

@@ -110,7 +110,7 @@ public class SimulationBridge : MonoBehaviour
         spawnerComp = spawner;
         pathComp = path;
         float flagDistance = (spawner != null && path != null)
-            ? CalculateFlagZoneDistance(spawner.transform.position, path.points)
+            ? CalculateFlagZoneDistance(spawner.transform.position, RoutePositions(path))
             : 0f;
 
         var config = new WaveConfig
@@ -175,9 +175,7 @@ public class SimulationBridge : MonoBehaviour
             {
                 Entity pEntity = em.CreateEntity();
                 em.AddComponent<SimulationTag>(pEntity);
-                var buf = em.AddBuffer<PathPoint>(pEntity);
-                foreach (var pt in assignedPath.points)
-                    buf.Add(new PathPoint { Value = pt });
+                FillPath(em.AddBuffer<PathPoint>(pEntity), assignedPath);
                 pathEntities[assignedPath] = pEntity;
             }
         }
@@ -200,9 +198,7 @@ public class SimulationBridge : MonoBehaviour
             });
         }
 
-        var pathBuffer = em.AddBuffer<PathPoint>(simEntity);
-        foreach (var point in path.points)
-            pathBuffer.Add(new PathPoint { Value = point });
+        FillPath(em.AddBuffer<PathPoint>(simEntity), path);
 
         // Initialize Player Bunker Entity in ECS
         var bunkerEntity = em.CreateEntity();
@@ -933,10 +929,26 @@ public class SimulationBridge : MonoBehaviour
         if (spawnerComp == null || pathComp == null)
             return;
 
-        float dist = CalculateFlagZoneDistance(spawnerComp.transform.position, pathComp.points);
+        float dist = CalculateFlagZoneDistance(spawnerComp.transform.position, RoutePositions(pathComp));
         var config = em.GetComponentData<WaveConfig>(simEntity);
         config.FlagZoneDistanceAlongPath = dist;
         em.SetComponentData(simEntity, config);
+    }
+
+    // Writes the walked route (flags plus L corners) into the simulation's path buffer
+    static void FillPath(DynamicBuffer<PathPoint> buffer, EnemyMovement movement)
+    {
+        foreach (var (position, radius) in movement.BuildRoute())
+            buffer.Add(new PathPoint { Value = position, Radius = radius });
+    }
+
+    static Vector3[] RoutePositions(EnemyMovement movement)
+    {
+        var route = movement.BuildRoute();
+        var positions = new Vector3[route.Count];
+        for (int i = 0; i < positions.Length; i++)
+            positions[i] = route[i].position;
+        return positions;
     }
 
     public static float CalculateFlagZoneDistance(Vector3 spawnPos, Vector3[] pathPoints)

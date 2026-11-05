@@ -160,7 +160,10 @@ namespace Bunker.Simulation
             ecb.AddComponent(e, new Defense { Value = def.Defense });
             ecb.AddComponent(e, new MoveSpeed { Value = def.MoveSpeed });
             ecb.AddComponent(e, new ScoreValue { Value = def.Score });
-            ecb.AddComponent(e, new PathFollower { NextIndex = 0, PathEntity = pathEntity });
+            // Own generator keyed on the spawn, so picking a slot never shifts the wave's enemy-type rolls
+            var slotRng = Random.CreateFromIndex((uint)(wave.Wave * 1000 + wave.SpawnedThisWave + 1));
+            float2 slot = slotRng.NextFloat2Direction() * math.sqrt(slotRng.NextFloat());
+            ecb.AddComponent(e, new PathFollower { NextIndex = 0, PathEntity = pathEntity, Slot = slot });
             ecb.AddComponent(e, new HitBox { HalfExtents = def.HitHalfExtents, Offset = def.HitOffset });
             ecb.AddComponent(e, new Weapon
             {
