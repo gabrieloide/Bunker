@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2312bfce9904126a652ffef953649a2, type: 3}
   m_Name: AllyGranadeCard
   m_EditorClassIdentifier: Assembly-CSharp::AllyCardDefinition
-  displayName: Ally Granade
-  description: Sale del bunker y marcha hasta la base enemiga, peleando con cada enemigo que encuentre.
+  displayName: Ally Grenadier
+  description: Walks your flags, then fights its way to the enemy base.
   handPrefab: {fileID: -3690923982419404029, guid: 0c4f6dce9afd4134aa5f38f9bb7fbbfd, type: 3}
   placedPrefab: {fileID: 0}
   dropWeight: 4

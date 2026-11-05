@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: HelicopterCard
   m_EditorClassIdentifier: Assembly-CSharp::HelicopterCardDefinition
   displayName: Helicopter
-  description: Vuela hasta donde lo sueltes y dispara a los enemigos en rango durante
-    unos segundos.
+  description: Flies to the drop point and shoots enemies for a few seconds.
   handPrefab: {fileID: -3690923982419404029, guid: ba04438406fa3a24f96c45e2d33be92a, type: 3}
   placedPrefab: {fileID: 240956174263498696, guid: bea92dc9dcf95eb4690e152d02c42667, type: 3}
   dropWeight: 4
@@ -24,5 +23,7 @@ MonoBehaviour:
   fireRate: 3
   range: 4
   baseDamageMultiplier: 0.2
+  patrolRadius: 3
+  patrolSpeed: 2
   hoverTime: 8
   flySpeed: 6

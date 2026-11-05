@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sniper
   m_EditorClassIdentifier: Assembly-CSharp::TowerCardDefinition
   displayName: Sniper
-  description: lorem
+  description: Huge range. Slow, heavy shots that pierce armor.
   handPrefab: {fileID: 3708226502008462382, guid: 9f25c04d807549046b5a71e419d59d0e, type: 3}
   placedPrefab: {fileID: 1065562097503117305, guid: 54cd5a6ddd80eaa43b2bcae8a5dfa3fe, type: 3}
   dropWeight: 10

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Flag
   m_EditorClassIdentifier: Assembly-CSharp::FlagCardDefinition
   displayName: Flag
-  description: Planta una bandera para recuperar terreno. Su radio debe tocar el
-    de otra bandera y no puede haber enemigos dentro.
+  description: Claims ground for your cards. Must touch a flag, with no enemies inside.
   handPrefab: {fileID: -8057555976105955795, guid: cc2b79de316bc9b4ebee9227f63cd1cf, type: 3}
   placedPrefab: {fileID: 7031208037778065838, guid: 00b2bf8fad79fc24592d90d5afd96aa7, type: 3}
   dropWeight: 6

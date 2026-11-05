@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Turret1
   m_EditorClassIdentifier: Assembly-CSharp::TowerCardDefinition
   displayName: Cannon
-  description: asfdasfasfasfsafasfasfasfasf
+  description: Basic turret. Steady fire at short range. Weak against armor.
   handPrefab: {fileID: 569118739540680089, guid: 1a08555a349a415448da8ebf559bd6f6, type: 3}
   placedPrefab: {fileID: 7014277254556713406, guid: 80507f07be04ba746983563e47591a1c, type: 3}
   dropWeight: 24
