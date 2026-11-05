@@ -70,7 +70,7 @@ namespace Bunker.Simulation
                         Position = transform.ValueRO.Position.xy,
                         PathEntity = pathEntity,
                         NextIndex = follower.ValueRO.NextIndex,
-                        DistanceToNext = DistanceToNext(transform.ValueRO.Position, follower.ValueRO.NextIndex, pathEntity, pathLookup)
+                        DistanceToNext = DistanceToNext(transform.ValueRO.Position, follower.ValueRO.NextIndex, follower.ValueRO.Slot, pathEntity, pathLookup)
                     });
                 }
             }
@@ -151,15 +151,11 @@ namespace Bunker.Simulation
                     follower.ValueRW.ContactCooldown = ContactWindUp * math.max(0.05f, idleWeapon.FireInterval);
 
                 if (spacing > 0f && IsBlockedByAhead(entity, pos.xy, targetPathEntity, follower.ValueRO.NextIndex,
-                        DistanceToNext(pos, follower.ValueRO.NextIndex, targetPathEntity, pathLookup), spacing, walkers))
+                        DistanceToNext(pos, follower.ValueRO.NextIndex, follower.ValueRO.Slot, targetPathEntity, pathLookup), spacing, walkers))
                     continue;
 
-                float3 targetPos = path[follower.ValueRO.NextIndex].Value;
-                float3 delta = targetPos - pos;
-                float dist = math.length(delta);
-                float step = speed.ValueRO.Value * dt;
-
-                pos = dist <= step ? targetPos : pos + delta / dist * step;
+                float3 targetPos = BalanceMath.FlagTarget(path[follower.ValueRO.NextIndex], follower.ValueRO.Slot);
+                pos = BalanceMath.StepAxisAligned(pos, targetPos, speed.ValueRO.Value * dt);
                 transform.ValueRW.Position = pos;
 
                 if (math.distance(pos, targetPos) <= ArriveDistance)
@@ -180,12 +176,16 @@ namespace Bunker.Simulation
             public float DistanceToNext;
         }
 
-        static float DistanceToNext(float3 pos, int nextIndex, Entity pathEntity, BufferLookup<PathPoint> pathLookup)
+        // Length of the L the soldier still has to walk to its own spot in the next flag
+        static float DistanceToNext(float3 pos, int nextIndex, float2 slot, Entity pathEntity, BufferLookup<PathPoint> pathLookup)
         {
             if (pathEntity == Entity.Null || !pathLookup.HasBuffer(pathEntity))
                 return 0f;
             var path = pathLookup[pathEntity];
-            return nextIndex >= 0 && nextIndex < path.Length ? math.distance(pos, path[nextIndex].Value) : 0f;
+            if (nextIndex < 0 || nextIndex >= path.Length)
+                return 0f;
+            float3 target = BalanceMath.FlagTarget(path[nextIndex], slot);
+            return math.abs(target.x - pos.x) + math.abs(target.y - pos.y);
         }
 
         // Ahead = further along the same path; a tie on both counts is broken by entity index so exactly one of two stacked soldiers waits

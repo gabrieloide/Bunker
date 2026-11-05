@@ -59,7 +59,10 @@ namespace Bunker.Simulation
             int typeCount = config.Roster.IsCreated ? config.Roster.Value.Types.Length : 0;
             for (int i = 0; i < requests.Length; i++)
                 if (requests[i].TypeIndex >= 0 && requests[i].TypeIndex < typeCount)
-                    SpawnAlly(requests[i].TypeIndex, lastPathIndex, in config, ecb);
+                {
+                    var slotRng = Random.CreateFromIndex((uint)(SystemAPI.Time.ElapsedTime * 1000.0) + (uint)i + 1u);
+                    SpawnAlly(requests[i].TypeIndex, lastPathIndex, slotRng.NextFloat2Direction() * math.sqrt(slotRng.NextFloat()), in config, ecb);
+                }
             requests.Clear();
 
             var enemies = new NativeList<Entity>(Allocator.Temp);
@@ -90,7 +93,7 @@ namespace Bunker.Simulation
                          SystemAPI.Query<RefRO<LocalTransform>, RefRO<AllyPathFollower>>().WithAll<AllyTag>().WithEntityAccess())
                 {
                     Entity walkerPath = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
-                    if (!TryWaypoint(follower.ValueRO.NextIndex, walkerPath, in pathLookup, hasBase, basePos, out float3 walkerWaypoint))
+                    if (!TryWaypoint(follower.ValueRO.NextIndex, follower.ValueRO.Slot, walkerPath, in pathLookup, hasBase, basePos, out float3 walkerWaypoint))
                         continue;
                     walkers.Add(new Walker
                     {
@@ -158,16 +161,13 @@ namespace Bunker.Simulation
                 }
 
                 Entity targetPathEntity = follower.ValueRO.PathEntity != Entity.Null ? follower.ValueRO.PathEntity : defaultPathEntity;
-                if (!TryWaypoint(follower.ValueRO.NextIndex, targetPathEntity, in pathLookup, hasBase, basePos, out float3 waypoint))
+                if (!TryWaypoint(follower.ValueRO.NextIndex, follower.ValueRO.Slot, targetPathEntity, in pathLookup, hasBase, basePos, out float3 waypoint))
                     continue;
 
                 if (spacing > 0f && IsBlockedByAhead(entity, pos.xy, targetPathEntity, follower.ValueRO.NextIndex, math.distance(pos, waypoint), spacing, walkers))
                     continue;
 
-                float3 delta = waypoint - pos;
-                float dist = math.length(delta);
-                float step = speed.ValueRO.Value * dt;
-                pos = dist <= step ? waypoint : pos + delta / dist * step;
+                pos = BalanceMath.StepAxisAligned(pos, waypoint, speed.ValueRO.Value * dt);
                 transform.ValueRW.Position = pos;
 
                 if (follower.ValueRO.NextIndex >= 0 && math.distance(pos, waypoint) <= ArriveDistance)
@@ -189,14 +189,14 @@ namespace Bunker.Simulation
         }
 
         // The point an ally walks to: the path point it is heading for, or the enemy base once past the path start
-        static bool TryWaypoint(int nextIndex, Entity pathEntity, in BufferLookup<PathPoint> pathLookup, bool hasBase, float3 basePos, out float3 waypoint)
+        static bool TryWaypoint(int nextIndex, float2 slot, Entity pathEntity, in BufferLookup<PathPoint> pathLookup, bool hasBase, float3 basePos, out float3 waypoint)
         {
             if (nextIndex >= 0 && pathEntity != Entity.Null && pathLookup.HasBuffer(pathEntity))
             {
                 var path = pathLookup[pathEntity];
                 if (nextIndex < path.Length)
                 {
-                    waypoint = path[nextIndex].Value;
+                    waypoint = BalanceMath.FlagTarget(path[nextIndex], slot);
                     return true;
                 }
             }
@@ -225,7 +225,7 @@ namespace Bunker.Simulation
             return false;
         }
 
-        static void SpawnAlly(int typeIndex, int lastPathIndex, in AllySpawnConfig config, EntityCommandBuffer ecb)
+        static void SpawnAlly(int typeIndex, int lastPathIndex, float2 slot, in AllySpawnConfig config, EntityCommandBuffer ecb)
         {
             ref var def = ref config.Roster.Value.Types[typeIndex];
             var e = ecb.CreateEntity();
@@ -243,7 +243,7 @@ namespace Bunker.Simulation
                 Range = def.AttackRange,
                 Cooldown = 0f
             });
-            ecb.AddComponent(e, new AllyPathFollower { NextIndex = lastPathIndex });
+            ecb.AddComponent(e, new AllyPathFollower { NextIndex = lastPathIndex, Slot = slot });
             ecb.AddBuffer<DamageRequest>(e);
             ecb.AddComponent(e, new NeedsView { Kind = ViewKind.Ally, PrefabId = typeIndex });
         }

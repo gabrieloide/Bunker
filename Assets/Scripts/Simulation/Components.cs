@@ -65,9 +65,16 @@ namespace Bunker.Simulation
         public Entity PathEntity;
         // Seconds until this enemy can hit the ally blocking it again
         public float ContactCooldown;
+        // This soldier's spot inside each flag circle, as a point of the unit disc (scaled by PathPoint.Radius); makes the wave walk as a group, not a line
+        public float2 Slot;
     }
     public struct AtPathEnd : IComponentData { public float AttackTimer; }
-    public struct PathPoint : IBufferElementData { public float3 Value; }
+    // One flag of a route. Radius is the flag circle soldiers spread over (0 = they all aim for the exact point)
+    public struct PathPoint : IBufferElementData
+    {
+        public float3 Value;
+        public float Radius;
+    }
     public struct PrimaryPath : IComponentData { }
     public struct SpawnerPoint : IBufferElementData
     {
@@ -119,6 +126,8 @@ namespace Bunker.Simulation
     {
         public int NextIndex;
         public Entity PathEntity;
+        // Same idea as PathFollower.Slot: the ally marches in the flag band instead of on its centreline, so enemies meet it across the band's width
+        public float2 Slot;
     }
 
     public struct Projectile : IComponentData

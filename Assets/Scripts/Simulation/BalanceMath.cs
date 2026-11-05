@@ -16,20 +16,49 @@ namespace Bunker.Simulation
         }
 
         // Where a path follower will be after `time` seconds, walking its remaining waypoints at constant speed
-        public static float3 PredictAlongPath(float3 position, int nextIndex, DynamicBuffer<PathPoint> path, float speed, float time)
+        // Follows the real movement: toward the soldier's own spot in each flag, horizontal gap first then vertical (so the length is |dx|+|dy|)
+        public static float3 PredictAlongPath(float3 position, int nextIndex, DynamicBuffer<PathPoint> path, float speed, float time, float2 slot)
         {
             float remaining = speed * time;
             while (nextIndex < path.Length && remaining > 0f)
             {
-                float3 next = path[nextIndex].Value;
-                float d = math.distance(position, next);
-                if (d >= remaining)
-                    return position + (next - position) / d * remaining;
+                float3 next = FlagTarget(path[nextIndex], slot);
+                float d = math.abs(next.x - position.x) + math.abs(next.y - position.y);
+                if (d > remaining)
+                    return StepAxisAligned(position, next, remaining);
                 remaining -= d;
                 position = next;
                 nextIndex++;
             }
             return position;
+        }
+
+        // Soldiers never move diagonally: they cover the horizontal gap first, then the vertical one (an "L"). Leftover step carries over to the second axis.
+        public static float3 StepAxisAligned(float3 position, float3 target, float step)
+        {
+            float dx = target.x - position.x;
+            float ax = math.abs(dx);
+            if (ax > 1e-5f)
+            {
+                float move = math.min(ax, step);
+                position.x += math.sign(dx) * move;
+                step -= move;
+            }
+            float dy = target.y - position.y;
+            float ay = math.abs(dy);
+            if (step > 0f && ay > 1e-5f)
+            {
+                float move = math.min(ay, step);
+                position.y += math.sign(dy) * move;
+            }
+            position.z = target.z;
+            return position;
+        }
+
+        // The spot a soldier walks to for one flag: the flag centre shifted by its personal slot inside the flag circle
+        public static float3 FlagTarget(PathPoint point, float2 slot)
+        {
+            return point.Value + new float3(slot * point.Radius, 0f);
         }
 
         public static bool CircleOverlapsBox(float2 center, float radius, float2 boxCenter, float2 halfExtents)

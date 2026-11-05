@@ -8,8 +8,33 @@ public class EnemyMovement : MonoBehaviour
     public float waypointRadius = 0.35f;
     public bool showLabels = true;
 
+    [Tooltip("Enemy flags in walking order; the last one is the bunker. Every flag is a circle the wave spreads over")]
     public Vector3[] points = new Vector3[0];
     public Vector3[] Points => points;
+    [Tooltip("Radius of every enemy flag circle")]
+    [Min(0f)] public float flagRadius = 1.5f;
+    [Tooltip("Radius of the last point (the bunker): arriving enemies surround it instead of stacking on one spot")]
+    [Min(0f)] public float bunkerRadius = 0.6f;
+    [Tooltip("Between two flags that are not in line, walk vertically first instead of horizontally first")]
+    public bool verticalFirst;
+
+    // The route as soldiers walk it: soldiers never move diagonally, so every pair of flags out of line gets an "L" corner between them
+    public List<(Vector3 position, float radius)> BuildRoute()
+    {
+        var route = new List<(Vector3, float)>();
+        if (points == null) return route;
+        for (int i = 0; i < points.Length; i++)
+        {
+            if (i > 0)
+            {
+                Vector3 a = points[i - 1], b = points[i];
+                if (Mathf.Abs(a.x - b.x) > 0.001f && Mathf.Abs(a.y - b.y) > 0.001f)
+                    route.Add((verticalFirst ? new Vector3(a.x, b.y, a.z) : new Vector3(b.x, a.y, a.z), flagRadius));
+            }
+            route.Add((points[i], i == points.Length - 1 ? bunkerRadius : flagRadius));
+        }
+        return route;
+    }
     public Vector3 CurrentPosition => _gameStarted ? _currentPosition : transform.position;
     Vector3 _currentPosition;
     bool _gameStarted;
@@ -42,6 +67,11 @@ public class EnemyMovement : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             Vector3 worldPos = origin + points[i];
+            if (i < points.Length - 1)
+            {
+                Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.6f);
+                Gizmos.DrawWireSphere(worldPos, flagRadius);
+            }
 
             // Color-code start, waypoints, and end (bunker)
             if (i == 0)
