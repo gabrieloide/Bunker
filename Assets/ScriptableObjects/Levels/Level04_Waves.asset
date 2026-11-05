@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Level04_Waves
   m_EditorClassIdentifier: Assembly-CSharp::WaveBalanceConfig
   startDelay: 30
-  spawnInterval: 1.4
+  spawnInterval: 5.6
+  groupSize: 4
+  groupGap: 0
   initialEnemyAmount: 12
   wavesPerTier: 3
   initialUnlockedTypes: 3

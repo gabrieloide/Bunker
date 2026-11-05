@@ -39,6 +39,10 @@ public class SimulationBridge : MonoBehaviour
     BlobAssetReference<EnemyBuffTableBlob> buffBlob;
     BlobAssetReference<AllyRosterBlob> allyRosterBlob;
     Entity allySpawnerEntity;
+    RouteOverlay routeOverlay;
+    readonly HashSet<Flag> syncedFlags = new HashSet<Flag>();
+    readonly List<Vector3> flagNodePositions = new List<Vector3>();
+    readonly List<(Vector3 from, Vector3 to)> flagLinks = new List<(Vector3 from, Vector3 to)>();
 
     public ViewRegistry Views => viewRegistry;
     private ViewRegistry viewRegistry;
@@ -168,16 +172,15 @@ public class SimulationBridge : MonoBehaviour
 
         // 1. Create per-spawner path entities first (structural changes must not interleave buffer writes)
         var pathEntities = new Dictionary<EnemyMovement, Entity>();
+        // The primary route lives on simEntity; enemies and allies on it must share one entity to keep their spacing
+        pathEntities[path] = simEntity;
+        FillPath(em.AddBuffer<PathPoint>(simEntity), path);
+        AddBranches(simEntity, path, pathEntities);
         foreach (var spawnerComp in spawners)
         {
             var assignedPath = spawnerComp.path != null ? spawnerComp.path : path;
-            if (assignedPath != null && !pathEntities.ContainsKey(assignedPath))
-            {
-                Entity pEntity = em.CreateEntity();
-                em.AddComponent<SimulationTag>(pEntity);
-                FillPath(em.AddBuffer<PathPoint>(pEntity), assignedPath);
-                pathEntities[assignedPath] = pEntity;
-            }
+            if (assignedPath != null)
+                CreatePathEntity(assignedPath, pathEntities);
         }
 
         // 2. Configure simEntity primary path tag and buffers
@@ -198,8 +201,6 @@ public class SimulationBridge : MonoBehaviour
             });
         }
 
-        FillPath(em.AddBuffer<PathPoint>(simEntity), path);
-
         // Initialize Player Bunker Entity in ECS
         var bunkerEntity = em.CreateEntity();
         em.AddComponent<SimulationTag>(bunkerEntity);
@@ -218,6 +219,8 @@ public class SimulationBridge : MonoBehaviour
 
         CreateEnemyBase();
         CreateAllySpawner(allySpawner);
+        routeOverlay = RouteOverlay.Create(pathEntities.Keys);
+        SyncPlayerFlags();
 
         needsViewQuery = em.CreateEntityQuery(typeof(NeedsView), typeof(LocalTransform));
         enemyQuery = em.CreateEntityQuery(typeof(EnemyTag), typeof(LocalTransform));
@@ -319,6 +322,43 @@ public class SimulationBridge : MonoBehaviour
             Roster = allyRosterBlob
         });
         em.AddBuffer<AllySpawnRequest>(allySpawnerEntity);
+        em.AddBuffer<PlayerFlagNode>(allySpawnerEntity);
+    }
+
+    // New flags join the tree allies march along, hanging from the nearest flag that was already there
+    void SyncPlayerFlags()
+    {
+        if (pathComp == null) return;
+        bool added = false;
+        foreach (var flag in FlagTerritory.Flags)
+        {
+            if (flag == null || syncedFlags.Contains(flag)) continue;
+
+            Vector3 position = flag.Center;
+            position.z = pathComp.points != null && pathComp.points.Length > 0 ? pathComp.points[0].z : 0f;
+
+            int parent = -1;
+            float nearest = float.MaxValue;
+            for (int i = 0; i < flagNodePositions.Count; i++)
+            {
+                float distance = Vector2.Distance(flagNodePositions[i], position);
+                if (distance < nearest)
+                {
+                    nearest = distance;
+                    parent = i;
+                }
+            }
+
+            syncedFlags.Add(flag);
+            flagNodePositions.Add(position);
+            if (parent >= 0)
+                flagLinks.Add((flagNodePositions[parent], position));
+            if (em.Exists(allySpawnerEntity) && em.HasBuffer<PlayerFlagNode>(allySpawnerEntity))
+                em.GetBuffer<PlayerFlagNode>(allySpawnerEntity).Add(new PlayerFlagNode { Position = position, Radius = pathComp.flagRadius, Parent = parent });
+            added = true;
+        }
+        if (added && routeOverlay != null)
+            routeOverlay.SetPlayerLinks(flagLinks);
     }
 
     // An ally card was played: the ally leaves the bunker on the next simulation step
@@ -685,6 +725,9 @@ public class SimulationBridge : MonoBehaviour
     {
         if (GameManager.instance == null || !GameManager.instance.StartingHandDealt || GameManager.instance.onDrag)
             return false;
+        // The last card may still be on its way with the builder soldier
+        if (Card.PendingResolveCount > 0)
+            return false;
         if (Deck.instance == null || Deck.instance.Hand == null)
             return false;
         if (CardDrop.instance != null && CardDrop.instance.HasPlayableCard)
@@ -929,10 +972,51 @@ public class SimulationBridge : MonoBehaviour
         if (spawnerComp == null || pathComp == null)
             return;
 
+        SyncPlayerFlags();
+
         float dist = CalculateFlagZoneDistance(spawnerComp.transform.position, RoutePositions(pathComp));
         var config = em.GetComponentData<WaveConfig>(simEntity);
         config.FlagZoneDistanceAlongPath = dist;
         em.SetComponentData(simEntity, config);
+    }
+
+    // One entity per route, plus every route it forks into. Fills `entities` so a shared branch is created once
+    Entity CreatePathEntity(EnemyMovement movement, Dictionary<EnemyMovement, Entity> entities)
+    {
+        if (entities.TryGetValue(movement, out var existing))
+            return existing;
+
+        Entity entity = em.CreateEntity();
+        entities[movement] = entity;
+        em.AddComponent<SimulationTag>(entity);
+        FillPath(em.AddBuffer<PathPoint>(entity), movement);
+        AddBranches(entity, movement, entities);
+        return entity;
+    }
+
+    void AddBranches(Entity entity, EnemyMovement movement, Dictionary<EnemyMovement, Entity> entities)
+    {
+        if (!movement.Forks) return;
+
+        var children = new List<Entity>();
+        foreach (var branch in movement.branches)
+        {
+            if (branch == null || branch.points == null || branch.points.Length == 0)
+            {
+                Debug.LogError($"SimulationBridge: route '{movement.name}' has an empty branch; skipping it.", movement);
+                continue;
+            }
+            Entity child = CreatePathEntity(branch, entities);
+            children.Add(child);
+            if (!em.HasComponent<PathParent>(child))
+                em.AddComponentData(child, new PathParent { Path = entity });
+        }
+
+        if (children.Count == 0) return;
+        em.AddComponentData(entity, new PathFork());
+        var buffer = em.AddBuffer<PathBranch>(entity);
+        foreach (var child in children)
+            buffer.Add(new PathBranch { Path = child });
     }
 
     // Writes the walked route (flags plus L corners) into the simulation's path buffer

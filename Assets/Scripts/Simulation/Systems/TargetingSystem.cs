@@ -55,6 +55,8 @@ namespace Bunker.Simulation
                 }
             }
 
+            bool preparation = SystemAPI.TryGetSingleton<WaveState>(out var waveState) && waveState.Phase == WavePhase.WaitingToStart;
+
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -102,7 +104,8 @@ namespace Bunker.Simulation
                 Entity newTarget = best >= 0 && bestDist <= w.Range ? candidates[best] : Entity.Null;
                 float3 targetPos = best >= 0 ? candidatePositions[best] : float3.zero;
 
-                if (targetsEnemies && newTarget == Entity.Null && baseEntity != Entity.Null && math.distance(pos.xy, basePos.xy) <= w.Range + baseReach)
+                // No free hits on the base between waves: a flag chain must not win with no enemy on the map
+                if (targetsEnemies && !preparation && newTarget == Entity.Null && baseEntity != Entity.Null && math.distance(pos.xy, basePos.xy) <= w.Range + baseReach)
                 {
                     newTarget = baseEntity;
                     targetPos = basePos;
