@@ -13,8 +13,8 @@ public class RouteOverlay : MonoBehaviour
     const float EnemyHalfWidth = 0.1875f; // 3 art pixels
     const float PlayerHalfWidth = 0.125f; // 2 art pixels
 
-    // The game's two-colour palette: enemy marks in the light tone, the player's in the dark one (like the flag rings)
-    static readonly Color EnemyColor = new Color32(235, 235, 225, 255);
+    // The dark tone of the game's palette, the only one that reads on the light ground. Width and the rings tell enemy routes from player links
+    static readonly Color EnemyColor = new Color32(34, 35, 35, 255);
     static readonly Color PlayerColor = new Color32(34, 35, 35, 255);
     static readonly int ColorId = Shader.PropertyToID("_Color");
 
