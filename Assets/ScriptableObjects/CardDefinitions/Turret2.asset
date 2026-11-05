@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Turret2
   m_EditorClassIdentifier: Assembly-CSharp::TowerCardDefinition
   displayName: BiCannon
-  description: lorem
+  description: Fires two-shot bursts, with a bit more range than the Cannon.
   handPrefab: {fileID: -1858775797922942355, guid: d81b9daf69722e54c8bd9a365da20a11, type: 3}
   placedPrefab: {fileID: 1355402855024040456, guid: 3d466198936322846871685be4fe8bcc, type: 3}
   dropWeight: 16

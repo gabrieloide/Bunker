@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Turret3
   m_EditorClassIdentifier: Assembly-CSharp::TowerCardDefinition
   displayName: TriCannon
-  description: lorem
+  description: Fires three-shot bursts. The longest range of the cannons.
   handPrefab: {fileID: 82753302256148822, guid: 0460eca159e425c4e97257c31fa754fd, type: 3}
   placedPrefab: {fileID: 8316505337117789106, guid: 6c3fef1f234744b4589449eb1283a005, type: 3}
   dropWeight: 10
