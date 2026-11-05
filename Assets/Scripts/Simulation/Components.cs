@@ -63,10 +63,37 @@ namespace Bunker.Simulation
     {
         public int NextIndex;
         public Entity PathEntity;
+        // Seconds until this enemy can hit the ally blocking it again
+        public float ContactCooldown;
+        // This soldier's spot inside each flag circle, as a point of the unit disc (scaled by PathPoint.Radius); makes the wave walk as a group, not a line
+        public float2 Slot;
     }
     public struct AtPathEnd : IComponentData { public float AttackTimer; }
-    public struct PathPoint : IBufferElementData { public float3 Value; }
+    // One flag of a route. Radius is the flag circle soldiers spread over (0 = they all aim for the exact point)
+    public struct PathPoint : IBufferElementData
+    {
+        public float3 Value;
+        public float Radius;
+    }
     public struct PrimaryPath : IComponentData { }
+
+    // A route that forks at its end: soldiers arriving there take its branches in turn, so the group splits evenly
+    public struct PathBranch : IBufferElementData { public Entity Path; }
+    public struct PathFork : IComponentData { public int NextBranch; }
+    // The route a branch forked from, for allies walking the routes backwards
+    public struct PathParent : IComponentData { public Entity Path; }
+
+    // One player flag; together they form a tree (each flag hangs from the nearest flag that existed when it was planted).
+    // Parents always come before their children in the buffer. Allies march along it from the root outwards.
+    public struct PlayerFlagNode : IBufferElementData
+    {
+        public float3 Position;
+        // Spread of the marching allies at this flag (a formation width, not the flag's territory radius)
+        public float Radius;
+        public int Parent;
+        // Allies arriving here take its children in turn, so the group splits evenly
+        public int NextChild;
+    }
     public struct SpawnerPoint : IBufferElementData
     {
         public float3 Position;
@@ -117,6 +144,11 @@ namespace Bunker.Simulation
     {
         public int NextIndex;
         public Entity PathEntity;
+        // Same idea as PathFollower.Slot: the ally marches in the flag band instead of on its centreline, so enemies meet it across the band's width
+        public float2 Slot;
+        // Still marching along the player's flags, heading for PlayerFlagNode FlagNode; NextIndex takes over once it leaves them
+        public bool OnFlags;
+        public int FlagNode;
     }
 
     public struct Projectile : IComponentData
@@ -257,6 +289,10 @@ namespace Bunker.Simulation
         public BlobAssetReference<EnemyRosterBlob> Roster;
         public BlobAssetReference<EnemyBuffTableBlob> BuffTable;
         public float FlagZoneDistanceAlongPath;
+        // Enemy and ally closer than this stop and trade melee blows (0 = soldiers walk through each other)
+        public float ContactDistance;
+        // Soldiers of one side keep at least this far from the one ahead (0 = they may overlap)
+        public float UnitSpacing;
     }
 
     public struct WaveState : IComponentData

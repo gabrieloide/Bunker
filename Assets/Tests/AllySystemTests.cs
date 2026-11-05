@@ -26,7 +26,7 @@ namespace Bunker.Tests
             world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             simEntity = em.CreateEntity();
-            em.AddComponentData(simEntity, new WaveState());
+            em.AddComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
             em.AddComponentData(simEntity, new GameSession());
             em.AddBuffer<SimEvent>(simEntity);
             var path = em.AddBuffer<PathPoint>(simEntity);
@@ -131,6 +131,24 @@ namespace Bunker.Tests
 
             Assert.AreEqual(1, em.GetBuffer<DamageRequest>(enemy).Length);
             Assert.AreEqual(1, em.GetComponentData<AllyPathFollower>(ally).NextIndex, "did not move on");
+        }
+
+        [Test]
+        public void Ally_IgnoresEnemyAlreadyHittingTheBunker()
+        {
+            var ally = CreateAlly(float3.zero, 1);
+            var enemy = em.CreateEntity();
+            em.AddComponent<EnemyTag>(enemy);
+            em.AddComponentData(enemy, new AtPathEnd());
+            em.AddComponentData(enemy, LocalTransform.FromPosition(new float3(0.5f, 0f, 0f)));
+            em.AddComponentData(enemy, new Health { Value = 50f, Max = 50f });
+            em.AddBuffer<DamageRequest>(enemy);
+
+            world.SetTime(new Unity.Core.TimeData(0, 0.01f));
+            allySystem.Update(world.Unmanaged);
+
+            Assert.AreEqual(0, em.GetBuffer<DamageRequest>(enemy).Length, "no free hits on bunker campers");
+            Assert.AreEqual(0, em.GetComponentData<AllyPathFollower>(ally).NextIndex, "keeps walking");
         }
 
         [Test]

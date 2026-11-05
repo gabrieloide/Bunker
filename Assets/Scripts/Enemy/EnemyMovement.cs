@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Bunker.Simulation;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
@@ -8,8 +9,33 @@ public class EnemyMovement : MonoBehaviour
     public float waypointRadius = 0.35f;
     public bool showLabels = true;
 
+    [Tooltip("Enemy flags in walking order; the last one is the bunker. Every flag is a circle the wave spreads over")]
     public Vector3[] points = new Vector3[0];
     public Vector3[] Points => points;
+    [Tooltip("Radius of every enemy flag circle")]
+    [Min(0f)] public float flagRadius = 0.5f;
+    [Tooltip("Radius of the last point (the bunker): arriving enemies surround it instead of stacking on one spot")]
+    [Min(0f)] public float bunkerRadius = 0.6f;
+    [Tooltip("Between two flags that are not in line, walk vertically first instead of horizontally first")]
+    public bool verticalFirst;
+    [Tooltip("Routes this one forks into at its last flag: arriving soldiers take them in turn, so the group splits. Empty = the last point is the bunker")]
+    public EnemyMovement[] branches = new EnemyMovement[0];
+
+    public bool Forks => branches != null && branches.Length > 0;
+
+    // The route as soldiers walk it: soldiers never move diagonally, so every pair of flags out of line gets an "L" corner between them
+    public List<(Vector3 position, float radius)> BuildRoute()
+    {
+        var route = new List<(Vector3, float)>();
+        if (points == null) return route;
+        for (int i = 0; i < points.Length; i++)
+        {
+            if (i > 0 && RouteGeometry.TryGetCorner(points[i - 1], points[i], verticalFirst, out Vector3 corner))
+                route.Add((corner, flagRadius));
+            route.Add((points[i], i == points.Length - 1 && !Forks ? bunkerRadius : flagRadius));
+        }
+        return route;
+    }
     public Vector3 CurrentPosition => _gameStarted ? _currentPosition : transform.position;
     Vector3 _currentPosition;
     bool _gameStarted;
@@ -42,6 +68,18 @@ public class EnemyMovement : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             Vector3 worldPos = origin + points[i];
+            if (i < points.Length - 1 || Forks)
+            {
+                Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.6f);
+                Gizmos.DrawWireSphere(worldPos, flagRadius);
+            }
+            if (i == points.Length - 1 && Forks)
+            {
+                Gizmos.color = pathColor;
+                foreach (var branch in branches)
+                    if (branch != null && branch.points != null && branch.points.Length > 0)
+                        Gizmos.DrawLine(worldPos, branch.CurrentPosition + branch.points[0]);
+            }
 
             // Color-code start, waypoints, and end (bunker)
             if (i == 0)

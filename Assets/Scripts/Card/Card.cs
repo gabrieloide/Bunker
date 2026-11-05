@@ -53,15 +53,16 @@ public abstract class Card : MonoBehaviour
     public static bool PlayableIn(CardDefinition card, bool preparation) => card switch
     {
         TowerCardDefinition => preparation,
-        AllyCardDefinition => !preparation,
         HelicopterCardDefinition => !preparation,
         _ => true
     };
 
     public bool PlayableNow => PlayableIn(definition, SimulationBridge.IsPreparationPhase);
 
+    public static void ResetPendingResolveCount() => PendingResolveCount = 0;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetStaticResolveCount() => PendingResolveCount = 0;
+    static void ResetStaticResolveCount() => ResetPendingResolveCount();
 
     // Cards that place an object on the map snap its footprint (origin + offset) to a grid cell
     protected virtual bool SnapsToGrid => false;

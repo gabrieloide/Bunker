@@ -30,6 +30,8 @@ namespace Bunker.Simulation
                 .CreateCommandBuffer(state.WorldUnmanaged);
             float dt = SystemAPI.Time.DeltaTime;
             bool hasSpawners = SystemAPI.TryGetSingletonBuffer<SpawnerPoint>(out var spawners, true);
+            var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
+            SystemAPI.TryGetSingletonEntity<PrimaryPath>(out Entity defaultPath);
 
             switch (wave.Phase)
             {
@@ -46,12 +48,12 @@ namespace Bunker.Simulation
                     wave.Timer -= dt;
                     while (wave.Timer <= 0f && wave.SpawnedThisWave < wave.EnemyAmount)
                     {
-                        SpawnEnemy(ref wave, in config, ecb, spawners, hasSpawners);
+                        SpawnEnemy(ref wave, in config, ecb, spawners, hasSpawners, pathLookup, defaultPath);
                         wave.SpawnedThisWave++;
                         bool groupDone = config.GroupSize <= 1 || wave.SpawnedThisWave % config.GroupSize == 0;
                         wave.Timer += groupDone ? config.SpawnInterval : config.GroupGap;
                     }
-                    if (wave.SpawnedThisWave >= wave.EnemyAmount && wave.Timer <= 0f)
+                    if (wave.SpawnedThisWave >= wave.EnemyAmount)
                     {
                         wave.Phase = WavePhase.WaitingForClear;
                         events.Add(new SimEvent { Kind = SimEventKind.WavePhaseChanged, IntValue = (int)wave.Phase, Amount = wave.Wave });
@@ -125,7 +127,7 @@ namespace Bunker.Simulation
             return distance;
         }
 
-        static float SpawnEnemy(ref WaveState wave, in WaveConfig config, EntityCommandBuffer ecb, DynamicBuffer<SpawnerPoint> spawners, bool hasSpawners)
+        static float SpawnEnemy(ref WaveState wave, in WaveConfig config, EntityCommandBuffer ecb, DynamicBuffer<SpawnerPoint> spawners, bool hasSpawners, BufferLookup<PathPoint> pathLookup, Entity defaultPath)
         {
             ref var roster = ref config.Roster.Value;
             int typeCount = math.clamp(wave.UnlockedTypes, 1, roster.Types.Length);
@@ -147,10 +149,20 @@ namespace Bunker.Simulation
             Entity pathEntity = Entity.Null;
             if (hasSpawners && spawners.Length > 0)
             {
-                int spawnerIndex = wave.SpawnedThisWave % spawners.Length;
+                // A whole group leaves from the same spawner
+                int spawnerIndex = wave.SpawnedThisWave / math.max(1, config.GroupSize) % spawners.Length;
                 spawnPos = spawners[spawnerIndex].Position;
                 pathEntity = spawners[spawnerIndex].PathEntity;
             }
+
+            // Own generator keyed on the spawn, so picking a slot never shifts the wave's enemy-type rolls
+            var slotRng = Random.CreateFromIndex((uint)(wave.Wave * 1000 + wave.SpawnedThisWave + 1));
+            float2 slot = slotRng.NextFloat2Direction() * math.sqrt(slotRng.NextFloat());
+
+            // Spread around the spawner by the first flag's radius: a group spawned at once starts as a group, not stacked on one point
+            Entity firstFlagPath = pathEntity != Entity.Null ? pathEntity : defaultPath;
+            if (firstFlagPath != Entity.Null && pathLookup.HasBuffer(firstFlagPath) && pathLookup[firstFlagPath].Length > 0)
+                spawnPos.xy += slot * pathLookup[firstFlagPath][0].Radius;
 
             var e = ecb.CreateEntity();
             ecb.AddComponent(e, LocalTransform.FromPosition(spawnPos));
@@ -160,7 +172,7 @@ namespace Bunker.Simulation
             ecb.AddComponent(e, new Defense { Value = def.Defense });
             ecb.AddComponent(e, new MoveSpeed { Value = def.MoveSpeed });
             ecb.AddComponent(e, new ScoreValue { Value = def.Score });
-            ecb.AddComponent(e, new PathFollower { NextIndex = 0, PathEntity = pathEntity });
+            ecb.AddComponent(e, new PathFollower { NextIndex = 0, PathEntity = pathEntity, Slot = slot });
             ecb.AddComponent(e, new HitBox { HalfExtents = def.HitHalfExtents, Offset = def.HitOffset });
             ecb.AddComponent(e, new Weapon
             {

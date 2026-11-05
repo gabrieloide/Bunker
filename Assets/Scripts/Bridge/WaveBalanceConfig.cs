@@ -12,10 +12,16 @@ public class WaveBalanceConfig : ScriptableObject
     [Min(1)] public int initialEnemyAmount = 15;
     [Tooltip("Enemies spawned back to back as one group; spawnInterval is the wait between groups")]
     [Min(1)] public int groupSize = 1;
-    [Tooltip("Seconds between the members of one group (0 = all on the same frame, stacked)")]
+    [Tooltip("Seconds between the members of one group (0 = all at once, spread over the first flag's circle)")]
     [Min(0f)] public float groupGap = 0.2f;
     [Tooltip("Every enemy walks at its own speed times this (2 = twice as fast)")]
     [Min(0.05f)] public float enemySpeedMultiplier = 1f;
+
+    [Header("Soldier contact")]
+    [Tooltip("An enemy and an ally closer than this stop and fight in melee; 0 lets them walk through each other")]
+    [Min(0f)] public float contactDistance = 0.6f;
+    [Tooltip("Minimum distance a soldier keeps from the one ahead of it on its own side; 0 lets them overlap")]
+    [Min(0f)] public float unitSpacing = 0.45f;
 
     [Header("Wave progression")]
     public int wavesPerTier = 10;

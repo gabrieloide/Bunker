@@ -106,8 +106,8 @@
 .card-info__description {
     position: absolute;
     top: 14.9px;
-    left: 0;
-    width: 83px;
+    left: 2.5px;
+    width: 78px;
     height: 49.3px;
     margin: 0;
     padding: 0;

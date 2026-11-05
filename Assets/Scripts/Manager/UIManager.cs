@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     [Space]
     [Tooltip("UI Toolkit HUD (UI/HUD.uxml): score, wave, towers and bunker life")]
     [SerializeField] UIDocument hud;
+    public UIDocument HudDocument => hud;
+    public PanelSettings HudPanelSettings => hud != null ? hud.panelSettings : null;
     [Space]
     [Header("CRT Compositing")]
     [Tooltip("UIComposite shader: composites HUD texture into camera backbuffer before RetroCRTFilter")]
@@ -103,6 +105,9 @@ public class UIManager : MonoBehaviour
             lifeFill = root.Q("life-fill");
         }
 
+        lifeInitialized = false;
+        lastLife = -1f;
+
         SetScore(SimEventDispatcher.Score, 0);
         SetWave(SimEventDispatcher.Wave, SimEventDispatcher.CurrentBuff);
         SetLifeNormalized(SimEventDispatcher.Health01);
@@ -123,15 +128,22 @@ public class UIManager : MonoBehaviour
         SimEventDispatcher.OnWaveChanged -= SetWave;
         SimEventDispatcher.OnPlayerHit -= OnPlayerHit;
         SimEventDispatcher.OnBunkerHealed -= OnBunkerHealed;
-        TowerLimits.Changed += UpdateTowerCount;
+        TowerLimits.Changed -= UpdateTowerCount;
 
         ClearDamageChunks();
+        lifeInitialized = false;
+        lastLife = -1f;
     }
 
     private void OnDestroy()
     {
+        if (instance == this)
+            instance = null;
+
         Camera.onPostRender -= CompositeHud;
         ClearDamageChunks();
+        lifeInitialized = false;
+        lastLife = -1f;
         if (hudTarget != null)
         {
             hudTarget.Release();
@@ -164,6 +176,12 @@ public class UIManager : MonoBehaviour
         ResizeHudTexture();
         Camera.onPostRender -= CompositeHud;
         Camera.onPostRender += CompositeHud;
+
+        var pause = FindAnyObjectByType<PauseMenu>(FindObjectsInactive.Include);
+        if (pause != null) pause.EnsureCompositedSettings();
+
+        var matchResult = FindAnyObjectByType<MatchResultScreen>(FindObjectsInactive.Include);
+        if (matchResult != null) matchResult.EnsureCompositedSettings();
     }
 
     void ResizeHudTexture()
@@ -555,7 +573,7 @@ public class UIManager : MonoBehaviour
     {
         if (CardDrop.instance == null) return;
 
-        // Shown while it holds something playable in this phase (towers in preparation, allies during a wave)
+        // Shown while it holds something playable in this phase (towers only in preparation, helicopters only during a wave)
         bool playable = CardDrop.instance.HasPlayableCard;
         if (!CardDrop.instance.DeckShown && playable)
         {

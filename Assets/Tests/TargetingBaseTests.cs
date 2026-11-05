@@ -27,7 +27,7 @@ namespace Bunker.Tests
 
             simEntity = em.CreateEntity();
             em.AddComponentData(simEntity, new WaveConfig());
-            em.AddComponentData(simEntity, new WaveState());
+            em.AddComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
             em.AddComponentData(simEntity, new GameSession());
             em.AddBuffer<SimEvent>(simEntity);
 

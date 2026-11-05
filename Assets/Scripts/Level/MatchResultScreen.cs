@@ -12,21 +12,64 @@ public class MatchResultScreen : MonoBehaviour
     Label titleText;
     Button nextLevelButton; // only offered after a victory when there is a next level
 
+    void Awake()
+    {
+        EnsureCompositedSettings();
+    }
+
     void OnEnable()
     {
-        var root = GetComponent<UIDocument>().rootVisualElement;
-        // Nested under the HUD document: fill the screen without catching clicks meant for the game
+        EnsureCompositedSettings();
+        BindUI();
+
+        SimEventDispatcher.OnVictory += ShowVictory;
+        SimEventDispatcher.OnGameOver += ShowDefeat;
+    }
+
+    public void EnsureCompositedSettings()
+    {
+        var doc = GetComponent<UIDocument>();
+        if (doc == null) return;
+        var targetSettings = UIManager.instance != null ? UIManager.instance.HudPanelSettings : null;
+        if (targetSettings != null && doc.panelSettings != targetSettings)
+        {
+            doc.panelSettings = targetSettings;
+            BindUI();
+        }
+    }
+
+    void BindUI()
+    {
+        var doc = GetComponent<UIDocument>();
+        if (doc == null) return;
+        var root = doc.rootVisualElement;
+        if (root == null) return;
+
+        // Fill the screen without catching clicks meant for the game
         root.StretchToParentSize();
         root.pickingMode = PickingMode.Ignore;
         panel = root.Q("result");
         titleText = root.Q<Label>("title");
         nextLevelButton = root.Q<Button>("next");
-        nextLevelButton.clicked += NextLevel;
-        root.Q<Button>("retry").clicked += Retry;
-        root.Q<Button>("levels").clicked += Levels;
+        if (nextLevelButton != null)
+        {
+            nextLevelButton.clicked -= NextLevel;
+            nextLevelButton.clicked += NextLevel;
+        }
 
-        SimEventDispatcher.OnVictory += ShowVictory;
-        SimEventDispatcher.OnGameOver += ShowDefeat;
+        var retryBtn = root.Q<Button>("retry");
+        if (retryBtn != null)
+        {
+            retryBtn.clicked -= Retry;
+            retryBtn.clicked += Retry;
+        }
+
+        var levelsBtn = root.Q<Button>("levels");
+        if (levelsBtn != null)
+        {
+            levelsBtn.clicked -= Levels;
+            levelsBtn.clicked += Levels;
+        }
     }
 
     void OnDisable()
@@ -45,9 +88,10 @@ public class MatchResultScreen : MonoBehaviour
 
     void Show(string title, bool offerNext)
     {
-        if (!panel.ClassListContains("hidden")) return;
-        titleText.text = title;
-        nextLevelButton.EnableInClassList("hidden", !offerNext);
+        EnsureCompositedSettings();
+        if (panel == null || !panel.ClassListContains("hidden")) return;
+        if (titleText != null) titleText.text = title;
+        if (nextLevelButton != null) nextLevelButton.EnableInClassList("hidden", !offerNext);
         panel.RemoveFromClassList("hidden");
 
         // The pause menu would unfreeze the game underneath

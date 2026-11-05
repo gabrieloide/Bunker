@@ -29,7 +29,8 @@ namespace Bunker.Simulation
             var enemies = new NativeList<Entity>(Allocator.Temp);
             var enemyPositions = new NativeList<float3>(Allocator.Temp);
 
-            foreach (var (transform, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<Health>().WithAny<TowerTag, AllyTag>().WithEntityAccess())
+            // Enemies shoot towers only; allies are fought in melee (EnemyMovementSystem)
+            foreach (var (transform, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<Health, TowerTag>().WithEntityAccess())
             {
                 towers.Add(entity);
                 towerPositions.Add(transform.ValueRO.Position);
@@ -53,6 +54,8 @@ namespace Bunker.Simulation
                     break;
                 }
             }
+
+            bool preparation = SystemAPI.TryGetSingleton<WaveState>(out var waveState) && waveState.Phase == WavePhase.WaitingToStart;
 
             var events = SystemAPI.GetSingletonBuffer<SimEvent>();
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
@@ -101,7 +104,8 @@ namespace Bunker.Simulation
                 Entity newTarget = best >= 0 && bestDist <= w.Range ? candidates[best] : Entity.Null;
                 float3 targetPos = best >= 0 ? candidatePositions[best] : float3.zero;
 
-                if (targetsEnemies && newTarget == Entity.Null && baseEntity != Entity.Null && math.distance(pos.xy, basePos.xy) <= w.Range + baseReach)
+                // No free hits on the base between waves: a flag chain must not win with no enemy on the map
+                if (targetsEnemies && !preparation && newTarget == Entity.Null && baseEntity != Entity.Null && math.distance(pos.xy, basePos.xy) <= w.Range + baseReach)
                 {
                     newTarget = baseEntity;
                     targetPos = basePos;
@@ -131,7 +135,7 @@ namespace Bunker.Simulation
                         {
                             var targetPath = pathLookup[targetPathEntity];
                             if (targetPath.Length > 0)
-                                impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, targetPath, speed.Value, artillery.RiseTime + artillery.FallTime);
+                                impact = BalanceMath.PredictAlongPath(targetPos, follower.NextIndex, targetPath, speed.Value, artillery.RiseTime + artillery.FallTime, follower.Slot);
                         }
                     }
 

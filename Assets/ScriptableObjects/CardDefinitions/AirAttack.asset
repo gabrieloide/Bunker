@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fc1078677f5d03428906c8c69fb1f2c, type: 3}
   m_Name: AirAttack
   m_EditorClassIdentifier: Assembly-CSharp::AirStrikeCardDefinition
-  displayName: Air attack
-  description: lorem
+  displayName: Air Strike
+  description: A plane reaches the drop point and fires a piercing volley.
   handPrefab: {fileID: -213461620801725421, guid: accd407f48c24194b800df1472ec5053, type: 3}
   placedPrefab: {fileID: 6397520152180845838, guid: 767b7a347acb9b74f9f9dc8f41ae8460, type: 3}
   dropWeight: 4

@@ -93,7 +93,8 @@ public class HandLayout : MonoBehaviour
         for (int i = 0; i < cards.Count; i++)
         {
             var card = cards[i];
-            if (!card.PlayableNow)
+            // More playable cards than slots (they can pile up across a phase change): the extras wait hidden until a slot frees up
+            if (!card.PlayableNow || slot >= slotCount)
             {
                 card.CancelDrag();
                 card.gameObject.SetActive(false);

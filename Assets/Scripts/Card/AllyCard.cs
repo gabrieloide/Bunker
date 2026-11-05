@@ -15,7 +15,7 @@ public class AllyCard : Card
 
     protected override void ShowPlacementFeedback(bool valid)
     {
-        // Allies can be dropped anywhere on the map during wave, so only show X if not playable now
+        // Allies can be dropped anywhere on the map, so only show X if not playable now
         if (!PlayableNow)
             PlacementCrossIndicator.Show(PointerWorld());
         else
