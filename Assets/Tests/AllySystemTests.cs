@@ -26,7 +26,7 @@ namespace Bunker.Tests
             world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             simEntity = em.CreateEntity();
-            em.AddComponentData(simEntity, new WaveState());
+            em.AddComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
             em.AddComponentData(simEntity, new GameSession());
             em.AddBuffer<SimEvent>(simEntity);
             var path = em.AddBuffer<PathPoint>(simEntity);

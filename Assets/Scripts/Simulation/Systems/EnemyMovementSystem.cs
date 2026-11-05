@@ -88,6 +88,8 @@ namespace Bunker.Simulation
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
             var weaponLookup = SystemAPI.GetComponentLookup<Weapon>(true);
+            var branchLookup = SystemAPI.GetBufferLookup<PathBranch>(true);
+            var forkLookup = SystemAPI.GetComponentLookup<PathFork>();
 
             foreach (var (transform, follower, speed, entity) in
                      SystemAPI.Query<RefRW<LocalTransform>, RefRW<PathFollower>, RefRO<MoveSpeed>>()
@@ -107,6 +109,18 @@ namespace Bunker.Simulation
 
                 if (follower.ValueRO.NextIndex >= path.Length)
                 {
+                    // A fork: take the next branch in turn, so the group splits evenly between them
+                    if (branchLookup.HasBuffer(targetPathEntity) && forkLookup.HasComponent(targetPathEntity) && branchLookup[targetPathEntity].Length > 0)
+                    {
+                        var branches = branchLookup[targetPathEntity];
+                        var fork = forkLookup[targetPathEntity];
+                        follower.ValueRW.PathEntity = branches[fork.NextBranch % branches.Length].Path;
+                        follower.ValueRW.NextIndex = 0;
+                        fork.NextBranch++;
+                        forkLookup[targetPathEntity] = fork;
+                        continue;
+                    }
+
                     ecb.AddComponent(entity, new AtPathEnd { AttackTimer = 0f });
                     events.Add(new SimEvent { Kind = SimEventKind.EnemyReachedEnd, Source = entity, Position = transform.ValueRO.Position });
                     continue;

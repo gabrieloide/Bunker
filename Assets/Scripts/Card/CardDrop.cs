@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // The draw pile, shared by every card type. Drawing takes the oldest card playable in the current
-// phase (towers in preparation, allies during a wave), so cards for the other phase wait their turn.
+// phase (towers only in preparation, helicopters only during a wave), so cards for the other phase wait their turn.
 // The pile is the "deck" element of UI/Game.uxml; clicking it draws.
 public class CardDrop : MonoBehaviour
 {

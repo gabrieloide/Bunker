@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Bunker.Simulation;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
@@ -17,6 +18,10 @@ public class EnemyMovement : MonoBehaviour
     [Min(0f)] public float bunkerRadius = 0.6f;
     [Tooltip("Between two flags that are not in line, walk vertically first instead of horizontally first")]
     public bool verticalFirst;
+    [Tooltip("Routes this one forks into at its last flag: arriving soldiers take them in turn, so the group splits. Empty = the last point is the bunker")]
+    public EnemyMovement[] branches = new EnemyMovement[0];
+
+    public bool Forks => branches != null && branches.Length > 0;
 
     // The route as soldiers walk it: soldiers never move diagonally, so every pair of flags out of line gets an "L" corner between them
     public List<(Vector3 position, float radius)> BuildRoute()
@@ -25,13 +30,9 @@ public class EnemyMovement : MonoBehaviour
         if (points == null) return route;
         for (int i = 0; i < points.Length; i++)
         {
-            if (i > 0)
-            {
-                Vector3 a = points[i - 1], b = points[i];
-                if (Mathf.Abs(a.x - b.x) > 0.001f && Mathf.Abs(a.y - b.y) > 0.001f)
-                    route.Add((verticalFirst ? new Vector3(a.x, b.y, a.z) : new Vector3(b.x, a.y, a.z), flagRadius));
-            }
-            route.Add((points[i], i == points.Length - 1 ? bunkerRadius : flagRadius));
+            if (i > 0 && RouteGeometry.TryGetCorner(points[i - 1], points[i], verticalFirst, out Vector3 corner))
+                route.Add((corner, flagRadius));
+            route.Add((points[i], i == points.Length - 1 && !Forks ? bunkerRadius : flagRadius));
         }
         return route;
     }
@@ -67,10 +68,17 @@ public class EnemyMovement : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             Vector3 worldPos = origin + points[i];
-            if (i < points.Length - 1)
+            if (i < points.Length - 1 || Forks)
             {
                 Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.6f);
                 Gizmos.DrawWireSphere(worldPos, flagRadius);
+            }
+            if (i == points.Length - 1 && Forks)
+            {
+                Gizmos.color = pathColor;
+                foreach (var branch in branches)
+                    if (branch != null && branch.points != null && branch.points.Length > 0)
+                        Gizmos.DrawLine(worldPos, branch.CurrentPosition + branch.points[0]);
             }
 
             // Color-code start, waypoints, and end (bunker)

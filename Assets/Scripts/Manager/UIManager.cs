@@ -573,7 +573,7 @@ public class UIManager : MonoBehaviour
     {
         if (CardDrop.instance == null) return;
 
-        // Shown while it holds something playable in this phase (towers in preparation, allies during a wave)
+        // Shown while it holds something playable in this phase (towers only in preparation, helicopters only during a wave)
         bool playable = CardDrop.instance.HasPlayableCard;
         if (!CardDrop.instance.DeckShown && playable)
         {

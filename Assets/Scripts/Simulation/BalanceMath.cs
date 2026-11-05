@@ -61,6 +61,43 @@ namespace Bunker.Simulation
             return point.Value + new float3(slot * point.Radius, 0f);
         }
 
+        // Next flag for a soldier standing on `node`: its children in turn, -1 when the tree ends there.
+        // A flag with nothing after it, planted just for tower space, doesn't drain the army while a real chain continues: only chains split the group.
+        public static int NextFlagChild(DynamicBuffer<PlayerFlagNode> nodes, int node)
+        {
+            int childCount = 0, chainCount = 0;
+            for (int i = node + 1; i < nodes.Length; i++)
+            {
+                if (nodes[i].Parent != node) continue;
+                childCount++;
+                if (HasFlagChild(nodes, i)) chainCount++;
+            }
+            if (childCount == 0)
+                return -1;
+
+            bool onlyChains = chainCount > 0;
+            var current = nodes[node];
+            int pick = current.NextChild % (onlyChains ? chainCount : childCount);
+            current.NextChild++;
+            nodes[node] = current;
+
+            for (int i = node + 1; i < nodes.Length; i++)
+            {
+                if (nodes[i].Parent != node || (onlyChains && !HasFlagChild(nodes, i))) continue;
+                if (pick-- == 0)
+                    return i;
+            }
+            return -1;
+        }
+
+        static bool HasFlagChild(DynamicBuffer<PlayerFlagNode> nodes, int node)
+        {
+            for (int i = node + 1; i < nodes.Length; i++)
+                if (nodes[i].Parent == node)
+                    return true;
+            return false;
+        }
+
         public static bool CircleOverlapsBox(float2 center, float radius, float2 boxCenter, float2 halfExtents)
         {
             float2 closest = math.clamp(center, boxCenter - halfExtents, boxCenter + halfExtents);
