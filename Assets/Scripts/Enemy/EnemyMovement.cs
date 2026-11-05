@@ -13,7 +13,7 @@ public class EnemyMovement : MonoBehaviour
     public Vector3[] points = new Vector3[0];
     public Vector3[] Points => points;
     [Tooltip("Radius of every enemy flag circle")]
-    [Min(0f)] public float flagRadius = 1.5f;
+    [Min(0f)] public float flagRadius = 0.5f;
     [Tooltip("Radius of the last point (the bunker): arriving enemies surround it instead of stacking on one spot")]
     [Min(0f)] public float bunkerRadius = 0.6f;
     [Tooltip("Between two flags that are not in line, walk vertically first instead of horizontally first")]
