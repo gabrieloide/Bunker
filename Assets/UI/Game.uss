@@ -71,6 +71,36 @@
     background-image: url("project://database/Assets/Sprites/32x48/MiniCard.png");
 }
 
+/* Cards left to draw in this phase (CardDrop): a tag pinned to the pile's corner that pops when the number changes */
+.deck-count {
+    position: absolute;
+    right: -3px;
+    top: -6px;
+    min-width: 13px;
+    height: 13px;
+    margin: 0;
+    padding: 0 1.5px;
+    border-width: 1px;
+    border-color: #F0F6F0;
+    background-color: #000000;
+    color: #F0F6F0;
+    -unity-font: url("project://database/Assets/Fonts/pixel_maz.ttf");
+    -unity-font-definition: initial;
+    font-size: 22px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    transition-property: background-color, color, border-color;
+    transition-duration: 0.15s;
+}
+
+/* Inverted for a moment when a card joins the pile */
+.deck-count--flash {
+    background-color: #F0F6F0;
+    color: #000000;
+    border-color: #000000;
+    transition-duration: 0s;
+}
+
 /* Card detail (ChangeCardText): the panel clips its content while it opens */
 .card-info {
     position: absolute;

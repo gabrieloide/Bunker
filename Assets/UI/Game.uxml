@@ -4,6 +4,7 @@
     <ui:VisualElement class="deck-anchor" picking-mode="Ignore">
         <ui:VisualElement name="deck" class="deck">
             <ui:VisualElement name="deck-slice" class="deck-slice" picking-mode="Ignore" />
+            <ui:Label name="deck-count" class="deck-count" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="hand" class="hand" picking-mode="Ignore">
