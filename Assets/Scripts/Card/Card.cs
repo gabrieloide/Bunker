@@ -211,6 +211,19 @@ public abstract class Card : MonoBehaviour
     void OnEnable() => view.style.display = DisplayStyle.Flex;
     void OnDisable() => view.style.display = DisplayStyle.None;
 
+    // The PointerUp can be lost (button released over another panel, e.g. the HUD, or outside the game view),
+    // which left the card frozen face down in the air with its placement marks on the map. Polling the
+    // button ends the drag anyway; when the PointerUp does arrive it finds nothing left to do.
+    void Update()
+    {
+        if (!pressed || Input.GetMouseButton(0)) return;
+        pressed = false;
+        if (view.HasPointerCapture(PointerId.mousePointerId))
+            view.ReleasePointer(PointerId.mousePointerId);
+        if (isDragging)
+            OnEndDrag();
+    }
+
     void LateUpdate()
     {
         view.style.translate = new Translate(handPosition.x, -handPosition.y);
