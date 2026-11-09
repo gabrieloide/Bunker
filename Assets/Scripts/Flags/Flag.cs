@@ -53,7 +53,10 @@ public class Flag : MonoBehaviour, ICardConfigurable
     {
         if (body == null || Camera.main == null) return false;
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return false;
-        Vector3 pointer = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouse = Input.mousePosition;
+        // Infinite while the game view has no focus
+        if (!float.IsFinite(mouse.x) || !float.IsFinite(mouse.y)) return false;
+        Vector3 pointer = Camera.main.ScreenToWorldPoint(mouse);
         pointer.z = body.bounds.center.z;
         return body.bounds.Contains(pointer);
     }

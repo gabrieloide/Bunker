@@ -54,7 +54,10 @@ public class RangeIndicator : MonoBehaviour
         if (Camera.main == null) return null;
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return null;
 
-        Vector2 pointer = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouse = Input.mousePosition;
+        // Infinite while the game view has no focus
+        if (!float.IsFinite(mouse.x) || !float.IsFinite(mouse.y)) return null;
+        Vector2 pointer = Camera.main.ScreenToWorldPoint(mouse);
         Collider2D hit = Physics2D.OverlapPoint(pointer, turretMask);
         return hit != null ? hit.GetComponentInParent<TurretCard>() : null;
     }
