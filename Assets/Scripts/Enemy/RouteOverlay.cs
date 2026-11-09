@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Bunker.Simulation;
 using UnityEngine;
 
-// Shows the player where everybody will walk: the enemy routes as chevrons moving towards the bunker with a ring on every enemy flag,
-// and the links between the player's own flags. Visible during preparation and while dragging a card, when the player is planning.
+// Shows the player where everybody will walk: the enemy routes (allies walk them too, backwards) as chevrons moving towards the bunker
+// with a ring on every enemy flag. Visible during preparation and while dragging a card, when the player is planning.
 public class RouteOverlay : MonoBehaviour
 {
     const string LineMaterialPath = "RouteLine";
@@ -11,16 +11,13 @@ public class RouteOverlay : MonoBehaviour
     const string SortingLayer = "Background";
     const int SortingOrder = 11;
     const float EnemyHalfWidth = 0.1875f; // 3 art pixels
-    const float PlayerHalfWidth = 0.125f; // 2 art pixels
 
-    // The dark tone of the game's palette, the only one that reads on the light ground. Width and the rings tell enemy routes from player links
+    // The dark tone of the game's palette, the only one that reads on the light ground
     static readonly Color EnemyColor = new Color32(34, 35, 35, 255);
-    static readonly Color PlayerColor = new Color32(34, 35, 35, 255);
     static readonly int ColorId = Shader.PropertyToID("_Color");
 
     GameObject visuals;
     Material lineMaterial;
-    Mesh playerMesh;
     readonly List<Mesh> meshes = new List<Mesh>();
 
     public static RouteOverlay Create(IEnumerable<EnemyMovement> routes)
@@ -56,28 +53,6 @@ public class RouteOverlay : MonoBehaviour
             AddRings(route, ringMaterial);
         }
         Apply(enemyMesh, vertices, uvs, triangles);
-
-        playerMesh = CreateMeshObject("PlayerFlagLinks", PlayerColor);
-    }
-
-    // The links are horizontal-then-vertical, the way allies walk them
-    public void SetPlayerLinks(IReadOnlyList<(Vector3 from, Vector3 to)> links)
-    {
-        if (playerMesh == null) return;
-        var vertices = new List<Vector3>();
-        var uvs = new List<Vector2>();
-        var triangles = new List<int>();
-        var polyline = new List<Vector3>();
-        foreach (var (from, to) in links)
-        {
-            polyline.Clear();
-            polyline.Add(from);
-            if (RouteGeometry.TryGetCorner(from, to, false, out Vector3 corner))
-                polyline.Add(corner);
-            polyline.Add(to);
-            RouteGeometry.AppendStrip(polyline, PlayerHalfWidth, vertices, uvs, triangles);
-        }
-        Apply(playerMesh, vertices, uvs, triangles);
     }
 
     static List<Vector3> Polyline(EnemyMovement route)

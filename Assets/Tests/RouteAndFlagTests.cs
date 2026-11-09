@@ -9,7 +9,7 @@ using Bunker.Simulation;
 
 namespace Bunker.Tests
 {
-    // Allies marching along the player's flags, enemy routes that fork, waves leaving as groups, and the route overlay's data
+    // Allies walking the enemy routes backwards, enemy routes that fork, waves leaving as groups, and the route overlay's data
     [TestFixture]
     public class RouteAndFlagTests
     {
@@ -54,16 +54,7 @@ namespace Bunker.Tests
             if (allyRoster.IsCreated) allyRoster.Dispose();
         }
 
-        // Flag 0 at the origin, with children 1 and 2 (a fork)
-        void AddForkedFlags()
-        {
-            var nodes = em.AddBuffer<PlayerFlagNode>(configEntity);
-            nodes.Add(new PlayerFlagNode { Position = float3.zero, Parent = -1 });
-            nodes.Add(new PlayerFlagNode { Position = new float3(0f, 5f, 0f), Parent = 0 });
-            nodes.Add(new PlayerFlagNode { Position = new float3(0f, -5f, 0f), Parent = 0 });
-        }
-
-        Entity CreateAlly(float3 position, int flagNode)
+        Entity CreateAlly(float3 position, int nextIndex, Entity path)
         {
             var ally = em.CreateEntity();
             em.AddComponent<AllyTag>(ally);
@@ -71,9 +62,29 @@ namespace Bunker.Tests
             em.AddComponentData(ally, new Health { Value = 10f, Max = 10f });
             em.AddComponentData(ally, new MoveSpeed { Value = 1f });
             em.AddComponentData(ally, new Melee { Damage = 1f, Interval = 1f, Range = 1f });
-            em.AddComponentData(ally, new AllyPathFollower { NextIndex = 1, OnFlags = true, FlagNode = flagNode });
+            em.AddComponentData(ally, new AllyPathFollower { NextIndex = nextIndex, PathEntity = path });
             em.AddBuffer<DamageRequest>(ally);
             return ally;
+        }
+
+        // Plays `count` ally cards and lets the command buffer create them
+        void SpawnAllies(int count)
+        {
+            var requests = em.GetBuffer<AllySpawnRequest>(configEntity);
+            for (int i = 0; i < count; i++)
+                requests.Add(new AllySpawnRequest { TypeIndex = 0 });
+            StepAllies(0f);
+            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
+        }
+
+        AllyPathFollower[] AllyFollowers()
+        {
+            var query = em.CreateEntityQuery(typeof(AllyTag), typeof(AllyPathFollower));
+            var followers = query.ToComponentDataArray<AllyPathFollower>(Allocator.Temp);
+            var result = followers.ToArray();
+            followers.Dispose();
+            query.Dispose();
+            return result;
         }
 
         void StepAllies(float dt)
@@ -90,87 +101,63 @@ namespace Bunker.Tests
         }
 
         [Test]
-        public void Allies_ArrivingAtAFork_TakeItsBranchesInTurn()
+        public void Ally_Spawned_StartsAtTheBunkerEndOfTheEnemyRoute()
         {
-            AddForkedFlags();
-            var first = CreateAlly(float3.zero, 0);
-            var second = CreateAlly(float3.zero, 0);
+            SpawnAllies(1);
 
-            StepAllies(0.01f);
-
-            int a = em.GetComponentData<AllyPathFollower>(first).FlagNode;
-            int b = em.GetComponentData<AllyPathFollower>(second).FlagNode;
-            Assert.AreNotEqual(a, b, "the group splits between the two flags");
-            Assert.That(a, Is.EqualTo(1).Or.EqualTo(2));
-            Assert.That(b, Is.EqualTo(1).Or.EqualTo(2));
+            var followers = AllyFollowers();
+            Assert.AreEqual(1, followers.Length);
+            Assert.AreEqual(simEntity, followers[0].PathEntity);
+            Assert.AreEqual(1, followers[0].NextIndex, "the route's last point, by the bunker");
         }
 
         [Test]
-        public void Ally_AtLastFlagDuringPreparation_WaitsThere()
+        public void Allies_Spawned_TakeTheRoutesThatReachTheBunkerInTurn()
         {
-            AddForkedFlags();
+            // The primary route forks at its end: only the two branches reach the bunker
+            var left = em.CreateEntity();
+            em.AddBuffer<PathPoint>(left).Add(new PathPoint { Value = new float3(30f, 5f, 0f) });
+            em.AddComponentData(left, new PathParent { Path = simEntity });
+            var right = em.CreateEntity();
+            em.AddBuffer<PathPoint>(right).Add(new PathPoint { Value = new float3(30f, -5f, 0f) });
+            em.AddComponentData(right, new PathParent { Path = simEntity });
+            var branches = em.AddBuffer<PathBranch>(simEntity);
+            branches.Add(new PathBranch { Path = left });
+            branches.Add(new PathBranch { Path = right });
+
+            SpawnAllies(2);
+
+            var followers = AllyFollowers();
+            Assert.AreEqual(2, followers.Length);
+            Assert.AreNotEqual(followers[0].PathEntity, followers[1].PathEntity, "the group splits between the branches");
+            foreach (var follower in followers)
+            {
+                Assert.That(follower.PathEntity, Is.EqualTo(left).Or.EqualTo(right), "never the forking route: it doesn't reach the bunker");
+                Assert.AreEqual(0, follower.NextIndex);
+            }
+        }
+
+        [Test]
+        public void Ally_DuringPreparation_WaitsAtTheBunker()
+        {
             SetPhase(WavePhase.WaitingToStart);
-            var ally = CreateAlly(new float3(0f, 5f, 0f), 1);
+            var ally = CreateAlly(new float3(35f, 0f, 0f), 1, simEntity);
 
             StepAllies(1f);
 
-            var follower = em.GetComponentData<AllyPathFollower>(ally);
-            Assert.IsTrue(follower.OnFlags, "nowhere further to go: it stays on the flag");
-            Assert.AreEqual(5f, em.GetComponentData<LocalTransform>(ally).Position.y, 1e-4f);
+            Assert.AreEqual(35f, em.GetComponentData<LocalTransform>(ally).Position.x, 1e-4f);
         }
 
         [Test]
-        public void Allies_AtAFork_SkipADeadEndFlagWhileAChainContinues()
+        public void Ally_OnceTheRoundRuns_WalksTheRouteBackwards()
         {
-            AddForkedFlags();
-            em.GetBuffer<PlayerFlagNode>(configEntity).Add(new PlayerFlagNode { Position = new float3(0f, 9f, 0f), Parent = 1 });
-            var first = CreateAlly(float3.zero, 0);
-            var second = CreateAlly(float3.zero, 0);
-
-            StepAllies(0.01f);
-
-            Assert.AreEqual(1, em.GetComponentData<AllyPathFollower>(first).FlagNode, "flag 2 is only tower space");
-            Assert.AreEqual(1, em.GetComponentData<AllyPathFollower>(second).FlagNode);
-        }
-
-        [Test]
-        public void Ally_WaitingOnAFlag_DoesNotBlockAllyHeadingForAnotherBranch()
-        {
-            AddForkedFlags();
-            var state = em.GetComponentData<WaveConfig>(simEntity);
-            state.UnitSpacing = 2f;
-            em.SetComponentData(simEntity, state);
-            SetPhase(WavePhase.WaitingToStart);
-
-            CreateAlly(new float3(0f, 5f, 0f), 1);
-            var walker = CreateAlly(new float3(1f, 5f, 0f), 2);
+            var ally = CreateAlly(new float3(40f, 0f, 0f), 1, simEntity);
 
             StepAllies(0.1f);
+            Assert.AreEqual(0, em.GetComponentData<AllyPathFollower>(ally).NextIndex, "reached (40, 0), next is (50, 0)");
 
-            Assert.AreNotEqual(1f, em.GetComponentData<LocalTransform>(walker).Position.x, "the flag it waits on is not this ally's way");
-        }
-
-        [Test]
-        public void Ally_LeavingFlags_JoinsTheRouteAheadOfTheLeadingEnemy()
-        {
-            AddForkedFlags();
-            // The route point nearest the flag is index 1, but the leading enemy has passed it
-            var path = em.GetBuffer<PathPoint>(simEntity);
-            path.Add(new PathPoint { Value = new float3(80f, 0f, 0f) });
-
-            var enemy = em.CreateEntity();
-            em.AddComponent<EnemyTag>(enemy);
-            em.AddComponentData(enemy, LocalTransform.FromPosition(new float3(70f, 0f, 0f)));
-            em.AddComponentData(enemy, new Health { Value = 10f, Max = 10f });
-            em.AddComponentData(enemy, new PathFollower { NextIndex = 2 });
-            em.AddBuffer<DamageRequest>(enemy);
-
-            var ally = CreateAlly(new float3(0f, 5f, 0f), 1);
-            StepAllies(0.1f);
-
-            var follower = em.GetComponentData<AllyPathFollower>(ally);
-            Assert.IsFalse(follower.OnFlags);
-            Assert.AreEqual(2, follower.NextIndex);
+            StepAllies(1f);
+            Assert.AreEqual(41f, em.GetComponentData<LocalTransform>(ally).Position.x, 1e-4f, "heads up the route, towards the enemy base");
         }
 
         [Test]
@@ -221,49 +208,6 @@ namespace Bunker.Tests
         }
 
         [Test]
-        public void Ally_WaitingAtLastFlag_MovesOnWhenANewFlagIsPlanted()
-        {
-            AddForkedFlags();
-            SetPhase(WavePhase.WaitingToStart);
-            var ally = CreateAlly(new float3(0f, 5f, 0f), 1);
-            StepAllies(0.1f);
-
-            em.GetBuffer<PlayerFlagNode>(configEntity).Add(new PlayerFlagNode { Position = new float3(0f, 9f, 0f), Parent = 1 });
-            StepAllies(0.1f);
-
-            Assert.AreEqual(3, em.GetComponentData<AllyPathFollower>(ally).FlagNode);
-        }
-
-        [Test]
-        public void Ally_AtLastFlagOnceTheRoundRuns_LeavesForTheClosestRoutePoint()
-        {
-            AddForkedFlags();
-            var ally = CreateAlly(new float3(0f, 5f, 0f), 1);
-
-            StepAllies(0.1f);
-
-            var follower = em.GetComponentData<AllyPathFollower>(ally);
-            Assert.IsFalse(follower.OnFlags);
-            Assert.AreEqual(1, follower.NextIndex, "(40, 0) is closer than (50, 0)");
-            Assert.AreEqual(simEntity, follower.PathEntity);
-        }
-
-        [Test]
-        public void Ally_OffTheFlagsDuringPreparation_DoesNotWalk()
-        {
-            AddForkedFlags();
-            SetPhase(WavePhase.WaitingToStart);
-            var ally = CreateAlly(new float3(45f, 0f, 0f), 0);
-            var follower = em.GetComponentData<AllyPathFollower>(ally);
-            follower.OnFlags = false;
-            em.SetComponentData(ally, follower);
-
-            StepAllies(1f);
-
-            Assert.AreEqual(45f, em.GetComponentData<LocalTransform>(ally).Position.x, 1e-4f);
-        }
-
-        [Test]
         public void Ally_DuringPreparation_DoesNotHitTheEnemyBase()
         {
             SetPhase(WavePhase.WaitingToStart);
@@ -273,11 +217,7 @@ namespace Bunker.Tests
             em.AddComponentData(enemyBase, new Health { Value = 10f, Max = 10f });
             em.AddBuffer<DamageRequest>(enemyBase);
 
-            var ally = CreateAlly(new float3(45.5f, 0f, 0f), 0);
-            var follower = em.GetComponentData<AllyPathFollower>(ally);
-            follower.OnFlags = false;
-            follower.NextIndex = -1;
-            em.SetComponentData(ally, follower);
+            CreateAlly(new float3(45.5f, 0f, 0f), -1, simEntity);
 
             StepAllies(0.1f);
 
@@ -292,8 +232,7 @@ namespace Bunker.Tests
             points.Add(new PathPoint { Value = new float3(30f, 0f, 0f) });
             em.AddComponentData(branch, new PathParent { Path = simEntity });
 
-            var ally = CreateAlly(new float3(30f, 0f, 0f), 0);
-            em.SetComponentData(ally, new AllyPathFollower { NextIndex = 0, PathEntity = branch, OnFlags = false });
+            var ally = CreateAlly(new float3(30f, 0f, 0f), 0, branch);
 
             StepAllies(0.1f);
 

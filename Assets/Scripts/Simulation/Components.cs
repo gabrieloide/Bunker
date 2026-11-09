@@ -83,17 +83,6 @@ namespace Bunker.Simulation
     // The route a branch forked from, for allies walking the routes backwards
     public struct PathParent : IComponentData { public Entity Path; }
 
-    // One player flag; together they form a tree (each flag hangs from the nearest flag that existed when it was planted).
-    // Parents always come before their children in the buffer. Allies march along it from the root outwards.
-    public struct PlayerFlagNode : IBufferElementData
-    {
-        public float3 Position;
-        // Spread of the marching allies at this flag (a formation width, not the flag's territory radius)
-        public float Radius;
-        public int Parent;
-        // Allies arriving here take its children in turn, so the group splits evenly
-        public int NextChild;
-    }
     public struct SpawnerPoint : IBufferElementData
     {
         public float3 Position;
@@ -139,16 +128,13 @@ namespace Bunker.Simulation
         public float Cooldown;
     }
 
-    // Walks the PathPoint buffer from the end towards the start; below 0 it heads for the enemy base
+    // Walks an enemy route's PathPoint buffer from the end towards the start; below 0 it heads for the enemy base
     public struct AllyPathFollower : IComponentData
     {
         public int NextIndex;
         public Entity PathEntity;
         // Same idea as PathFollower.Slot: the ally marches in the flag band instead of on its centreline, so enemies meet it across the band's width
         public float2 Slot;
-        // Still marching along the player's flags, heading for PlayerFlagNode FlagNode; NextIndex takes over once it leaves them
-        public bool OnFlags;
-        public int FlagNode;
     }
 
     public struct Projectile : IComponentData

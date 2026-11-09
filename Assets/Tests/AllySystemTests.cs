@@ -63,7 +63,7 @@ namespace Bunker.Tests
             em.AddComponentData(ally, new Health { Value = 10f, Max = 10f });
             em.AddComponentData(ally, new MoveSpeed { Value = 100f });
             em.AddComponentData(ally, new Melee { Damage = 5f, Interval = 1f, Range = 1f });
-            em.AddComponentData(ally, new AllyPathFollower { NextIndex = nextIndex });
+            em.AddComponentData(ally, new AllyPathFollower { NextIndex = nextIndex, PathEntity = simEntity });
             em.AddBuffer<DamageRequest>(ally);
             return ally;
         }

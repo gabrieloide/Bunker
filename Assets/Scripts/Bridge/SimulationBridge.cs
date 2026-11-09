@@ -40,9 +40,6 @@ public class SimulationBridge : MonoBehaviour
     BlobAssetReference<AllyRosterBlob> allyRosterBlob;
     Entity allySpawnerEntity;
     RouteOverlay routeOverlay;
-    readonly HashSet<Flag> syncedFlags = new HashSet<Flag>();
-    readonly List<Vector3> flagNodePositions = new List<Vector3>();
-    readonly List<(Vector3 from, Vector3 to)> flagLinks = new List<(Vector3 from, Vector3 to)>();
 
     public ViewRegistry Views => viewRegistry;
     private ViewRegistry viewRegistry;
@@ -220,7 +217,6 @@ public class SimulationBridge : MonoBehaviour
         CreateEnemyBase();
         CreateAllySpawner(allySpawner);
         routeOverlay = RouteOverlay.Create(pathEntities.Keys);
-        SyncPlayerFlags();
 
         needsViewQuery = em.CreateEntityQuery(typeof(NeedsView), typeof(LocalTransform));
         enemyQuery = em.CreateEntityQuery(typeof(EnemyTag), typeof(LocalTransform));
@@ -322,43 +318,6 @@ public class SimulationBridge : MonoBehaviour
             Roster = allyRosterBlob
         });
         em.AddBuffer<AllySpawnRequest>(allySpawnerEntity);
-        em.AddBuffer<PlayerFlagNode>(allySpawnerEntity);
-    }
-
-    // New flags join the tree allies march along, hanging from the nearest flag that was already there
-    void SyncPlayerFlags()
-    {
-        if (pathComp == null) return;
-        bool added = false;
-        foreach (var flag in FlagTerritory.Flags)
-        {
-            if (flag == null || syncedFlags.Contains(flag)) continue;
-
-            Vector3 position = flag.Center;
-            position.z = pathComp.points != null && pathComp.points.Length > 0 ? pathComp.points[0].z : 0f;
-
-            int parent = -1;
-            float nearest = float.MaxValue;
-            for (int i = 0; i < flagNodePositions.Count; i++)
-            {
-                float distance = Vector2.Distance(flagNodePositions[i], position);
-                if (distance < nearest)
-                {
-                    nearest = distance;
-                    parent = i;
-                }
-            }
-
-            syncedFlags.Add(flag);
-            flagNodePositions.Add(position);
-            if (parent >= 0)
-                flagLinks.Add((flagNodePositions[parent], position));
-            if (em.Exists(allySpawnerEntity) && em.HasBuffer<PlayerFlagNode>(allySpawnerEntity))
-                em.GetBuffer<PlayerFlagNode>(allySpawnerEntity).Add(new PlayerFlagNode { Position = position, Radius = pathComp.flagRadius, Parent = parent });
-            added = true;
-        }
-        if (added && routeOverlay != null)
-            routeOverlay.SetPlayerLinks(flagLinks);
     }
 
     // An ally card was played: the ally leaves the bunker on the next simulation step
@@ -971,8 +930,6 @@ public class SimulationBridge : MonoBehaviour
 
         if (spawnerComp == null || pathComp == null)
             return;
-
-        SyncPlayerFlags();
 
         float dist = CalculateFlagZoneDistance(spawnerComp.transform.position, RoutePositions(pathComp));
         var config = em.GetComponentData<WaveConfig>(simEntity);
