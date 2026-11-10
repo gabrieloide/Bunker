@@ -83,7 +83,11 @@ public class HandLayout : MonoBehaviour
         int index = cards.IndexOf(card);
         if (index < 0) return;
         cards.RemoveAt(index);
-        Relayout(slideTime);
+        // While the hand itself goes away (leaving play mode, reloading the level) the other cards are being destroyed too:
+        // moving or toggling them trips Unity's "!IsDestroying()" assertions. Teardown disables the whole hierarchy before
+        // any OnDestroy runs, so a disabled hand means there is nothing left to lay out.
+        if (isActiveAndEnabled)
+            Relayout(slideTime);
     }
 
     void Relayout(float time)
