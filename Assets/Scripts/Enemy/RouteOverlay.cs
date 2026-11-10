@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using Bunker.Simulation;
 using UnityEngine;
 
-// Shows the player where everybody will walk: the enemy routes (allies walk them too, backwards) as chevrons moving towards the bunker
-// with a ring on every enemy flag. Visible during preparation and while dragging a card, when the player is planning.
+// Shows the player where everybody will walk: the enemy routes (allies walk them too, backwards). While the player plans (preparation,
+// dragging a card) they are chevrons moving towards the bunker with a ring on every enemy flag; during combat a thin still dashed line,
+// because both sides walk it and arrows towards the bunker would read as allies going the wrong way.
 public class RouteOverlay : MonoBehaviour
 {
     const string LineMaterialPath = "RouteLine";
@@ -15,8 +16,12 @@ public class RouteOverlay : MonoBehaviour
     // The dark tone of the game's palette, the only one that reads on the light ground
     static readonly Color EnemyColor = new Color32(34, 35, 35, 255);
     static readonly int ColorId = Shader.PropertyToID("_Color");
+    static readonly int DashedId = Shader.PropertyToID("_Dashed");
 
-    GameObject visuals;
+    GameObject visuals, rings;
+    MeshRenderer routeRenderer;
+    MaterialPropertyBlock routeBlock;
+    bool? planning;
     Material lineMaterial;
     readonly List<Mesh> meshes = new List<Mesh>();
 
@@ -40,8 +45,11 @@ public class RouteOverlay : MonoBehaviour
 
         visuals = new GameObject("Visuals");
         visuals.transform.SetParent(transform, false);
+        rings = new GameObject("Rings");
+        rings.transform.SetParent(visuals.transform, false);
 
         var enemyMesh = CreateMeshObject("EnemyRoutes", EnemyColor);
+        routeRenderer = visuals.transform.Find("EnemyRoutes").GetComponent<MeshRenderer>();
         var vertices = new List<Vector3>();
         var uvs = new List<Vector2>();
         var triangles = new List<int>();
@@ -89,7 +97,7 @@ public class RouteOverlay : MonoBehaviour
         for (int i = 0; i < ringCount; i++)
         {
             var ringObject = new GameObject("EnemyFlagRing", typeof(MeshFilter), typeof(MeshRenderer));
-            ringObject.transform.SetParent(visuals.transform, false);
+            ringObject.transform.SetParent(rings.transform, false);
             Vector3 position = route.points[i];
             position.z = 0f;
             ringObject.transform.position = position;
@@ -134,10 +142,16 @@ public class RouteOverlay : MonoBehaviour
 
     void Update()
     {
-        if (visuals == null) return;
-        bool show = SimulationBridge.IsPreparationPhase || (GameManager.instance != null && GameManager.instance.onDrag);
-        if (visuals.activeSelf != show)
-            visuals.SetActive(show);
+        if (visuals == null || routeRenderer == null) return;
+        bool plan = SimulationBridge.IsPreparationPhase || (GameManager.instance != null && GameManager.instance.onDrag);
+        if (planning == plan) return;
+        planning = plan;
+
+        rings.SetActive(plan);
+        routeBlock ??= new MaterialPropertyBlock();
+        routeRenderer.GetPropertyBlock(routeBlock);
+        routeBlock.SetFloat(DashedId, plan ? 0f : 1f);
+        routeRenderer.SetPropertyBlock(routeBlock);
     }
 
     void OnDestroy()

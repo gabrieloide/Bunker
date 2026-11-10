@@ -1,5 +1,6 @@
 // Pixel-art chevrons along a strip: uv.x = distance walked, uv.y = distance from the centre line (both in world units).
 // They scroll towards the end of the route, so the player reads both the route and its direction.
+// _Dashed = 1 draws a thin still dashed line instead: the road without a direction, for while both sides walk it.
 Shader "Bunker/RouteLine"
 {
     Properties
@@ -9,6 +10,10 @@ Shader "Bunker/RouteLine"
         _Spacing ("Chevron Spacing (pixels)", Float) = 8
         _Length ("Chevron Length (pixels)", Float) = 2
         _Speed ("Scroll Speed (pixels/sec)", Float) = 8
+        _Dashed ("Dashed (0 = chevrons)", Float) = 0
+        _DashSpacing ("Dash Spacing (pixels)", Float) = 6
+        _DashLength ("Dash Length (pixels)", Float) = 3
+        _DashHalfWidth ("Dash Half Width (pixels)", Float) = 1
     }
 
     SubShader
@@ -30,6 +35,10 @@ Shader "Bunker/RouteLine"
             float _Spacing;
             float _Length;
             float _Speed;
+            float _Dashed;
+            float _DashSpacing;
+            float _DashLength;
+            float _DashHalfWidth;
 
             struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; };
             struct v2f { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; };
@@ -47,6 +56,12 @@ Shader "Bunker/RouteLine"
                 // Evaluate at art-pixel centres so it reads as pixel art
                 float along = floor(i.uv.x * _PixelsPerUnit) + 0.5;
                 float across = floor(abs(i.uv.y) * _PixelsPerUnit) + 0.5;
+                if (_Dashed > 0.5)
+                {
+                    clip(_DashHalfWidth - across);
+                    clip(_DashLength / _DashSpacing - frac(along / _DashSpacing));
+                    return fixed4(_Color.rgb, _Color.a);
+                }
                 // Edges trail behind the centre: a ">" whose tip points the way soldiers walk
                 float s = frac((along + across - _Time.y * _Speed) / _Spacing);
                 clip(_Length / _Spacing - s);
