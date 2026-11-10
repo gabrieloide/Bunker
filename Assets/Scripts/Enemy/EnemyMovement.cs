@@ -1,32 +1,15 @@
+using System.Collections;
 using System.Collections.Generic;
 using Bunker.Simulation;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-// An enemy route: the flags soldiers walk through, in order, to the bunker. A procedural route plans itself when the level
-// loads: from the enemy spawner to the bunker door around the decoration and limits (trees, cliffs), first the shortest walk
-// and then wound into a tower defense route (RoutePlanner.Meander); its flags are the corners. In edit mode the gizmo
-// previews it and follows every tile change.
-// Runs before the SimulationBridge, which reads the route on Start.
-[DefaultExecutionOrder(-600)]
 public class EnemyMovement : MonoBehaviour
 {
     public Color pathColor = new Color(0.15f, 0.85f, 1f, 1f);
     public float waypointRadius = 0.35f;
     public bool showLabels = true;
 
-    [Header("Procedural route")]
-    [Tooltip("Plan the shortest walk from start to end around the decoration and limits when the level loads. The points below are then ignored")]
-    public bool procedural = true;
-    [Tooltip("Where soldiers start; empty = the EnemySpawner")]
-    public Transform start;
-    [Tooltip("Where they end; empty = the AllySpawner (the bunker door)")]
-    public Transform end;
-    [Tooltip("How the route winds on its way: a tower defense route is long and leaves room for towers between its legs")]
-    public RoutePlanner.MeanderSettings meander = RoutePlanner.MeanderSettings.Default;
-
-    [Header("Route")]
-    [Tooltip("Enemy flags in walking order; the last one is the bunker. Every flag is a circle the wave spreads over. Filled by the planner when procedural")]
+    [Tooltip("Enemy flags in walking order; the last one is the bunker. Every flag is a circle the wave spreads over")]
     public Vector3[] points = new Vector3[0];
     public Vector3[] Points => points;
     [Tooltip("Radius of every enemy flag circle")]
@@ -40,15 +23,38 @@ public class EnemyMovement : MonoBehaviour
 
     public bool Forks => branches != null && branches.Length > 0;
 
-    // Cells every procedural route walks: the path for placement (towers can't go there, mines only there)
+    // Cells every route walks (its flags and the straight legs between them): the path for placement, so towers can't go
+    // there and mines only can. Follows the drawn route; the old Path tilemap no longer has to be painted to match
     static readonly HashSet<Vector3Int> routeCells = new HashSet<Vector3Int>();
-    public static bool HasProceduralRoute => routeCells.Count > 0;
+    public static bool HasRoute => routeCells.Count > 0;
     public static bool IsRouteCell(Vector3Int cell) => routeCells.Contains(cell);
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetRouteCells() => routeCells.Clear();
 
-    List<Vector3Int> plannedCells;
+    List<Vector3Int> registeredCells;
+
+    // Every cell the soldiers walk through, flag to flag along the L legs
+    public List<Vector3Int> RouteCells()
+    {
+        var cells = new List<Vector3Int>();
+        if (!PlacementGrid.Available) return cells;
+        var route = BuildRoute();
+        for (int i = 0; i < route.Count; i++)
+        {
+            var to = PlacementGrid.WorldToCell(route[i].position);
+            if (i == 0)
+            {
+                cells.Add(to);
+                continue;
+            }
+            var at = PlacementGrid.WorldToCell(route[i - 1].position);
+            // Legs are straight; step along x then y in case a leg is not
+            while (at.x != to.x) { at.x += System.Math.Sign(to.x - at.x); cells.Add(at); }
+            while (at.y != to.y) { at.y += System.Math.Sign(to.y - at.y); cells.Add(at); }
+        }
+        return cells;
+    }
 
     // The route as soldiers walk it: soldiers never move diagonally, so every pair of flags out of line gets an "L" corner between them
     public List<(Vector3 position, float radius)> BuildRoute()
@@ -71,24 +77,14 @@ public class EnemyMovement : MonoBehaviour
     {
         _gameStarted = true;
         _currentPosition = transform.position;
-        if (!procedural) return;
-
-        if (TryPlan(out var cells, out var corners))
-        {
-            points = corners;
-            plannedCells = cells;
-            routeCells.UnionWith(cells);
-        }
-        else
-        {
-            Debug.LogError($"EnemyMovement '{name}': no walkable route from {StartPoint} to {EndPoint} around the decoration and limits; keeping the hand-placed points.", this);
-        }
+        registeredCells = RouteCells();
+        routeCells.UnionWith(registeredCells);
     }
 
     private void OnDestroy()
     {
-        if (plannedCells != null)
-            routeCells.ExceptWith(plannedCells);
+        if (registeredCells != null)
+            routeCells.ExceptWith(registeredCells);
     }
 
     private void Start()
@@ -104,137 +100,21 @@ public class EnemyMovement : MonoBehaviour
         return CurrentPosition + points[index];
     }
 
-    Vector3 StartPoint
-    {
-        get
-        {
-            if (start != null) return start.position;
-            var spawner = FindAnyObjectByType<EnemySpawner>();
-            return spawner != null ? spawner.transform.position : transform.position;
-        }
-    }
-
-    Vector3 EndPoint
-    {
-        get
-        {
-            if (end != null) return end.position;
-            var door = FindAnyObjectByType<AllySpawner>();
-            return door != null ? door.transform.position : transform.position;
-        }
-    }
-
-    // Plans the walk; corners are world positions at cell centres, keeping the authored depth of the points
-    bool TryPlan(out List<Vector3Int> cells, out Vector3[] corners)
-    {
-        cells = null;
-        corners = null;
-        PlacementGrid.CacheTilemaps();
-        if (!PlacementGrid.Available) return false;
-
-        var startCell = PlacementGrid.WorldToCell(StartPoint);
-        var endCell = PlacementGrid.WorldToCell(EndPoint);
-        var bounds = PlacementGrid.TilemapBounds();
-        var min = Vector3Int.Min(Vector3Int.Min(bounds.min, startCell), endCell) - new Vector3Int(1, 1, 0);
-        var max = Vector3Int.Max(Vector3Int.Max(bounds.max, startCell + Vector3Int.one), endCell + Vector3Int.one) + new Vector3Int(1, 1, 0);
-        bounds.SetMinMax(new Vector3Int(min.x, min.y, startCell.z), new Vector3Int(max.x, max.y, startCell.z + 1));
-
-        cells = RoutePlanner.FindPath(startCell, endCell, PlacementGrid.BlocksWalking, bounds);
-        if (cells.Count == 0) return false;
-        cells = RoutePlanner.Meander(cells, PlacementGrid.BlocksWalking, bounds, meander);
-
-        float depth = points != null && points.Length > 0 ? points[0].z : 0f;
-        var cornerCells = RoutePlanner.Corners(cells);
-        corners = new Vector3[cornerCells.Count];
-        for (int i = 0; i < cornerCells.Count; i++)
-        {
-            var position = PlacementGrid.CellCenter(cornerCells[i]);
-            position.z = depth;
-            corners[i] = position;
-        }
-        return true;
-    }
-
-    // ------------------------------------------------ Edit-mode preview
-
-    Vector3[] preview;
-    bool previewFailed;
-    bool previewDirty = true;
-    Vector3 previewStart, previewEnd;
-    int previewTilesVersion = -1;
-
-    // Bumped by every tile painted or erased. Watched from a static editor hook: OnEnable never runs in edit mode
-    // on a component without [ExecuteAlways], so a subscription there missed every brush stroke
-    static int tilesVersion;
-
-#if UNITY_EDITOR
-    [UnityEditor.InitializeOnLoadMethod]
-    static void WatchTiles()
-    {
-        Tilemap.tilemapTileChanged -= OnAnyTilesChanged;
-        Tilemap.tilemapTileChanged += OnAnyTilesChanged;
-        // Undo/redo restores tiles without raising tilemapTileChanged
-        UnityEditor.Undo.undoRedoPerformed -= OnUndoRedo;
-        UnityEditor.Undo.undoRedoPerformed += OnUndoRedo;
-    }
-
-    static void OnUndoRedo() => OnAnyTilesChanged(null, null);
-
-    static void OnAnyTilesChanged(Tilemap tilemap, Tilemap.SyncTile[] tiles)
-    {
-        tilesVersion++;
-        UnityEditor.SceneView.RepaintAll();
-    }
-#endif
-
-    void OnValidate() => previewDirty = true;
-
-    // What the gizmo draws: the live route in play mode, the planner's preview in edit mode
-    Vector3[] GizmoPoints()
-    {
-        if (Application.isPlaying || !procedural)
-            return points;
-
-        Vector3 startNow = StartPoint, endNow = EndPoint;
-        if (previewDirty || previewTilesVersion != tilesVersion || startNow != previewStart || endNow != previewEnd)
-        {
-            previewDirty = false;
-            previewTilesVersion = tilesVersion;
-            previewStart = startNow;
-            previewEnd = endNow;
-            previewFailed = !TryPlan(out _, out preview);
-        }
-        return previewFailed ? null : preview;
-    }
-
     private void OnDrawGizmos()
     {
-        var drawn = GizmoPoints();
-        if (procedural && !Application.isPlaying && previewFailed)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(previewStart, previewEnd);
-#if UNITY_EDITOR
-            var style = new GUIStyle { fontStyle = FontStyle.Bold, fontSize = 12 };
-            style.normal.textColor = Color.red;
-            UnityEditor.Handles.Label((previewStart + previewEnd) * 0.5f, "NO ROUTE: the decoration closes every way", style);
-#endif
-            return;
-        }
-        if (drawn == null || drawn.Length == 0) return;
+        if (points == null || points.Length == 0) return;
 
-        // Procedural points are world positions already; hand-placed ones hang from the object
-        Vector3 origin = procedural ? Vector3.zero : CurrentPosition;
+        Vector3 origin = CurrentPosition;
 
-        for (int i = 0; i < drawn.Length; i++)
+        for (int i = 0; i < points.Length; i++)
         {
-            Vector3 worldPos = origin + drawn[i];
-            if (i < drawn.Length - 1 || Forks)
+            Vector3 worldPos = origin + points[i];
+            if (i < points.Length - 1 || Forks)
             {
                 Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.6f);
                 Gizmos.DrawWireSphere(worldPos, flagRadius);
             }
-            if (i == drawn.Length - 1 && Forks)
+            if (i == points.Length - 1 && Forks)
             {
                 Gizmos.color = pathColor;
                 foreach (var branch in branches)
@@ -250,7 +130,7 @@ public class EnemyMovement : MonoBehaviour
                 Gizmos.color = Color.white;
                 Gizmos.DrawWireSphere(worldPos, waypointRadius * 1.6f);
             }
-            else if (i == drawn.Length - 1)
+            else if (i == points.Length - 1)
             {
                 Gizmos.color = new Color(1f, 0.25f, 0.25f, 0.95f); // Red for Bunker/End
                 Gizmos.DrawSphere(worldPos, waypointRadius * 1.4f);
@@ -266,15 +146,22 @@ public class EnemyMovement : MonoBehaviour
             }
 
             // Draw line to next point
-            if (i < drawn.Length - 1)
+            if (i < points.Length - 1)
             {
-                Vector3 nextPos = origin + drawn[i + 1];
+                Vector3 nextPos = origin + points[i + 1];
                 Gizmos.color = pathColor;
-                Gizmos.DrawLine(worldPos, nextPos);
+                // Soldiers never walk diagonally: draw the L they take
+                Vector3 legStart = worldPos;
+                if (RouteGeometry.TryGetCorner(worldPos, nextPos, verticalFirst, out Vector3 corner))
+                {
+                    Gizmos.DrawLine(worldPos, corner);
+                    legStart = corner;
+                }
+                Gizmos.DrawLine(legStart, nextPos);
 
-                // Draw directional marker along line
-                Vector3 midPoint = (worldPos + nextPos) * 0.5f;
-                Vector3 dir = (nextPos - worldPos).normalized;
+                // Direction marker on the leg that reaches the next flag
+                Vector3 midPoint = (legStart + nextPos) * 0.5f;
+                Vector3 dir = (nextPos - legStart).normalized;
                 Vector3 perp = new Vector3(-dir.y, dir.x, 0f) * 0.25f;
                 Gizmos.color = Color.white;
                 Gizmos.DrawLine(midPoint - dir * 0.3f + perp, midPoint);
@@ -285,10 +172,10 @@ public class EnemyMovement : MonoBehaviour
             if (showLabels)
             {
                 string label = i == 0 ? $"{gameObject.name} [START]" :
-                               i == drawn.Length - 1 ? $"{gameObject.name} [END]" :
+                               i == points.Length - 1 ? $"{gameObject.name} [END]" :
                                $"{i}";
                 var style = new GUIStyle();
-                style.normal.textColor = (i == 0) ? Color.green : (i == drawn.Length - 1) ? Color.red : Color.cyan;
+                style.normal.textColor = (i == 0) ? Color.green : (i == points.Length - 1) ? Color.red : Color.cyan;
                 style.fontStyle = FontStyle.Bold;
                 style.fontSize = 11;
                 UnityEditor.Handles.Label(worldPos + Vector3.up * 0.5f, label, style);
@@ -299,13 +186,12 @@ public class EnemyMovement : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        var drawn = GizmoPoints();
-        if (drawn == null || drawn.Length < 2) return;
+        if (points == null || points.Length < 2) return;
 #if UNITY_EDITOR
-        Vector3 origin = procedural ? Vector3.zero : CurrentPosition;
-        Vector3[] worldPoints = new Vector3[drawn.Length];
-        for (int i = 0; i < drawn.Length; i++)
-            worldPoints[i] = origin + drawn[i];
+        Vector3 origin = CurrentPosition;
+        Vector3[] worldPoints = new Vector3[points.Length];
+        for (int i = 0; i < points.Length; i++)
+            worldPoints[i] = origin + points[i];
 
         UnityEditor.Handles.color = pathColor;
         UnityEditor.Handles.DrawAAPolyLine(6f, worldPoints);
