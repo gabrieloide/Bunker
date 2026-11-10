@@ -49,10 +49,20 @@ public class SoundBankEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    // The editor's own clip preview (what the AudioClip inspector uses): it needs no AudioListener in the open scene
+    static readonly System.Reflection.MethodInfo playPreviewClip = typeof(AudioImporter).Assembly.GetType("UnityEditor.AudioUtil")?
+        .GetMethod("PlayPreviewClip", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public,
+            null, new[] { typeof(AudioClip), typeof(int), typeof(bool) }, null);
+
     static void Preview(SoundBank.Entry entry)
     {
         var clip = SoundBank.Synthesize(entry, 0);
         if (clip == null) return;
+        if (playPreviewClip != null && !Application.isPlaying)
+        {
+            playPreviewClip.Invoke(null, new object[] { clip, 0, false });
+            return;
+        }
         if (previewSource == null)
         {
             var host = EditorUtility.CreateGameObjectWithHideFlags("SoundBankPreview", HideFlags.HideAndDontSave, typeof(AudioSource));

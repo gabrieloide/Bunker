@@ -78,6 +78,7 @@ public class SoundBank : ScriptableObject
     static SoundBank instance;
     static Dictionary<Sfx, Entry> lookup;
     static AudioSource sfxSource;
+    static AudioListener listener;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
@@ -85,6 +86,27 @@ public class SoundBank : ScriptableObject
         instance = null;
         lookup = null;
         sfxSource = null;
+        listener = null;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Unity hears nothing without an AudioListener and no scene camera carries one (Wwise used its own listener),
+    // so the persistent audio host brings it, before the first scene starts
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void CreateHost()
+    {
+        SfxSource();
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    // Exactly one listener: the host's steps aside while a scene brings its own
+    static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        if (listener == null) return;
+        bool sceneHasOne = false;
+        foreach (var other in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+            if (other != listener && other.isActiveAndEnabled) sceneHasOne = true;
+        listener.enabled = !sceneHasOne;
     }
 
     public static void Play(Sfx id)
@@ -117,14 +139,31 @@ public class SoundBank : ScriptableObject
             parameters.startFrequency = Mathf.Clamp(parameters.startFrequency * pitch, 0.01f, 1f);
     }
 
+    // Synthesizing one sound can take a tenth of a second, so the host warms one per frame from the start:
+    // nothing stalls the first time it plays. Returns false once every sound is ready.
+    public static bool WarmNext()
+    {
+        if (!TryLoad()) return false;
+        foreach (var entry in instance.entries)
+            if (entry.takes == null)
+            {
+                EnsureTakes(entry);
+                return true;
+            }
+        return false;
+    }
+
+    static void EnsureTakes(Entry entry)
+    {
+        if (entry.takes != null) return;
+        entry.takes = new AudioClip[TakeCount];
+        for (int i = 0; i < TakeCount; i++)
+            entry.takes[i] = Synthesize(entry, i);
+    }
+
     static AudioClip NextTake(Entry entry)
     {
-        if (entry.takes == null)
-        {
-            entry.takes = new AudioClip[TakeCount];
-            for (int i = 0; i < TakeCount; i++)
-                entry.takes[i] = Synthesize(entry, i);
-        }
+        EnsureTakes(entry);
         var clip = entry.takes[entry.nextTake];
         entry.nextTake = (entry.nextTake + 1) % TakeCount;
         return clip;
@@ -155,12 +194,14 @@ public class SoundBank : ScriptableObject
         return true;
     }
 
-    // One 2D source kept across scene loads; PlayOneShot lets the effects overlap
+    // One 2D source kept across scene loads (PlayOneShot lets the effects overlap), next to the game's listener
     static AudioSource SfxSource()
     {
         if (sfxSource != null) return sfxSource;
-        var host = new GameObject("[Audio Sfx]");
+        var host = new GameObject("[Audio]");
         DontDestroyOnLoad(host);
+        listener = host.AddComponent<AudioListener>();
+        host.AddComponent<SoundBankWarmup>();
         sfxSource = host.AddComponent<AudioSource>();
         sfxSource.playOnAwake = false;
         sfxSource.spatialBlend = 0f;
