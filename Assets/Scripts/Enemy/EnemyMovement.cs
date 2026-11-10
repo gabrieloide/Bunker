@@ -157,18 +157,33 @@ public class EnemyMovement : MonoBehaviour
     bool previewFailed;
     bool previewDirty = true;
     Vector3 previewStart, previewEnd;
+    int previewTilesVersion = -1;
 
-    void OnValidate() => previewDirty = true;
+    // Bumped by every tile painted or erased. Watched from a static editor hook: OnEnable never runs in edit mode
+    // on a component without [ExecuteAlways], so a subscription there missed every brush stroke
+    static int tilesVersion;
 
-    void OnEnable()
+#if UNITY_EDITOR
+    [UnityEditor.InitializeOnLoadMethod]
+    static void WatchTiles()
     {
-        Tilemap.tilemapTileChanged += OnTilesChanged;
-        previewDirty = true;
+        Tilemap.tilemapTileChanged -= OnAnyTilesChanged;
+        Tilemap.tilemapTileChanged += OnAnyTilesChanged;
+        // Undo/redo restores tiles without raising tilemapTileChanged
+        UnityEditor.Undo.undoRedoPerformed -= OnUndoRedo;
+        UnityEditor.Undo.undoRedoPerformed += OnUndoRedo;
     }
 
-    void OnDisable() => Tilemap.tilemapTileChanged -= OnTilesChanged;
+    static void OnUndoRedo() => OnAnyTilesChanged(null, null);
 
-    void OnTilesChanged(Tilemap tilemap, Tilemap.SyncTile[] tiles) => previewDirty = true;
+    static void OnAnyTilesChanged(Tilemap tilemap, Tilemap.SyncTile[] tiles)
+    {
+        tilesVersion++;
+        UnityEditor.SceneView.RepaintAll();
+    }
+#endif
+
+    void OnValidate() => previewDirty = true;
 
     // What the gizmo draws: the live route in play mode, the planner's preview in edit mode
     Vector3[] GizmoPoints()
@@ -177,9 +192,10 @@ public class EnemyMovement : MonoBehaviour
             return points;
 
         Vector3 startNow = StartPoint, endNow = EndPoint;
-        if (previewDirty || startNow != previewStart || endNow != previewEnd)
+        if (previewDirty || previewTilesVersion != tilesVersion || startNow != previewStart || endNow != previewEnd)
         {
             previewDirty = false;
+            previewTilesVersion = tilesVersion;
             previewStart = startNow;
             previewEnd = endNow;
             previewFailed = !TryPlan(out _, out preview);
