@@ -69,6 +69,97 @@ namespace Bunker.Tests
             Assert.AreEqual(4, path.Count, "the spawner and the bunker door may sit on decorated cells");
         }
 
+        static readonly BoundsInt Field = new BoundsInt(0, 0, 0, 40, 24, 1);
+
+        static List<Vector3Int> Wind(HashSet<Vector3Int> walls, RoutePlanner.MeanderSettings settings, out List<Vector3Int> shortest)
+        {
+            shortest = RoutePlanner.FindPath(new Vector3Int(2, 12, 0), new Vector3Int(37, 12, 0), c => walls.Contains(c), Field);
+            return RoutePlanner.Meander(shortest, c => walls.Contains(c), Field, settings);
+        }
+
+        static HashSet<Vector3Int> Clumps()
+        {
+            var walls = new HashSet<Vector3Int>();
+            foreach (var (cx, cy) in new[] { (12, 6), (20, 17), (28, 8) })
+                for (int x = -1; x <= 1; x++)
+                    for (int y = -1; y <= 1; y++)
+                        walls.Add(new Vector3Int(cx + x, cy + y, 0));
+            return walls;
+        }
+
+        [Test]
+        public void Meander_WindsToAboutTheTargetLength()
+        {
+            var settings = RoutePlanner.MeanderSettings.Default;
+            var route = Wind(Clumps(), settings, out var shortest);
+            int target = Mathf.RoundToInt((shortest.Count - 1) * settings.lengthFactor);
+
+            Assert.Greater(route.Count, shortest.Count, "it grew");
+            Assert.LessOrEqual(route.Count - 1, target, "never past the target");
+            Assert.GreaterOrEqual(route.Count - 1, target - 2 * settings.minSegment, "and as close as a last detour allows");
+        }
+
+        [Test]
+        public void Meander_StaysAWalkableSelfAvoidingRoute()
+        {
+            var walls = Clumps();
+            var route = Wind(walls, RoutePlanner.MeanderSettings.Default, out var shortest);
+
+            Assert.AreEqual(shortest[0], route[0]);
+            Assert.AreEqual(shortest[shortest.Count - 1], route[route.Count - 1]);
+            var seen = new HashSet<Vector3Int>();
+            for (int i = 0; i < route.Count; i++)
+            {
+                Assert.IsTrue(seen.Add(route[i]), $"{route[i]} walked twice");
+                Assert.IsFalse(walls.Contains(route[i]), $"{route[i]} is a wall");
+                Assert.IsTrue(Field.Contains(route[i]));
+                if (i > 0)
+                    Assert.AreEqual(1, Mathf.Abs(route[i].x - route[i - 1].x) + Mathf.Abs(route[i].y - route[i - 1].y), "one straight step at a time");
+            }
+        }
+
+        [Test]
+        public void Meander_KeepsTheGapBetweenLegsThatPassByEachOther()
+        {
+            var settings = RoutePlanner.MeanderSettings.Default;
+            var route = Wind(Clumps(), settings, out _);
+
+            // Cells far apart along the route (not the two sides of one corner) must be more than `gap` cells apart on the map
+            for (int i = 0; i < route.Count; i++)
+                for (int j = i + 2 * settings.gap + 2; j < route.Count; j++)
+                {
+                    int distance = Mathf.Max(Mathf.Abs(route[i].x - route[j].x), Mathf.Abs(route[i].y - route[j].y));
+                    Assert.Greater(distance, settings.gap, $"cells {i} {route[i]} and {j} {route[j]} leave no room for towers");
+                }
+        }
+
+        [Test]
+        public void Meander_SameSeedSameRoute_OtherSeedOtherRoute()
+        {
+            var settings = RoutePlanner.MeanderSettings.Default;
+            var first = Wind(Clumps(), settings, out _);
+            var again = Wind(Clumps(), settings, out _);
+            CollectionAssert.AreEqual(first, again);
+
+            bool anyDifferent = false;
+            for (int seed = 2; seed <= 6 && !anyDifferent; seed++)
+            {
+                settings.seed = seed;
+                var other = Wind(Clumps(), settings, out _);
+                anyDifferent = other.Count != first.Count || !new HashSet<Vector3Int>(other).SetEquals(first);
+            }
+            Assert.IsTrue(anyDifferent, "another seed gives another variant");
+        }
+
+        [Test]
+        public void Meander_FactorOne_KeepsTheShortestWalk()
+        {
+            var settings = RoutePlanner.MeanderSettings.Default;
+            settings.lengthFactor = 1f;
+            var route = Wind(Clumps(), settings, out var shortest);
+            CollectionAssert.AreEqual(shortest, route);
+        }
+
         [Test]
         public void Corners_KeepEndsAndTurnsOnly()
         {

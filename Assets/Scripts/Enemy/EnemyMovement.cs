@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // An enemy route: the flags soldiers walk through, in order, to the bunker. A procedural route plans itself when the level
-// loads: the shortest walk from the enemy spawner to the bunker door around the decoration and limits (trees, cliffs),
-// turning as little as possible; its flags are the corners. In edit mode the gizmo previews it and follows every tile change.
+// loads: from the enemy spawner to the bunker door around the decoration and limits (trees, cliffs), first the shortest walk
+// and then wound into a tower defense route (RoutePlanner.Meander); its flags are the corners. In edit mode the gizmo
+// previews it and follows every tile change.
 // Runs before the SimulationBridge, which reads the route on Start.
 [DefaultExecutionOrder(-600)]
 public class EnemyMovement : MonoBehaviour
@@ -21,6 +22,8 @@ public class EnemyMovement : MonoBehaviour
     public Transform start;
     [Tooltip("Where they end; empty = the AllySpawner (the bunker door)")]
     public Transform end;
+    [Tooltip("How the route winds on its way: a tower defense route is long and leaves room for towers between its legs")]
+    public RoutePlanner.MeanderSettings meander = RoutePlanner.MeanderSettings.Default;
 
     [Header("Route")]
     [Tooltip("Enemy flags in walking order; the last one is the bunker. Every flag is a circle the wave spreads over. Filled by the planner when procedural")]
@@ -138,6 +141,7 @@ public class EnemyMovement : MonoBehaviour
 
         cells = RoutePlanner.FindPath(startCell, endCell, PlacementGrid.BlocksWalking, bounds);
         if (cells.Count == 0) return false;
+        cells = RoutePlanner.Meander(cells, PlacementGrid.BlocksWalking, bounds, meander);
 
         float depth = points != null && points.Length > 0 ? points[0].z : 0f;
         var cornerCells = RoutePlanner.Corners(cells);
