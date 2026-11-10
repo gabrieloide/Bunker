@@ -295,12 +295,20 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    // Seconds until the wave's first enemy reaches the player's flags once the wave has started; < 0 when it already has
+    float arrivalLeft = -1f;
+
+    // Two countdowns back to back: PREP counts the real building time (towers can only be placed then), and once the wave
+    // starts WAVE counts down the enemies' walk, hitting zero as the first of them enters the player's flags
     private void UpdateWaveDisplay()
     {
         if (waveText == null) return;
+        var bridge = SimulationBridge.Instance;
+        float walk = bridge != null ? bridge.FlagArrivalSeconds : 0f;
 
         if (SimulationBridge.IsPreparationPhase)
         {
+            arrivalLeft = walk;
             int secondsLeft = Mathf.CeilToInt(SimEventDispatcher.PhaseTimer);
             if (!wasPrepPhase || secondsLeft != lastPrepSeconds)
             {
@@ -308,8 +316,34 @@ public class UIManager : MonoBehaviour
                 lastPrepSeconds = secondsLeft;
                 waveText.text = $"PREP\n{secondsLeft:00}s";
             }
+            return;
         }
-        else if (wasPrepPhase || SimEventDispatcher.Wave != lastWave)
+
+        if (arrivalLeft >= 0f)
+        {
+            arrivalLeft -= Time.deltaTime;
+            if (bridge != null && bridge.EnemyInTerritory) arrivalLeft = -1f;
+        }
+        if (arrivalLeft >= 0f)
+        {
+            int secondsLeft = Mathf.CeilToInt(arrivalLeft);
+            if (wasPrepPhase || secondsLeft != lastPrepSeconds)
+            {
+                if (wasPrepPhase) CameraShake.MicroShake();
+                wasPrepPhase = false;
+                lastWave = SimEventDispatcher.Wave;
+                lastPrepSeconds = secondsLeft;
+                waveText.text = $"WAVE\n{secondsLeft:00}s";
+            }
+            return;
+        }
+        if (lastPrepSeconds >= 0)
+        {
+            // The enemies just reached the flags: show the wave number
+            lastPrepSeconds = -1;
+            lastWave = -1;
+        }
+        if (wasPrepPhase || SimEventDispatcher.Wave != lastWave)
         {
             bool transitionedFromPrep = wasPrepPhase;
             int newWave = SimEventDispatcher.Wave;

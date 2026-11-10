@@ -19,7 +19,7 @@ public class AllyView : MonoBehaviour
     public void OnDied()
     {
         if (deathParticle != null)
-            Instantiate(deathParticle, transform.position, Quaternion.identity);
+            OneShotEffect.EnsureFrontSorting(Instantiate(deathParticle, transform.position, Quaternion.identity));
         SoundBank.Play(deathSound);
     }
 }

@@ -12,6 +12,8 @@ public class SoundBankEditor : Editor
         var bank = (SoundBank)target;
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("masterVolume"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultMusic"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("musicVolume"));
         EditorGUILayout.Space();
         var entries = serializedObject.FindProperty("entries");
         for (int i = 0; i < entries.arraySize; i++)

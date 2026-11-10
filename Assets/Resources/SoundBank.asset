@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: SoundBank
   m_EditorClassIdentifier: Assembly-CSharp::SoundBank
   masterVolume: 0.4
+  defaultMusic: {fileID: 8300000, guid: 5afa4979551e3da4cbeb735715328078, type: 3}
+  musicVolume: 0.35
   entries:
   - id: 1
     volume: 0.35

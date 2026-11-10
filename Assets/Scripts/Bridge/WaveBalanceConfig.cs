@@ -16,6 +16,8 @@ public class WaveBalanceConfig : ScriptableObject
     [Min(0f)] public float groupGap = 0.2f;
     [Tooltip("Every enemy walks at its own speed times this (2 = twice as fast)")]
     [Min(0.05f)] public float enemySpeedMultiplier = 1f;
+    [Tooltip("Every enemy starts with its own life times this (0.5 = half): more, weaker enemies make a swarm")]
+    [Min(0.05f)] public float enemyLifeMultiplier = 1f;
 
     [Header("Soldier contact")]
     [Tooltip("An enemy and an ally closer than this stop and fight in melee; 0 lets them walk through each other")]

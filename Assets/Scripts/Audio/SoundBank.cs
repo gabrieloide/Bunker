@@ -76,11 +76,15 @@ public class SoundBank : ScriptableObject
 
     [Tooltip("Scales every sound; each entry's volume is relative to it")]
     [Range(0f, 1f)] public float masterVolume = 0.4f;
+    [Header("Music")]
+    [Tooltip("Looped in every level that has no music of its own (LevelDefinition.music)")]
+    public AudioClip defaultMusic;
+    [Range(0f, 1f)] public float musicVolume = 0.35f;
     public List<Entry> entries = new List<Entry>();
 
     static SoundBank instance;
     static Dictionary<Sfx, Entry> lookup;
-    static AudioSource sfxSource;
+    static AudioSource sfxSource, musicSource;
     static AudioListener listener;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -89,6 +93,7 @@ public class SoundBank : ScriptableObject
         instance = null;
         lookup = null;
         sfxSource = null;
+        musicSource = null;
         listener = null;
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
@@ -122,6 +127,30 @@ public class SoundBank : ScriptableObject
         if (clip == null) return;
         entry.lastPlayed = now;
         SfxSource().PlayOneShot(clip, entry.volume * instance.masterVolume);
+    }
+
+    // Loops `clip` (or the default music when null); keeps playing if it is already the one on
+    public static void PlayMusic(AudioClip clip = null)
+    {
+        if (!TryLoad()) return;
+        if (clip == null) clip = instance.defaultMusic;
+        if (clip == null) return;
+        if (musicSource == null)
+        {
+            musicSource = SfxSource().gameObject.AddComponent<AudioSource>();
+            musicSource.playOnAwake = false;
+            musicSource.loop = true;
+            musicSource.spatialBlend = 0f;
+        }
+        musicSource.volume = instance.musicVolume;
+        if (musicSource.isPlaying && musicSource.clip == clip) return;
+        musicSource.clip = clip;
+        musicSource.Play();
+    }
+
+    public static void StopMusic()
+    {
+        if (musicSource != null) musicSource.Stop();
     }
 
     // Synthesizes a take; the first is the sound as designed, the others are pitched a little up and down

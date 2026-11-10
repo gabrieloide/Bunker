@@ -17,6 +17,10 @@ public class LevelDefinition : ScriptableObject
     [Tooltip("Life of the enemy base; destroying it wins the level")]
     [Min(1f)] public float enemyBaseLife = 500f;
 
+    [Header("Music")]
+    [Tooltip("Looped while the level plays; empty = the SoundBank's default music")]
+    public AudioClip music;
+
     [Header("Waves")]
     [Tooltip("Empty = the scene's own WaveBalanceConfig")]
     public WaveBalanceConfig balance;

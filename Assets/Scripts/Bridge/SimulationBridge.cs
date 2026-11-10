@@ -250,7 +250,7 @@ public class SimulationBridge : MonoBehaviour
             ColliderBox(enemyPrefabs[i], out var half, out var offset);
             types[i] = new EnemyTypeDef
             {
-                Life = data.BaseLife,
+                Life = data.BaseLife * balance.enemyLifeMultiplier,
                 Damage = data.BaseDamage,
                 FireInterval = data.BaseAttackInterval,
                 Defense = data.BaseDefense,
@@ -660,8 +660,44 @@ public class SimulationBridge : MonoBehaviour
         }
         DrainEvents();
         SyncPhaseAndCheckEarlyStart();
+        UpdateFlagArrival();
         CreateViews();
         SyncViews();
+    }
+
+    // Seconds the fastest enemy of this wave needs from its spawner to the player's flags; 0 with no territory
+    public float FlagArrivalSeconds { get; private set; }
+    // Some enemy of the running wave already stands inside the player's territory
+    public bool EnemyInTerritory { get; private set; }
+
+    void UpdateFlagArrival()
+    {
+        if (!em.Exists(simEntity) || !em.HasComponent<WaveConfig>(simEntity) || !em.HasComponent<WaveState>(simEntity))
+            return;
+        var config = em.GetComponentData<WaveConfig>(simEntity);
+        var state = em.GetComponentData<WaveState>(simEntity);
+
+        float fastest = 0f;
+        int unlocked = Mathf.Min(state.UnlockedTypes, enemyPrefabs.Length);
+        for (int i = 0; i < unlocked; i++)
+        {
+            var enemy = enemyPrefabs[i] != null ? enemyPrefabs[i].GetComponent<Enemy>() : null;
+            if (enemy != null && enemy.Data != null)
+                fastest = Mathf.Max(fastest, enemy.Data.BaseMoveSpeed);
+        }
+        fastest *= balance.enemySpeedMultiplier;
+        if (state.Buff == EnemyBuffKind.Velocity) fastest *= balance.speedMultiplier;
+        FlagArrivalSeconds = fastest > 0f ? config.FlagZoneDistanceAlongPath / fastest : 0f;
+
+        EnemyInTerritory = false;
+        if (state.Phase == WavePhase.WaitingToStart || !FlagTerritory.HasTerritory) return;
+        using var positions = enemyQuery.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+        foreach (var t in positions)
+            if (FlagTerritory.Contains(t.Position))
+            {
+                EnemyInTerritory = true;
+                break;
+            }
     }
 
     void SyncPhaseAndCheckEarlyStart()

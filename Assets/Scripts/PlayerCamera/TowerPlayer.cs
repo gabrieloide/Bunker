@@ -46,7 +46,7 @@ public class TowerPlayer : MonoBehaviour
             SoundBank.Play(HitSound);
             RetroCRTFilter.Hit();
             if (hitParticle != null)
-                Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform);
+                OneShotEffect.EnsureFrontSorting(Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform));
         }
     }
 

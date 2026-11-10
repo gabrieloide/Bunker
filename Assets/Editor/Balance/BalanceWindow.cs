@@ -640,7 +640,7 @@ public class BalanceWindow : EditorWindow
         // One panel per asset: each level points at its own config (Levels section, "Waves config" column)
         foreach (var wave in waves)
         {
-            var panel = Panel(wave.name, "Every field has a tooltip. Enemy life per wave = base × (1 + growth × (wave − 1)).");
+            var panel = Panel(wave.name, "Every field has a tooltip. Enemy life per wave = base × life multiplier × (1 + growth × (wave − 1)).");
             var so = new SerializedObject(wave);
             var it = so.GetIterator();
             for (bool enter = true; it.NextVisible(enter); enter = false)

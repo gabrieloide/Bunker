@@ -52,11 +52,13 @@ public class GameManager : MonoBehaviour
         StartingHandDealt = true;
 
         SimEventDispatcher.OnWavePhaseChanged += OnWavePhaseChanged;
+        SoundBank.PlayMusic(LevelSetup.Current != null ? LevelSetup.Current.music : null);
     }
 
     private void OnDestroy()
     {
         SimEventDispatcher.OnWavePhaseChanged -= OnWavePhaseChanged;
+        SoundBank.StopMusic();
     }
 
     // Clearing a wave earns a flag to win ground back and new towers (kills only drop allies and effect cards)
