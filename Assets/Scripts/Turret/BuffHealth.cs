@@ -5,6 +5,7 @@ public class BuffHealth : Card
     protected override void CardBehaviour()
     {
         float healAmount = definition is HealCardDefinition heal ? heal.healAmount : 0f;
+        SoundBank.Play(Sfx.Heal);
         if (SimulationBridge.Instance != null)
         {
             SimulationBridge.Instance.RequestBunkerHeal(healAmount);

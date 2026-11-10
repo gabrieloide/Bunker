@@ -64,5 +64,6 @@ public class FlagCard : Card
     protected override void CardBehaviour()
     {
         SpawnPlacement();
+        SoundBank.Play(Sfx.FlagPlant);
     }
 }

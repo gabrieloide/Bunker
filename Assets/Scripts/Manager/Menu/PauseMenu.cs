@@ -113,6 +113,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+        if (GameIsPaused) SoundBank.Play(Sfx.PauseClose);
         if (pauseMenuUI != null) pauseMenuUI.AddToClassList("hidden");
         Time.timeScale = 1f;
         GameIsPaused = false;
@@ -125,6 +126,7 @@ public class PauseMenu : MonoBehaviour
         ShowOptions(false);
         Time.timeScale = 0f;
         GameIsPaused = true;
+        SoundBank.Play(Sfx.PauseOpen);
     }
 
     void ShowOptions(bool show)

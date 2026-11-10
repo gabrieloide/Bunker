@@ -16,5 +16,6 @@ public class SpawnCardOnMouse : Card
     protected override void CardBehaviour()
     {
         SpawnPlacement();
+        SoundBank.Play(Sfx.MinePlaced);
     }
 }

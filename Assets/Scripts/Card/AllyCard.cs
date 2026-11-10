@@ -26,5 +26,6 @@ public class AllyCard : Card
     {
         if (SimulationBridge.Instance != null && definition is AllyCardDefinition card)
             SimulationBridge.Instance.RequestAlly(card.ally);
+        SoundBank.Play(Sfx.AllyDeploy);
     }
 }

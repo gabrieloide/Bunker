@@ -73,6 +73,7 @@ public class TowerDemolition : MonoBehaviour
     void Demolish()
     {
         if (!TryGetComponent(out GridOccupant occupant)) return;
+        SoundBank.Play(Sfx.TowerDemolished);
         Vector3Int cell = occupant.Cell;
         var body = GetComponentInChildren<SpriteRenderer>();
         Ruin.Leave(cell, transform.position, body, Neighbours);

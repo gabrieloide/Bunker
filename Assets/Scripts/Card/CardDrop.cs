@@ -155,6 +155,7 @@ public class CardDrop : MonoBehaviour
     public void ShowDeck()
     {
         if (deck == null) return;
+        if (!DeckShown) SoundBank.Play(Sfx.DeckAppear);
         isHidingDeck = false;
         DeckShown = true;
         deck.style.display = DisplayStyle.Flex;

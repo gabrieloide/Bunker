@@ -20,5 +20,6 @@ public class HelicopterCard : Card
     protected override void CardBehaviour()
     {
         SpawnPlacement();
+        SoundBank.Play(Sfx.HelicopterLaunch);
     }
 }

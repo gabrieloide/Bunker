@@ -314,6 +314,7 @@ public abstract class Card : MonoBehaviour
     void ElevateCard()
     {
         hovered = true;
+        SoundBank.Play(Sfx.CardHover);
         LeanTween.cancel(gameObject);
         TweenAnchored(HandPosition, 0.12f).setEaseOutQuad();
         LeanTween.scale(gameObject, Vector3.one * 1.08f, 0.12f).setEaseOutQuad();
@@ -551,6 +552,8 @@ public abstract class Card : MonoBehaviour
         }
         else
         {
+            // Dragged out to the map and refused (blocked cell, out of territory, wrong phase); a short drag is just a cancel
+            if (d > dragThreshold) SoundBank.Play(Sfx.CardInvalid);
             ReturnToSlot();
         }
     }
@@ -563,6 +566,7 @@ public abstract class Card : MonoBehaviour
     // Plays the flip where the object goes and resolves the card when it ends; returns the flip's length
     float PlayFlipAndResolve()
     {
+        SoundBank.Play(Sfx.CardFlip);
         float flipDuration = 0f;
         if (CardFlipAnim != null)
         {

@@ -32,6 +32,7 @@ public class NormalCard : Card
     {
         ReleaseReservation();
         SpawnPlacement();
+        SoundBank.Play(Sfx.TowerBuilt);
     }
 
     protected override void OnDestroy()

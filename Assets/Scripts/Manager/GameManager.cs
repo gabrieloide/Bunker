@@ -60,10 +60,16 @@ public class GameManager : MonoBehaviour
     }
 
     // Clearing a wave earns a flag to win ground back and new towers (kills only drop allies and effect cards)
+    Bunker.Simulation.WavePhase lastPhase = Bunker.Simulation.WavePhase.WaitingToStart;
+
     void OnWavePhaseChanged(Bunker.Simulation.WavePhase phase)
     {
         if (phase == Bunker.Simulation.WavePhase.Spawning)
             SoundBank.Play(Sfx.WaveStart);
+        // Back to preparation after a wave was running: the wave is beaten
+        if (phase == Bunker.Simulation.WavePhase.WaitingToStart && lastPhase != Bunker.Simulation.WavePhase.WaitingToStart && !SimEventDispatcher.IsGameOver)
+            SoundBank.Play(Sfx.WaveCleared);
+        lastPhase = phase;
         if (phase != Bunker.Simulation.WavePhase.WaitingToStart || SimEventDispatcher.IsGameOver || catalog == null)
             return;
         DealFlags(catalog.flagsPerWave);

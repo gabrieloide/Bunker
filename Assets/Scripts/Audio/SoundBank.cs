@@ -30,7 +30,23 @@ public enum Sfx
     WaveStart = 21,
     EnemyBaseHit = 22,
     EnemyBaseDestroyed = 23,
-    Defeat = 24
+    Defeat = 24,
+    UiClick = 25,
+    UiHover = 26,
+    CardHover = 27,
+    CardInvalid = 28,
+    CardFlip = 29,
+    FlagPlant = 30,
+    TowerBuilt = 31,
+    MinePlaced = 32,
+    AllyDeploy = 33,
+    HelicopterLaunch = 34,
+    TowerDemolished = 35,
+    Heal = 36,
+    DeckAppear = 37,
+    PauseOpen = 38,
+    PauseClose = 39,
+    WaveCleared = 40
 }
 
 // All the game's sound effects, synthesized at runtime with the Retro Sound Synthesizer (Tools > Procedural Audio Synthesizer:
