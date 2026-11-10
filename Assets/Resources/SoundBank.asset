@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49bd6eca6ef96947a6e48a468075670, type: 3}
   m_Name: SoundBank
   m_EditorClassIdentifier: Assembly-CSharp::SoundBank
+  masterVolume: 0.4
   entries:
   - id: 1
     volume: 0.35
@@ -2533,6 +2534,79 @@ MonoBehaviour:
         lfoSpeed: 0
         lfoDepth: 0
         delay: 0
+        bitCrush: 0
+        sampleRate: 44100
+        sampleSize: 16
+        masterGain: 0.4
+  - id: 41
+    volume: 0.25
+    variation: 0
+    minInterval: 0.3
+    sound:
+      baseSound:
+        soundName: heart_lub
+        waveType: 2
+        attackTime: 0
+        sustainTime: 0.03
+        sustainPunch: 0.6
+        decayTime: 0.18
+        startFrequency: 0.12
+        minFrequencyCutoff: 0
+        slide: -0.1
+        deltaSlide: 0
+        depth: 0
+        speed: 0
+        frequencyMult: 0
+        changeSpeed: 0
+        dutyCycle: 0
+        dutySweep: 0
+        rate: 0
+        offset: 0
+        flangerSweep: 0
+        lpCutoffFrequency: 1
+        lpCutoffSweep: 0
+        resonance: 0
+        hpCutoffFrequency: 0
+        hpCutoffSweep: 0
+        lfoTarget: 0
+        lfoWaveform: 0
+        lfoSpeed: 0
+        lfoDepth: 0
+        delay: 0
+        bitCrush: 0
+        sampleRate: 44100
+        sampleSize: 16
+        masterGain: 0.6
+      layers:
+      - soundName: heart_dub
+        waveType: 2
+        attackTime: 0
+        sustainTime: 0.03
+        sustainPunch: 0.4
+        decayTime: 0.16
+        startFrequency: 0.11
+        minFrequencyCutoff: 0
+        slide: -0.1
+        deltaSlide: 0
+        depth: 0
+        speed: 0
+        frequencyMult: 0
+        changeSpeed: 0
+        dutyCycle: 0
+        dutySweep: 0
+        rate: 0
+        offset: 0
+        flangerSweep: 0
+        lpCutoffFrequency: 1
+        lpCutoffSweep: 0
+        resonance: 0
+        hpCutoffFrequency: 0
+        hpCutoffSweep: 0
+        lfoTarget: 0
+        lfoWaveform: 0
+        lfoSpeed: 0
+        lfoDepth: 0
+        delay: 0.14
         bitCrush: 0
         sampleRate: 44100
         sampleSize: 16

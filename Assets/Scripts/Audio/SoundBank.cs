@@ -46,7 +46,8 @@ public enum Sfx
     DeckAppear = 37,
     PauseOpen = 38,
     PauseClose = 39,
-    WaveCleared = 40
+    WaveCleared = 40,
+    LowLifeBeat = 41
 }
 
 // All the game's sound effects, synthesized at runtime with the Retro Sound Synthesizer (Tools > Procedural Audio Synthesizer:
@@ -73,6 +74,8 @@ public class SoundBank : ScriptableObject
     const string ResourcePath = "SoundBank";
     const int TakeCount = 3;
 
+    [Tooltip("Scales every sound; each entry's volume is relative to it")]
+    [Range(0f, 1f)] public float masterVolume = 0.4f;
     public List<Entry> entries = new List<Entry>();
 
     static SoundBank instance;
@@ -118,7 +121,7 @@ public class SoundBank : ScriptableObject
         var clip = NextTake(entry);
         if (clip == null) return;
         entry.lastPlayed = now;
-        SfxSource().PlayOneShot(clip, entry.volume);
+        SfxSource().PlayOneShot(clip, entry.volume * instance.masterVolume);
     }
 
     // Synthesizes a take; the first is the sound as designed, the others are pitched a little up and down

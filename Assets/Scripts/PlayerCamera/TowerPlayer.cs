@@ -44,6 +44,7 @@ public class TowerPlayer : MonoBehaviour
         if (enemyDamage > 0f)
         {
             SoundBank.Play(HitSound);
+            RetroCRTFilter.Hit();
             if (hitParticle != null)
                 Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform);
         }

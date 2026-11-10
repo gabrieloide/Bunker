@@ -11,6 +11,8 @@ public class SoundBankEditor : Editor
     {
         var bank = (SoundBank)target;
         serializedObject.Update();
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("masterVolume"));
+        EditorGUILayout.Space();
         var entries = serializedObject.FindProperty("entries");
         for (int i = 0; i < entries.arraySize; i++)
         {
@@ -68,6 +70,6 @@ public class SoundBankEditor : Editor
             var host = EditorUtility.CreateGameObjectWithHideFlags("SoundBankPreview", HideFlags.HideAndDontSave, typeof(AudioSource));
             previewSource = host.GetComponent<AudioSource>();
         }
-        previewSource.PlayOneShot(clip, entry.volume);
+        previewSource.PlayOneShot(clip, entry.volume * (Selection.activeObject is SoundBank bank ? bank.masterVolume : 1f));
     }
 }
