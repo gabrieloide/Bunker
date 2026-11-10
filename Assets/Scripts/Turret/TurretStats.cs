@@ -4,6 +4,6 @@ using UnityEngine;
 public class TurretStats : MonoBehaviour
 {
     [Header("Sounds")]
-    [SerializeField] protected AK.Wwise.Event shoot;
-    [SerializeField] protected AK.Wwise.Event destroy;
+    [SerializeField] protected Sfx shoot = Sfx.TowerShot;
+    [SerializeField] protected Sfx destroy = Sfx.None;
 }

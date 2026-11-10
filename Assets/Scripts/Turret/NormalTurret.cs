@@ -21,6 +21,6 @@ public class NormalTurret : TurretCard
             headRotation.transform.localScale = dot > 0 ? new Vector3(1, 1, 1) : new Vector3(1, -1, 1);
         }
 
-        shoot.Post(gameObject);
+        SoundBank.Play(shoot);
     }
 }

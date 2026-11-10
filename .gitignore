@@ -71,17 +71,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# unofficial .gitignore for WWise + Unity projects
-# dom at audiotankstudios dot com for questions
-#
-# this is based on a slightly older Unity and WWise version but, should be a decent starting point
-#
-# Instructions:
-# 1) Place this in your root folder for your Unity project
-# 2) Modify "WWiseProject/" below to be the path to your .wproj folder inside your Unity assets
-
-# Unity portion based on https://github.com/github/gitignore/blob/master/Unity.gitignore
-
 # unity stuff
 [Ll]ibrary/
 [Tt]emp/
@@ -121,41 +110,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-
-## ---------------- ##
-##   WWise stuff    ##
-## ---------------- ##
-
-# project stuff
-GameJamN3_WwiseProject/.cache/
-GameJamN3_WwiseProject/*.prof
-GameJamN3_WwiseProject/*_WwiseProject.*.validationcache
-GameJamN3_WwiseProject/*_WwiseProject.*.wsettings
-GameJamN3_WwiseProject/**/*.akd
-
-# build stuff (unsure?)
-# Assets/Wwise/Deployment/Plugins/Windows/**/*.meta
-
-# WWise Picker (editor)
-# from https://www.audiokinetic.com/library/edge/?source=Unity&id=unity__troubleshooting.html
-# >> Do not keep AkWwiseProjectData.asset under version control!
-# >> This is a temporary cache file for the Wwise project data,
-# >> so as to avoid having the Wwise Picker continuously parse the Work Unit files.
-Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset*
-
-# notes:
-# 1) if any other files go in Assets/Wwise/Editor/ProjectData/ besides AkWwiseProjectData.asset*,
-#    then don't ignore Assets/Wwise/Editor/ProjectData.meta. If AkWwiseProjectData.asset is the only item in there,
-#    then, it's OK to ignore this file.
-#
-# Assets/Wwise/Editor/ProjectData.meta
-
-## --------------- ##
-## End WWise Stuff ##
-## --------------- ##
-
-# temp install files
-WwiseUnityIntegration_*_Src.zip
 
 # Mac stuff
 .DS_store

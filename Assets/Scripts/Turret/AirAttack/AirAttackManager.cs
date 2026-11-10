@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AirAttackManager : TurretStats, ICardConfigurable
 {
-    [SerializeField] AK.Wwise.Event PlaneSound;
-    [SerializeField] AK.Wwise.Event PlaneShoot;
+    [SerializeField] Sfx PlaneSound = Sfx.PlaneFlyby;
+    [SerializeField] Sfx PlaneShoot = Sfx.PlaneShot;
 
     [SerializeField] GameObject BulletAA;
     [SerializeField] GameObject PlaneGO;
@@ -28,7 +28,7 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     }
     void LaunchPlane()
     {
-        PlaneSound.Post(gameObject);
+        SoundBank.Play(PlaneSound);
         camera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
         Vector3 position = camera != null ? GetPointLeftOfCamera(camera, distance, diametroGO) : Vector3.zero;
         MousePosition = camera != null ? camera.ScreenToWorldPoint(Input.mousePosition) : Vector3.zero;
@@ -77,7 +77,7 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     }
     void Shoot(GameObject airPlanePos)
     {
-        PlaneShoot.Post(gameObject);
+        SoundBank.Play(PlaneShoot);
         if (SimulationBridge.Instance == null)
             return;
 

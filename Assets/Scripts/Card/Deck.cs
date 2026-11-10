@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
-    [SerializeField] AK.Wwise.Event TakeCard;
+    [SerializeField] Sfx TakeCard = Sfx.CardDraw;
     [Tooltip("Arranges the cards in hand; they no longer sit in fixed slots")]
     [SerializeField] HandLayout hand;
     [Tooltip("Cards the hand can hold at once")]
@@ -36,7 +36,7 @@ public class Deck : MonoBehaviour
 
         CardIndex newCard = Instantiate(card.handPrefab, hand.transform);
         hand.Add(newCard.GetComponent<Card>());
-        TakeCard.Post(gameObject);
+        SoundBank.Play(TakeCard);
         if (GameManager.instance != null)
             GameManager.instance.CurrentCardAmount++;
     }

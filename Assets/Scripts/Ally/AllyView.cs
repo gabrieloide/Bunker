@@ -6,22 +6,20 @@ public class AllyView : MonoBehaviour
     public AllyData Data;
 
     [Header("Sound")]
-    [SerializeField] AK.Wwise.Event attackSound;
-    [SerializeField] AK.Wwise.Event deathSound;
+    [SerializeField] Sfx attackSound = Sfx.AllyAttack;
+    [SerializeField] Sfx deathSound = Sfx.AllyDeath;
     [Space]
     [SerializeField] GameObject deathParticle;
 
     public void OnAttack()
     {
-        if (attackSound != null && attackSound.IsValid())
-            attackSound.Post(gameObject);
+        SoundBank.Play(attackSound);
     }
 
     public void OnDied()
     {
         if (deathParticle != null)
             Instantiate(deathParticle, transform.position, Quaternion.identity);
-        if (deathSound != null && deathSound.IsValid())
-            deathSound.Post(gameObject);
+        SoundBank.Play(deathSound);
     }
 }

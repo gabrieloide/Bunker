@@ -84,7 +84,11 @@ public class MatchResultScreen : MonoBehaviour
         Show(victoryTitle, LevelProgress.Next != null);
     }
 
-    void ShowDefeat() => Show(defeatTitle, false);
+    void ShowDefeat()
+    {
+        SoundBank.Play(Sfx.Defeat);
+        Show(defeatTitle, false);
+    }
 
     void Show(string title, bool offerNext)
     {

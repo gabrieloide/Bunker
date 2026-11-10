@@ -53,7 +53,7 @@ public class SimulationBridge : MonoBehaviour
     {
         public ArtilleryShellView Shell;
         public GameObject ImpactEffect;
-        public AK.Wwise.Event ImpactSound;
+        public Sfx ImpactSound;
     }
     readonly List<ArtilleryVisuals> artilleryVisuals = new List<ArtilleryVisuals>();
 
@@ -545,12 +545,11 @@ public class SimulationBridge : MonoBehaviour
     {
         if (viewId < 0 || viewId >= artilleryVisuals.Count) return;
         var visuals = artilleryVisuals[viewId];
+        SoundBank.Play(visuals.ImpactSound);
         if (visuals.ImpactEffect == null) return;
         Vector3 pos = new Vector3(position.x, position.y, 0f);
         var fx = Instantiate(visuals.ImpactEffect, pos, Quaternion.identity);
         OneShotEffect.EnsureFrontSorting(fx);
-        if (visuals.ImpactSound != null && visuals.ImpactSound.IsValid())
-            visuals.ImpactSound.Post(fx);
     }
 
     public void SpawnTowerProjectile(Vector3 origin, Vector3 aimPoint, float damage, float bulletPen)

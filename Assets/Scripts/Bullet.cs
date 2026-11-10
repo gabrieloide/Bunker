@@ -4,7 +4,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [Header("Sound")]
-    [SerializeField] AK.Wwise.Event HitSound;
+    [SerializeField] Sfx HitSound = Sfx.BulletHit;
     [Space]
 
     [SerializeField] private float speed;
@@ -16,6 +16,6 @@ public class Bullet : MonoBehaviour
 
     public void PlayHitSound()
     {
-        HitSound.Post(gameObject);
+        SoundBank.Play(HitSound);
     }
 }

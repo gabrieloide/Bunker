@@ -3,7 +3,7 @@ using UnityEngine;
 public class TowerPlayer : MonoBehaviour
 {
     [Header("Sound")]
-    [SerializeField] AK.Wwise.Event HitSound;
+    [SerializeField] Sfx HitSound = Sfx.BunkerHit;
     [Space]
     public static TowerPlayer instance;
     [Range(0, 100)] public float life;
@@ -43,7 +43,7 @@ public class TowerPlayer : MonoBehaviour
 
         if (enemyDamage > 0f)
         {
-            HitSound.Post(gameObject);
+            SoundBank.Play(HitSound);
             if (hitParticle != null)
                 Instantiate(hitParticle, transform.position + new Vector3(2, 0), Quaternion.identity, transform);
         }

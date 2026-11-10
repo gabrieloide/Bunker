@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LandMines : MonoBehaviour, ICardConfigurable
 {
-    [SerializeField] AK.Wwise.Event ExplotionLandMine;
+    [SerializeField] Sfx ExplotionLandMine = Sfx.MineExplosion;
     [SerializeField] GameObject ExplosionParticle;
 
     LandMineCardDefinition definition;
@@ -13,7 +13,7 @@ public class LandMines : MonoBehaviour, ICardConfigurable
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            ExplotionLandMine.Post(gameObject);
+            SoundBank.Play(ExplotionLandMine);
             if (ExplosionParticle != null)
             {
                 var pos = new Vector3(transform.position.x, transform.position.y, 0f);

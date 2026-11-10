@@ -7,5 +7,5 @@ public class ArtilleryAuthoring : MonoBehaviour
     [Header("Presentation")]
     public ArtilleryShellView shellPrefab;
     public GameObject impactEffect;
-    public AK.Wwise.Event impactSound;
+    public Sfx impactSound = Sfx.ShellImpact;
 }

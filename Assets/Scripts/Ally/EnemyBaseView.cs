@@ -21,12 +21,14 @@ public class EnemyBaseView : MonoBehaviour
     public void OnHit(float remainingLife)
     {
         if (lifeBar != null) lifeBar.SetValue(remainingLife, StartLife);
+        SoundBank.Play(Sfx.EnemyBaseHit);
         if (hitParticle != null)
             Instantiate(hitParticle, transform.position, Quaternion.identity);
     }
 
     public void OnDestroyed()
     {
+        SoundBank.Play(Sfx.EnemyBaseDestroyed);
         if (destroyedParticle != null)
             Instantiate(destroyedParticle, transform.position, Quaternion.identity);
     }

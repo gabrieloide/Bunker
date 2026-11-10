@@ -15,8 +15,6 @@ public class Enemy : NPCBehaviour, IDamageable
     {
         if (hitParticle != null)
             hitParticle.SetActive(true);
-
-        destroy.Post(gameObject);
     }
 
     public void OnReachedEnd()
@@ -27,7 +25,7 @@ public class Enemy : NPCBehaviour, IDamageable
 
     public void OnDied()
     {
-        destroy.Post(gameObject);
+        SoundBank.Play(destroy);
     }
 
     public void Damage(float damage, float bulletPen, GameObject deactivateBullet)

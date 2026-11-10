@@ -4,11 +4,11 @@ using UnityEngine;
 public class NPCBehaviour : MonoBehaviour
 {
     [Header("Sound")]
-    [SerializeField] protected AK.Wwise.Event shoot;
-    [SerializeField] protected AK.Wwise.Event destroy;
+    [SerializeField] protected Sfx shoot = Sfx.EnemyShot;
+    [SerializeField] protected Sfx destroy = Sfx.EnemyDeath;
 
     public void OnFired()
     {
-        shoot.Post(gameObject);
+        SoundBank.Play(shoot);
     }
 }

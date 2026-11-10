@@ -203,12 +203,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AllyView
   Data: {fileID: 11400000, guid: 7ffa5ff55e8fdcc4bbccbb40ba8c48f0, type: 2}
-  attackSound:
-    idInternal: 0
-    valueGuidInternal: 
-    WwiseObjectReference: {fileID: 0}
-  deathSound:
-    idInternal: 0
-    valueGuidInternal: 
-    WwiseObjectReference: {fileID: 0}
+  attackSound: 9
+  deathSound: 8
   deathParticle: {fileID: 0}

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.gabrieloide.retro-sound-synthesizer": "https://github.com/gabrieloide/Retro-Sound-Synthesizer.git#upm",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.entities": "1.4.8",

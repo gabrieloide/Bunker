@@ -3,8 +3,8 @@ using UnityEngine;
 public class Trash : MonoBehaviour
 {
     [Header("Sounds")]
-    [SerializeField] AK.Wwise.Event openTrashSound;
-    [SerializeField] AK.Wwise.Event closeTrashSound;
+    [SerializeField] Sfx openTrashSound = Sfx.TrashOpen;
+    [SerializeField] Sfx closeTrashSound = Sfx.TrashClose;
     [Space]
     
     [SerializeField] float widthBox, heightBox;
@@ -74,11 +74,11 @@ public class Trash : MonoBehaviour
 
             if (isOpen)
             {
-                openTrashSound.Post(gameObject);
+                SoundBank.Play(openTrashSound);
             }
             else
             {
-                closeTrashSound.Post(gameObject);
+                SoundBank.Play(closeTrashSound);
             }
         }
     }

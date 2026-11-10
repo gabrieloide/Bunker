@@ -498,8 +498,6 @@ GameObject:
   m_Component:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
-  - component: {fileID: 519420034}
-  - component: {fileID: 519420033}
   - component: {fileID: 519420035}
   - component: {fileID: 519420037}
   - component: {fileID: 519420038}
@@ -580,42 +578,6 @@ Transform:
   - {fileID: 2095824253}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &519420033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1359086ea74880942aefb37deca900a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isDefaultListener: 1
-  listenerId: 0
---- !u!114 &519420034
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0c904f237c4c874b999ff6111257a78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_listeners:
-    initialListenerList: []
-    useDefaultListeners: 1
-  isEnvironmentAware: 0
-  isStaticObject: 0
-  m_positionOffsetData:
-    KeepMe: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-  m_posOffsetData: {fileID: 0}
-  listenerMask: 1
 --- !u!114 &519420035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -645,6 +607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9115283d25a7ad9499501556d35022f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraShake
+  intensityMultiplier: 1
+  maxIntensityCap: 0.12
 --- !u!114 &519420038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -988,14 +952,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641605962175e6244b5a2f1e08a3f00e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openTrashSound:
-    idInternal: 0
-    valueGuidInternal: 
-    WwiseObjectReference: {fileID: 0}
-  closeTrashSound:
-    idInternal: 0
-    valueGuidInternal: 
-    WwiseObjectReference: {fileID: 0}
+  openTrashSound: 19
+  closeTrashSound: 20
   widthBox: 1.75
   heightBox: 2.45
   CardLayer:
@@ -1207,63 +1165,6 @@ MonoBehaviour:
   EnemyBullet: {fileID: 5277132566021701445, guid: 10fcd7a38bb5aa945af8ae84d2471914, type: 3}
   textDamage: {fileID: 563626671048280399, guid: ab0645bee825d314e93d621efeb58f6f, type: 3}
   amountToPool: 25
---- !u!1 &1359798011
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1359798013}
-  - component: {fileID: 1359798012}
-  m_Layer: 0
-  m_Name: WwiseGlobal
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1359798012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1359798011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7331eeea213d8f4983caa5e68415580, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InitializationSettings: {fileID: 11400000, guid: 98818155e516fde4a86d7ac977c24eab, type: 2}
-  basePath: 
-  language: 
-  defaultPoolSize: 0
-  lowerPoolSize: 0
-  streamingPoolSize: 0
-  memoryCutoffThreshold: 0
-  monitorPoolSize: 0
-  monitorQueuePoolSize: 0
-  callbackManagerBufferSize: 0
-  spatialAudioPoolSize: 0
-  maxSoundPropagationDepth: 0
-  engineLogging: 0
---- !u!4 &1359798013
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1359798011}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1391085688
 GameObject:
   m_ObjectHideFlags: 0
@@ -1369,13 +1270,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05ef50321a67e9b4cac31094c47f0f36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowBoxText:
-    idInternal: 0
-    valueGuidInternal: 
-    WwiseObjectReference: {fileID: 0}
+  ShowBoxText: 18
   cursorDefault: {fileID: 2800000, guid: bb2c519e32e49824eb95bd40469bc1b0, type: 3}
   cursorTexture: {fileID: 2800000, guid: a1604f7b113be7a49a2efefcbf07aae0, type: 3}
   hud: {fileID: 1441938019}
+  compositeShader: {fileID: 0}
   ShowTowerSlot: 0
   TowerSlotAnimation: {fileID: 2797376125411415245}
   offset: {x: 0, y: 0, z: -20}
@@ -2165,7 +2064,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 2040187448}
   - {fileID: 1441938020}
-  - {fileID: 1359798013}
   - {fileID: 519420032}
   - {fileID: 2797376125411415240}
   - {fileID: 1270013531}

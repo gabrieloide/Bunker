@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 public class UIManager : MonoBehaviour
 {
     [Header("Sounds")]
-    [SerializeField] AK.Wwise.Event ShowBoxText;
+    [SerializeField] Sfx ShowBoxText = Sfx.InfoBox;
     [Space]
     
     public static UIManager instance;
@@ -551,7 +551,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        ShowBoxText.Post(gameObject);
+        SoundBank.Play(ShowBoxText);
         cardPanel.Show(card, _name, _description, card.View);
     }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 public class BuffCard : Card
 {
     [Header("Sound")]
-    [SerializeField] AK.Wwise.Event buffSound;
+    [SerializeField] Sfx buffSound = Sfx.Buff;
     [Space]
     [SerializeField] GameObject BuffSprite;
     [Tooltip("One-shot burst played on the tower (OneShotEffect prefab)")]
@@ -75,9 +75,7 @@ public class BuffCard : Card
     {
         pendingTurret.ApplyBuff(BuffSprite, buffEffect, buffEffectTint);
         pendingTurret.HaveBuff = true;
-        // Posted on the tower: the card is destroyed this frame and would cut the sound
-        if (buffSound != null && buffSound.IsValid())
-            buffSound.Post(pendingTurret.gameObject);
+        SoundBank.Play(buffSound);
         if (SimulationBridge.Instance != null && definition is BuffCardDefinition buff)
             SimulationBridge.Instance.ApplyBuff(pendingTurret.Entity, buff);
     }

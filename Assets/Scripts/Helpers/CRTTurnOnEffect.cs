@@ -128,7 +128,7 @@ public class CRTTurnOnEffect : MonoBehaviour
         }
         catch
         {
-            // Silently ignore if Wwise has disabled Unity Audio engine
+            // Silently ignore if Unity audio is disabled
         }
     }
 

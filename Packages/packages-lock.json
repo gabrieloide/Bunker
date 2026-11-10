@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.gabrieloide.retro-sound-synthesizer": {
+      "version": "https://github.com/gabrieloide/Retro-Sound-Synthesizer.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "d971b0caecc1f4998b702dd3065e689f2567d58a"
+    },
     "com.unity.2d.tilemap": {
       "version": "1.0.0",
       "depth": 0,

@@ -520,6 +520,7 @@ public abstract class Card : MonoBehaviour
         if (!hasObstacle && d > dragThreshold && PlayableNow && InTerritory && AllowPlacement())
         {
             OnPlacementAccepted();
+            SoundBank.Play(Sfx.CardPlace);
             CameraShake.MicroShake();
             LeaveHand();
             BeginPendingResolve();
