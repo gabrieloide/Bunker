@@ -113,20 +113,59 @@ public static class PlacementGrid
         return groundTilemap == null || groundTilemap.HasTile(cell);
     }
 
+    // Towers can't go on the enemy route. With a procedural route (EnemyMovement) that route is the path and the old
+    // hand-painted Path tilemap no longer counts
     public static bool HasObstacle(Vector3Int cell)
     {
         EnsureTilemapsCached();
+        bool procedural = EnemyMovement.HasProceduralRoute;
+        if (procedural && EnemyMovement.IsRouteCell(cell))
+            return true;
         for (int i = 0; i < obstacleTilemaps.Count; i++)
         {
             var tm = obstacleTilemaps[i];
-            if (tm != null && tm.HasTile(cell))
+            if (tm != null && !(procedural && pathTilemaps.Contains(tm)) && tm.HasTile(cell))
                 return true;
         }
         return false;
     }
 
+    // What soldiers can't walk through: decoration and limits (the Path tilemap is no wall)
+    public static bool BlocksWalking(Vector3Int cell)
+    {
+        EnsureTilemapsCached();
+        for (int i = 0; i < obstacleTilemaps.Count; i++)
+        {
+            var tm = obstacleTilemaps[i];
+            if (tm != null && !pathTilemaps.Contains(tm) && tm.HasTile(cell))
+                return true;
+        }
+        return false;
+    }
+
+    // Every tilemap under the grid, for bounding a route search
+    public static BoundsInt TilemapBounds()
+    {
+        var bounds = new BoundsInt();
+        bool any = false;
+        if (Grid == null) return bounds;
+        foreach (var tm in Grid.GetComponentsInChildren<Tilemap>(true))
+        {
+            tm.CompressBounds();
+            var b = tm.cellBounds;
+            if (b.size.x <= 0 || b.size.y <= 0) continue;
+            if (!any) { bounds = b; any = true; continue; }
+            var min = Vector3Int.Min(bounds.min, b.min);
+            var max = Vector3Int.Max(bounds.max, b.max);
+            bounds.SetMinMax(min, max);
+        }
+        return bounds;
+    }
+
     public static bool IsPath(Vector3Int cell)
     {
+        if (EnemyMovement.HasProceduralRoute)
+            return EnemyMovement.IsRouteCell(cell);
         EnsureTilemapsCached();
         for (int i = 0; i < pathTilemaps.Count; i++)
         {
