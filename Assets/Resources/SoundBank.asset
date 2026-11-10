@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -1534,5 +1534,3 @@ MonoBehaviour:
         sampleRate: 44100
         sampleSize: 16
         masterGain: 0.35
-  music: {fileID: 8300000, guid: eacd096a0c942654aaec6be8bb0dd637, type: 3}
-  musicVolume: 0.45

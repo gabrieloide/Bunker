@@ -58,13 +58,10 @@ public class SoundBank : ScriptableObject
     const int TakeCount = 3;
 
     public List<Entry> entries = new List<Entry>();
-    [Header("Music")]
-    public AudioClip music;
-    [Range(0f, 1f)] public float musicVolume = 0.5f;
 
     static SoundBank instance;
     static Dictionary<Sfx, Entry> lookup;
-    static AudioSource sfxSource, musicSource;
+    static AudioSource sfxSource;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
@@ -72,7 +69,6 @@ public class SoundBank : ScriptableObject
         instance = null;
         lookup = null;
         sfxSource = null;
-        musicSource = null;
     }
 
     public static void Play(Sfx id)
@@ -84,23 +80,7 @@ public class SoundBank : ScriptableObject
         var clip = NextTake(entry);
         if (clip == null) return;
         entry.lastPlayed = now;
-        Source(ref sfxSource, "Sfx").PlayOneShot(clip, entry.volume);
-    }
-
-    public static void PlayMusic()
-    {
-        if (!TryLoad() || instance.music == null) return;
-        var source = Source(ref musicSource, "Music");
-        if (source.isPlaying && source.clip == instance.music) return;
-        source.clip = instance.music;
-        source.loop = true;
-        source.volume = instance.musicVolume;
-        source.Play();
-    }
-
-    public static void StopMusic()
-    {
-        if (musicSource != null) musicSource.Stop();
+        SfxSource().PlayOneShot(clip, entry.volume);
     }
 
     // Synthesizes a take; the first is the sound as designed, the others are pitched a little up and down
@@ -159,15 +139,15 @@ public class SoundBank : ScriptableObject
         return true;
     }
 
-    // One 2D source per channel, kept across scene loads; PlayOneShot lets the effects overlap
-    static AudioSource Source(ref AudioSource source, string channel)
+    // One 2D source kept across scene loads; PlayOneShot lets the effects overlap
+    static AudioSource SfxSource()
     {
-        if (source != null) return source;
-        var host = new GameObject($"[Audio {channel}]");
+        if (sfxSource != null) return sfxSource;
+        var host = new GameObject("[Audio Sfx]");
         DontDestroyOnLoad(host);
-        source = host.AddComponent<AudioSource>();
-        source.playOnAwake = false;
-        source.spatialBlend = 0f;
-        return source;
+        sfxSource = host.AddComponent<AudioSource>();
+        sfxSource.playOnAwake = false;
+        sfxSource.spatialBlend = 0f;
+        return sfxSource;
     }
 }
