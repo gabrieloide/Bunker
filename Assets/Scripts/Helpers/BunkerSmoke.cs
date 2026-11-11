@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Looping smoke over a bunker (the player's or the enemy base) while its life is low or once it is destroyed.
-// The particle is Resources/BunkerSmoke, a copy of ExplotionParticle tuned to loop slowly upwards.
+// The particle is Resources/BunkerSmoke, a copy of ExplotionParticle tuned to loop slowly upwards (white, like the original).
 public class BunkerSmoke
 {
     const string PrefabPath = "BunkerSmoke";
