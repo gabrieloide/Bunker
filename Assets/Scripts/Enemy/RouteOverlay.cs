@@ -9,6 +9,7 @@ public class RouteOverlay : MonoBehaviour
 {
     const string LineMaterialPath = "RouteLine";
     const string RingMaterialPath = "EnemyFlagRing";
+    const string FlagPrefabPath = "EnemyFlagStand";
     const string SortingLayer = "Background";
     const int SortingOrder = 11;
     const float EnemyHalfWidth = 0.1875f; // 3 art pixels
@@ -18,7 +19,7 @@ public class RouteOverlay : MonoBehaviour
     static readonly int ColorId = Shader.PropertyToID("_Color");
     static readonly int DashedId = Shader.PropertyToID("_Dashed");
 
-    GameObject visuals, rings;
+    GameObject visuals, rings, flagPrefab;
     MeshRenderer routeRenderer;
     MaterialPropertyBlock routeBlock;
     bool? planning;
@@ -43,6 +44,7 @@ public class RouteOverlay : MonoBehaviour
             return;
         }
 
+        flagPrefab = Resources.Load<GameObject>(FlagPrefabPath);
         visuals = new GameObject("Visuals");
         visuals.transform.SetParent(transform, false);
         rings = new GameObject("Rings");
@@ -106,6 +108,10 @@ public class RouteOverlay : MonoBehaviour
             ringObject.GetComponent<MeshRenderer>().sharedMaterial = ringMaterial;
             ring.SetColor(EnemyColor);
             ring.SetRadius(route.flagRadius);
+
+            // The white flag marks the enemy territory; the ring around it only shows while planning
+            if (flagPrefab != null)
+                Instantiate(flagPrefab, position, Quaternion.identity, transform);
         }
     }
 

@@ -26,7 +26,7 @@ public static class SetupWorldLevelSelector
         var sB3 = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/b3island.png");
         var sB4 = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/b4island.png");
         var sB5 = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/b5island.png");
-        var sDestroyed = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/destroyed.png");
+        var sDestroyed = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/16x16/BuildTorret1destroyed1.png");
         var sName = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/name.png");
         var sStairsLeft = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/stairsleft.png");
         var sStairsRight = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/32x32/stairsright.png");
