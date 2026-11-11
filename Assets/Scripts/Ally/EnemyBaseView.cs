@@ -19,7 +19,6 @@ public class EnemyBaseView : MonoBehaviour
 
     [Tooltip("Smoke shows at or below this fraction of life, and once destroyed")]
     [Range(0f, 1f)] [SerializeField] float smokeBelow = 0.3f;
-    [SerializeField] Vector3 smokeOffset = new Vector3(0f, 1f, 0f);
     BunkerSmoke smoke;
 
     DottedRing ring;
@@ -27,7 +26,7 @@ public class EnemyBaseView : MonoBehaviour
     void Start()
     {
         if (lifeBar != null) lifeBar.SetValue(StartLife, StartLife);
-        smoke = new BunkerSmoke(transform, smokeOffset, smokeBelow);
+        smoke = new BunkerSmoke(transform, smokeBelow);
         if (Radius > 0f)
         {
             EnemyTerritory.SetBase(transform.position, Radius);
