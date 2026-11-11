@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Plays a short sprite sequence once on a SpriteRenderer and stays on the last frame (the planted flag animation).
+// Loops a short sprite sequence on a SpriteRenderer (the waving flag, like FlagStand.anim on the player's flag).
 [RequireComponent(typeof(SpriteRenderer))]
 public class FlagFlipbook : MonoBehaviour
 {
@@ -20,8 +20,6 @@ public class FlagFlipbook : MonoBehaviour
     {
         if (frames == null || frames.Length < 2) { enabled = false; return; }
         elapsed += Time.deltaTime;
-        int frame = Mathf.Min((int)(elapsed * framesPerSecond), frames.Length - 1);
-        body.sprite = frames[frame];
-        if (frame == frames.Length - 1) enabled = false;
+        body.sprite = frames[(int)(elapsed * framesPerSecond) % frames.Length];
     }
 }

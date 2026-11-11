@@ -2,7 +2,7 @@ using UnityEngine;
 
 // What a demolished tower leaves for the rest of the match: its cell stays taken and so do the free
 // neighbouring cells (never the enemy path), and the ruins keep one slot of the tower limit.
-// Art comes from the CardCatalog; without it the tower's own sprite lies there greyed out.
+// Art comes from the CardCatalog (ruinsSprite: BuildTorret1destroyed1); without it the tower's own sprite lies there greyed out.
 public class Ruin : MonoBehaviour
 {
     // Only the main ruin (the tower's cell) holds a tower-limit slot

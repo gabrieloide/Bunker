@@ -33,6 +33,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     Action<string> onHoverDescriptionCallback;
 
     Vector3 initialScale;
+    Vector3 baseScale;
     bool isUnlocked;
     bool isCompleted;
     bool isHovered;
@@ -42,7 +43,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (turretTransform == null)
             turretTransform = turretRenderer != null ? turretRenderer.transform : transform;
 
-        initialScale = turretTransform.localScale;
+        initialScale = baseScale = turretTransform.localScale;
     }
 
     public void Setup(
@@ -73,10 +74,17 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (isCompleted && destroyedSprite != null)
         {
             turretRenderer.sprite = destroyedSprite;
+            // The ruins are 16x16-scale gameplay art: shown as wide as the island they replace
+            float fit = normalSprite != null && destroyedSprite.bounds.size.x > 0f
+                ? normalSprite.bounds.size.x / destroyedSprite.bounds.size.x : 1f;
+            initialScale = baseScale * fit;
+            turretTransform.localScale = initialScale;
         }
         else if (normalSprite != null)
         {
             turretRenderer.sprite = normalSprite;
+            initialScale = baseScale;
+            turretTransform.localScale = initialScale;
         }
 
         // 2. Color / Tint
