@@ -14,6 +14,11 @@ public class TowerPlayer : MonoBehaviour
 
     public Unity.Entities.Entity Entity { get; set; }
 
+    [Tooltip("Smoke shows at or below this fraction of life, and once destroyed")]
+    [Range(0f, 1f)] [SerializeField] float smokeBelow = 0.3f;
+    [SerializeField] Vector3 smokeOffset = new Vector3(0f, 1f, 0f);
+    BunkerSmoke smoke;
+
     private void Awake()
     {
         if (!instance)
@@ -21,6 +26,7 @@ public class TowerPlayer : MonoBehaviour
             instance = this;
             if (maxLife <= 0f) maxLife = 100f;
             life = maxLife;
+            smoke = new BunkerSmoke(transform, smokeOffset, smokeBelow);
         }
         else
         {
@@ -40,6 +46,7 @@ public class TowerPlayer : MonoBehaviour
             life = remainingLife;
         else
             life = Mathf.Max(0f, life - enemyDamage);
+        smoke?.SetLife(life, maxLife);
 
         if (enemyDamage > 0f)
         {
@@ -53,5 +60,6 @@ public class TowerPlayer : MonoBehaviour
     public void OnHealed(float newLife)
     {
         life = Mathf.Clamp(newLife, 0f, maxLife > 0f ? maxLife : 100f);
+        smoke?.SetLife(life, maxLife);
     }
 }

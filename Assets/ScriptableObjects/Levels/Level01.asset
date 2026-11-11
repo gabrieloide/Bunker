@@ -16,6 +16,7 @@ MonoBehaviour:
   description: La base enemiga es debil. Tienes dos banderas para desplegar tus torres.
   sceneName: SceneGame
   enemyBaseLife: 60
+  enemyBaseRadius: 7
   music: {fileID: 8300000, guid: 5afa4979551e3da4cbeb735715328078, type: 3}
   balance: {fileID: 0}
   flags:
@@ -23,3 +24,8 @@ MonoBehaviour:
     radius: 8
   - position: {x: 19, y: 1}
     radius: 6
+  enemyFlags:
+  - position: {x: 29.5, y: 4}
+    radius: 3
+  - position: {x: 44, y: 2}
+    radius: 3

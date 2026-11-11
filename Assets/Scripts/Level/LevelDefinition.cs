@@ -16,6 +16,8 @@ public class LevelDefinition : ScriptableObject
     [Header("Enemy base")]
     [Tooltip("Life of the enemy base; destroying it wins the level")]
     [Min(1f)] public float enemyBaseLife = 500f;
+    [Tooltip("Enemy territory around the base: no player flag can be planted inside it. It never falls")]
+    [Min(0f)] public float enemyBaseRadius = 7f;
 
     [Header("Music")]
     [Tooltip("Looped while the level plays; empty = the SoundBank's default music")]
@@ -28,6 +30,8 @@ public class LevelDefinition : ScriptableObject
     [Header("Flags")]
     [Tooltip("Flags planted when the level starts; cards can only be played inside their radius")]
     public List<FlagPlacement> flags = new List<FlagPlacement>();
+    [Tooltip("White enemy flags: no player flag can be planted inside their radius until an ally walks into it and knocks it down")]
+    public List<FlagPlacement> enemyFlags = new List<FlagPlacement>();
 }
 
 [Serializable]

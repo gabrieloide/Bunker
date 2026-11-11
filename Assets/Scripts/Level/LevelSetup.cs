@@ -11,11 +11,26 @@ public class LevelSetup : MonoBehaviour
     [SerializeField] LevelDefinition fallbackLevel;
     [SerializeField] Flag flagPrefab;
 
+    const string EnemyFlagPath = "EnemyFlag";
+
     void Awake()
     {
         Time.timeScale = 1f;
         Current = LevelProgress.Selected != null ? LevelProgress.Selected : fallbackLevel;
-        if (Current == null || flagPrefab == null) return;
+        if (Current == null) return;
+
+        var enemyFlagPrefab = Resources.Load<EnemyFlag>(EnemyFlagPath);
+        if (enemyFlagPrefab == null)
+        {
+            if (Current.enemyFlags.Count > 0) Debug.LogError($"LevelSetup: missing Resources/{EnemyFlagPath} prefab.");
+        }
+        else
+        {
+            foreach (var placement in Current.enemyFlags)
+                Instantiate(enemyFlagPrefab, placement.position, Quaternion.identity).Radius = placement.radius;
+        }
+
+        if (flagPrefab == null) return;
 
         foreach (var placement in Current.flags)
         {

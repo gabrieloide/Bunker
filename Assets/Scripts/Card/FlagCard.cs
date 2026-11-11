@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Plants a flag to win ground back. Unlike other cards it doesn't need to stand inside the territory:
-// its circle has to touch an existing flag's, and no enemy may be inside it.
+// its circle has to touch an existing flag's, no enemy may be inside it and it can't stand in enemy territory.
 public class FlagCard : Card
 {
     [Tooltip("Flag ghost with a check/cross, shown where the flag would go while dragging")]
@@ -52,7 +52,8 @@ public class FlagCard : Card
         get
         {
             Vector3 point = GetRaycastOrigin();
-            return FlagTerritory.IsConnected(point, Radius) && !SimulationBridge.AnyEnemyWithin(point, Radius);
+            return FlagTerritory.IsConnected(point, Radius) && !EnemyTerritory.Contains(point)
+                && !SimulationBridge.AnyEnemyWithin(point, Radius);
         }
     }
 

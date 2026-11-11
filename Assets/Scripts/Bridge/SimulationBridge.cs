@@ -320,7 +320,18 @@ public class SimulationBridge : MonoBehaviour
         em.AddBuffer<AllySpawnRequest>(allySpawnerEntity);
     }
 
-    // An ally card was played: the ally leaves the bunker on the next simulation step
+    // An ally card was played: `count` allies leave the bunker on the next simulation step, each of a random roster type when `random`
+    public void RequestAllies(AllyView prefab, int count, bool random)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            if (random && allyPrefabs.Length > 0)
+                RequestAlly(allyPrefabs[UnityEngine.Random.Range(0, allyPrefabs.Length)]);
+            else
+                RequestAlly(prefab);
+        }
+    }
+
     public void RequestAlly(AllyView prefab)
     {
         int index = prefab != null ? System.Array.IndexOf(allyPrefabs, prefab) : -1;

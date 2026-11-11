@@ -16,10 +16,20 @@ MonoBehaviour:
   description: La base suprema enemiga. Destruyela para liberar el sector.
   sceneName: SceneGame
   enemyBaseLife: 350
+  enemyBaseRadius: 7
+  music: {fileID: 0}
   balance: {fileID: 11400000, guid: 5ca20aa320004bf6a8b39f76fa59a3f3, type: 2}
-  allySpawnInterval: 6
-  firstAllyDelay: 3
   flags:
   - position: {x: 8, y: 0}
     radius: 8
-  startingHand: []
+  enemyFlags:
+  - position: {x: 21, y: 2.5}
+    radius: 2.5
+  - position: {x: 29.5, y: 4}
+    radius: 3
+  - position: {x: 37, y: 0.5}
+    radius: 2.5
+  - position: {x: 44.5, y: -3}
+    radius: 2.5
+  - position: {x: 44, y: 2}
+    radius: 3

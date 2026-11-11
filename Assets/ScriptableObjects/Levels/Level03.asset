@@ -16,10 +16,16 @@ MonoBehaviour:
   description: La base enemiga esta fortificada y tu territorio es minimo.
   sceneName: SceneGame
   enemyBaseLife: 150
+  enemyBaseRadius: 7
+  music: {fileID: 0}
   balance: {fileID: 0}
-  allySpawnInterval: 7
-  firstAllyDelay: 4
   flags:
   - position: {x: 6, y: 0}
     radius: 6
-  startingHand: []
+  enemyFlags:
+  - position: {x: 29.5, y: 4}
+    radius: 3
+  - position: {x: 37, y: 0.5}
+    radius: 2.5
+  - position: {x: 44, y: 2}
+    radius: 3

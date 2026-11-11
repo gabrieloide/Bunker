@@ -30,6 +30,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ac87583c96024157affb5755e7112969, type: 2}
   - {fileID: 11400000, guid: 9f1c02d1c6d1454199dc59dcb45ea507, type: 2}
   - {fileID: 11400000, guid: 78190ecb89d8645439805b1bfbcaaa7f, type: 2}
+  - {fileID: 11400000, guid: d316d97198c8eb749901abe4dcdf161b, type: 2}
+  - {fileID: 11400000, guid: b0524a2667fe44a4fb6298f897336910, type: 2}
+  - {fileID: 11400000, guid: 219395dfc6d25c24f8846526df9b6d4b, type: 2}
   startingFlags: 1
   startingTowers: 4
   towersPerWave: 3
