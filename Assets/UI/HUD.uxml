@@ -1,18 +1,18 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <Style src="Bunker.uss" />
-    <ui:VisualElement name="hud" class="screen" picking-mode="Ignore">
-        <ui:VisualElement class="hud-bar" picking-mode="Ignore">
-            <ui:Label name="score" text="SCORE&#10;000000" class="hud-stat" picking-mode="Ignore" />
-            <ui:VisualElement class="hud-life" picking-mode="Ignore">
-                <ui:VisualElement name="lifebar" class="lifebar" picking-mode="Ignore">
-                    <ui:VisualElement name="lifebar-track" class="lifebar-track" picking-mode="Ignore">
-                        <ui:VisualElement name="life-fill" class="lifebar-fill" picking-mode="Ignore" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Bunker.uss?fileID=7433441132597879392&amp;guid=aef80d20ad3ecfa4cbff58a742e728d1&amp;type=3#Bunker"/>
+    <ui:VisualElement name="hud" picking-mode="Ignore" class="screen">
+        <ui:VisualElement picking-mode="Ignore" class="hud-bar">
+            <ui:Label name="score" text="SCORE&#10;000000" picking-mode="Ignore" class="hud-stat" style="-unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255);"/>
+            <ui:VisualElement picking-mode="Ignore" class="hud-life">
+                <ui:VisualElement name="lifebar" picking-mode="Ignore" class="lifebar">
+                    <ui:VisualElement name="lifebar-track" picking-mode="Ignore" class="lifebar-track">
+                        <ui:VisualElement name="life-fill" picking-mode="Ignore" class="lifebar-fill"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:Label text="LIFE" class="hud-stat" picking-mode="Ignore" />
+                <ui:Label text="LIFE" picking-mode="Ignore" class="hud-stat" style="-unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255);"/>
             </ui:VisualElement>
-            <ui:Label name="towers" text="TOWERS&#10;0/0" class="hud-stat" picking-mode="Ignore" />
-            <ui:Label name="wave" text="WAVE&#10;000000" class="hud-stat" picking-mode="Ignore" />
+            <ui:Label name="towers" text="TOWERS&#10;0/0" picking-mode="Ignore" class="hud-stat" style="-unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255);"/>
+            <ui:Label name="wave" text="WAVE&#10;000000" picking-mode="Ignore" class="hud-stat" style="-unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255);"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
