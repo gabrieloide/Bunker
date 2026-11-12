@@ -17,7 +17,7 @@ MonoBehaviour:
     to the enemy base and knock down enemy flags on the way.
   handPrefab: {fileID: -3690923982419404029, guid: 3fa34ca0061519c4ba5a6c33e4b455e8, type: 3}
   placedPrefab: {fileID: 0}
-  dropWeight: 1
+  dropWeight: 6
   ally: {fileID: 3433324790548345707, guid: 833be1c1b5676374781fa630009eb821, type: 3}
   count: 10
   randomAlly: 1

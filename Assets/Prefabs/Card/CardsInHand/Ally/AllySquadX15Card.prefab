@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 159710727526833101}
   - component: {fileID: -3690923982419404029}
   m_Layer: 8
-  m_Name: AllySpyCard
+  m_Name: AllySquadX15Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

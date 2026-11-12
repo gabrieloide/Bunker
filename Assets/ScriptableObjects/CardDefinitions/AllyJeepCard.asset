@@ -16,5 +16,5 @@ MonoBehaviour:
   description: Fast and tough. Drives along your flags to the enemy base.
   handPrefab: {fileID: -3690923982419404029, guid: 5e64e336824243e7ab357bb8d4933640, type: 3}
   placedPrefab: {fileID: 0}
-  dropWeight: 4
+  dropWeight: 0
   ally: {fileID: 3433324790548345707, guid: 833be1c1b5676374781fa630009eb821, type: 3}
