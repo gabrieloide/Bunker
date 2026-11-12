@@ -1,3 +1,5 @@
+// supportsImageEffects is obsolete (always true); kept as shipped by Camera Filter Pack
+#pragma warning disable CS0618
 using UnityEngine;
 using System.Collections;
 

@@ -15,7 +15,7 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     [SerializeField] float airPlaneSpeed;
     [SerializeField] private float distance;
     private float diametroGO;
-    Camera camera;
+    Camera mainCamera;
     [SerializeField] private float threshold;
     private Vector3 MousePosition;
     AirStrikeCardDefinition definition;
@@ -29,9 +29,9 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     void LaunchPlane()
     {
         SoundBank.Play(PlaneSound);
-        camera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
-        Vector3 position = camera != null ? GetPointLeftOfCamera(camera, distance, diametroGO) : Vector3.zero;
-        MousePosition = camera != null ? camera.ScreenToWorldPoint(Input.mousePosition) : Vector3.zero;
+        mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
+        Vector3 position = mainCamera != null ? GetPointLeftOfCamera(mainCamera, distance, diametroGO) : Vector3.zero;
+        MousePosition = mainCamera != null ? mainCamera.ScreenToWorldPoint(Input.mousePosition) : Vector3.zero;
         PlaneBehaviour(position);
     }
     public static Vector3 GetPointLeftOfCamera(Camera camera, float distance, float goDiameter)

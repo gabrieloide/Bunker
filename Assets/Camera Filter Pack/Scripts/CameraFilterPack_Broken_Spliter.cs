@@ -1,3 +1,5 @@
+// supportsImageEffects is obsolete (always true); kept as shipped by Camera Filter Pack
+#pragma warning disable CS0618
 // Camera Filter Pack v4.0.0
 //
 // by VETASOFT 2018
