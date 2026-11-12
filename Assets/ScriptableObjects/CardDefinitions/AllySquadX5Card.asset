@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2312bfce9904126a652ffef953649a2, type: 3}
   m_Name: AllySquadX5Card
   m_EditorClassIdentifier: Assembly-CSharp::AllyCardDefinition
-  displayName: Allies x5
-  description: Sends 5 random allies out of the bunker. They march along the routes
-    to the enemy base and knock down enemy flags on the way.
+  displayName: Soldiers x5
+  description: Sends 5 soldiers (bazooka and spy) out of the bunker. They march
+    along the routes to the enemy base and knock down enemy flags on the way.
   handPrefab: {fileID: -3690923982419404029, guid: d1a51380ea1d23c4ca7316d2a7010975, type: 3}
   placedPrefab: {fileID: 0}
   dropWeight: 6
-  ally: {fileID: 3433324790548345707, guid: 833be1c1b5676374781fa630009eb821, type: 3}
+  ally: {fileID: 5392711699829510913, guid: 86abcc0af6385f245af608c7abe85180, type: 3}
   count: 5
-  randomAlly: 1
+  mix:
+  - {fileID: 5392711699829510913, guid: 86abcc0af6385f245af608c7abe85180, type: 3}
+  - {fileID: 2871404998198672892, guid: 3b530b73b0cd8e0439aa4f0ff7f3e0b6, type: 3}

@@ -37,7 +37,7 @@ public class AllyCard : Card
     protected override void CardBehaviour()
     {
         if (SimulationBridge.Instance != null && definition is AllyCardDefinition card)
-            SimulationBridge.Instance.RequestAllies(card.ally, card.count, card.randomAlly);
+            SimulationBridge.Instance.RequestAllies(card.ally, card.count, card.mix);
         SoundBank.Play(Sfx.AllyDeploy);
     }
 }

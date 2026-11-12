@@ -8,6 +8,6 @@ public class AllyCardDefinition : CardDefinition
     public AllyView ally;
     [Tooltip("Allies sent per play; above 1 the card shows xN")]
     [Min(1)] public int count = 1;
-    [Tooltip("Each ally is a random type from the scene's AllySpawner instead of Ally")]
-    public bool randomAlly;
+    [Tooltip("Each ally is a random one of these instead of Ally (all must be in the scene's AllySpawner); empty = always Ally")]
+    public AllyView[] mix;
 }
