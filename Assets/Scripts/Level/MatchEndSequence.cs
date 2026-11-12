@@ -16,6 +16,13 @@ public class MatchEndSequence : MonoBehaviour
     [SerializeField] float enemyGap = 0.08f;
     [SerializeField] float holdBeforePanel = 0.5f;
 
+    [Header("Defeat")]
+    [Tooltip("Every wait of the sequence is this many times longer when the player's bunker falls")]
+    [Min(1f)] [SerializeField] float defeatStretch = 1.8f;
+    [SerializeField] int defeatExplosions = 9;
+    [Tooltip("Extra real seconds watching the ruined bunker smoke before the panel")]
+    [SerializeField] float defeatLinger = 1.2f;
+
     [Header("Look")]
     [SerializeField] GameObject explosionPrefab;
     [Tooltip("Tint of the fallen bunker until it has ruins art")]
@@ -25,6 +32,7 @@ public class MatchEndSequence : MonoBehaviour
 
     Action onFinished;
     bool skipped;
+    float stretch = 1f;
 
     public bool Running { get; private set; }
 
@@ -34,6 +42,7 @@ public class MatchEndSequence : MonoBehaviour
         onFinished = finished;
         Running = true;
         skipped = false;
+        stretch = victory ? 1f : defeatStretch;
         StartCoroutine(Run(victory));
     }
 
@@ -60,12 +69,13 @@ public class MatchEndSequence : MonoBehaviour
         // 2. Slow motion, the camera travels to the fallen bunker
         Time.timeScale = slowMotion;
         if (target != null && CameraMovement.instance != null)
-            CameraMovement.instance.Focus(target.position, cameraTravel);
+            CameraMovement.instance.Focus(target.position, cameraTravel * stretch);
         yield return Wait(cameraTravel * 0.5f);
 
         // 3. Chain of explosions across the bunker
         Bounds bounds = body != null ? body.bounds : new Bounds(target != null ? target.position : Vector3.zero, Vector3.one * 2f);
-        for (int i = 0; i < explosions && !skipped; i++)
+        int count = victory ? explosions : defeatExplosions;
+        for (int i = 0; i < count && !skipped; i++)
         {
             Vector3 point = new Vector3(
                 UnityEngine.Random.Range(bounds.min.x, bounds.max.x),
@@ -99,6 +109,7 @@ public class MatchEndSequence : MonoBehaviour
         // 6. Silence, then the closing sting
         SoundBank.StopMusic();
         SoundBank.Play(victory ? Sfx.WaveCleared : Sfx.Defeat);
+        if (!victory) yield return Wait(defeatLinger);
         yield return Wait(holdBeforePanel);
 
         Time.timeScale = 0f;
@@ -109,7 +120,7 @@ public class MatchEndSequence : MonoBehaviour
     // Real time, cut short by a skip
     IEnumerator Wait(float seconds)
     {
-        float end = Time.unscaledTime + seconds;
+        float end = Time.unscaledTime + seconds * stretch;
         while (Time.unscaledTime < end && !skipped)
             yield return null;
     }
