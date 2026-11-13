@@ -62,7 +62,7 @@ public static class PlacementGrid
         foreach (var tm in tilemaps)
         {
             string n = tm.gameObject.name.ToLowerInvariant();
-            if (n.Contains("path") || n.Contains("limit") || n.Contains("decoration") || n.Contains("obstacle"))
+            if (n.Contains("path") || n.Contains("limit") || n.Contains("decoration") || n.Contains("obstacle") || n.Contains("water"))
             {
                 obstacleTilemaps.Add(tm);
                 if (n.Contains("path"))

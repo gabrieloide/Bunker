@@ -29,13 +29,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _CellHeight: 14
+    - _CellWidth: 22
     - _DarkThreshold: 0.25
     - _PixelsPerUnit: 16
+    - _WaveCoverage: 0.34
     - _WaveDensity: 0.91
-    - _WaveFPS: 4
+    - _WaveFPS: 3
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _WaterDarkColor: {r: 0.07, g: 0.07, b: 0.07, a: 1}
+    - _WaterDarkColor: {r: 0.12941177, g: 0.14117648, b: 0.13725491, a: 1}
     - _WaveColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
