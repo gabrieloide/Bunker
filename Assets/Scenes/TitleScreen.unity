@@ -285,7 +285,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1881573880}
-  - component: {fileID: 1881573879}
   m_Layer: 10
   m_Name: EDITOR
   m_TagString: Untagged
@@ -293,18 +292,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1881573879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1881573878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1881573880
 Transform:
   m_ObjectHideFlags: 0
@@ -330,7 +317,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2044494690}
   - component: {fileID: 2044494689}
-  - component: {fileID: 2044494693}
   - component: {fileID: 2044494695}
   - component: {fileID: 2044494696}
   - component: {fileID: 2044494697}
@@ -408,18 +394,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2044494693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2044494687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2044494695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,6 +470,13 @@ MonoBehaviour:
   contrast: 1.05
   vignetteIntensity: 0.35
   vignetteRoundness: 0.5
+  dangerStart: 0.35
+  dangerFull: 0.1
+  calmBpm: 70
+  panicBpm: 130
+  glitchTime: 0.15
+  recoverySpeed: 0.5
+  defeatSweepTime: 1.5
 --- !u!1 &2140234841
 GameObject:
   m_ObjectHideFlags: 0
