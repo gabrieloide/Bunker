@@ -30,17 +30,20 @@ public class LevelSelectorAmbience : MonoBehaviour
     DottedRing activeBeacon;
     Transform beaconTransform;
     Texture2D pixelTex;
+    Texture2D planetTex;
     Material starMat;
 
     void Start()
     {
         SetupNodes();
+        CreatePixelPlanet();
         CreateStarDust();
     }
 
     void OnDestroy()
     {
         if (pixelTex != null) Destroy(pixelTex);
+        if (planetTex != null) Destroy(planetTex);
         if (starMat != null) Destroy(starMat);
     }
 
@@ -62,6 +65,109 @@ public class LevelSelectorAmbience : MonoBehaviour
             float pulse = beaconBaseRadius + Mathf.Sin(t * 2.4f) * beaconPulseAmount;
             activeBeacon.SetRadius(pulse);
         }
+    }
+
+    void CreatePixelPlanet()
+    {
+        var cam = Camera.main;
+        if (cam == null) return;
+
+        float halfH = cam.orthographic ? cam.orthographicSize : 5f;
+        float halfW = halfH * cam.aspect;
+
+        const int size = 64;
+        planetTex = new Texture2D(size, size, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+        var pixels = new Color32[size * size];
+
+        Color32 transparent = new Color32(0, 0, 0, 0);
+        Color32 white = new Color32(235, 235, 235, 210);
+        Color32 mid = new Color32(130, 130, 130, 180);
+        Color32 dark = new Color32(34, 35, 35, 210);
+
+        float cx = (size - 1) * 0.5f;
+        float cy = (size - 1) * 0.5f;
+        float r = 20f;
+        Vector2 lightDir = new Vector2(-0.65f, 0.75f).normalized;
+
+        // Craters in normalized local coords
+        Vector3[] craters = {
+            new Vector3(-6f, 5f, 3.2f),
+            new Vector3(4f, -3f, 2.4f),
+            new Vector3(-2f, -8f, 1.9f)
+        };
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float dx = x - cx;
+                float dy = y - cy;
+                float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                Color32 col = transparent;
+
+                // Tilted ring behind/around the planet
+                float rx = dx * 0.92f + dy * 0.39f;
+                float ry = -dx * 0.39f + dy * 0.92f;
+                float ringDist = Mathf.Sqrt((rx / 30f) * (rx / 30f) + (ry / 9f) * (ry / 9f));
+                bool onRing = Mathf.Abs(ringDist - 1f) < 0.08f && ((x + y) % 2 == 0);
+                bool ringInFront = ry < 0f;
+
+                if (dist <= r)
+                {
+                    if (dist >= r - 1.2f)
+                    {
+                        col = white;
+                    }
+                    else
+                    {
+                        float ndotl = (dx * lightDir.x + dy * lightDir.y) / r;
+                        bool inCrater = false;
+                        for (int c = 0; c < craters.Length; c++)
+                        {
+                            float cd = Vector2.Distance(new Vector2(dx, dy), new Vector2(craters[c].x, craters[c].y));
+                            if (cd < craters[c].z) { inCrater = true; break; }
+                        }
+
+                        if (inCrater)
+                            col = ((x + y) % 2 == 0) ? dark : mid;
+                        else if (ndotl > 0.32f)
+                            col = white;
+                        else if (ndotl > -0.05f)
+                            col = ((x + y) % 2 == 0) ? white : mid;
+                        else if (ndotl > -0.35f)
+                            col = ((x + y) % 2 == 0) ? mid : dark;
+                        else
+                            col = dark;
+                    }
+                }
+
+                if (onRing && (dist > r || ringInFront))
+                    col = white;
+
+                pixels[y * size + x] = col;
+            }
+        }
+
+        planetTex.SetPixels32(pixels);
+        planetTex.Apply();
+
+        var sprite = Sprite.Create(planetTex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 16f);
+        var go = new GameObject("PixelPlanetAmbience");
+        go.transform.SetParent(transform, false);
+        go.transform.position = new Vector3(cam.transform.position.x - halfW * 0.66f, cam.transform.position.y + halfH * 0.42f, 0f);
+        go.transform.localScale = Vector3.one * 0.85f;
+
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite;
+        sr.sortingLayerName = "Background";
+        sr.sortingOrder = 2;
+
+        floaters.Add(new FloatEntry
+        {
+            target = go.transform,
+            baseLocalPos = go.transform.localPosition,
+            phase = 0.5f
+        });
     }
 
     void SetupNodes()
