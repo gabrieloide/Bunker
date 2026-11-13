@@ -16,7 +16,7 @@ public class LevelSelectorMenu : MonoBehaviour
     [SerializeField] Sprite[] customTurretSprites;
     [SerializeField] Sprite destroyedSprite;
 
-    [SerializeField] string backScene = "MainMenu 2";
+    [SerializeField] string backScene = "MainMenu";
 
     Label descriptionText;
 

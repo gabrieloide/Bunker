@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfdcc03c69f9246409687ba3c9da9941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SceneName: MainMenu 2
+  SceneName: MainMenu
   turnOnEffect: {fileID: 205289458}
 --- !u!4 &205289456
 Transform:
