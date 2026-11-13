@@ -11,7 +11,7 @@ public class LevelDefinition : ScriptableObject
     public string displayName;
     [TextArea(2, 4)] public string description;
     [Tooltip("Scene loaded for this level (must be in Build Settings)")]
-    public string sceneName = "SceneGame";
+    public string sceneName = "Level 1";
 
     [Header("Enemy base")]
     [Tooltip("Life of the enemy base; destroying it wins the level")]

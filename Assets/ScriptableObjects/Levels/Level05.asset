@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   displayName: Complejo Site-19
   description: The supreme enemy base. Destroy it to liberate the sector.
-  sceneName: SceneGame
+  sceneName: Level 5
   enemyBaseLife: 350
   enemyBaseRadius: 7
   music: {fileID: 0}

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   displayName: Estación Centinela-X
   description: The enemy base is fortified and your starting territory is minimal.
-  sceneName: SceneGame
+  sceneName: Level 3
   enemyBaseLife: 150
   enemyBaseRadius: 7
   music: {fileID: 0}

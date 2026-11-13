@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   displayName: Silo Tartarus
   description: Multiple enemy fronts attacking relentlessly.
-  sceneName: SceneGame
+  sceneName: Level 4
   enemyBaseLife: 220
   enemyBaseRadius: 7
   music: {fileID: 0}

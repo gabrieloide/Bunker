@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   displayName: Silo Bravo-12
   description: A single flag beside your bunker. Protect your allies as they advance.
-  sceneName: SceneGame
+  sceneName: Level 2
   enemyBaseLife: 100
   enemyBaseRadius: 7
   music: {fileID: 0}

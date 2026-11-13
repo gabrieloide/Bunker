@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
   displayName: Sector Zero
   description: The enemy base is weak. You have two flags to deploy your towers.
-  sceneName: SceneGame
+  sceneName: Level 1
   enemyBaseLife: 60
   enemyBaseRadius: 7
   music: {fileID: 8300000, guid: 5afa4979551e3da4cbeb735715328078, type: 3}
