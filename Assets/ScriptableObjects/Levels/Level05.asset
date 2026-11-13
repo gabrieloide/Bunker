@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
   m_Name: Level05
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
-  displayName: Final Fortress
+  displayName: Complejo Site-19
   description: The supreme enemy base. Destroy it to liberate the sector.
   sceneName: SceneGame
   enemyBaseLife: 350

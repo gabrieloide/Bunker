@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
   m_Name: Level02
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
-  displayName: Open Front
+  displayName: Silo Bravo-12
   description: A single flag beside your bunker. Protect your allies as they advance.
   sceneName: SceneGame
   enemyBaseLife: 100

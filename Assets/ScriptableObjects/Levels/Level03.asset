@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
   m_Name: Level03
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
-  displayName: Siege
+  displayName: Estación Centinela-X
   description: The enemy base is fortified and your starting territory is minimal.
   sceneName: SceneGame
   enemyBaseLife: 150
