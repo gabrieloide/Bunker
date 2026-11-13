@@ -135,7 +135,19 @@ public class RetroCRTFilter : MonoBehaviour
         Mat.SetFloat("_Glitch", danger > 0f && sinceHit < glitchTime ? 1f - sinceHit / glitchTime : 0f);
         Mat.SetFloat("_Defeat", defeat);
 
-        Graphics.Blit(source, destination, Mat);
+        RenderTexture inputTex = source;
+        RenderTexture composited = null;
+        var cam = GetComponent<Camera>();
+        if (cam != null && cam.targetTexture == null && RetroCRTUIBridge.Instance != null)
+        {
+            if (RetroCRTUIBridge.Instance.TryComposite(source, out composited))
+                inputTex = composited;
+        }
+
+        Graphics.Blit(inputTex, destination, Mat);
+
+        if (composited != null)
+            RenderTexture.ReleaseTemporary(composited);
     }
 
     void OnDisable()

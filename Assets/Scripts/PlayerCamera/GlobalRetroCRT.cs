@@ -33,6 +33,8 @@ public class GlobalRetroCRT : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            if (GetComponent<RetroCRTUIBridge>() == null)
+                gameObject.AddComponent<RetroCRTUIBridge>();
             SceneManager.sceneLoaded += HandleSceneLoaded;
             ApplyFilterToActiveCameras();
         }
@@ -59,6 +61,8 @@ public class GlobalRetroCRT : MonoBehaviour
     void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ApplyFilterToActiveCameras();
+        if (RetroCRTUIBridge.Instance != null)
+            RetroCRTUIBridge.Instance.Refresh();
     }
 
     public void ApplyFilterToActiveCameras()
