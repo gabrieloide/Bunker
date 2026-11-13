@@ -145,6 +145,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
         if (isUnlocked)
         {
+            SoundBank.Play(Sfx.InfoBox);
             // Escala más grande para dar la sensación de selección
             LeanTween.cancel(turretTransform.gameObject);
             LeanTween.scale(turretTransform.gameObject, initialScale * hoverScaleMultiplier, tweenDuration)
@@ -206,6 +207,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             return;
         }
 
+        SoundBank.Play(Sfx.CardPlace);
         // Efecto punch de confirmación al hacer click
         LeanTween.cancel(turretTransform.gameObject);
         LeanTween.scale(turretTransform.gameObject, initialScale * (hoverScaleMultiplier * 1.1f), 0.1f)
