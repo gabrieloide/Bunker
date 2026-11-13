@@ -33,9 +33,13 @@ Material:
     - _CellWidth: 22
     - _DarkThreshold: 0.25
     - _PixelsPerUnit: 16
-    - _WaveCoverage: 0.34
+    - _SwirlCellSize: 52
+    - _SwirlCoverage: 0.35
+    - _SwirlFPS: 7
+    - _SwirlRadius: 7.5
+    - _WaveCoverage: 0.38
     - _WaveDensity: 0.91
-    - _WaveFPS: 3
+    - _WaveFPS: 4
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _WaterDarkColor: {r: 0.12941177, g: 0.14117648, b: 0.13725491, a: 1}
