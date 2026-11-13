@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private CardDrop cardDrop;
     private CardBag towerBag;
     private CardBag flagBag;
+    private CardBag roadBag;
+    private int wavesCleared;
 
     private void Awake()
     {
@@ -45,6 +47,7 @@ public class GameManager : MonoBehaviour
         if (catalog != null)
         {
             DealFlags(catalog.startingFlags);
+            DealRoads(catalog.startingRoads);
             DealTowers(catalog.startingTowers);
         }
         if (cardDrop != null && !cardDrop.HasPlayableCard)
@@ -69,13 +72,31 @@ public class GameManager : MonoBehaviour
         if (phase == Bunker.Simulation.WavePhase.Spawning)
             SoundBank.Play(Sfx.WaveStart);
         // Back to preparation after a wave was running: the wave is beaten
-        if (phase == Bunker.Simulation.WavePhase.WaitingToStart && lastPhase != Bunker.Simulation.WavePhase.WaitingToStart && !SimEventDispatcher.IsGameOver)
+        bool cleared = phase == Bunker.Simulation.WavePhase.WaitingToStart && lastPhase != Bunker.Simulation.WavePhase.WaitingToStart && !SimEventDispatcher.IsGameOver;
+        if (cleared)
+        {
             SoundBank.Play(Sfx.WaveCleared);
+            wavesCleared++;
+        }
         lastPhase = phase;
         if (phase != Bunker.Simulation.WavePhase.WaitingToStart || SimEventDispatcher.IsGameOver || catalog == null)
             return;
         DealFlags(catalog.flagsPerWave);
+        if (catalog.wavesPerRoad > 0 && wavesCleared > 0 && wavesCleared % catalog.wavesPerRoad == 0)
+            DealRoads(catalog.roadsPerInterval);
         DealTowers(catalog.towersPerWave);
+    }
+
+    void DealRoads(int count)
+    {
+        if (count <= 0) return;
+        if (cardDrop == null)
+            cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
+        if (cardDrop == null) return;
+
+        roadBag ??= new CardBag(catalog, CardCatalog.IsRoad);
+        for (int i = 0; i < count; i++)
+            cardDrop.Deal(roadBag.Draw());
     }
 
     void DealFlags(int count)

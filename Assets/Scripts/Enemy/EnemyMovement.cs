@@ -34,7 +34,7 @@ public class EnemyMovement : MonoBehaviour
 
     List<Vector3Int> registeredCells;
 
-    // Every cell the soldiers walk through, flag to flag along the L legs
+    // Every cell the soldiers walk through, flag to flag along the L legs (including outgoing fork links)
     public List<Vector3Int> RouteCells()
     {
         var cells = new List<Vector3Int>();
@@ -48,12 +48,36 @@ public class EnemyMovement : MonoBehaviour
                 cells.Add(to);
                 continue;
             }
-            var at = PlacementGrid.WorldToCell(route[i - 1].position);
-            // Legs are straight; step along x then y in case a leg is not
-            while (at.x != to.x) { at.x += System.Math.Sign(to.x - at.x); cells.Add(at); }
-            while (at.y != to.y) { at.y += System.Math.Sign(to.y - at.y); cells.Add(at); }
+            AppendLegCells(PlacementGrid.WorldToCell(route[i - 1].position), to, cells);
+        }
+
+        if (Forks && route.Count > 0)
+        {
+            Vector3 fork = route[route.Count - 1].position;
+            Vector3Int forkCell = PlacementGrid.WorldToCell(fork);
+            foreach (var branch in branches)
+            {
+                if (branch == null || branch.points == null || branch.points.Length == 0) continue;
+                Vector3 branchStart = branch.points[0];
+                if (RouteGeometry.TryGetCorner(fork, branchStart, false, out Vector3 corner))
+                {
+                    Vector3Int cornerCell = PlacementGrid.WorldToCell(corner);
+                    AppendLegCells(forkCell, cornerCell, cells);
+                    AppendLegCells(cornerCell, PlacementGrid.WorldToCell(branchStart), cells);
+                }
+                else
+                {
+                    AppendLegCells(forkCell, PlacementGrid.WorldToCell(branchStart), cells);
+                }
+            }
         }
         return cells;
+    }
+
+    static void AppendLegCells(Vector3Int at, Vector3Int to, List<Vector3Int> cells)
+    {
+        while (at.x != to.x) { at.x += System.Math.Sign(to.x - at.x); cells.Add(at); }
+        while (at.y != to.y) { at.y += System.Math.Sign(to.y - at.y); cells.Add(at); }
     }
 
     // The route as soldiers walk it: soldiers never move diagonally, so every pair of flags out of line gets an "L" corner between them
@@ -97,18 +121,16 @@ public class EnemyMovement : MonoBehaviour
     {
         if (points == null || index < 0 || index >= points.Length)
             return CurrentPosition;
-        return CurrentPosition + points[index];
+        return points[index];
     }
 
     private void OnDrawGizmos()
     {
         if (points == null || points.Length == 0) return;
 
-        Vector3 origin = CurrentPosition;
-
         for (int i = 0; i < points.Length; i++)
         {
-            Vector3 worldPos = origin + points[i];
+            Vector3 worldPos = points[i];
             if (i < points.Length - 1 || Forks)
             {
                 Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.6f);
@@ -118,8 +140,17 @@ public class EnemyMovement : MonoBehaviour
             {
                 Gizmos.color = pathColor;
                 foreach (var branch in branches)
-                    if (branch != null && branch.points != null && branch.points.Length > 0)
-                        Gizmos.DrawLine(worldPos, branch.CurrentPosition + branch.points[0]);
+                {
+                    if (branch == null || branch.points == null || branch.points.Length == 0) continue;
+                    Vector3 branchStart = branch.points[0];
+                    Vector3 legStart = worldPos;
+                    if (RouteGeometry.TryGetCorner(worldPos, branchStart, false, out Vector3 corner))
+                    {
+                        Gizmos.DrawLine(worldPos, corner);
+                        legStart = corner;
+                    }
+                    Gizmos.DrawLine(legStart, branchStart);
+                }
             }
 
             // Color-code start, waypoints, and end (bunker)
@@ -148,7 +179,7 @@ public class EnemyMovement : MonoBehaviour
             // Draw line to next point
             if (i < points.Length - 1)
             {
-                Vector3 nextPos = origin + points[i + 1];
+                Vector3 nextPos = points[i + 1];
                 Gizmos.color = pathColor;
                 // Soldiers never walk diagonally: draw the L they take
                 Vector3 legStart = worldPos;
@@ -188,13 +219,8 @@ public class EnemyMovement : MonoBehaviour
     {
         if (points == null || points.Length < 2) return;
 #if UNITY_EDITOR
-        Vector3 origin = CurrentPosition;
-        Vector3[] worldPoints = new Vector3[points.Length];
-        for (int i = 0; i < points.Length; i++)
-            worldPoints[i] = origin + points[i];
-
         UnityEditor.Handles.color = pathColor;
-        UnityEditor.Handles.DrawAAPolyLine(6f, worldPoints);
+        UnityEditor.Handles.DrawAAPolyLine(6f, points);
 #endif
     }
 }

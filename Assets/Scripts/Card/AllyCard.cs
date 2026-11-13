@@ -37,7 +37,30 @@ public class AllyCard : Card
     protected override void CardBehaviour()
     {
         if (SimulationBridge.Instance != null && definition is AllyCardDefinition card)
-            SimulationBridge.Instance.RequestAllies(card.ally, card.count, card.mix);
+        {
+            Unity.Entities.Entity preferred = ResolvePreferredRoad();
+            SimulationBridge.Instance.RequestAllies(card.ally, card.count, card.mix, preferred);
+        }
         SoundBank.Play(Sfx.AllyDeploy);
+    }
+
+    Unity.Entities.Entity ResolvePreferredRoad()
+    {
+        if (AllyRoadNetwork.BuiltTileCount == 0 || SimulationBridge.Instance == null)
+            return default;
+
+        var roadEntity = SimulationBridge.Instance.AllyRoadPathEntity;
+        if (roadEntity == default)
+            return default;
+
+        Vector3 drop = PointerWorld();
+        float maxDistSq = Mathf.Pow((PlacementGrid.Available ? PlacementGrid.CellSize.x : 1f) * 2f, 2f);
+        foreach (var cell in AllyRoadNetwork.RoadCells)
+        {
+            Vector3 center = AllyRoadNetwork.CellToWorld(cell);
+            if (((Vector2)(center - drop)).sqrMagnitude <= maxDistSq)
+                return roadEntity;
+        }
+        return default;
     }
 }

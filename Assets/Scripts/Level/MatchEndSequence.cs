@@ -58,7 +58,7 @@ public class MatchEndSequence : MonoBehaviour
         var pause = FindAnyObjectByType<PauseMenu>();
         if (pause != null) pause.enabled = false;
 
-        Transform target = victory ? FindTarget<EnemyBaseView>() : (TowerPlayer.instance != null ? TowerPlayer.instance.transform : null);
+        Transform target = victory ? FindDestroyedEnemyBase() : (TowerPlayer.instance != null ? TowerPlayer.instance.transform : null);
         SpriteRenderer body = target != null ? Body(target) : null;
 
         // 1. Freeze on the blow
@@ -123,6 +123,14 @@ public class MatchEndSequence : MonoBehaviour
         float end = Time.unscaledTime + seconds * stretch;
         while (Time.unscaledTime < end && !skipped)
             yield return null;
+    }
+
+    static Transform FindDestroyedEnemyBase()
+    {
+        var bases = FindObjectsByType<EnemyBaseView>(FindObjectsSortMode.None);
+        foreach (var b in bases)
+            if (b != null && b.IsDestroyed) return b.transform;
+        return bases.Length > 0 && bases[0] != null ? bases[0].transform : null;
     }
 
     static Transform FindTarget<T>() where T : Component

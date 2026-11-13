@@ -41,17 +41,16 @@ namespace Bunker.Simulation
                 enemyPositions.Add(transform.ValueRO.Position);
             }
 
-            Entity baseEntity = Entity.Null;
-            float3 basePos = float3.zero;
-            float baseReach = 0f;
+            var bases = new NativeList<Entity>(Allocator.Temp);
+            var basePositions = new NativeList<float3>(Allocator.Temp);
+            var baseReaches = new NativeList<float>(Allocator.Temp);
             foreach (var (transform, health, box, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Health>, RefRO<HitBox>>().WithAll<EnemyBaseTag>().WithEntityAccess())
             {
                 if (health.ValueRO.Value > 0f)
                 {
-                    baseEntity = entity;
-                    basePos = transform.ValueRO.Position + new float3(box.ValueRO.Offset, 0f);
-                    baseReach = math.cmax(box.ValueRO.HalfExtents);
-                    break;
+                    bases.Add(entity);
+                    basePositions.Add(transform.ValueRO.Position + new float3(box.ValueRO.Offset, 0f));
+                    baseReaches.Add(math.cmax(box.ValueRO.HalfExtents));
                 }
             }
 
@@ -103,12 +102,23 @@ namespace Bunker.Simulation
 
                 Entity newTarget = best >= 0 && bestDist <= w.Range ? candidates[best] : Entity.Null;
                 float3 targetPos = best >= 0 ? candidatePositions[best] : float3.zero;
+                bool targetingBase = false;
 
                 // No free hits on the base between waves: a flag chain must not win with no enemy on the map
-                if (targetsEnemies && !preparation && newTarget == Entity.Null && baseEntity != Entity.Null && math.distance(pos.xy, basePos.xy) <= w.Range + baseReach)
+                if (targetsEnemies && !preparation && newTarget == Entity.Null && bases.Length > 0)
                 {
-                    newTarget = baseEntity;
-                    targetPos = basePos;
+                    float nearestDist = float.MaxValue;
+                    for (int i = 0; i < bases.Length; i++)
+                    {
+                        float d = math.distance(pos.xy, basePositions[i].xy);
+                        if (d <= w.Range + baseReaches[i] && d < nearestDist)
+                        {
+                            nearestDist = d;
+                            newTarget = bases[i];
+                            targetPos = basePositions[i];
+                            targetingBase = true;
+                        }
+                    }
                 }
 
                 target.ValueRW.Value = newTarget;
@@ -170,7 +180,7 @@ namespace Bunker.Simulation
                 {
                     Damage = w.Damage,
                     BulletPen = w.BulletPen,
-                    Lifetime = newTarget == baseEntity ? math.max(w.ProjectileLifetime, (len / math.max(0.01f, w.ProjectileSpeed)) + 0.15f) : w.ProjectileLifetime,
+                    Lifetime = targetingBase ? math.max(w.ProjectileLifetime, (len / math.max(0.01f, w.ProjectileSpeed)) + 0.15f) : w.ProjectileLifetime,
                     Velocity = dir * w.ProjectileSpeed,
                     HalfExtents = w.ProjectileHalfExtents,
                     TargetFaction = w.TargetFaction,
@@ -189,6 +199,9 @@ namespace Bunker.Simulation
             towerPositions.Dispose();
             enemies.Dispose();
             enemyPositions.Dispose();
+            bases.Dispose();
+            basePositions.Dispose();
+            baseReaches.Dispose();
         }
     }
 }

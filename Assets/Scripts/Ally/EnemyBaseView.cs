@@ -22,6 +22,9 @@ public class EnemyBaseView : MonoBehaviour
     BunkerSmoke smoke;
 
     DottedRing ring;
+    bool destroyed;
+
+    public bool IsDestroyed => destroyed;
 
     void Start()
     {
@@ -29,7 +32,7 @@ public class EnemyBaseView : MonoBehaviour
         smoke = new BunkerSmoke(transform, smokeBelow);
         if (Radius > 0f)
         {
-            EnemyTerritory.SetBase(transform.position, Radius);
+            EnemyTerritory.RegisterBase(this, transform.position, Radius);
             ring = EnemyTerritory.CreateRing(transform, Radius);
         }
     }
@@ -39,7 +42,7 @@ public class EnemyBaseView : MonoBehaviour
         if (ring != null) EnemyTerritory.UpdateRing(ring);
     }
 
-    void OnDestroy() => EnemyTerritory.ClearBase();
+    void OnDestroy() => EnemyTerritory.UnregisterBase(this);
 
     public void OnHit(float remainingLife)
     {
@@ -52,6 +55,8 @@ public class EnemyBaseView : MonoBehaviour
 
     public void OnDestroyed()
     {
+        if (destroyed) return;
+        destroyed = true;
         SoundBank.Play(Sfx.EnemyBaseDestroyed);
         smoke?.SetDestroyed();
         if (destroyedParticle != null)

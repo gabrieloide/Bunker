@@ -21,6 +21,14 @@ public class CardCatalog : ScriptableObject
     [Tooltip("Flag cards dealt each time a wave is cleared (before the towers, so they get a hand slot first)")]
     [Min(0)] public int flagsPerWave = 1;
 
+    [Header("Roads")]
+    [Tooltip("Road cards dealt when a level starts")]
+    [Min(0)] public int startingRoads = 1;
+    [Tooltip("Road cards dealt every Waves Per Road cleared waves")]
+    [Min(0)] public int roadsPerInterval = 1;
+    [Tooltip("How many cleared waves between each road card reward (0 = none after start)")]
+    [Min(0)] public int wavesPerRoad = 2;
+
     [Header("Placement")]
     [Tooltip("Towers allowed on the map at the same time; 0 = no limit. Each tower card can also set its own Max On Field")]
     [Min(0)] public int maxTowers = 8;
@@ -39,11 +47,12 @@ public class CardCatalog : ScriptableObject
 
     public static bool IsTower(CardDefinition card) => card is TowerCardDefinition;
     public static bool IsFlag(CardDefinition card) => card is FlagCardDefinition;
-    public static bool DropsOnKill(CardDefinition card) => !IsTower(card) && !IsFlag(card);
+    public static bool IsRoad(CardDefinition card) => card is RoadCardDefinition;
+    public static bool DropsOnKill(CardDefinition card) => !IsTower(card) && !IsFlag(card) && !IsRoad(card);
 
-    // The pool a card is rolled from: towers among towers, flags among flags, the rest among kill drops
+    // The pool a card is rolled from: towers among towers, flags among flags, roads among roads, the rest among kill drops
     public static System.Predicate<CardDefinition> PoolOf(CardDefinition card) =>
-        IsTower(card) ? IsTower : IsFlag(card) ? IsFlag : DropsOnKill;
+        IsTower(card) ? IsTower : IsFlag(card) ? IsFlag : IsRoad(card) ? IsRoad : DropsOnKill;
 
     public int TotalWeight(System.Predicate<CardDefinition> pool)
     {

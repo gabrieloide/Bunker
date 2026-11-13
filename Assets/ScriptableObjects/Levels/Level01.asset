@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
   m_Name: Level01
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
-  displayName: Primer contacto
-  description: La base enemiga es debil. Tienes dos banderas para desplegar tus torres.
+  displayName: First Contact
+  description: The enemy base is weak. You have two flags to deploy your towers.
   sceneName: SceneGame
   enemyBaseLife: 60
   enemyBaseRadius: 7

@@ -118,6 +118,8 @@ public static class PlacementGrid
     public static bool HasObstacle(Vector3Int cell)
     {
         EnsureTilemapsCached();
+        if (AllyRoadNetwork.IsRoadCell(cell))
+            return true;
         bool routed = EnemyMovement.HasRoute;
         if (routed && EnemyMovement.IsRouteCell(cell))
             return true;

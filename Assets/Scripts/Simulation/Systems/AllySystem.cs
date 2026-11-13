@@ -45,7 +45,9 @@ namespace Bunker.Simulation
 
             var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
             var branchLookup = SystemAPI.GetBufferLookup<PathBranch>(true);
-            var parentLookup = SystemAPI.GetComponentLookup<PathParent>(true);
+            var parentLookup = SystemAPI.GetBufferLookup<PathParent>(true);
+            var mergeLookup = SystemAPI.GetComponentLookup<PathMergeCursor>();
+            var allyRoadLookup = SystemAPI.GetComponentLookup<AllyRoadTag>(true);
 
             // Between waves allies wait at the bunker
             bool preparation = SystemAPI.TryGetSingleton<WaveState>(out var waveState) && waveState.Phase == WavePhase.WaitingToStart;
@@ -58,7 +60,7 @@ namespace Bunker.Simulation
                 var endRoutes = new NativeList<Entity>(Allocator.Temp);
                 var pathEntities = pathQuery.ToEntityArray(Allocator.Temp);
                 foreach (var path in pathEntities)
-                    if ((!branchLookup.HasBuffer(path) || branchLookup[path].Length == 0) && pathLookup[path].Length > 0)
+                    if (!allyRoadLookup.HasComponent(path) && (!branchLookup.HasBuffer(path) || branchLookup[path].Length == 0) && pathLookup[path].Length > 0)
                         endRoutes.Add(path);
                 pathEntities.Dispose();
 
@@ -69,7 +71,10 @@ namespace Bunker.Simulation
                     if (requests[i].TypeIndex < 0 || requests[i].TypeIndex >= typeCount)
                         continue;
                     var slotRng = Random.CreateFromIndex((uint)(SystemAPI.Time.ElapsedTime * 1000.0) + (uint)i + 1u);
-                    Entity route = endRoutes.Length > 0 ? endRoutes[turn++ % endRoutes.Length] : Entity.Null;
+                    Entity preferred = requests[i].PreferredPath;
+                    Entity route = (preferred != Entity.Null && pathLookup.HasBuffer(preferred) && pathLookup[preferred].Length > 0)
+                        ? preferred
+                        : (endRoutes.Length > 0 ? endRoutes[turn++ % endRoutes.Length] : Entity.Null);
                     int lastIndex = route != Entity.Null ? pathLookup[route].Length - 1 : -1;
                     SpawnAlly(requests[i].TypeIndex, route, lastIndex, slotRng.NextFloat2Direction() * math.sqrt(slotRng.NextFloat()), in config, ecb);
                 }
@@ -86,12 +91,18 @@ namespace Bunker.Simulation
                 enemyPositions.Add(transform.ValueRO.Position);
             }
 
-            bool hasBase = SystemAPI.TryGetSingletonEntity<EnemyBaseTag>(out var baseEntity);
-            float3 basePos = hasBase ? SystemAPI.GetComponent<LocalTransform>(baseEntity).Position : float3.zero;
-            // Reach counts from the base's edge, not its centre
-            float baseReach = hasBase && SystemAPI.HasComponent<HitBox>(baseEntity)
-                ? math.cmax(SystemAPI.GetComponent<HitBox>(baseEntity).HalfExtents)
-                : 0f;
+            var bases = new NativeList<Entity>(Allocator.Temp);
+            var basePositions = new NativeList<float3>(Allocator.Temp);
+            var baseReaches = new NativeList<float>(Allocator.Temp);
+            var hitBoxLookup = SystemAPI.GetComponentLookup<HitBox>(true);
+            foreach (var (transform, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Health>>().WithAll<EnemyBaseTag>().WithEntityAccess())
+            {
+                if (health.ValueRO.Value <= 0f) continue;
+                bases.Add(entity);
+                basePositions.Add(transform.ValueRO.Position);
+                // Reach counts from the base's edge, not its centre
+                baseReaches.Add(hitBoxLookup.TryGetComponent(entity, out var box) ? math.cmax(box.HalfExtents) : 0f);
+            }
 
             var damageLookup = SystemAPI.GetBufferLookup<DamageRequest>();
             var defenseLookup = SystemAPI.GetComponentLookup<Defense>(true);
@@ -104,7 +115,7 @@ namespace Bunker.Simulation
                 foreach (var (transform, follower, entity) in
                          SystemAPI.Query<RefRO<LocalTransform>, RefRO<AllyPathFollower>>().WithAll<AllyTag>().WithEntityAccess())
                 {
-                    if (!TryWaypoint(follower.ValueRO, in pathLookup, hasBase, basePos, out float3 walkerWaypoint))
+                    if (!TryWaypoint(transform.ValueRO.Position, follower.ValueRO, in pathLookup, basePositions, out float3 walkerWaypoint))
                         continue;
                     walkers.Add(new Walker
                     {
@@ -140,15 +151,21 @@ namespace Bunker.Simulation
 
                 Entity target = Entity.Null;
                 float3 targetPos = float3.zero;
+                bool hittingBase = false;
                 if (best >= 0 && bestDist <= m.Range)
                 {
                     target = enemies[best];
                     targetPos = enemyPositions[best];
                 }
-                else if (hasBase && !preparation && follower.ValueRO.NextIndex < 0 && math.distance(pos.xy, basePos.xy) <= m.Range + baseReach)
+                else if (bases.Length > 0 && !preparation && follower.ValueRO.NextIndex < 0)
                 {
-                    target = baseEntity;
-                    targetPos = basePos;
+                    int nearestBase = NearestBaseIndex(pos.xy, basePositions);
+                    if (nearestBase >= 0 && math.distance(pos.xy, basePositions[nearestBase].xy) <= m.Range + baseReaches[nearestBase])
+                    {
+                        target = bases[nearestBase];
+                        targetPos = basePositions[nearestBase];
+                        hittingBase = true;
+                    }
                 }
 
                 if (target != Entity.Null)
@@ -166,7 +183,7 @@ namespace Bunker.Simulation
                         Amount = defenseLookup.TryGetComponent(target, out var defense)
                             ? BalanceMath.EnemyDamageTaken(m.Damage, m.BulletPen, defense.Value)
                             : m.Damage,
-                        IntValue = target == baseEntity ? 1 : 0
+                        IntValue = hittingBase ? 1 : 0
                     });
                     continue;
                 }
@@ -174,7 +191,7 @@ namespace Bunker.Simulation
                 if (preparation)
                     continue;
 
-                if (!TryWaypoint(follower.ValueRO, in pathLookup, hasBase, basePos, out float3 waypoint))
+                if (!TryWaypoint(pos, follower.ValueRO, in pathLookup, basePositions, out float3 waypoint))
                     continue;
 
                 Entity pathEntity = follower.ValueRO.PathEntity;
@@ -188,16 +205,32 @@ namespace Bunker.Simulation
                     continue;
 
                 follower.ValueRW.NextIndex--;
-                // Past the start of a branch: carry on backwards along the route it forked from
-                if (follower.ValueRO.NextIndex < 0 && parentLookup.TryGetComponent(pathEntity, out var parent) && pathLookup.HasBuffer(parent.Path))
+                // Past the start of a branch: carry on backwards along a route it forked from
+                if (follower.ValueRO.NextIndex < 0 && parentLookup.HasBuffer(pathEntity) && parentLookup[pathEntity].Length > 0)
                 {
-                    follower.ValueRW.PathEntity = parent.Path;
-                    follower.ValueRW.NextIndex = pathLookup[parent.Path].Length - 1;
+                    var parents = parentLookup[pathEntity];
+                    int parentIdx = 0;
+                    if (parents.Length > 1 && mergeLookup.HasComponent(pathEntity))
+                    {
+                        var cursor = mergeLookup[pathEntity];
+                        parentIdx = cursor.NextParent % parents.Length;
+                        cursor.NextParent++;
+                        mergeLookup[pathEntity] = cursor;
+                    }
+                    Entity parentPath = parents[parentIdx].Path;
+                    if (pathLookup.HasBuffer(parentPath) && pathLookup[parentPath].Length > 0)
+                    {
+                        follower.ValueRW.PathEntity = parentPath;
+                        follower.ValueRW.NextIndex = pathLookup[parentPath].Length - 1;
+                    }
                 }
             }
 
             enemies.Dispose();
             enemyPositions.Dispose();
+            bases.Dispose();
+            basePositions.Dispose();
+            baseReaches.Dispose();
             walkers.Dispose();
         }
 
@@ -210,8 +243,24 @@ namespace Bunker.Simulation
             public float DistanceToWaypoint;
         }
 
-        // The point an ally walks to: its own spot at the next route point, or the enemy base once past the route's start
-        static bool TryWaypoint(in AllyPathFollower follower, in BufferLookup<PathPoint> pathLookup, bool hasBase, float3 basePos, out float3 waypoint)
+        static int NearestBaseIndex(float2 pos, NativeList<float3> basePositions)
+        {
+            int best = -1;
+            float bestDist = float.MaxValue;
+            for (int i = 0; i < basePositions.Length; i++)
+            {
+                float d = math.distancesq(pos, basePositions[i].xy);
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    best = i;
+                }
+            }
+            return best;
+        }
+
+        // The point an ally walks to: its own spot at the next route point, or the nearest enemy base once past the route's start
+        static bool TryWaypoint(float3 pos, in AllyPathFollower follower, in BufferLookup<PathPoint> pathLookup, NativeList<float3> basePositions, out float3 waypoint)
         {
             if (follower.NextIndex >= 0 && follower.PathEntity != Entity.Null && pathLookup.HasBuffer(follower.PathEntity))
             {
@@ -222,8 +271,14 @@ namespace Bunker.Simulation
                     return true;
                 }
             }
-            waypoint = basePos;
-            return hasBase;
+            int nearest = NearestBaseIndex(pos.xy, basePositions);
+            if (nearest >= 0)
+            {
+                waypoint = basePositions[nearest];
+                return true;
+            }
+            waypoint = float3.zero;
+            return false;
         }
 
         // Ahead = fewer path points left (allies walk the path backwards); a full tie is broken by entity index

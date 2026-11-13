@@ -96,14 +96,20 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 3. Name Box
         string title = levelDefinition != null && !string.IsNullOrEmpty(levelDefinition.displayName)
             ? levelDefinition.displayName
-            : $"NIVEL {levelIndex + 1}";
+            : $"LEVEL {levelIndex + 1}";
 
         if (nameText != null)
         {
+            nameText.enableAutoSizing = true;
+            nameText.fontSizeMin = 1f;
+            if (nameText.fontSizeMax <= 0f)
+                nameText.fontSizeMax = nameText.fontSize > 0f ? nameText.fontSize : 36f;
+            nameText.overflowMode = TextOverflowModes.Ellipsis;
+
             if (isCompleted)
             {
-                nameText.text = $"{title}";
-                nameText.color = new Color(0.8f, 1f, 0.8f, 1f);
+                nameText.text = title;
+                nameText.color = Color.white;
             }
             else if (isUnlocked)
             {
@@ -112,7 +118,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             }
             else
             {
-                nameText.text = "BLOQUEADO";
+                nameText.text = "LOCKED";
                 nameText.color = new Color(0.7f, 0.7f, 0.7f, 0.8f);
             }
         }
@@ -161,7 +167,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
         if (onHoverDescriptionCallback != null && levelDefinition != null)
         {
-            string desc = isUnlocked ? levelDefinition.description : "Supera los niveles anteriores para desbloquear.";
+            string desc = isUnlocked ? levelDefinition.description : "Complete previous levels to unlock.";
             onHoverDescriptionCallback(desc);
         }
     }

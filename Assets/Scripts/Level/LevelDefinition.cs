@@ -32,6 +32,10 @@ public class LevelDefinition : ScriptableObject
     public List<FlagPlacement> flags = new List<FlagPlacement>();
     [Tooltip("White enemy flags: no player flag can be planted inside their radius until an ally walks into it and knocks it down")]
     public List<FlagPlacement> enemyFlags = new List<FlagPlacement>();
+
+    [Header("Ally Roads")]
+    [Tooltip("Maximum number of ally road tiles the player can build in this level (0 = unlimited)")]
+    [Min(0)] public int maxAllyRoadTiles = 12;
 }
 
 [Serializable]

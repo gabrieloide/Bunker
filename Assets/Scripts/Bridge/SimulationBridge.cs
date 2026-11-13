@@ -25,7 +25,8 @@ public class SimulationBridge : MonoBehaviour
     TowerPlayer player;
     LootBag lootBag;
     AllyView[] allyPrefabs = new AllyView[0];
-    EnemyBaseView enemyBase;
+    EnemyBaseView primaryEnemyBase;
+    readonly Dictionary<Entity, EnemyBaseView> enemyBaseViews = new Dictionary<Entity, EnemyBaseView>();
     EnemySpawner spawnerComp;
     EnemyMovement pathComp;
 
@@ -87,7 +88,8 @@ public class SimulationBridge : MonoBehaviour
         pool = FindFirstObjectByType<ObjectPooling>();
         player = FindFirstObjectByType<TowerPlayer>();
         lootBag = FindFirstObjectByType<LootBag>();
-        enemyBase = FindFirstObjectByType<EnemyBaseView>();
+        var allEnemyBases = FindObjectsByType<EnemyBaseView>(FindObjectsSortMode.None);
+        primaryEnemyBase = allEnemyBases.Length > 0 ? allEnemyBases[0] : null;
         var allySpawner = FindFirstObjectByType<AllySpawner>();
         if (LevelSetup.Current != null && LevelSetup.Current.balance != null)
             balance = LevelSetup.Current.balance;
@@ -214,7 +216,7 @@ public class SimulationBridge : MonoBehaviour
             em.AddComponentData(bunkerEntity, new HitBox { HalfExtents = bunkerHalf, Offset = bunkerOffset });
         }
 
-        CreateEnemyBase();
+        CreateEnemyBases(allEnemyBases);
         CreateAllySpawner(allySpawner);
         routeOverlay = RouteOverlay.Create(pathEntities.Keys);
 
@@ -264,19 +266,25 @@ public class SimulationBridge : MonoBehaviour
         return builder.CreateBlobAssetReference<EnemyRosterBlob>(Allocator.Persistent);
     }
 
-    void CreateEnemyBase()
+    void CreateEnemyBases(EnemyBaseView[] bases)
     {
-        if (enemyBase == null) return;
-        var entity = em.CreateEntity();
-        em.AddComponent<SimulationTag>(entity);
-        em.AddComponent<EnemyBaseTag>(entity);
-        em.AddComponentData(entity, LocalTransform.FromPosition(enemyBase.transform.position));
-        float life = enemyBase.StartLife;
-        em.AddComponentData(entity, new Health { Value = life, Max = life });
-        ColliderBox(enemyBase.gameObject, out var half, out var offset);
-        em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
-        em.AddBuffer<DamageRequest>(entity);
-        enemyBase.Entity = entity;
+        enemyBaseViews.Clear();
+        if (bases == null) return;
+        foreach (var baseView in bases)
+        {
+            if (baseView == null) continue;
+            var entity = em.CreateEntity();
+            em.AddComponent<SimulationTag>(entity);
+            em.AddComponent<EnemyBaseTag>(entity);
+            em.AddComponentData(entity, LocalTransform.FromPosition(baseView.transform.position));
+            float life = baseView.StartLife;
+            em.AddComponentData(entity, new Health { Value = life, Max = life });
+            ColliderBox(baseView.gameObject, out var half, out var offset);
+            em.AddComponentData(entity, new HitBox { HalfExtents = half, Offset = offset });
+            em.AddBuffer<DamageRequest>(entity);
+            baseView.Entity = entity;
+            enemyBaseViews[entity] = baseView;
+        }
     }
 
     void CreateAllySpawner(AllySpawner spawner)
@@ -318,16 +326,48 @@ public class SimulationBridge : MonoBehaviour
             Roster = allyRosterBlob
         });
         em.AddBuffer<AllySpawnRequest>(allySpawnerEntity);
+
+        int maxRoadTiles = LevelSetup.Current != null ? LevelSetup.Current.maxAllyRoadTiles : 12;
+        AllyRoadNetwork.Initialize(spawner.transform.position, maxRoadTiles);
+        AllyRoadOverlay.EnsureExists();
+    }
+
+    public Entity AllyRoadPathEntity { get; private set; }
+
+    // Rebuilds the ECS PathPoint buffer for the player-built ally road in reverse order
+    // (far tip -> bunker) so AllySystem walks allies outward from the bunker to the tip.
+    public void SyncAllyRoadPath()
+    {
+        if (!ready) return;
+
+        var polyline = AllyRoadNetwork.GetMainPolylineWorld();
+        if (polyline.Count < 2) return;
+
+        if (AllyRoadPathEntity == Entity.Null || !em.Exists(AllyRoadPathEntity))
+        {
+            AllyRoadPathEntity = em.CreateEntity();
+            em.AddComponent<SimulationTag>(AllyRoadPathEntity);
+            em.AddComponent<AllyRoadTag>(AllyRoadPathEntity);
+            em.AddBuffer<PathPoint>(AllyRoadPathEntity);
+        }
+
+        var buffer = em.GetBuffer<PathPoint>(AllyRoadPathEntity);
+        buffer.Clear();
+        for (int i = polyline.Count - 1; i >= 0; i--)
+        {
+            Vector3 p = polyline[i];
+            buffer.Add(new PathPoint { Value = new float3(p.x, p.y, 0f), Radius = 0.25f });
+        }
     }
 
     // An ally card was played: `count` allies leave the bunker on the next simulation step, each a random one of `mix` when it has any
-    public void RequestAllies(AllyView prefab, int count, AllyView[] mix)
+    public void RequestAllies(AllyView prefab, int count, AllyView[] mix, Entity preferredPath = default)
     {
         for (int i = 0; i < count; i++)
-            RequestAlly(mix != null && mix.Length > 0 ? mix[UnityEngine.Random.Range(0, mix.Length)] : prefab);
+            RequestAlly(mix != null && mix.Length > 0 ? mix[UnityEngine.Random.Range(0, mix.Length)] : prefab, preferredPath);
     }
 
-    public void RequestAlly(AllyView prefab)
+    public void RequestAlly(AllyView prefab, Entity preferredPath = default)
     {
         int index = prefab != null ? System.Array.IndexOf(allyPrefabs, prefab) : -1;
         if (index < 0)
@@ -336,7 +376,11 @@ public class SimulationBridge : MonoBehaviour
             return;
         }
         if (!ready || !em.Exists(allySpawnerEntity)) return;
-        em.GetBuffer<AllySpawnRequest>(allySpawnerEntity).Add(new AllySpawnRequest { TypeIndex = index });
+        em.GetBuffer<AllySpawnRequest>(allySpawnerEntity).Add(new AllySpawnRequest
+        {
+            TypeIndex = index,
+            PreferredPath = preferredPath
+        });
     }
 
     BlobAssetReference<EnemyBuffTableBlob> BuildBuffTable()
@@ -792,11 +836,18 @@ public class SimulationBridge : MonoBehaviour
                     break;
 
                 case SimEventKind.EnemyBaseHit:
-                    if (enemyBase != null) enemyBase.OnHit(ev.IntValue);
+                    var hitBase = ResolveEnemyBase(ev.Source);
+                    if (hitBase != null)
+                    {
+                        hitBase.OnHit(ev.IntValue);
+                        if (ev.IntValue <= 0)
+                            hitBase.OnDestroyed();
+                    }
                     break;
 
                 case SimEventKind.Victory:
-                    if (enemyBase != null) enemyBase.OnDestroyed();
+                    var winBase = ResolveEnemyBase(ev.Source);
+                    if (winBase != null) winBase.OnDestroyed();
                     break;
 
                 case SimEventKind.EnemyDied:
@@ -978,23 +1029,41 @@ public class SimulationBridge : MonoBehaviour
         em.SetComponentData(simEntity, config);
     }
 
+    EnemyBaseView ResolveEnemyBase(Entity baseEntity)
+    {
+        if (baseEntity != Entity.Null && enemyBaseViews.TryGetValue(baseEntity, out var found))
+            return found;
+        return primaryEnemyBase;
+    }
+
     // One entity per route, plus every route it forks into. Fills `entities` so a shared branch is created once
-    Entity CreatePathEntity(EnemyMovement movement, Dictionary<EnemyMovement, Entity> entities)
+    Entity CreatePathEntity(EnemyMovement movement, Dictionary<EnemyMovement, Entity> entities, HashSet<EnemyMovement> visiting = null)
     {
         if (entities.TryGetValue(movement, out var existing))
             return existing;
+
+        visiting ??= new HashSet<EnemyMovement>();
+        if (!visiting.Add(movement))
+        {
+            Debug.LogError($"SimulationBridge: cycle detected in route '{movement.name}'.", movement);
+            return Entity.Null;
+        }
 
         Entity entity = em.CreateEntity();
         entities[movement] = entity;
         em.AddComponent<SimulationTag>(entity);
         FillPath(em.AddBuffer<PathPoint>(entity), movement);
-        AddBranches(entity, movement, entities);
+        AddBranches(entity, movement, entities, visiting);
+        visiting.Remove(movement);
         return entity;
     }
 
-    void AddBranches(Entity entity, EnemyMovement movement, Dictionary<EnemyMovement, Entity> entities)
+    void AddBranches(Entity entity, EnemyMovement movement, Dictionary<EnemyMovement, Entity> entities, HashSet<EnemyMovement> visiting = null)
     {
         if (!movement.Forks) return;
+
+        visiting ??= new HashSet<EnemyMovement>();
+        visiting.Add(movement);
 
         var children = new List<Entity>();
         foreach (var branch in movement.branches)
@@ -1004,10 +1073,25 @@ public class SimulationBridge : MonoBehaviour
                 Debug.LogError($"SimulationBridge: route '{movement.name}' has an empty branch; skipping it.", movement);
                 continue;
             }
-            Entity child = CreatePathEntity(branch, entities);
+            if (visiting.Contains(branch))
+            {
+                Debug.LogError($"SimulationBridge: circular branch '{branch.name}' on route '{movement.name}'; skipping it.", movement);
+                continue;
+            }
+            Entity child = CreatePathEntity(branch, entities, visiting);
+            if (child == Entity.Null) continue;
             children.Add(child);
-            if (!em.HasComponent<PathParent>(child))
-                em.AddComponentData(child, new PathParent { Path = entity });
+
+            var parents = em.HasBuffer<PathParent>(child) ? em.GetBuffer<PathParent>(child) : em.AddBuffer<PathParent>(child);
+            bool alreadyLinked = false;
+            for (int i = 0; i < parents.Length; i++)
+            {
+                if (parents[i].Path == entity) { alreadyLinked = true; break; }
+            }
+            if (!alreadyLinked)
+                parents.Add(new PathParent { Path = entity });
+            if (parents.Length > 1 && !em.HasComponent<PathMergeCursor>(child))
+                em.AddComponentData(child, new PathMergeCursor());
         }
 
         if (children.Count == 0) return;

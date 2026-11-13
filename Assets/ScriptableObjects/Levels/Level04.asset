@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
   m_Name: Level04
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
-  displayName: Tormenta de Fuego
-  description: Multiples frentes enemigos atacando sin tregua.
+  displayName: Firestorm
+  description: Multiple enemy fronts attacking relentlessly.
   sceneName: SceneGame
   enemyBaseLife: 220
   enemyBaseRadius: 7

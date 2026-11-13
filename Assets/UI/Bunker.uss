@@ -189,17 +189,22 @@
 .selector-title {
     position: absolute;
     top: 40px;
-    left: 0;
-    right: 0;
-    font-size: 96px;
+    left: 40px;
+    right: 40px;
+    font-size: 84px;
+    white-space: normal;
+    overflow: hidden;
     -unity-text-align: middle-center;
 }
 
 .selector-description {
     position: absolute;
-    bottom: 60px;
-    left: 200px;
-    right: 200px;
+    bottom: 48px;
+    left: 260px;
+    right: 260px;
+    font-size: 36px;
+    white-space: normal;
+    overflow: hidden;
     -unity-text-align: middle-center;
 }
 

@@ -111,6 +111,11 @@ namespace Bunker.Simulation
                 ecb.DestroyEntity(entity);
             }
 
+            bool anyBaseKilled = false;
+            bool anyBaseAlive = false;
+            Entity lastKilledBase = Entity.Null;
+            float3 lastKilledPos = float3.zero;
+
             foreach (var (health, requests, transform, entity) in
                      SystemAPI.Query<RefRW<Health>, DynamicBuffer<DamageRequest>, RefRO<LocalTransform>>()
                          .WithAll<EnemyBaseTag>()
@@ -119,6 +124,8 @@ namespace Bunker.Simulation
                 if (requests.Length == 0 || health.ValueRO.Value <= 0f)
                 {
                     requests.Clear();
+                    if (health.ValueRO.Value > 0f)
+                        anyBaseAlive = true;
                     continue;
                 }
 
@@ -139,17 +146,30 @@ namespace Bunker.Simulation
                 });
 
                 if (newHealth > 0f)
-                    continue;
+                {
+                    anyBaseAlive = true;
+                }
+                else
+                {
+                    anyBaseKilled = true;
+                    lastKilledBase = entity;
+                    lastKilledPos = transform.ValueRO.Position;
+                }
+            }
 
+            if (anyBaseKilled && !anyBaseAlive)
+            {
                 // A bunker that fell the same frame already ended the match
+                bool alreadyOver = false;
                 if (hasSession)
                 {
                     ref var session = ref SystemAPI.GetSingletonRW<GameSession>().ValueRW;
-                    if (session.IsGameOver)
-                        continue;
-                    session.IsGameOver = true;
+                    alreadyOver = session.IsGameOver;
+                    if (!alreadyOver)
+                        session.IsGameOver = true;
                 }
-                events.Add(new SimEvent { Kind = SimEventKind.Victory, Source = entity, Position = transform.ValueRO.Position });
+                if (!alreadyOver)
+                    events.Add(new SimEvent { Kind = SimEventKind.Victory, Source = lastKilledBase, Position = lastKilledPos });
             }
 
             foreach (var (health, requests, transform, entity) in

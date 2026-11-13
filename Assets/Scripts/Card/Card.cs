@@ -53,6 +53,7 @@ public abstract class Card : MonoBehaviour
     public static bool PlayableIn(CardDefinition card, bool preparation) => card switch
     {
         TowerCardDefinition => preparation,
+        RoadCardDefinition => preparation,
         HelicopterCardDefinition => !preparation,
         _ => true
     };

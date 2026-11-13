@@ -117,10 +117,10 @@ namespace Bunker.Tests
             // The primary route forks at its end: only the two branches reach the bunker
             var left = em.CreateEntity();
             em.AddBuffer<PathPoint>(left).Add(new PathPoint { Value = new float3(30f, 5f, 0f) });
-            em.AddComponentData(left, new PathParent { Path = simEntity });
+            em.AddBuffer<PathParent>(left).Add(new PathParent { Path = simEntity });
             var right = em.CreateEntity();
             em.AddBuffer<PathPoint>(right).Add(new PathPoint { Value = new float3(30f, -5f, 0f) });
-            em.AddComponentData(right, new PathParent { Path = simEntity });
+            em.AddBuffer<PathParent>(right).Add(new PathParent { Path = simEntity });
             var branches = em.AddBuffer<PathBranch>(simEntity);
             branches.Add(new PathBranch { Path = left });
             branches.Add(new PathBranch { Path = right });
@@ -230,7 +230,7 @@ namespace Bunker.Tests
             var branch = em.CreateEntity();
             var points = em.AddBuffer<PathPoint>(branch);
             points.Add(new PathPoint { Value = new float3(30f, 0f, 0f) });
-            em.AddComponentData(branch, new PathParent { Path = simEntity });
+            em.AddBuffer<PathParent>(branch).Add(new PathParent { Path = simEntity });
 
             var ally = CreateAlly(new float3(30f, 0f, 0f), 0, branch);
 
@@ -239,6 +239,101 @@ namespace Bunker.Tests
             var follower = em.GetComponentData<AllyPathFollower>(ally);
             Assert.AreEqual(simEntity, follower.PathEntity);
             Assert.AreEqual(1, follower.NextIndex, "the last point of the parent route");
+        }
+
+        [Test]
+        public void Allies_WalkingBackThroughMergedTail_SplitAcrossBothParentBranches()
+        {
+            var parentA = em.CreateEntity();
+            em.AddBuffer<PathPoint>(parentA).Add(new PathPoint { Value = new float3(35f, 5f, 0f) });
+            var parentB = em.CreateEntity();
+            em.AddBuffer<PathPoint>(parentB).Add(new PathPoint { Value = new float3(35f, -5f, 0f) });
+
+            var mergedTail = em.CreateEntity();
+            em.AddBuffer<PathPoint>(mergedTail).Add(new PathPoint { Value = new float3(20f, 0f, 0f) });
+            var parents = em.AddBuffer<PathParent>(mergedTail);
+            parents.Add(new PathParent { Path = parentA });
+            parents.Add(new PathParent { Path = parentB });
+            em.AddComponentData(mergedTail, new PathMergeCursor());
+
+            var ally1 = CreateAlly(new float3(20f, 0f, 0f), 0, mergedTail);
+            var ally2 = CreateAlly(new float3(20f, 0f, 0f), 0, mergedTail);
+
+            StepAllies(0.1f);
+
+            var f1 = em.GetComponentData<AllyPathFollower>(ally1);
+            var f2 = em.GetComponentData<AllyPathFollower>(ally2);
+            Assert.AreNotEqual(f1.PathEntity, f2.PathEntity, "allies split back into both branches");
+            Assert.That(f1.PathEntity, Is.EqualTo(parentA).Or.EqualTo(parentB));
+            Assert.That(f2.PathEntity, Is.EqualTo(parentA).Or.EqualTo(parentB));
+        }
+
+        [Test]
+        public void MultipleEnemyBases_AlliesTargetNearest_AndVictoryRequiresAllDestroyed()
+        {
+            var baseNorth = em.CreateEntity();
+            em.AddComponent<EnemyBaseTag>(baseNorth);
+            em.AddComponentData(baseNorth, LocalTransform.FromPosition(new float3(50f, 15f, 0f)));
+            em.AddComponentData(baseNorth, new Health { Value = 1f, Max = 1f });
+            em.AddComponentData(baseNorth, new HitBox { HalfExtents = new float2(0.5f, 0.5f) });
+            em.AddBuffer<DamageRequest>(baseNorth);
+
+            var baseSouth = em.CreateEntity();
+            em.AddComponent<EnemyBaseTag>(baseSouth);
+            em.AddComponentData(baseSouth, LocalTransform.FromPosition(new float3(50f, -15f, 0f)));
+            em.AddComponentData(baseSouth, new Health { Value = 1f, Max = 1f });
+            em.AddComponentData(baseSouth, new HitBox { HalfExtents = new float2(0.5f, 0.5f) });
+            em.AddBuffer<DamageRequest>(baseSouth);
+
+            // Ally near South base hits South base first
+            CreateAlly(new float3(49.2f, -15f, 0f), -1, simEntity);
+
+            StepAllies(0.1f);
+            Assert.AreEqual(1, em.GetBuffer<DamageRequest>(baseSouth).Length);
+            Assert.AreEqual(0, em.GetBuffer<DamageRequest>(baseNorth).Length);
+
+            var damageSystem = world.GetOrCreateSystem<DamageSystem>();
+            damageSystem.Update(world.Unmanaged);
+
+            Assert.AreEqual(0f, em.GetComponentData<Health>(baseSouth).Value, 1e-4f);
+            Assert.IsFalse(em.GetComponentData<GameSession>(simEntity).IsGameOver, "North base is still alive");
+
+            // Destroy North base: now victory triggers
+            em.GetBuffer<DamageRequest>(baseNorth).Add(new DamageRequest { Damage = 10f });
+            damageSystem.Update(world.Unmanaged);
+
+            Assert.IsTrue(em.GetComponentData<GameSession>(simEntity).IsGameOver);
+            bool victory = false;
+            foreach (var ev in em.GetBuffer<SimEvent>(simEntity))
+                victory |= ev.Kind == SimEventKind.Victory;
+            Assert.IsTrue(victory);
+        }
+
+        [Test]
+        public void TargetingSystem_WithMultipleBases_TargetsNearestAliveBase()
+        {
+            var baseFar = em.CreateEntity();
+            em.AddComponent<EnemyBaseTag>(baseFar);
+            em.AddComponentData(baseFar, LocalTransform.FromPosition(new float3(10f, 10f, 0f)));
+            em.AddComponentData(baseFar, new Health { Value = 10f, Max = 10f });
+            em.AddComponentData(baseFar, new HitBox { HalfExtents = new float2(1f, 1f) });
+
+            var baseNear = em.CreateEntity();
+            em.AddComponent<EnemyBaseTag>(baseNear);
+            em.AddComponentData(baseNear, LocalTransform.FromPosition(new float3(3f, 0f, 0f)));
+            em.AddComponentData(baseNear, new Health { Value = 10f, Max = 10f });
+            em.AddComponentData(baseNear, new HitBox { HalfExtents = new float2(1f, 1f) });
+
+            var tower = em.CreateEntity();
+            em.AddComponentData(tower, LocalTransform.FromPosition(float3.zero));
+            em.AddComponentData(tower, new Weapon { Range = 5f, FireInterval = 1f, ProjectileSpeed = 1f, TargetFaction = Faction.Enemy });
+            em.AddComponentData(tower, new Target());
+
+            SetPhase(WavePhase.Spawning);
+            world.SetTime(new Unity.Core.TimeData(0.0, 0.1f));
+            world.GetOrCreateSystem<TargetingSystem>().Update(world.Unmanaged);
+
+            Assert.AreEqual(baseNear, em.GetComponentData<Target>(tower).Value);
         }
 
         [Test]

@@ -80,8 +80,9 @@ namespace Bunker.Simulation
     // A route that forks at its end: soldiers arriving there take its branches in turn, so the group splits evenly
     public struct PathBranch : IBufferElementData { public Entity Path; }
     public struct PathFork : IComponentData { public int NextBranch; }
-    // The route a branch forked from, for allies walking the routes backwards
-    public struct PathParent : IComponentData { public Entity Path; }
+    // Routes a branch forked from, for allies walking the routes backwards (supports merging multiple branches)
+    public struct PathParent : IBufferElementData { public Entity Path; }
+    public struct PathMergeCursor : IComponentData { public int NextParent; }
 
     public struct SpawnerPoint : IBufferElementData
     {
@@ -245,10 +246,13 @@ namespace Bunker.Simulation
         public BlobAssetReference<AllyRosterBlob> Roster;
     }
 
+    public struct AllyRoadTag : IComponentData { }
+
     // One ally card played; AllySystem sends that roster type out of the bunker
     public struct AllySpawnRequest : IBufferElementData
     {
         public int TypeIndex;
+        public Entity PreferredPath;
     }
 
     public struct WaveConfig : IComponentData
