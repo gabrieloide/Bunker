@@ -31,14 +31,12 @@ Material:
     m_Floats:
     - _CellHeight: 14
     - _CellWidth: 22
-    - _DarkThreshold: 0.25
     - _PixelsPerUnit: 16
-    - _SwirlCellSize: 52
-    - _SwirlCoverage: 0.35
-    - _SwirlFPS: 7
-    - _SwirlRadius: 7.5
-    - _WaveCoverage: 0.38
-    - _WaveDensity: 0.91
+    - _SwirlCellSize: 88
+    - _SwirlCoverage: 0.3
+    - _SwirlFPS: 6
+    - _SwirlRadius: 8.5
+    - _WaveCoverage: 0.36
     - _WaveFPS: 4
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

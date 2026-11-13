@@ -10,11 +10,11 @@ Shader "Bunker/PixelWater2Color"
         _WaveFPS ("Wave Step FPS", Float) = 4
         _CellWidth ("Wave Cell Width (px)", Float) = 22
         _CellHeight ("Wave Cell Height (px)", Float) = 14
-        _WaveCoverage ("Wave Coverage", Range(0.05, 0.6)) = 0.38
-        _SwirlCellSize ("Whirlpool Cell Size (px)", Float) = 52
-        _SwirlCoverage ("Whirlpool Coverage", Range(0.0, 0.8)) = 0.35
-        _SwirlRadius ("Whirlpool Radius (px)", Range(4.0, 12.0)) = 7.5
-        _SwirlFPS ("Whirlpool Step FPS", Float) = 7
+        _WaveCoverage ("Wave Coverage", Range(0.05, 0.6)) = 0.36
+        _SwirlCellSize ("Ripple Cell Size (px)", Float) = 88
+        _SwirlCoverage ("Ripple Spawn Chance", Range(0.0, 0.8)) = 0.30
+        _SwirlRadius ("Ripple Max Radius (px)", Range(4.0, 14.0)) = 8.5
+        _SwirlFPS ("Ripple Step FPS", Float) = 6
     }
 
     SubShader
@@ -130,37 +130,51 @@ Shader "Bunker/PixelWater2Color"
                     }
                 }
 
-                // 2) Occasional small pixel whirlpools (remolinos)
-                float sSize = max(_SwirlCellSize, 24.0);
+                // 2) Rare, temporary expanding swirling drop-ripples
+                float sSize = max(_SwirlCellSize, 32.0);
                 float sRow = floor(px.y / sSize);
                 float sStagger = (fmod(abs(sRow), 2.0) >= 1.0) ? floor(sSize * 0.5) : 0.0;
                 float2 sPx = float2(px.x + sStagger, px.y);
                 float2 sCell = floor(sPx / sSize);
                 float2 sLocal = sPx - sCell * sSize;
 
-                float sSpawn = hash21(sCell + 211.3);
-                if (sSpawn < _SwirlCoverage)
+                float swirlStep = floor(_Time.y * _SwirlFPS);
+                float cycleLen = 54.0;
+                float activeLen = 15.0;
+                float phaseOffset = floor(hash21(sCell + 19.3) * cycleLen);
+                float totalStep = swirlStep + phaseOffset;
+                float epoch = floor(totalStep / cycleLen);
+                float ageStep = totalStep - epoch * cycleLen;
+
+                // Re-roll position & existence each epoch so ripples appear in different spots
+                float sSpawn = hash21(sCell + epoch * 17.1 + 211.3);
+                if (sSpawn < _SwirlCoverage && ageStep < activeLen)
                 {
+                    float t = ageStep / (activeLen - 1.0); // 0..1 lifecycle
                     float margin = _SwirlRadius + 2.0;
                     float span = max(sSize - margin * 2.0, 1.0);
-                    float cx = floor(hash21(sCell + 43.9) * span + margin);
-                    float cy = floor(hash21(sCell + 89.7) * span + margin);
+                    float cx = floor(hash21(sCell + epoch * 7.3 + 43.9) * span + margin);
+                    float cy = floor(hash21(sCell + epoch * 11.7 + 89.7) * span + margin);
 
                     float2 d = sLocal - float2(cx, cy);
                     float r = length(d);
 
-                    if (r >= 1.1 && r <= _SwirlRadius)
-                    {
-                        float swirlDir = (hash21(sCell + 157.1) > 0.5) ? 1.0 : -1.0;
-                        float swirlPhase = floor(_Time.y * _SwirlFPS) * 0.14 * swirlDir + hash21(sCell + 19.3);
-                        float ang = atan2(d.y, d.x) / 6.2831853;
+                    float outerR = lerp(1.5, _SwirlRadius, t);
+                    float innerR = lerp(0.5, _SwirlRadius * 0.55, saturate((t - 0.18) / 0.82));
 
-                        // Two crisp spiral arms tightening toward the center
-                        float spiral = frac(ang * 2.0 + r * 0.23 - swirlPhase);
-                        float armWidth = (r < _SwirlRadius * 0.65) ? 0.28 : 0.18;
-                        if (spiral < armWidth)
-                            isWave = true;
-                    }
+                    float swirlDir = (hash21(sCell + epoch * 3.1 + 157.1) > 0.5) ? 1.0 : -1.0;
+                    float ang = atan2(d.y, d.x) / 6.2831853;
+                    float rot = t * 0.75 * swirlDir;
+
+                    // Swirling broken concentric arcs (drop-ripple + eddy rotation)
+                    float arcMask = frac(ang * 2.0 + r * 0.08 * swirlDir - rot);
+                    float arcFill = lerp(0.75, 0.32, t); // breaks into smaller arcs as it dissipates
+
+                    bool onOuter = (abs(r - outerR) < 0.68) && (arcMask < arcFill);
+                    bool onInner = (t > 0.22 && t < 0.85) && (abs(r - innerR) < 0.62) && (frac(arcMask + 0.5) < 0.62);
+
+                    if (onOuter || onInner)
+                        isWave = true;
                 }
 
                 c.rgb = isWave ? _WaveColor.rgb : _WaterDarkColor.rgb;
