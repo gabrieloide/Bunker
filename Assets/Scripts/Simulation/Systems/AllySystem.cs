@@ -204,7 +204,33 @@ namespace Bunker.Simulation
                 if (math.distance(pos, waypoint) > ArriveDistance || follower.ValueRO.NextIndex < 0)
                     continue;
 
+                bool isCustomRoad = pathEntity != Entity.Null && allyRoadLookup.HasComponent(pathEntity) && pathLookup.HasBuffer(pathEntity);
+                if (isCustomRoad && follower.ValueRO.Reversing != 0)
+                {
+                    var customPath = pathLookup[pathEntity];
+                    follower.ValueRW.NextIndex++;
+                    if (follower.ValueRW.NextIndex >= customPath.Length)
+                    {
+                        follower.ValueRW.Reversing = 0;
+                        follower.ValueRW.NextIndex = customPath.Length > 1 ? customPath.Length - 2 : 0;
+                    }
+                    continue;
+                }
+
                 follower.ValueRW.NextIndex--;
+                // On an unfinished player-built ally road that does not reach an enemy base yet,
+                // turn around and patrol back toward the bunker instead of walking off-road across obstacles.
+                if (isCustomRoad && follower.ValueRO.NextIndex < 0)
+                {
+                    var customPath = pathLookup[pathEntity];
+                    if (customPath.Length > 0 && !IsTipNearAnyBase(customPath[0].Value.xy, basePositions, baseReaches, 3.5f))
+                    {
+                        follower.ValueRW.Reversing = 1;
+                        follower.ValueRW.NextIndex = customPath.Length > 1 ? 1 : 0;
+                    }
+                    continue;
+                }
+
                 // Past the start of a branch: carry on backwards along a route it forked from
                 if (follower.ValueRO.NextIndex < 0 && parentLookup.HasBuffer(pathEntity) && parentLookup[pathEntity].Length > 0)
                 {
@@ -241,6 +267,17 @@ namespace Bunker.Simulation
             public Entity PathEntity;
             public int NextIndex;
             public float DistanceToWaypoint;
+        }
+
+        static bool IsTipNearAnyBase(float2 tip, NativeList<float3> basePositions, NativeList<float> baseReaches, float maxDist)
+        {
+            for (int i = 0; i < basePositions.Length; i++)
+            {
+                float reach = maxDist + baseReaches[i];
+                if (math.distancesq(tip, basePositions[i].xy) <= reach * reach)
+                    return true;
+            }
+            return false;
         }
 
         static int NearestBaseIndex(float2 pos, NativeList<float3> basePositions)

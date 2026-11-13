@@ -216,5 +216,62 @@ namespace Bunker.Tests
             Assert.Greater(damageBuffer.Length, 0);
             Assert.AreEqual(5f, damageBuffer[0].Damage);
         }
+
+        [Test]
+        public void AllySystem_AllyOnUnfinishedRoad_ReversesAndPatrolsInsteadOfCrossingMap()
+        {
+            using var world = new World("AllyRoadPatrolTest");
+            var em = world.EntityManager;
+            world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+
+            var simEntity = em.CreateEntity();
+            em.AddComponentData(simEntity, new WaveConfig());
+            em.AddComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
+            em.AddComponentData(simEntity, new GameSession());
+            em.AddBuffer<SimEvent>(simEntity);
+
+            // Unfinished road: only goes from (0,0) to (0,4), while enemy base is far away at (0,30)
+            var customRoad = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(customRoad);
+            var customPath = em.AddBuffer<PathPoint>(customRoad);
+            customPath.Add(new PathPoint { Value = new float3(0f, 4f, 0f) });
+            customPath.Add(new PathPoint { Value = new float3(0f, 0f, 0f) });
+
+            var enemyBase = em.CreateEntity();
+            em.AddComponent<EnemyBaseTag>(enemyBase);
+            em.AddComponentData(enemyBase, LocalTransform.FromPosition(new float3(0f, 30f, 0f)));
+            em.AddComponentData(enemyBase, new Health { Value = 50f, Max = 50f });
+            em.AddComponentData(enemyBase, new HitBox { HalfExtents = new float2(1f, 1f) });
+            em.AddBuffer<DamageRequest>(enemyBase);
+
+            using var builder = new BlobBuilder(Allocator.Temp);
+            ref var root = ref builder.ConstructRoot<AllyRosterBlob>();
+            var types = builder.Allocate(ref root.Types, 1);
+            types[0] = new AllyTypeDef { Life = 20f, Damage = 5f, AttackInterval = 0.5f, AttackRange = 1.5f, MoveSpeed = 10f };
+            using var roster = builder.CreateBlobAssetReference<AllyRosterBlob>(Allocator.Persistent);
+
+            var configEntity = em.CreateEntity();
+            em.AddComponentData(configEntity, new AllySpawnConfig { SpawnPosition = float3.zero, Roster = roster });
+            var requests = em.AddBuffer<AllySpawnRequest>(configEntity);
+            requests.Add(new AllySpawnRequest { TypeIndex = 0, PreferredPath = customRoad });
+
+            var allySystem = world.GetOrCreateSystem<AllySystem>();
+            var ecbSystem = world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
+
+            for (int i = 0; i < 15; i++)
+            {
+                world.SetTime(new Unity.Core.TimeData(i * 0.1, 0.1f));
+                allySystem.Update(world.Unmanaged);
+                ecbSystem.Update(world.Unmanaged);
+            }
+
+            var query = em.CreateEntityQuery(typeof(AllyTag), typeof(LocalTransform), typeof(AllyPathFollower));
+            using var transforms = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+            using var followers = query.ToComponentDataArray<AllyPathFollower>(Allocator.Temp);
+            Assert.AreEqual(1, transforms.Length);
+            Assert.LessOrEqual(transforms[0].Position.y, 4.1f);
+            Assert.AreEqual(1, followers[0].Reversing);
+            Assert.AreEqual(0, em.GetBuffer<DamageRequest>(enemyBase).Length);
+        }
     }
 }

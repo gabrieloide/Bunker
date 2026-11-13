@@ -39,7 +39,11 @@ public class EnemyBaseView : MonoBehaviour
 
     void Update()
     {
-        if (ring != null) EnemyTerritory.UpdateRing(ring);
+        if (ring != null)
+        {
+            EnemyTerritory.UpdateRing(ring);
+            ring.transform.Rotate(0f, 0f, -10f * Time.deltaTime);
+        }
     }
 
     void OnDestroy() => EnemyTerritory.UnregisterBase(this);

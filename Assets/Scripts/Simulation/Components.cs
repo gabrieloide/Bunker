@@ -136,6 +136,8 @@ namespace Bunker.Simulation
         public Entity PathEntity;
         // Same idea as PathFollower.Slot: the ally marches in the flag band instead of on its centreline, so enemies meet it across the band's width
         public float2 Slot;
+        // 1 when patrolling back along an unfinished player-built AllyRoad toward the bunker
+        public byte Reversing;
     }
 
     public struct Projectile : IComponentData
