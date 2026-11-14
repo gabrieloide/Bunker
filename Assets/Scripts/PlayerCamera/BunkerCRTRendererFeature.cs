@@ -20,6 +20,7 @@ public class BunkerCRTRendererFeature : ScriptableRendererFeature
         public BunkerCRTPass()
         {
             renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+            ConfigureInput(ScriptableRenderPassInput.Color);
         }
 
         Material GetCompositeMaterial()

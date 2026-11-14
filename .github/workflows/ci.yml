@@ -1,0 +1,179 @@
+name: CI/CD Unity Tests and Builds
+
+on:
+  push:
+    branches: [ master, main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ master, main, develop ]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run EditMode Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Restore Library Cache
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Run Unity Tests
+        uses: game-ci/unity-test-runner@v4
+        id: testRunner
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: .
+          unityVersion: 6000.3.4f1
+          testMode: EditMode
+          artifactsPath: artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: EditMode Test Results
+
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Test-Results-EditMode
+          path: artifacts
+
+  build-webgl:
+    name: Build and Deploy WebGL
+    needs: test
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-webgl-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-webgl-
+
+      - name: Clean Bee build cache
+        run: rm -rf Library/Bee
+
+      - name: Build
+        uses: game-ci/unity-builder@v6
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: WebGL
+
+      - name: Prepare build for GitHub Pages and Itch.io
+        run: |
+          sudo apt-get update && sudo apt-get install -y brotli
+          sudo chown -R $USER:$USER build/
+          if [ -d "build/WebGL/WebGL/Build" ]; then
+            cd build/WebGL/WebGL
+            for f in Build/*.br; do
+              [ -e "$f" ] || continue
+              brotli -d "$f"
+              rm "$f"
+            done
+            sed -i 's/\.br//g' index.html
+            if [ -f "TemplateData/style.css" ]; then
+              echo "#unity-footer { display: none !important; }" >> TemplateData/style.css
+              echo "#unity-logo { display: none !important; }" >> TemplateData/style.css
+              echo "#unity-container.unity-desktop { position: absolute !important; width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important; transform: none !important; }" >> TemplateData/style.css
+              echo "#unity-canvas { width: 100% !important; height: 100% !important; }" >> TemplateData/style.css
+            fi
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/WebGL/WebGL
+
+      - name: Deploy to Itch.io with Butler
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          curl -L -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d bin/
+          chmod +x bin/butler
+          ./bin/butler push build/WebGL/WebGL virterex/bunker:html5 --userversion ${{ github.sha }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-build
+          path: build/WebGL/WebGL
+
+  build-windows:
+    name: Build and Deploy Windows
+    needs: test
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-windows-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-windows-
+
+      - name: Clean Bee build cache
+        run: rm -rf Library/Bee
+
+      - name: Build
+        uses: game-ci/unity-builder@v6
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+          buildName: Bunker
+
+      - name: Prepare permissions
+        run: sudo chown -R $USER:$USER build/
+
+      - name: Deploy to Itch.io with Butler
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          curl -L -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d bin/
+          chmod +x bin/butler
+          ./bin/butler push build/StandaloneWindows64 virterex/bunker:windows --userversion ${{ github.sha }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: build/StandaloneWindows64

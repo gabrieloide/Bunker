@@ -10,10 +10,21 @@ public class LevelSelectorAmbience : MonoBehaviour
     [SerializeField] float floatAmplitude = 0.06f;
     [SerializeField] float floatSpeed = 1.4f;
 
-    [Header("Frontier Beacon")]
-    [SerializeField] float beaconBaseRadius = 1.25f;
-    [SerializeField] float beaconPulseAmount = 0.08f;
-    [SerializeField] float beaconSpinSpeed = 18f;
+    [Header("Frontier Silhouette")]
+    [SerializeField] Color silhouetteColor = Color.white;
+    [SerializeField] float silhouetteOutlineWidth = 1.5f;
+    [SerializeField] float silhouetteMinAlpha = 0.45f;
+    [SerializeField] float silhouetteMaxAlpha = 0.95f;
+    [SerializeField] float silhouettePulseSpeed = 2.6f;
+
+    static readonly Color LockedPathColor = new Color(0.4f, 0.4f, 0.4f, 0.7f);
+    static readonly (string name, int targetLevel)[] PathNodes =
+    {
+        ("stairsplain", 1),
+        ("stairsright", 2),
+        ("stairsup", 3),
+        ("stairsright (1)", 4)
+    };
 
     [Header("Star Dust")]
     [SerializeField] int maxParticles = 45;
@@ -27,8 +38,8 @@ public class LevelSelectorAmbience : MonoBehaviour
     }
 
     readonly List<FloatEntry> floaters = new List<FloatEntry>();
-    DottedRing activeBeacon;
-    Transform beaconTransform;
+    SpriteRenderer activeSilhouette;
+    Material silhouetteMaterial;
     Texture2D pixelTex;
     Texture2D planetTex;
     Color32[] planetPixels;
@@ -50,6 +61,7 @@ public class LevelSelectorAmbience : MonoBehaviour
         if (pixelTex != null) Destroy(pixelTex);
         if (planetTex != null) Destroy(planetTex);
         if (starMat != null) Destroy(starMat);
+        if (silhouetteMaterial != null) Destroy(silhouetteMaterial);
     }
 
     void Update()
@@ -64,11 +76,12 @@ public class LevelSelectorAmbience : MonoBehaviour
             f.target.localPosition = p;
         }
 
-        if (activeBeacon != null && beaconTransform != null)
+        if (activeSilhouette != null)
         {
-            beaconTransform.Rotate(0f, 0f, -beaconSpinSpeed * Time.unscaledDeltaTime);
-            float pulse = beaconBaseRadius + Mathf.Sin(t * 2.4f) * beaconPulseAmount;
-            activeBeacon.SetRadius(pulse);
+            float pulse = Mathf.Sin(t * silhouettePulseSpeed) * 0.5f + 0.5f;
+            Color c = silhouetteColor;
+            c.a = Mathf.Lerp(silhouetteMinAlpha, silhouetteMaxAlpha, pulse);
+            activeSilhouette.color = c;
         }
 
         if (planetTex != null && planetTransform != null)
@@ -230,25 +243,53 @@ public class LevelSelectorAmbience : MonoBehaviour
             frontier = nodes[0];
 
         if (frontier != null)
-            AttachBeacon(frontier.transform);
+            AttachSilhouette(frontier);
+
+        ApplyPathOpacity();
     }
 
-    void AttachBeacon(Transform target)
+    void ApplyPathOpacity()
     {
-        var ringMat = Resources.Load<Material>("EnemyFlagRing");
-        if (ringMat == null) return;
+        for (int i = 0; i < PathNodes.Length; i++)
+        {
+            var entry = PathNodes[i];
+            var go = GameObject.Find(entry.name);
+            if (go == null) continue;
 
-        var go = new GameObject("ActiveSectorBeacon", typeof(MeshFilter), typeof(MeshRenderer));
-        go.transform.SetParent(target, false);
+            var sr = go.GetComponent<SpriteRenderer>();
+            if (sr == null) continue;
+
+            sr.color = LevelProgress.IsUnlocked(entry.targetLevel) ? Color.white : LockedPathColor;
+        }
+    }
+
+    void AttachSilhouette(WorldLevelNode frontier)
+    {
+        Transform visual = frontier.transform.Find("TurretVisual");
+        if (visual == null) visual = frontier.transform;
+
+        var visualRenderer = visual.GetComponent<SpriteRenderer>();
+        if (visualRenderer == null || visualRenderer.sprite == null) return;
+
+        var shader = Shader.Find("Bunker/SpriteSilhouetteOutline");
+        if (shader == null) return;
+
+        silhouetteMaterial = new Material(shader);
+        silhouetteMaterial.SetFloat("_OutlineWidth", silhouetteOutlineWidth);
+
+        var go = new GameObject("ActiveSectorSilhouette", typeof(SpriteRenderer));
+        go.transform.SetParent(visual, false);
         go.transform.localPosition = Vector3.zero;
+        go.transform.localScale = Vector3.one;
 
-        var renderer = go.GetComponent<MeshRenderer>();
-        renderer.sharedMaterial = ringMat;
-
-        activeBeacon = go.AddComponent<DottedRing>();
-        activeBeacon.SetColor(new Color(1f, 1f, 1f, 0.65f));
-        activeBeacon.SetRadius(beaconBaseRadius);
-        beaconTransform = go.transform;
+        activeSilhouette = go.GetComponent<SpriteRenderer>();
+        activeSilhouette.sprite = visualRenderer.sprite;
+        activeSilhouette.flipX = visualRenderer.flipX;
+        activeSilhouette.flipY = visualRenderer.flipY;
+        activeSilhouette.sortingLayerID = visualRenderer.sortingLayerID;
+        activeSilhouette.sortingOrder = visualRenderer.sortingOrder - 1;
+        activeSilhouette.sharedMaterial = silhouetteMaterial;
+        activeSilhouette.color = silhouetteColor;
     }
 
     void CreateStarDust()
