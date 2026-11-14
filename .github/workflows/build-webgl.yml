@@ -30,13 +30,11 @@ jobs:
         run: rm -rf Library/Bee
 
       - name: Build
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@v6
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          unityVersion: 6000.3.4f1
           targetPlatform: WebGL
 
       - name: Prepare build for GitHub Pages and Itch.io
