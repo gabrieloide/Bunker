@@ -12,8 +12,6 @@ public class BunkerCRTRendererFeature : ScriptableRendererFeature
     class BunkerCRTPass : ScriptableRenderPass
     {
         static readonly int TempAId = Shader.PropertyToID("_BunkerCRT_TempA");
-        static readonly int TempBId = Shader.PropertyToID("_BunkerCRT_TempB");
-        static readonly int OverlayTexId = Shader.PropertyToID("_OverlayTex");
 
         Material compositeMat;
 
@@ -27,7 +25,7 @@ public class BunkerCRTRendererFeature : ScriptableRendererFeature
         {
             if (compositeMat == null)
             {
-                var shader = Shader.Find("Hidden/AlphaComposite");
+                var shader = Shader.Find("Hidden/Bunker/UIComposite");
                 if (shader != null && shader.isSupported)
                 {
                     compositeMat = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
@@ -75,69 +73,38 @@ public class BunkerCRTRendererFeature : ScriptableRendererFeature
 
             CommandBuffer cmd = CommandBufferPool.Get("BunkerCRT");
 
-            RenderTextureDescriptor desc = camData.cameraTargetDescriptor;
-            desc.depthBufferBits = 0;
-            desc.msaaSamples = 1;
-
-            cmd.GetTemporaryRT(TempAId, desc, FilterMode.Bilinear);
-            cmd.GetTemporaryRT(TempBId, desc, FilterMode.Bilinear);
-
             RTHandle colorTarget = camData.renderer.cameraColorTargetHandle;
-            RenderTargetIdentifier current = colorTarget;
-            RenderTargetIdentifier tempA = new RenderTargetIdentifier(TempAId);
-            RenderTargetIdentifier tempB = new RenderTargetIdentifier(TempBId);
 
             if (hasComp)
             {
                 if (gameUiTex != null)
-                {
-                    RenderTargetIdentifier dst = current == tempA ? tempB : tempA;
-                    cmd.SetGlobalTexture(OverlayTexId, gameUiTex);
-                    cmd.Blit(current, dst, compMat);
-                    current = dst;
-                }
+                    cmd.Blit(gameUiTex, colorTarget, compMat);
 
                 if (hudTex != null)
-                {
-                    RenderTargetIdentifier dst = current == tempA ? tempB : tempA;
-                    cmd.SetGlobalTexture(OverlayTexId, hudTex);
-                    cmd.Blit(current, dst, compMat);
-                    current = dst;
-                }
+                    cmd.Blit(hudTex, colorTarget, compMat);
 
                 if (bridgeCount > 0 && RetroCRTUIBridge.Instance != null)
                 {
                     for (int i = 0; i < bridgeCount; i++)
                     {
                         Texture panelTex = RetroCRTUIBridge.Instance.GetActiveTexture(i);
-                        if (panelTex == null) continue;
-                        RenderTargetIdentifier dst = current == tempA ? tempB : tempA;
-                        cmd.SetGlobalTexture(OverlayTexId, panelTex);
-                        cmd.Blit(current, dst, compMat);
-                        current = dst;
+                        if (panelTex != null)
+                            cmd.Blit(panelTex, colorTarget, compMat);
                     }
                 }
             }
 
             if (hasCrt)
             {
-                if (current == colorTarget)
-                {
-                    cmd.Blit(colorTarget, tempA);
-                    cmd.Blit(tempA, colorTarget, crtMat);
-                }
-                else
-                {
-                    cmd.Blit(current, colorTarget, crtMat);
-                }
-            }
-            else if (current != colorTarget)
-            {
-                cmd.Blit(current, colorTarget);
-            }
+                RenderTextureDescriptor desc = camData.cameraTargetDescriptor;
+                desc.depthBufferBits = 0;
+                desc.msaaSamples = 1;
 
-            cmd.ReleaseTemporaryRT(TempAId);
-            cmd.ReleaseTemporaryRT(TempBId);
+                cmd.GetTemporaryRT(TempAId, desc, FilterMode.Bilinear);
+                cmd.Blit(colorTarget, TempAId);
+                cmd.Blit(TempAId, colorTarget, crtMat);
+                cmd.ReleaseTemporaryRT(TempAId);
+            }
 
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
