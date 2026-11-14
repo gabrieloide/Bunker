@@ -1,83 +1,83 @@
 # Bunker
 
-Juego de estrategia y defensa de torres 2D con estetica retro pixel art, desarrollado en Unity 6 por Biste Games. Combina gestion de mazo en tiempo real, conquista territorial y una arquitectura hibrida basada en Unity Entities (ECS).
+A 2D pixel art strategy and tower defense game built with Unity 6 by Biste Games. It combines real time deck management, territory control, and a hybrid Unity Entities (ECS) simulation architecture.
 
-## Descripcion general
+## Overview
 
-En **Bunker**, el jugador defiende su base frente a oleadas enemigas mientras recupera terreno y lanza contraofensivas para destruir la base enemiga. La partida alterna fases de preparacion y combate por oleadas, gestionando cartas de construccion, apoyo tactico y despliegue de unidades aliadas.
+In **Bunker**, the player defends their base against incoming enemy waves while reclaiming ground and launching counteroffensives to destroy the enemy base. Matches alternate between preparation and wave combat phases, using cards for defensive structures, tactical support, and allied unit deployment.
 
-### Mecanicas principales
+### Core Mechanics
 
-* **Sistema de cartas y mazo** (`CardCatalog`, `CardDrop`, `Deck`):
-  * **Torres defensivas**: torretas estandar, francotiradores y morteros de artilleria con limites de colocacion en grilla (`PlacementGrid`, `TowerLimits`). Al demoler una torre quedan ruinas que bloquean celdas adyacentes.
-  * **Banderas y carreteras**: las banderas expanden el territorio aliado (`FlagTerritory`) para habilitar nuevas zonas de construccion; las carreteras (`RoadCard`, `AllyRoadNetwork`) permiten planificar rutas para las unidades propias.
-  * **Unidades aliadas**: escuadrones de infanteria, granaderos, jeeps, mechas y espias que avanzan en sentido inverso por las rutas hasta la base enemiga.
-  * **Apoyo tactico**: ataques aereos (`AirAttackManager`), helicopteros (`Helicopter`), minas terrestres (`LandMines`), mejoras de estadisticas (`BuffCard`) y curacion del bunker.
-  * **Botin por bajas**: las cartas no estructurales se obtienen al derrotar enemigos mediante una probabilidad progresiva que aumenta cuando disminuye la vida del bunker.
-* **Progresion y niveles**: cinco niveles jugables (`Level 1` a `Level 5`), selector de niveles con desbloqueo secuencial, pantalla de titulo, menu principal, pausa, opciones y creditos.
-* **Estetica y audio retro**: filtro CRT global (`GlobalRetroCRT`, `RetroCRTFilter`), transiciones de encendido CRT y efectos de sonido sintetizados en tiempo de ejecucion mediante `Retro Sound Synthesizer` (`SoundBank`).
+* **Card and deck system** (`CardCatalog`, `CardDrop`, `Deck`):
+  * **Defensive towers**: standard turrets, snipers, and artillery mortars with grid placement rules (`PlacementGrid`, `TowerLimits`). Demolishing a tower leaves ruins behind that block neighboring cells.
+  * **Flags and roads**: flags expand allied territory (`FlagTerritory`) to unlock forward buildable tiles; roads (`RoadCard`, `AllyRoadNetwork`) plan and connect routes for allied units.
+  * **Allied units**: infantry squads, grenadiers, jeeps, mechas, and spies that march in reverse along enemy paths toward the enemy base.
+  * **Tactical support**: air strikes (`AirAttackManager`), attack helicopters (`Helicopter`), land mines (`LandMines`), stat buffs (`BuffCard`), and bunker healing.
+  * **Kill drops**: non structural cards drop from defeated enemies using a progressive drop chance that scales up as bunker health decreases.
+* **Progression and levels**: five playable levels (`Level 1` through `Level 5`), sequential level unlock selector, title screen, main menu, pause menu, options, and credits.
+* **Retro visuals and audio**: global CRT post processing (`GlobalRetroCRT`, `RetroCRTFilter`), CRT turn on transitions, and runtime synthesized sound effects powered by `Retro Sound Synthesizer` (`SoundBank`).
 
-## Controles
+## Controls
 
-* **Raton**: arrastrar y soltar cartas sobre el mapa o la papelera de descarte, e interactuar con los menus.
-* **Teclado (`WASD` o flechas)**: desplazar la camara dentro de los limites del escenario (`CameraMovement`).
+* **Mouse**: drag and drop cards onto valid map tiles or the discard trash, and interact with UI menus.
+* **Keyboard (`WASD` or Arrow keys)**: pan the camera within level bounds (`CameraMovement`).
 
-## Arquitectura tecnica
+## Technical Architecture
 
-El proyecto separa la simulacion de combate de la capa de presentacion en Unity:
+The project decouples combat simulation from Unity presentation:
 
-* **Simulacion ECS (`Assets/Scripts/Simulation`)**: implementada sobre `com.unity.entities` (`1.4.8`). Incluye componentes puros (`Components.cs`), planificacion de rutas (`RouteGeometry.cs`, `AllyRoadPlanner.cs`), calculos de balance (`BalanceMath.cs`) y sistemas para oleadas (`WaveSystem`), movimiento en formacion (`EnemyMovementSystem`), aliados (`AllySystem`), seleccion de objetivos (`TargetingSystem`), ataques (`PlayerAttackSystem`), proyectiles (`ProjectileSystem`, `ArtilleryShellSystem`) y dano (`DamageSystem`).
-* **Puente de vistas (`Assets/Scripts/Bridge`)**: `SimulationBridge`, `SimEventDispatcher` y `ViewRegistry` sincronizan el mundo ECS con GameObjects reutilizados mediante `ObjectPooling`.
-* **Interfaz de usuario (`Assets/UI`)**: construida con Unity UI Toolkit (`.uxml`, `.uss`, `BunkerTheme.tss`).
-* **Datos configurables (`Assets/Scripts/Data`, `Assets/ScriptableObjects`)**: catalogo de cartas, catalogo de niveles, definiciones de enemigos, aliados y balance de oleadas (`WaveBalanceConfig`).
+* **ECS simulation (`Assets/Scripts/Simulation`)**: built on `com.unity.entities` (`1.4.8`). Includes pure data components (`Components.cs`), route geometry (`RouteGeometry.cs`), ally road planning (`AllyRoadPlanner.cs`), balance math (`BalanceMath.cs`), and simulation systems for waves (`WaveSystem`), formation movement (`EnemyMovementSystem`), allies (`AllySystem`), targeting (`TargetingSystem`), attacks (`PlayerAttackSystem`), projectiles (`ProjectileSystem`, `ArtilleryShellSystem`), and damage (`DamageSystem`).
+* **View bridge (`Assets/Scripts/Bridge`)**: `SimulationBridge`, `SimEventDispatcher`, and `ViewRegistry` synchronize ECS state and events with pooled GameObjects (`ObjectPooling`).
+* **User interface (`Assets/UI`)**: built with Unity UI Toolkit (`.uxml`, `.uss`, `BunkerTheme.tss`).
+* **Data configuration (`Assets/Scripts/Data`, `Assets/ScriptableObjects`)**: card catalog, level catalog, enemy and ally definitions, and wave balance (`WaveBalanceConfig`).
 
-## Estructura del proyecto
+## Project Structure
 
 ```text
 Assets/
-  Animations/         Animaciones de unidades y efectos
-  Audio/              Musica y configuracion de audio
-  Scenes/             Escenas (TitleScreen, MainMenu, LevelSelector, Level 1..5, CoreManagers, Credits)
-  ScriptableObjects/  Catalogos y definiciones de cartas, aliados, enemigos y niveles
+  Animations/         Unit and effect animations
+  Audio/              Music and audio settings
+  Scenes/             Scenes (TitleScreen, MainMenu, LevelSelector, Level 1..5, CoreManagers, Credits)
+  ScriptableObjects/  Catalogs and definitions for cards, allies, enemies, and levels
   Scripts/
-    Ally/             Vistas y despliegue de aliados
-    Audio/            SoundBank y sonido de interfaz
-    Bridge/           Sincronizacion entre ECS y MonoBehaviours
-    Card/             Logica de mano, mazo y cartas jugables
-    Data/             ScriptableObjects de configuracion
-    Enemy/            Vistas de enemigos y superposicion de rutas
-    Flags/            Territorio, banderas y red de carreteras aliadas
-    Helpers/          Pooling, grilla de colocacion, efectos CRT y utilidades
-    Level/            Carga de niveles, progreso y secuencia de fin de partida
-    Manager/          GameManager, WaveManager, UIManager y menus
-    PlayerCamera/     Camara, sacudida, cursor y puente CRT
-    Simulation/       Componentes y sistemas ECS (Bunker.Simulation)
-    Turret/           Torres, artilleria, helicoptero, minas y ataque aereo
-  Settings/           Configuracion de renderizado y pipeline
-  Shaders/            Shaders personalizados (agua, efectos)
-  Tests/              Pruebas unitarias EditMode (Bunker.Tests)
-  UI/                 Plantillas UXML y hojas de estilo USS
+    Ally/             Ally views and spawning
+    Audio/            SoundBank and UI audio
+    Bridge/           ECS to MonoBehaviour synchronization
+    Card/             Hand, deck, and playable card logic
+    Data/             Configuration ScriptableObjects
+    Enemy/            Enemy views and route overlays
+    Flags/            Territory, flags, and ally road network
+    Helpers/          Pooling, placement grid, CRT effects, and utilities
+    Level/            Level loading, progress, and match end sequence
+    Manager/          GameManager, WaveManager, UIManager, and menus
+    PlayerCamera/     Camera movement, screen shake, cursor, and CRT bridge
+    Simulation/       ECS components and systems (Bunker.Simulation)
+    Turret/           Towers, artillery, helicopter, mines, and air strike
+  Settings/           Render pipeline and graphics settings
+  Shaders/            Custom shaders (water, visual effects)
+  Tests/              EditMode unit tests (Bunker.Tests)
+  UI/                 UXML templates and USS stylesheets
 ```
 
-## Requisitos y configuracion local
+## Requirements and Local Setup
 
-* **Motor**: Unity `6000.3.4f1` (Unity 6).
-* **Dependencias clave** (`Packages/manifest.json`):
+* **Engine**: Unity `6000.3.4f1` (Unity 6).
+* **Key packages** (`Packages/manifest.json`):
   * `com.unity.entities` (`1.4.8`)
   * `com.unity.ai.navigation` (`2.0.9`)
   * `com.unity.ugui` (`2.0.0`)
   * `com.unity.2d.tilemap` (`1.0.0`)
-  * `com.gabrieloide.retro-sound-synthesizer` (paquete UPM por Git)
+  * `com.gabrieloide.retro-sound-synthesizer` (Git UPM package)
 
-Para abrir el proyecto localmente:
+To open locally:
 
-1. Clonar el repositorio (con Git LFS habilitado si corresponde).
-2. Abrir la carpeta raiz desde Unity Hub con la version `6000.3.4f1`.
-3. Abrir `Assets/Scenes/TitleScreen.unity` o cualquiera de las escenas de nivel en `Assets/Scenes/` para ejecutar en el editor.
+1. Clone the repository (with Git LFS enabled if applicable).
+2. Open the project root in Unity Hub using `6000.3.4f1`.
+3. Open `Assets/Scenes/TitleScreen.unity` or any level scene under `Assets/Scenes/` to run in the Editor.
 
-## Pruebas automatizadas
+## Automated Tests
 
-Las pruebas unitarias se encuentran en `Assets/Tests/` (`Bunker.Tests.asmdef`) y cubren la simulacion y geometria de rutas:
+Unit tests live in `Assets/Tests/` (`Bunker.Tests.asmdef`) and cover simulation and route geometry:
 
 * `AllyRoadTests.cs`
 * `AllySystemTests.cs`
@@ -89,11 +89,11 @@ Las pruebas unitarias se encuentran en `Assets/Tests/` (`Bunker.Tests.asmdef`) y
 * `SoldierContactTests.cs`
 * `TargetingBaseTests.cs`
 
-Se pueden ejecutar desde Unity en **Window > General > Test Runner > EditMode**.
+Run them in Unity via **Window > General > Test Runner > EditMode**.
 
-## Integracion continua y despliegue (CI/CD)
+## CI/CD Workflows
 
-El repositorio incluye flujos en `.github/workflows/`:
+The repository includes GitHub Actions workflows in `.github/workflows/`:
 
-* `tests.yml`: ejecuta las pruebas EditMode con `game-ci/unity-test-runner@v4` en cada `push` y `pull_request` hacia `master`, `main`, `develop` o `feature/**`.
-* `build-webgl.yml`: al hacer `push` a `master`, compila el cliente WebGL con `game-ci/unity-builder@v6`, descomprime los archivos `.br` para compatibilidad estatica, publica en GitHub Pages (`gh-pages`) y sube la compilacion a Itch.io (`virterex/bunker:html5`) mediante Butler.
+* `tests.yml`: runs EditMode tests with `game-ci/unity-test-runner@v4` on `push` and `pull_request` to `master`, `main`, `develop`, or `feature/**`.
+* `build-webgl.yml`: on `push` to `master`, builds the WebGL target with `game-ci/unity-builder@v6`, decompresses `.br` files for static hosting, deploys to GitHub Pages (`gh-pages`), and pushes to Itch.io (`virterex/bunker:html5`) via Butler.
