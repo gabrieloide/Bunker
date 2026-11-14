@@ -45,10 +45,10 @@ jobs:
           curl -L -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
           unzip -q butler.zip -d bin/
           chmod +x bin/butler
-          ./bin/butler push build/StandaloneWindows64/StandaloneWindows64 virterex/bunker:windows --userversion ${{ github.sha }}
+          ./bin/butler push build/StandaloneWindows64 virterex/bunker:windows --userversion ${{ github.sha }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: build/StandaloneWindows64/StandaloneWindows64
+          path: build/StandaloneWindows64

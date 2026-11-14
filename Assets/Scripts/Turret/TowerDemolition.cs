@@ -14,13 +14,13 @@ public class TowerDemolition : MonoBehaviour
     {
         if (ghost == null)
         {
-            if (Input.GetMouseButtonDown(0) && CanStartDrag())
+            if (PointerInput.WasPressedThisFrame && CanStartDrag())
                 BeginDrag();
             return;
         }
 
         ghost.transform.position = PointerWorld();
-        if (Input.GetMouseButtonUp(0))
+        if (!PointerInput.IsPressed || PointerInput.WasReleasedThisFrame)
             EndDrag();
     }
 
@@ -33,7 +33,7 @@ public class TowerDemolition : MonoBehaviour
     {
         if (!SimulationBridge.IsPreparationPhase || !PlacementGrid.Available) return false;
         if (GameManager.instance == null || GameManager.instance.onDrag) return false;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return false;
+        if (PointerInput.IsPointerOverUI()) return false;
         // Same pick as tower buffs: the tower's own cell or the one under it (the art stands half a cell up)
         Vector3Int cell = PlacementGrid.WorldToCell(PointerWorld());
         return IsMine(cell) || IsMine(cell + Vector3Int.down);
@@ -87,9 +87,6 @@ public class TowerDemolition : MonoBehaviour
 
     static Vector3 PointerWorld()
     {
-        if (Camera.main == null) return Vector3.zero;
-        Vector3 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        world.z = 0f;
-        return world;
+        return PointerInput.TryGetWorldPosition(Camera.main, out Vector3 world) ? world : Vector3.zero;
     }
 }

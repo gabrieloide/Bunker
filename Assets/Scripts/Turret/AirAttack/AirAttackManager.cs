@@ -31,7 +31,7 @@ public class AirAttackManager : TurretStats, ICardConfigurable
         SoundBank.Play(PlaneSound);
         mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
         Vector3 position = mainCamera != null ? GetPointLeftOfCamera(mainCamera, distance, diametroGO) : Vector3.zero;
-        MousePosition = mainCamera != null ? mainCamera.ScreenToWorldPoint(Input.mousePosition) : Vector3.zero;
+        MousePosition = PointerInput.TryGetWorldPosition(mainCamera, out Vector3 worldPos) ? worldPos : Vector3.zero;
         PlaneBehaviour(position);
     }
     public static Vector3 GetPointLeftOfCamera(Camera camera, float distance, float goDiameter)

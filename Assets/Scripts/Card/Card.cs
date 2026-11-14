@@ -40,6 +40,7 @@ public abstract class Card : MonoBehaviour
     Vector2 baseAnchoredPos;
     Vector2 dragStartScreenPos;
     bool pressed;
+    int activePointerId = -1;
     Vector2 pressPosition;
     float lastPointerX;
 
@@ -71,10 +72,7 @@ public abstract class Card : MonoBehaviour
 
     protected Vector3 PointerWorld()
     {
-        if (Camera.main == null) return transform.position;
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        worldPos.z = 0f;
-        return worldPos;
+        return PointerInput.TryGetWorldPosition(Camera.main, out Vector3 worldPos) ? worldPos : transform.position;
     }
 
     protected Vector3Int FootprintCell() => PlacementGrid.WorldToCell(PointerWorld() + offset);
@@ -201,7 +199,7 @@ public abstract class Card : MonoBehaviour
         view.RegisterCallback<PointerDownEvent>(OnPointerDown);
         view.RegisterCallback<PointerMoveEvent>(OnPointerMove);
         view.RegisterCallback<PointerUpEvent>(OnPointerUp);
-        view.RegisterCallback<PointerCaptureOutEvent>(_ => { pressed = false; if (isDragging) OnEndDrag(); });
+        view.RegisterCallback<PointerCaptureOutEvent>(_ => { pressed = false; activePointerId = -1; if (isDragging) OnEndDrag(); });
 
         if (GameUIPanel.Instance != null)
             GameUIPanel.Instance.Hand.Add(view);
@@ -217,10 +215,11 @@ public abstract class Card : MonoBehaviour
     // button ends the drag anyway; when the PointerUp does arrive it finds nothing left to do.
     void Update()
     {
-        if (!pressed || Input.GetMouseButton(0)) return;
+        if (!pressed || PointerInput.IsPressed) return;
         pressed = false;
-        if (view.HasPointerCapture(PointerId.mousePointerId))
-            view.ReleasePointer(PointerId.mousePointerId);
+        if (activePointerId >= 0 && view.HasPointerCapture(activePointerId))
+            view.ReleasePointer(activePointerId);
+        activePointerId = -1;
         if (isDragging)
             OnEndDrag();
     }
@@ -397,6 +396,7 @@ public abstract class Card : MonoBehaviour
         else if (evt.button == 0)
         {
             pressed = true;
+            activePointerId = evt.pointerId;
             pressPosition = evt.position;
             view.CapturePointer(evt.pointerId);
         }
@@ -404,7 +404,7 @@ public abstract class Card : MonoBehaviour
 
     void OnPointerMove(PointerMoveEvent evt)
     {
-        if (!pressed) return;
+        if (!pressed || evt.pointerId != activePointerId) return;
         if (!isDragging && Vector2.Distance(evt.position, pressPosition) > BeginDragDistance)
             OnBeginDrag();
         if (isDragging)
@@ -413,20 +413,26 @@ public abstract class Card : MonoBehaviour
 
     void OnPointerUp(PointerUpEvent evt)
     {
-        if (evt.button != 0) return;
+        if (evt.button != 0 || evt.pointerId != activePointerId) return;
         pressed = false;
+        bool wasDragging = isDragging;
         if (isDragging)
             OnEndDrag();
+        else if (evt.pointerType == UnityEngine.UIElements.PointerType.touch && UIManager.instance != null && definition != null && GameManager.instance != null && !GameManager.instance.onDrag)
+            UIManager.instance.ToggleCardBox(this, definition.displayName, definition.description);
+
         if (view.HasPointerCapture(evt.pointerId))
             view.ReleasePointer(evt.pointerId);
+        activePointerId = -1;
     }
 
     void OnBeginDrag()
     {
         isDragging = true;
         hovered = false;
-        dragStartScreenPos = Input.mousePosition;
-        lastPointerX = Input.mousePosition.x;
+        Vector2 screenPos = PointerInput.ScreenPositionOrZero();
+        dragStartScreenPos = screenPos;
+        lastPointerX = screenPos.x;
         currentTiltAngle = 0f;
         LeanTween.cancel(gameObject);
         LeanTween.scale(gameObject, Vector3.one * dragScale, 0.08f).setEaseOutQuad();
@@ -458,9 +464,10 @@ public abstract class Card : MonoBehaviour
         Vector2 local = view.parent.WorldToLocal(pointer);
         handPosition = new Vector2(local.x, -local.y) + DragLift();
 
-        // Dynamic tilt based on horizontal mouse movement (screen pixels)
-        float deltaX = Input.mousePosition.x - lastPointerX;
-        lastPointerX = Input.mousePosition.x;
+        // Dynamic tilt based on horizontal pointer movement (screen pixels)
+        float currentX = PointerInput.ScreenPositionOrZero().x;
+        float deltaX = currentX - lastPointerX;
+        lastPointerX = currentX;
         float targetAngle = Mathf.Clamp(-deltaX * 1.5f, -22f, 22f);
         currentTiltAngle = Mathf.Lerp(currentTiltAngle, targetAngle, Time.deltaTime * 18f);
         transform.rotation = Quaternion.Euler(0f, 0f, currentTiltAngle);
@@ -516,7 +523,7 @@ public abstract class Card : MonoBehaviour
     {
         Vector3 worldDropPos = GetRaycastOrigin();
         // Measured in screen space, from where the drag started
-        float d = Vector2.Distance(Input.mousePosition, dragStartScreenPos);
+        float d = Vector2.Distance(PointerInput.ScreenPositionOrZero(), dragStartScreenPos);
         bool hasObstacle = HasObstacleBelow();
 
         if (!hasObstacle && d > dragThreshold && PlayableNow && InTerritory && AllowPlacement())

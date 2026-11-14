@@ -15,7 +15,7 @@ public class TitleScreen : MonoBehaviour
         // Wait until the CRT TV turning on animation completes
         if (turnOnEffect != null && turnOnEffect.IsPlaying) return;
 
-        if (Input.anyKeyDown)
+        if (BunkerInput.AnyInputWasPressedThisFrame)
         {
             isTransitioning = true;
             CRTTransition.LoadScene(SceneName);

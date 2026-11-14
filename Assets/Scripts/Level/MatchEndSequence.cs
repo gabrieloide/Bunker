@@ -48,7 +48,7 @@ public class MatchEndSequence : MonoBehaviour
 
     void Update()
     {
-        if (Running && !skipped && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
+        if (Running && !skipped && BunkerInput.SkipWasPressedThisFrame)
             skipped = true;
     }
 

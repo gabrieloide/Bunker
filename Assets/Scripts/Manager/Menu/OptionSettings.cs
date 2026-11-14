@@ -49,13 +49,22 @@ public static class OptionSettings
         var fsBtn = options.Q<Button>("fullscreen");
         if (fsBtn != null)
         {
-            fsBtn.text = Screen.fullScreen ? "ON" : "OFF";
-            fsBtn.clicked += () =>
+            if (Application.isMobilePlatform)
             {
-                bool next = !Screen.fullScreen;
-                Screen.fullScreen = next;
-                fsBtn.text = next ? "ON" : "OFF";
-            };
+                var row = fsBtn.parent;
+                if (row != null) row.style.display = DisplayStyle.None;
+                else fsBtn.style.display = DisplayStyle.None;
+            }
+            else
+            {
+                fsBtn.text = Screen.fullScreen ? "ON" : "OFF";
+                fsBtn.clicked += () =>
+                {
+                    bool next = !Screen.fullScreen;
+                    Screen.fullScreen = next;
+                    fsBtn.text = next ? "ON" : "OFF";
+                };
+            }
         }
 
         var back = options.Q<Button>("back");

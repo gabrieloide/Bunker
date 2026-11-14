@@ -14,9 +14,15 @@ public class CameraMovement : MonoBehaviour
 
     // End of match: the camera travels to a point on its own (real time, pixel steps) and ignores the keys
     const float PixelSize = 1f / 16f;
+    const float TouchPanThresholdPx = 10f;
     bool focusing;
     Vector3 focusFrom, focusTo;
     float focusStart, focusDuration;
+
+    bool touchPanCandidate;
+    bool touchPanning;
+    Vector2 touchPanStartScreen;
+    Vector2 touchPanLastScreen;
 
     public void Focus(Vector3 target, float duration)
     {
@@ -45,12 +51,58 @@ public class CameraMovement : MonoBehaviour
             basePosition = new Vector3(Mathf.Round(p.x / PixelSize) * PixelSize, Mathf.Round(p.y / PixelSize) * PixelSize, p.z);
             return;
         }
-        float X = Input.GetAxis("Horizontal");
-        float Y = Input.GetAxis("Vertical");
-        Vector3 move = new Vector3(X * speed * Time.deltaTime, Y * speed * Time.deltaTime, 0f);
+        Vector2 axis = BunkerInput.MoveCamera;
+        Vector3 move = new Vector3(axis.x * speed * Time.deltaTime, axis.y * speed * Time.deltaTime, 0f);
         basePosition += move;
+
+        UpdateTouchPan();
+
         basePosition.x = Mathf.Clamp(basePosition.x, minX, maxX);
         basePosition.y = Mathf.Clamp(basePosition.y, minY, maxY);
+    }
+
+    void UpdateTouchPan()
+    {
+        bool blocked = PauseMenu.GameIsPaused || (GameManager.instance != null && GameManager.instance.onDrag);
+        if (blocked || !PointerInput.IsTouch || !PointerInput.IsPressed)
+        {
+            touchPanCandidate = false;
+            touchPanning = false;
+            return;
+        }
+
+        if (!PointerInput.TryGetScreenPosition(out Vector2 screenPos))
+            return;
+
+        if (PointerInput.WasPressedThisFrame && !PointerInput.IsPointerOverUI())
+        {
+            touchPanCandidate = true;
+            touchPanning = false;
+            touchPanStartScreen = screenPos;
+            touchPanLastScreen = screenPos;
+            return;
+        }
+
+        if (!touchPanCandidate) return;
+
+        if (!touchPanning)
+        {
+            if (Vector2.Distance(screenPos, touchPanStartScreen) < TouchPanThresholdPx)
+                return;
+            touchPanning = true;
+            touchPanLastScreen = screenPos;
+            return;
+        }
+
+        Vector2 delta = screenPos - touchPanLastScreen;
+        touchPanLastScreen = screenPos;
+
+        var cam = Camera.main;
+        if (cam != null && cam.orthographic)
+        {
+            float worldPerPixel = (cam.orthographicSize * 2f) / Mathf.Max(1, Screen.height);
+            basePosition -= new Vector3(delta.x * worldPerPixel, delta.y * worldPerPixel, 0f);
+        }
     }
 
     void LateUpdate()

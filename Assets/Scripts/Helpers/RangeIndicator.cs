@@ -52,12 +52,9 @@ public class RangeIndicator : MonoBehaviour
     TurretCard HoveredTurret()
     {
         if (Camera.main == null) return null;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return null;
+        if (PointerInput.IsPointerOverUI()) return null;
 
-        Vector3 mouse = Input.mousePosition;
-        // Infinite while the game view has no focus
-        if (!float.IsFinite(mouse.x) || !float.IsFinite(mouse.y)) return null;
-        Vector2 pointer = Camera.main.ScreenToWorldPoint(mouse);
+        if (!PointerInput.TryGetWorldPosition(Camera.main, out Vector3 pointer)) return null;
         Collider2D hit = Physics2D.OverlapPoint(pointer, turretMask);
         return hit != null ? hit.GetComponentInParent<TurretCard>() : null;
     }

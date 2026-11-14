@@ -131,13 +131,13 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (UIManager.instance == null) return;
+        if (UIManager.instance == null || Application.isMobilePlatform || PointerInput.IsTouch) return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (PointerInput.WasPressedThisFrame)
         {
             Cursor.SetCursor(UIManager.instance.cursorTexture, Vector2.zero, CursorMode.Auto);
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (PointerInput.WasReleasedThisFrame)
         {
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         }

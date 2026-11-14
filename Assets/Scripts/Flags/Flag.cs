@@ -52,11 +52,8 @@ public class Flag : MonoBehaviour, ICardConfigurable
     bool Hovered()
     {
         if (body == null || Camera.main == null) return false;
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return false;
-        Vector3 mouse = Input.mousePosition;
-        // Infinite while the game view has no focus
-        if (!float.IsFinite(mouse.x) || !float.IsFinite(mouse.y)) return false;
-        Vector3 pointer = Camera.main.ScreenToWorldPoint(mouse);
+        if (PointerInput.IsPointerOverUI()) return false;
+        if (!PointerInput.TryGetWorldPosition(Camera.main, out Vector3 pointer)) return false;
         pointer.z = body.bounds.center.z;
         return body.bounds.Contains(pointer);
     }

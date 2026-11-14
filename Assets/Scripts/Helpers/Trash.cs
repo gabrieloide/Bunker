@@ -39,7 +39,7 @@ public class Trash : MonoBehaviour
 
         if (mainCamera == null) return false;
 
-        Vector3 worldMouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (!PointerInput.TryGetWorldPosition(mainCamera, out Vector3 worldMouse)) return false;
         Bounds b = new Bounds(transform.position, new Vector3(widthBox, heightBox, 10f));
         return b.Contains(new Vector3(worldMouse.x, worldMouse.y, transform.position.z));
     }
