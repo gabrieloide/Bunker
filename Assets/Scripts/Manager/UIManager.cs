@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] UIDocument hud;
     public UIDocument HudDocument => hud;
     public PanelSettings HudPanelSettings => hud != null ? hud.panelSettings : null;
+    public RenderTexture HudTarget => hudTarget;
     [Space]
     [Header("CRT Compositing")]
     [Tooltip("UIComposite shader: composites HUD texture into camera backbuffer before RetroCRTFilter")]
@@ -122,8 +123,6 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
-        Camera.onPostRender -= CompositeHud;
-
         SimEventDispatcher.OnScoreChanged -= SetScore;
         SimEventDispatcher.OnWaveChanged -= SetWave;
         SimEventDispatcher.OnPlayerHit -= OnPlayerHit;
@@ -140,7 +139,6 @@ public class UIManager : MonoBehaviour
         if (instance == this)
             instance = null;
 
-        Camera.onPostRender -= CompositeHud;
         ClearDamageChunks();
         lifeInitialized = false;
         lastLife = -1f;
@@ -174,8 +172,6 @@ public class UIManager : MonoBehaviour
             hudComposite = new Material(compositeShader);
 
         ResizeHudTexture();
-        Camera.onPostRender -= CompositeHud;
-        Camera.onPostRender += CompositeHud;
 
         var pause = FindAnyObjectByType<PauseMenu>(FindObjectsInactive.Include);
         if (pause != null) pause.EnsureCompositedSettings();
@@ -194,22 +190,6 @@ public class UIManager : MonoBehaviour
 
     Vector2 ScreenToTexture(Vector2 screen) =>
         hudTarget == null ? screen : new Vector2(screen.x * hudTarget.width / Screen.width, screen.y * hudTarget.height / Screen.height);
-
-    void CompositeHud(Camera cam)
-    {
-        if (cam != Camera.main || hudTarget == null || hudComposite == null) return;
-        hudComposite.mainTexture = hudTarget;
-        GL.PushMatrix();
-        GL.LoadOrtho();
-        hudComposite.SetPass(0);
-        GL.Begin(GL.QUADS);
-        GL.TexCoord2(0, 0); GL.Vertex3(0, 0, 0);
-        GL.TexCoord2(0, 1); GL.Vertex3(0, 1, 0);
-        GL.TexCoord2(1, 1); GL.Vertex3(1, 1, 0);
-        GL.TexCoord2(1, 0); GL.Vertex3(1, 0, 0);
-        GL.End();
-        GL.PopMatrix();
-    }
 
     void LateUpdate()
     {

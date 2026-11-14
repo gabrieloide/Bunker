@@ -123,6 +123,8 @@ public class RetroCRTUIBridge : MonoBehaviour
         foreach (var doc in docs)
         {
             if (doc == null || !doc.isActiveAndEnabled) continue;
+            if (doc.GetComponent<GameUIPanel>() != null) continue;
+            if (UIManager.instance != null && doc.panelSettings == UIManager.instance.HudPanelSettings) continue;
 
             var ps = doc.panelSettings;
             if (ps == null) continue;
@@ -181,6 +183,15 @@ public class RetroCRTUIBridge : MonoBehaviour
             return new Vector2(float.NaN, float.NaN);
 
         return new Vector2(uv.x * w, uv.y * h);
+    }
+
+    public int ActiveTextureCount => boundPanels.Count;
+
+    public Texture GetActiveTexture(int index)
+    {
+        if (index < 0 || index >= boundPanels.Count) return null;
+        var state = boundPanels[index];
+        return state.hasActiveDoc && state.panel != null ? state.rt : null;
     }
 
     public bool TryComposite(RenderTexture source, out RenderTexture composited)

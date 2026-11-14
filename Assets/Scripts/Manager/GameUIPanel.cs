@@ -21,6 +21,7 @@ public class GameUIPanel : MonoBehaviour
     public VisualElement Root => document.rootVisualElement;
     public VisualElement Hand => Root.Q("hand");
     public VisualElement World => Root.Q("world");
+    public RenderTexture TargetTexture => target;
 
     void Awake()
     {
@@ -29,25 +30,27 @@ public class GameUIPanel : MonoBehaviour
         // Own copy: the target texture must not end up in the shared asset
         var settings = Instantiate(document.panelSettings);
         settings.scaleMode = PanelScaleMode.ConstantPixelSize;
+        settings.clearColor = true;
+        settings.colorClearValue = Color.clear;
         settings.SetScreenToPanelSpaceFunction(ScreenToTexture);
         document.panelSettings = settings;
-        composite = new Material(compositeShader);
+        if (compositeShader != null)
+            composite = new Material(compositeShader);
         Resize();
     }
 
     void OnEnable()
     {
         Root.pickingMode = PickingMode.Ignore;
-        Camera.onPostRender += Composite;
     }
 
-    void OnDisable() => Camera.onPostRender -= Composite;
+    void OnDisable() { }
 
     void OnDestroy()
     {
         if (Instance == this) Instance = null;
         if (target != null) target.Release();
-        Destroy(composite);
+        if (composite != null) Destroy(composite);
     }
 
     void LateUpdate()
