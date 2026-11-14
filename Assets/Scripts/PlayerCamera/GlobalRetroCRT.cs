@@ -79,6 +79,14 @@ public class GlobalRetroCRT : MonoBehaviour
         }
     }
 
+    public bool CrtEnabled { get; private set; } = true;
+
+    public void SetCrtEnabled(bool enabled)
+    {
+        CrtEnabled = enabled;
+        ApplyFilterToActiveCameras();
+    }
+
     public void ApplyToCamera(Camera cam)
     {
         if (cam == null) return;
@@ -89,17 +97,34 @@ public class GlobalRetroCRT : MonoBehaviour
             filter = cam.gameObject.AddComponent<RetroCRTFilter>();
         }
 
-        filter.curvature = curvature;
-        filter.bezelSmoothness = bezelSmoothness;
-        filter.scanlineIntensity = scanlineIntensity;
-        filter.scanlineCount = scanlineCount;
-        filter.phosphorGlow = phosphorGlow;
-        filter.shadowMaskIntensity = shadowMaskIntensity;
-        filter.chromaticAberration = chromaticAberration;
-        filter.brightness = brightness;
-        filter.contrast = contrast;
-        filter.vignetteIntensity = vignetteIntensity;
-        filter.vignetteRoundness = vignetteRoundness;
+        if (CrtEnabled)
+        {
+            filter.curvature = curvature;
+            filter.bezelSmoothness = bezelSmoothness;
+            filter.scanlineIntensity = scanlineIntensity;
+            filter.scanlineCount = scanlineCount;
+            filter.phosphorGlow = phosphorGlow;
+            filter.shadowMaskIntensity = shadowMaskIntensity;
+            filter.chromaticAberration = chromaticAberration;
+            filter.brightness = brightness;
+            filter.contrast = contrast;
+            filter.vignetteIntensity = vignetteIntensity;
+            filter.vignetteRoundness = vignetteRoundness;
+        }
+        else
+        {
+            filter.curvature = 0f;
+            filter.bezelSmoothness = 0.001f;
+            filter.scanlineIntensity = 0f;
+            filter.scanlineCount = scanlineCount;
+            filter.phosphorGlow = 0f;
+            filter.shadowMaskIntensity = 0f;
+            filter.chromaticAberration = 0f;
+            filter.brightness = 1f;
+            filter.contrast = 1f;
+            filter.vignetteIntensity = 0f;
+            filter.vignetteRoundness = 0.5f;
+        }
     }
 
 #if UNITY_EDITOR

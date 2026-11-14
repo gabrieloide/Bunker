@@ -2,6 +2,18 @@
     <Style src="Bunker.uss" />
     <ui:VisualElement class="menu-list">
         <ui:Label text="SETTINGS" class="title" />
-        <ui:Button name="back" text="BACK" class="menu-button" />
+        <ui:VisualElement class="option-row">
+            <ui:Label text="VOLUME" />
+            <ui:Slider name="volume" low-value="0" high-value="1" value="1" />
+        </ui:VisualElement>
+        <ui:VisualElement class="option-row">
+            <ui:Label text="CRT" />
+            <ui:Button name="crt" text="ON" class="menu-button" />
+        </ui:VisualElement>
+        <ui:VisualElement class="option-row">
+            <ui:Label text="FULLSCREEN" />
+            <ui:Button name="fullscreen" text="OFF" class="menu-button" />
+        </ui:VisualElement>
+        <ui:Button name="back" text="BACK" class="menu-button" style="margin-top: 32px;" />
     </ui:VisualElement>
 </ui:UXML>

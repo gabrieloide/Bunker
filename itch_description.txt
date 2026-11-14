@@ -1,0 +1,40 @@
+<div style="background-color: #000000; color: #F0F6F0; border: 3px solid #F0F6F0; padding: 24px; font-family: 'Courier New', Courier, monospace; line-height: 1.6;">
+
+  <div style="background-color: #F0F6F0; color: #000000; padding: 12px 18px; margin-bottom: 20px;">
+    <div style="margin: 0; font-size: 32px; font-weight: bold; color: #000000; letter-spacing: 4px; text-transform: uppercase;">BUNKER</div>
+  </div>
+
+  <p style="margin: 0 0 22px 0; font-size: 19px; color: #F0F6F0;">
+    Defend your base, expand your territory, and launch counteroffensives in a monochrome pixel art strategy and tower defense game.
+  </p>
+
+  <div style="border: 2px solid #F0F6F0; padding: 18px; margin-bottom: 20px;">
+    <div style="margin: 0 0 12px 0; font-size: 18px; font-weight: bold; color: #FFFFFF; letter-spacing: 2px; text-transform: uppercase; border-bottom: 2px solid #F0F6F0; padding-bottom: 8px;">HOW TO PLAY</div>
+    <ul style="margin: 0; padding-left: 22px; font-size: 17px; color: #F0F6F0;">
+      <li style="margin-bottom: 8px;"><strong>Defend:</strong> Place turrets, snipers, and mortars on the grid.</li>
+      <li style="margin-bottom: 8px;"><strong>Expand:</strong> Use flags to claim territory and roads to guide your allies.</li>
+      <li style="margin-bottom: 0;"><strong>Counterattack:</strong> Deploy squads and tactical support to destroy the enemy base.</li>
+    </ul>
+  </div>
+
+  <div style="border: 2px solid #F0F6F0; padding: 18px; margin-bottom: 18px;">
+    <div style="margin: 0 0 12px 0; font-size: 18px; font-weight: bold; color: #FFFFFF; letter-spacing: 2px; text-transform: uppercase; border-bottom: 2px solid #F0F6F0; padding-bottom: 8px;">CONTROLS</div>
+    <table style="width: 100%; border-collapse: collapse; font-size: 17px; color: #F0F6F0; border: none;">
+      <tbody>
+        <tr style="border: none;">
+          <td style="padding: 6px 0; width: 42%; border: none; color: #FFFFFF;"><strong>MOUSE</strong></td>
+          <td style="padding: 6px 0; border: none;">Drag and drop cards</td>
+        </tr>
+        <tr style="border: none;">
+          <td style="padding: 6px 0; border: none; color: #FFFFFF;"><strong>WASD / ARROWS</strong></td>
+          <td style="padding: 6px 0; border: none;">Pan camera</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="text-align: right; font-size: 14px; color: #BBBBBB; letter-spacing: 2px; text-transform: uppercase;">
+    Biste Games
+  </div>
+
+</div>

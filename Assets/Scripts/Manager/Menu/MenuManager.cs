@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] string SceneName = "LevelSelector";
-    [SerializeField] string creditsScene = "Credits";
 
     VisualElement main, options;
 
@@ -18,8 +17,14 @@ public class MenuManager : MonoBehaviour
 
         root.Q<Button>("start").clicked += PlayButton;
         root.Q<Button>("settings").clicked += () => ShowOptions(true);
-        root.Q<Button>("credits").clicked += () => CRTTransition.LoadScene(creditsScene);
-        root.Q<Button>("quit").clicked += Quit;
+        var quitBtn = root.Q<Button>("quit");
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (quitBtn != null)
+            quitBtn.style.display = DisplayStyle.None;
+#else
+        if (quitBtn != null)
+            quitBtn.clicked += Quit;
+#endif
         OptionSettings.Bind(options, () => ShowOptions(false));
     }
 
