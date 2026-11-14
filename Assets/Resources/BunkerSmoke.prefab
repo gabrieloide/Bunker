@@ -50,6 +50,7 @@ MonoBehaviour:
   - {fileID: -903622225, guid: 5c908d88188eb644ea2966a64b67f11f, type: 3}
   - {fileID: -1458095917, guid: 5c908d88188eb644ea2966a64b67f11f, type: 3}
   - {fileID: 1764311209, guid: 5c908d88188eb644ea2966a64b67f11f, type: 3}
+  fallbackDestroyedBunkerSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   frameRate: 6
   stepsPerSecond: 12
   windEvery: 4
@@ -59,3 +60,6 @@ MonoBehaviour:
   - 0.3
   - 0.7
   - 0.5
+  puffWidthRatio: 0.14
+  minPuffSize: 0.12
+  maxPuffSize: 0.45

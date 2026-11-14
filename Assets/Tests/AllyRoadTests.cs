@@ -77,6 +77,7 @@ namespace Bunker.Tests
             Assert.IsFalse(cells.Contains(new Vector3Int(2, 0, 0)) && cells.Contains(new Vector3Int(2, 1, 0)));
         }
 
+        // Verifies allies only spawn on an AllyRoadTag road with >= 2 points (no enemy-route fallback)
         [Test]
         public void AllySystem_UsesPreferredAllyRoad_AndSkipsItForDefaultRoundRobin()
         {
@@ -110,6 +111,7 @@ namespace Bunker.Tests
             em.AddComponentData(configEntity, new AllySpawnConfig { Roster = roster });
             var requests = em.AddBuffer<AllySpawnRequest>(configEntity);
             requests.Add(new AllySpawnRequest { TypeIndex = 0, PreferredPath = Entity.Null });
+            requests.Add(new AllySpawnRequest { TypeIndex = 0, PreferredPath = simEntity });
             requests.Add(new AllySpawnRequest { TypeIndex = 0, PreferredPath = customRoad });
 
             world.SetTime(new Unity.Core.TimeData(0.0, 0f));
@@ -118,9 +120,8 @@ namespace Bunker.Tests
 
             var query = em.CreateEntityQuery(typeof(AllyTag), typeof(AllyPathFollower));
             using var followers = query.ToComponentDataArray<AllyPathFollower>(Allocator.Temp);
-            Assert.AreEqual(2, followers.Length);
-            Assert.AreEqual(simEntity, followers[0].PathEntity);
-            Assert.AreEqual(customRoad, followers[1].PathEntity);
+            Assert.AreEqual(1, followers.Length);
+            Assert.AreEqual(customRoad, followers[0].PathEntity);
         }
 
         [Test]

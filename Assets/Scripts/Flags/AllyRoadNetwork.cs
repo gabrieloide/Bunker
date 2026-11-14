@@ -128,6 +128,8 @@ public static class AllyRoadNetwork
             if (!PlacementGrid.HasGround(cell)) return false;
             if (PlacementGrid.BlocksWalking(cell)) return false;
             if (PlacementGrid.IsOccupied(cell)) return false;
+            // Intentionally do NOT block PlacementGrid.IsPath(cell): ally roads may share enemy route
+            // terrain so allied and enemy troops clash on the same ground.
         }
 
         Vector3 world = CellToWorld(cell);

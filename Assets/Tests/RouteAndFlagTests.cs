@@ -27,6 +27,7 @@ namespace Bunker.Tests
             world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             simEntity = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(simEntity);
             em.AddComponentData(simEntity, new WaveConfig());
             em.AddComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
             em.AddComponentData(simEntity, new GameSession());
@@ -68,11 +69,11 @@ namespace Bunker.Tests
         }
 
         // Plays `count` ally cards and lets the command buffer create them
-        void SpawnAllies(int count)
+        void SpawnAllies(int count, Entity preferredPath = default)
         {
             var requests = em.GetBuffer<AllySpawnRequest>(configEntity);
             for (int i = 0; i < count; i++)
-                requests.Add(new AllySpawnRequest { TypeIndex = 0 });
+                requests.Add(new AllySpawnRequest { TypeIndex = 0, PreferredPath = preferredPath });
             StepAllies(0f);
             world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>().Update(world.Unmanaged);
         }
@@ -101,9 +102,9 @@ namespace Bunker.Tests
         }
 
         [Test]
-        public void Ally_Spawned_StartsAtTheBunkerEndOfTheEnemyRoute()
+        public void Ally_Spawned_StartsAtTheBunkerEndOfTheAllyRoad()
         {
-            SpawnAllies(1);
+            SpawnAllies(1, simEntity);
 
             var followers = AllyFollowers();
             Assert.AreEqual(1, followers.Length);
@@ -112,29 +113,27 @@ namespace Bunker.Tests
         }
 
         [Test]
-        public void Allies_Spawned_TakeTheRoutesThatReachTheBunkerInTurn()
+        public void Allies_WithoutValidAllyRoad_DoNotSpawnOrWalkEnemyRoutes()
         {
-            // The primary route forks at its end: only the two branches reach the bunker
-            var left = em.CreateEntity();
-            em.AddBuffer<PathPoint>(left).Add(new PathPoint { Value = new float3(30f, 5f, 0f) });
-            em.AddBuffer<PathParent>(left).Add(new PathParent { Path = simEntity });
-            var right = em.CreateEntity();
-            em.AddBuffer<PathPoint>(right).Add(new PathPoint { Value = new float3(30f, -5f, 0f) });
-            em.AddBuffer<PathParent>(right).Add(new PathParent { Path = simEntity });
-            var branches = em.AddBuffer<PathBranch>(simEntity);
-            branches.Add(new PathBranch { Path = left });
-            branches.Add(new PathBranch { Path = right });
+            // Enemy routes without AllyRoadTag (even with branches) and 1-point AllyRoadTag paths must not spawn allies
+            var enemyRoute = em.CreateEntity();
+            var enemyPoints = em.AddBuffer<PathPoint>(enemyRoute);
+            enemyPoints.Add(new PathPoint { Value = new float3(30f, 5f, 0f) });
+            enemyPoints.Add(new PathPoint { Value = new float3(20f, 5f, 0f) });
 
-            SpawnAllies(2);
+            var shortAllyRoad = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(shortAllyRoad);
+            em.AddBuffer<PathPoint>(shortAllyRoad).Add(new PathPoint { Value = new float3(30f, -5f, 0f) });
 
-            var followers = AllyFollowers();
-            Assert.AreEqual(2, followers.Length);
-            Assert.AreNotEqual(followers[0].PathEntity, followers[1].PathEntity, "the group splits between the branches");
-            foreach (var follower in followers)
-            {
-                Assert.That(follower.PathEntity, Is.EqualTo(left).Or.EqualTo(right), "never the forking route: it doesn't reach the bunker");
-                Assert.AreEqual(0, follower.NextIndex);
-            }
+            SpawnAllies(1);
+            SpawnAllies(1, enemyRoute);
+            SpawnAllies(1, shortAllyRoad);
+            Assert.AreEqual(0, AllyFollowers().Length, "no fallback to enemy routes and no spawn on < 2 points");
+
+            // Existing ally assigned to an enemy route without AllyRoadTag must not walk it
+            var stranded = CreateAlly(new float3(20f, 5f, 0f), 1, enemyRoute);
+            StepAllies(1f);
+            Assert.AreEqual(20f, em.GetComponentData<LocalTransform>(stranded).Position.x, 1e-4f);
         }
 
         [Test]
@@ -228,6 +227,7 @@ namespace Bunker.Tests
         public void Ally_PastTheStartOfABranch_ContinuesOnTheRouteItForkedFrom()
         {
             var branch = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(branch);
             var points = em.AddBuffer<PathPoint>(branch);
             points.Add(new PathPoint { Value = new float3(30f, 0f, 0f) });
             em.AddBuffer<PathParent>(branch).Add(new PathParent { Path = simEntity });
@@ -245,11 +245,14 @@ namespace Bunker.Tests
         public void Allies_WalkingBackThroughMergedTail_SplitAcrossBothParentBranches()
         {
             var parentA = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(parentA);
             em.AddBuffer<PathPoint>(parentA).Add(new PathPoint { Value = new float3(35f, 5f, 0f) });
             var parentB = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(parentB);
             em.AddBuffer<PathPoint>(parentB).Add(new PathPoint { Value = new float3(35f, -5f, 0f) });
 
             var mergedTail = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(mergedTail);
             em.AddBuffer<PathPoint>(mergedTail).Add(new PathPoint { Value = new float3(20f, 0f, 0f) });
             var parents = em.AddBuffer<PathParent>(mergedTail);
             parents.Add(new PathParent { Path = parentA });

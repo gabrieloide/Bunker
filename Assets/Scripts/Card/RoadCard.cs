@@ -28,6 +28,8 @@ public class RoadCard : Card
         }
     }
 
+    protected override bool AllowPlacement() => CanPlaceNow;
+
     protected override void ShowPlacementFeedback(bool valid)
     {
         var overlay = AllyRoadOverlay.EnsureExists();

@@ -9,12 +9,23 @@ public class BunkerSmoke
 
     readonly Transform owner;
     readonly float threshold;
+    readonly SpriteRenderer bodyRenderer;
     PixelSmoke smoke;
 
-    public BunkerSmoke(Transform owner, float threshold = 0.3f)
+    public BunkerSmoke(Transform owner, float threshold = 0.3f, SpriteRenderer bodyRenderer = null)
     {
         this.owner = owner;
         this.threshold = threshold;
+        this.bodyRenderer = bodyRenderer;
+    }
+
+    public static Sprite FallbackDestroyedBunkerSprite
+    {
+        get
+        {
+            if (prefab == null) prefab = Resources.Load<PixelSmoke>(PrefabPath);
+            return prefab != null ? prefab.FallbackDestroyedBunkerSprite : null;
+        }
     }
 
     // Smoke on at or below the threshold, off again if the bunker is healed above it
@@ -42,5 +53,6 @@ public class BunkerSmoke
             return;
         }
         smoke = Object.Instantiate(prefab, owner.position, Quaternion.identity, owner);
+        if (bodyRenderer != null) smoke.SetBodyRenderer(bodyRenderer);
     }
 }

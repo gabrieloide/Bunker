@@ -37,6 +37,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     bool isUnlocked;
     bool isCompleted;
     bool isHovered;
+    bool pendingRevealLock;
 
     void Awake()
     {
@@ -65,16 +66,54 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         RefreshState();
     }
 
+    public void SetPendingReveal(bool hiddenAsLocked)
+    {
+        pendingRevealLock = hiddenAsLocked;
+        RefreshState();
+    }
+
+    public void RevealUnlocked()
+    {
+        pendingRevealLock = false;
+        RefreshState();
+
+        if (turretTransform != null)
+        {
+            LeanTween.cancel(turretTransform.gameObject);
+            turretTransform.localScale = initialScale * 0.85f;
+            LeanTween.scale(turretTransform.gameObject, initialScale * 1.22f, 0.14f)
+                .setEaseOutQuad()
+                .setOnComplete(() =>
+                {
+                    if (turretTransform != null)
+                        LeanTween.scale(turretTransform.gameObject, initialScale, 0.22f).setEaseOutBack();
+                });
+        }
+
+        if (nameBox != null)
+        {
+            LeanTween.cancel(nameBox);
+            nameBox.transform.localScale = Vector3.one * 0.85f;
+            LeanTween.scale(nameBox, Vector3.one * 1.15f, 0.14f)
+                .setEaseOutQuad()
+                .setOnComplete(() =>
+                {
+                    if (nameBox != null)
+                        LeanTween.scale(nameBox, Vector3.one, 0.2f).setEaseOutBack();
+                });
+        }
+    }
+
     public void RefreshState()
     {
-        isUnlocked = LevelProgress.IsUnlocked(levelIndex);
+        isUnlocked = LevelProgress.IsUnlocked(levelIndex) && !pendingRevealLock;
         isCompleted = LevelProgress.IsCompleted(levelIndex);
 
         // 1. Sprite: si está completado (ganado), cambiar a destroyedSprite
         if (isCompleted && destroyedSprite != null)
         {
             turretRenderer.sprite = destroyedSprite;
-            // The ruins are 16x16-scale gameplay art: shown as wide as the island they replace
+            // Scale the destroyed bunker sprite to match the width of the island it replaces
             float fit = normalSprite != null && destroyedSprite.bounds.size.x > 0f
                 ? normalSprite.bounds.size.x / destroyedSprite.bounds.size.x : 1f;
             initialScale = baseScale * fit;

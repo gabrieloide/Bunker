@@ -215751,6 +215751,8 @@ MonoBehaviour:
   destroyedParticle: {fileID: 0}
   defaultRadius: 7
   smokeBelow: 0.3
+  bodyRenderer: {fileID: 0}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
 --- !u!61 &1860074609
 BoxCollider2D:
   m_ObjectHideFlags: 0

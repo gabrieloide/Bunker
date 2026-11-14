@@ -185,7 +185,7 @@ MonoBehaviour:
   turretTransform: {fileID: 1126120716}
   turretRenderer: {fileID: 1126120717}
   normalSprite: {fileID: -4025479463741854780, guid: c8b4cff063a41f0408005fcf2f628908, type: 3}
-  destroyedSprite: {fileID: -6333088320393621515, guid: 0db0ca852ca33c041a4abe80af1fc4d3, type: 3}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   nameBox: {fileID: 404182073}
   nameText: {fileID: 413875756}
   nameBoxRenderer: {fileID: 898972957}
@@ -291,7 +291,7 @@ MonoBehaviour:
   turretTransform: {fileID: 1127075905}
   turretRenderer: {fileID: 1127075906}
   normalSprite: {fileID: -3958080340244407837, guid: 38e5e1f5f5a095e4abc7c12cdf2d0c8f, type: 3}
-  destroyedSprite: {fileID: -6333088320393621515, guid: 0db0ca852ca33c041a4abe80af1fc4d3, type: 3}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   nameBox: {fileID: 2093628199}
   nameText: {fileID: 1727277238}
   nameBoxRenderer: {fileID: 456194973}
@@ -1173,7 +1173,7 @@ MonoBehaviour:
   - {fileID: -7340129816828107592, guid: bbb5b045f6302754ca1fef48d384a8cf, type: 3}
   - {fileID: -4025479463741854780, guid: c8b4cff063a41f0408005fcf2f628908, type: 3}
   - {fileID: -3958080340244407837, guid: 38e5e1f5f5a095e4abc7c12cdf2d0c8f, type: 3}
-  destroyedSprite: {fileID: -6333088320393621515, guid: 0db0ca852ca33c041a4abe80af1fc4d3, type: 3}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   backScene: MainMenu
 --- !u!114 &366127477
 MonoBehaviour:
@@ -1265,7 +1265,7 @@ MonoBehaviour:
   turretTransform: {fileID: 613632402}
   turretRenderer: {fileID: 613632403}
   normalSprite: {fileID: -7340129816828107592, guid: bbb5b045f6302754ca1fef48d384a8cf, type: 3}
-  destroyedSprite: {fileID: -6333088320393621515, guid: 0db0ca852ca33c041a4abe80af1fc4d3, type: 3}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   nameBox: {fileID: 112997659}
   nameText: {fileID: 518359428}
   nameBoxRenderer: {fileID: 1014079741}
@@ -2760,9 +2760,9 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 4036301243
+  m_SortingLayer: -1
+  m_SortingOrder: -10
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1056139964
@@ -3300,9 +3300,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelSelectorAmbience
   floatAmplitude: 0.06
   floatSpeed: 1.4
-  beaconBaseRadius: 1.25
-  beaconPulseAmount: 0.08
-  beaconSpinSpeed: 18
+  silhouetteColor: {r: 1, g: 1, b: 1, a: 1}
+  silhouetteOutlineWidth: 1.5
+  silhouetteMinAlpha: 0.45
+  silhouetteMaxAlpha: 0.95
+  silhouettePulseSpeed: 2.6
+  unlockStartDelay: 0.35
+  bridgeFillDuration: 0.65
   maxParticles: 45
   driftSpeed: 0.25
 --- !u!114 &1347708540
@@ -3671,7 +3675,7 @@ MonoBehaviour:
   turretTransform: {fileID: 1376950644}
   turretRenderer: {fileID: 1376950645}
   normalSprite: {fileID: 7210683791793947506, guid: 64721851f9ff18e44ba9dc2e1ebfbbba, type: 3}
-  destroyedSprite: {fileID: -6333088320393621515, guid: 0db0ca852ca33c041a4abe80af1fc4d3, type: 3}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   nameBox: {fileID: 743590778}
   nameText: {fileID: 1393286503}
   nameBoxRenderer: {fileID: 1091850398}
@@ -4058,7 +4062,7 @@ MonoBehaviour:
   turretTransform: {fileID: 736675949}
   turretRenderer: {fileID: 736675950}
   normalSprite: {fileID: -4648884926954377506, guid: fce9b12c2e9cb874b8a046d31a7ec8a8, type: 3}
-  destroyedSprite: {fileID: -6333088320393621515, guid: 0db0ca852ca33c041a4abe80af1fc4d3, type: 3}
+  destroyedSprite: {fileID: 27891646989397261, guid: 72ead910c2d59984b88af9e7ec412387, type: 3}
   nameBox: {fileID: 2120059394}
   nameText: {fileID: 667906396}
   nameBoxRenderer: {fileID: 1077714007}

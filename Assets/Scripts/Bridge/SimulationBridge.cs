@@ -289,6 +289,7 @@ public class SimulationBridge : MonoBehaviour
 
     void CreateAllySpawner(AllySpawner spawner)
     {
+        AllyRoadPathEntity = Entity.Null;
         if (spawner == null || spawner.Allies == null || spawner.Allies.Length == 0) return;
         allyPrefabs = spawner.Allies;
 
@@ -369,13 +370,15 @@ public class SimulationBridge : MonoBehaviour
 
     public void RequestAlly(AllyView prefab, Entity preferredPath = default)
     {
+        if (!ready || !em.Exists(allySpawnerEntity)) return;
+        if (AllyRoadNetwork.BuiltTileCount == 0 || preferredPath == Entity.Null || !em.Exists(preferredPath) || !em.HasComponent<AllyRoadTag>(preferredPath) || !em.HasBuffer<PathPoint>(preferredPath) || em.GetBuffer<PathPoint>(preferredPath).Length < 2)
+            return;
         int index = prefab != null ? System.Array.IndexOf(allyPrefabs, prefab) : -1;
         if (index < 0)
         {
             Debug.LogError($"SimulationBridge: ally '{(prefab != null ? prefab.name : "null")}' is not in the scene's AllySpawner roster.", prefab);
             return;
         }
-        if (!ready || !em.Exists(allySpawnerEntity)) return;
         em.GetBuffer<AllySpawnRequest>(allySpawnerEntity).Add(new AllySpawnRequest
         {
             TypeIndex = index,

@@ -10,30 +10,42 @@ public class PixelSmoke : MonoBehaviour
 
     [Tooltip("Puff frames, played once over each puff's life")]
     [SerializeField] Sprite[] frames;
+    [Tooltip("Fallback ruined bunker sprite if an EnemyBaseView has none assigned")]
+    [SerializeField] Sprite fallbackDestroyedBunkerSprite;
     [Tooltip("Frames per second of each puff's animation")]
     [Min(1f)] [SerializeField] float frameRate = 6f;
-    [Tooltip("Movement steps per second; each step climbs one art pixel")]
+    [Tooltip("Movement steps per second; each step climbs one scaled art pixel")]
     [Min(1f)] [SerializeField] float stepsPerSecond = 12f;
-    [Tooltip("Every this many pixels climbed the puff also moves one pixel downwind")]
+    [Tooltip("Every this many steps climbed the puff also moves one step downwind")]
     [Min(1)] [SerializeField] int windEvery = 4;
     [Tooltip("Seconds between puffs: damaged / destroyed")]
     [SerializeField] float damagedInterval = 0.7f;
     [SerializeField] float destroyedInterval = 0.25f;
     [Tooltip("Vent positions across the top of the building (0 = left edge, 1 = right edge); damaged uses the first only")]
     [SerializeField] float[] vents = { 0.3f, 0.7f, 0.5f };
+    [Tooltip("Width of each puff relative to the building sprite width")]
+    [Range(0.05f, 0.5f)] [SerializeField] float puffWidthRatio = 0.14f;
+    [Min(0.05f)] [SerializeField] float minPuffSize = 0.12f;
+    [Min(0.05f)] [SerializeField] float maxPuffSize = 0.45f;
 
     class Puff
     {
         public SpriteRenderer renderer;
         public Vector2 origin;
+        public float stepSize;
         public float age;
     }
 
     readonly List<Puff> puffs = new List<Puff>();
     readonly Stack<SpriteRenderer> pool = new Stack<SpriteRenderer>();
+    SpriteRenderer bodyOverride;
     bool destroyedState;
     float timer;
     int nextVent;
+
+    public Sprite FallbackDestroyedBunkerSprite => fallbackDestroyedBunkerSprite;
+
+    public void SetBodyRenderer(SpriteRenderer renderer) => bodyOverride = renderer;
 
     public bool Destroyed
     {
@@ -66,8 +78,8 @@ public class PixelSmoke : MonoBehaviour
             }
             int steps = Mathf.FloorToInt(puff.age * stepsPerSecond);
             puff.renderer.transform.position = new Vector3(
-                puff.origin.x + steps / windEvery * PixelSize,
-                puff.origin.y + steps * PixelSize, 0f);
+                puff.origin.x + (steps / windEvery) * puff.stepSize,
+                puff.origin.y + steps * puff.stepSize, 0f);
             puff.renderer.sprite = frames[Mathf.Min((int)(puff.age * frameRate), frames.Length - 1)];
         }
     }
@@ -79,7 +91,12 @@ public class PixelSmoke : MonoBehaviour
         float vent = vents[nextVent++ % ventCount];
 
         Bounds bounds = BuildingBounds();
-        Vector2 origin = new Vector2(Mathf.Lerp(bounds.min.x, bounds.max.x, vent), bounds.max.y - 4f * PixelSize);
+        float worldSize = Mathf.Clamp(bounds.size.x * puffWidthRatio, minPuffSize, maxPuffSize);
+        float stepSize = Mathf.Max(0.015f, worldSize * 0.24f);
+
+        Vector2 origin = new Vector2(
+            Mathf.Lerp(bounds.min.x, bounds.max.x, vent),
+            bounds.max.y - bounds.size.y * 0.1f);
         // Snapped to the art pixel grid, like every other sprite
         origin.x = Mathf.Round(origin.x / PixelSize) * PixelSize;
         origin.y = Mathf.Round(origin.y / PixelSize) * PixelSize;
@@ -88,7 +105,14 @@ public class PixelSmoke : MonoBehaviour
         renderer.gameObject.SetActive(true);
         renderer.sprite = frames[0];
         renderer.transform.position = origin;
-        puffs.Add(new Puff { renderer = renderer, origin = origin });
+
+        float nativeWidth = frames[0] != null && frames[0].bounds.size.x > 0f ? frames[0].bounds.size.x : 1f;
+        Vector3 parentLossy = transform.lossyScale;
+        float sx = Mathf.Abs(parentLossy.x) > 0.0001f ? worldSize / (nativeWidth * Mathf.Abs(parentLossy.x)) : worldSize / nativeWidth;
+        float sy = Mathf.Abs(parentLossy.y) > 0.0001f ? worldSize / (nativeWidth * Mathf.Abs(parentLossy.y)) : worldSize / nativeWidth;
+        renderer.transform.localScale = new Vector3(sx, sy, 1f);
+
+        puffs.Add(new Puff { renderer = renderer, origin = origin, stepSize = stepSize });
     }
 
     SpriteRenderer CreateRenderer()
@@ -105,6 +129,9 @@ public class PixelSmoke : MonoBehaviour
     // The building is the biggest sprite under the parent (not its life bar or hit effects)
     Bounds BuildingBounds()
     {
+        if (bodyOverride != null && bodyOverride.sprite != null && bodyOverride.enabled)
+            return bodyOverride.bounds;
+
         var best = new Bounds(transform.position, Vector3.one);
         float bestArea = 0f;
         var parent = transform.parent;

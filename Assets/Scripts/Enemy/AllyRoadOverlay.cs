@@ -3,28 +3,39 @@ using Bunker.Simulation;
 using UnityEngine;
 
 // Renders player-built ally roads and the live monochrome drag preview using the project's
-// black-and-white RouteLine material (no colors: dark ink #222323 for built roads, white dashed for preview).
+// black-and-white RouteLine material with a lateral lane offset so ally roads stay legible
+// even when sharing terrain with enemy routes (solid dark backing + outward white chevrons).
 public class AllyRoadOverlay : MonoBehaviour
 {
     const string LineMaterialPath = "RouteLine";
     const string SortingLayer = "Background";
-    const int SortingOrder = 12;
-    const float DefaultHalfWidth = 0.16f;
+    const int BackingSortingOrder = 12;
+    const int BuiltSortingOrder = 13;
+    const int PreviewSortingOrder = 14;
+    const float LaneOffset = 0.14f;
+    const float BackingHalfWidth = 0.1875f;
+    const float InnerHalfWidth = 0.125f;
 
-    static readonly Color BuiltColor = new Color32(34, 35, 35, 255);
+    static readonly Color BackingColor = new Color32(34, 35, 35, 255);
+    static readonly Color BuiltColor = new Color32(240, 246, 240, 255);
     static readonly Color PreviewColor = Color.white;
     static readonly int ColorId = Shader.PropertyToID("_Color");
     static readonly int DashedId = Shader.PropertyToID("_Dashed");
+    static readonly int LengthId = Shader.PropertyToID("_Length");
+    static readonly int SpacingId = Shader.PropertyToID("_Spacing");
+    static readonly int SpeedId = Shader.PropertyToID("_Speed");
 
     public static AllyRoadOverlay Instance { get; private set; }
 
     Material lineMaterial;
+    Mesh backingMesh;
     Mesh builtMesh;
     Mesh previewMesh;
     GameObject previewObject;
     readonly List<Vector3> vertices = new List<Vector3>();
     readonly List<Vector2> uvs = new List<Vector2>();
     readonly List<int> triangles = new List<int>();
+    readonly List<Vector3> polyline = new List<Vector3>();
 
     public static AllyRoadOverlay EnsureExists()
     {
@@ -44,8 +55,9 @@ public class AllyRoadOverlay : MonoBehaviour
             return;
         }
 
-        builtMesh = CreateLayer("BuiltAllyRoads", BuiltColor, dashed: true, SortingOrder);
-        previewMesh = CreateLayer("AllyRoadPreview", PreviewColor, dashed: true, SortingOrder + 1, out previewObject);
+        backingMesh = CreateLayer("BuiltAllyRoadBacking", BackingColor, BackingSortingOrder, length: 16f, spacing: 8f);
+        builtMesh = CreateLayer("BuiltAllyRoads", BuiltColor, BuiltSortingOrder, length: 2f, spacing: 8f, speed: 6f);
+        previewMesh = CreateLayer("AllyRoadPreview", PreviewColor, PreviewSortingOrder, length: 3f, spacing: 8f, speed: 10f, out previewObject);
         previewObject.SetActive(false);
 
         AllyRoadNetwork.Changed += RebuildBuilt;
@@ -56,11 +68,12 @@ public class AllyRoadOverlay : MonoBehaviour
     {
         AllyRoadNetwork.Changed -= RebuildBuilt;
         if (Instance == this) Instance = null;
+        if (backingMesh != null) Destroy(backingMesh);
         if (builtMesh != null) Destroy(builtMesh);
         if (previewMesh != null) Destroy(previewMesh);
     }
 
-    public void ShowPreview(Vector3Int anchorCell, IReadOnlyList<Vector3Int> plannedCells, float halfWidth = DefaultHalfWidth)
+    public void ShowPreview(Vector3Int anchorCell, IReadOnlyList<Vector3Int> plannedCells, float halfWidth = InnerHalfWidth)
     {
         if (previewMesh == null || previewObject == null) return;
         if (plannedCells == null || plannedCells.Count == 0)
@@ -72,12 +85,14 @@ public class AllyRoadOverlay : MonoBehaviour
         vertices.Clear();
         uvs.Clear();
         triangles.Clear();
+        polyline.Clear();
 
-        var polyline = new List<Vector3>(plannedCells.Count + 1) { AllyRoadNetwork.CellToWorld(anchorCell) };
+        polyline.Add(AllyRoadNetwork.CellToWorld(anchorCell));
         for (int i = 0; i < plannedCells.Count; i++)
             polyline.Add(AllyRoadNetwork.CellToWorld(plannedCells[i]));
 
-        RouteGeometry.AppendStrip(polyline, halfWidth, vertices, uvs, triangles);
+        float previewHalfWidth = halfWidth > 0f ? Mathf.Min(halfWidth, InnerHalfWidth) : InnerHalfWidth;
+        RouteGeometry.AppendStrip(polyline, previewHalfWidth, LaneOffset, vertices, uvs, triangles);
         ApplyMesh(previewMesh, vertices, uvs, triangles);
         previewObject.SetActive(true);
     }
@@ -90,8 +105,14 @@ public class AllyRoadOverlay : MonoBehaviour
 
     void RebuildBuilt()
     {
-        if (builtMesh == null) return;
+        if (backingMesh == null || builtMesh == null) return;
 
+        RebuildBuiltLayer(backingMesh, BackingHalfWidth);
+        RebuildBuiltLayer(builtMesh, InnerHalfWidth);
+    }
+
+    void RebuildBuiltLayer(Mesh mesh, float halfWidth)
+    {
         vertices.Clear();
         uvs.Clear();
         triangles.Clear();
@@ -102,16 +123,17 @@ public class AllyRoadOverlay : MonoBehaviour
             var seg = segments[s];
             if (seg.Count == 0) continue;
 
-            // Connect from the nearest prior cell (bunker or earlier segment) so corners render seamlessly
+            // Connect from the nearest prior cell (bunker or earlier segment) toward the tip so chevrons point outward
             Vector3Int anchor = FindSegmentAnchor(seg[0], s);
-            var polyline = new List<Vector3>(seg.Count + 1) { AllyRoadNetwork.CellToWorld(anchor) };
+            polyline.Clear();
+            polyline.Add(AllyRoadNetwork.CellToWorld(anchor));
             for (int i = 0; i < seg.Count; i++)
                 polyline.Add(AllyRoadNetwork.CellToWorld(seg[i]));
 
-            RouteGeometry.AppendStrip(polyline, DefaultHalfWidth, vertices, uvs, triangles);
+            RouteGeometry.AppendStrip(polyline, halfWidth, LaneOffset, vertices, uvs, triangles);
         }
 
-        ApplyMesh(builtMesh, vertices, uvs, triangles);
+        ApplyMesh(mesh, vertices, uvs, triangles);
     }
 
     static Vector3Int FindSegmentAnchor(Vector3Int firstCell, int segmentIndex)
@@ -137,12 +159,12 @@ public class AllyRoadOverlay : MonoBehaviour
 
     static int Manhattan(Vector3Int a, Vector3Int b) => Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
 
-    Mesh CreateLayer(string layerName, Color color, bool dashed, int order)
+    Mesh CreateLayer(string layerName, Color color, int order, float length, float spacing, float? speed = null)
     {
-        return CreateLayer(layerName, color, dashed, order, out _);
+        return CreateLayer(layerName, color, order, length, spacing, speed, out _);
     }
 
-    Mesh CreateLayer(string layerName, Color color, bool dashed, int order, out GameObject layerObject)
+    Mesh CreateLayer(string layerName, Color color, int order, float length, float spacing, float? speed, out GameObject layerObject)
     {
         layerObject = new GameObject(layerName, typeof(MeshFilter), typeof(MeshRenderer));
         layerObject.transform.SetParent(transform, false);
@@ -157,7 +179,11 @@ public class AllyRoadOverlay : MonoBehaviour
 
         var block = new MaterialPropertyBlock();
         block.SetColor(ColorId, color);
-        block.SetFloat(DashedId, dashed ? 1f : 0f);
+        block.SetFloat(DashedId, 0f);
+        block.SetFloat(LengthId, length);
+        block.SetFloat(SpacingId, spacing);
+        if (speed.HasValue)
+            block.SetFloat(SpeedId, speed.Value);
         renderer.SetPropertyBlock(block);
         return mesh;
     }

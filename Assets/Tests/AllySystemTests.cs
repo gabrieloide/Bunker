@@ -26,6 +26,7 @@ namespace Bunker.Tests
             world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
 
             simEntity = em.CreateEntity();
+            em.AddComponent<AllyRoadTag>(simEntity);
             em.AddComponentData(simEntity, new WaveState { Phase = WavePhase.Spawning });
             em.AddComponentData(simEntity, new GameSession());
             em.AddBuffer<SimEvent>(simEntity);
@@ -191,13 +192,14 @@ namespace Bunker.Tests
             Assert.AreEqual(0, allyQuery.CalculateEntityCount(), "no card played, no ally");
 
             var requests = em.GetBuffer<AllySpawnRequest>(configEntity);
+            requests.Add(new AllySpawnRequest { TypeIndex = 0, PreferredPath = simEntity });
             requests.Add(new AllySpawnRequest { TypeIndex = 0 });
-            requests.Add(new AllySpawnRequest { TypeIndex = 7 });
+            requests.Add(new AllySpawnRequest { TypeIndex = 7, PreferredPath = simEntity });
             world.SetTime(new Unity.Core.TimeData(2.0, 0.01f));
             allySystem.Update(world.Unmanaged);
             ecbSystem.Update(world.Unmanaged);
 
-            Assert.AreEqual(1, allyQuery.CalculateEntityCount(), "one ally per valid request; out-of-roster index ignored");
+            Assert.AreEqual(1, allyQuery.CalculateEntityCount(), "one ally per valid request; unpreferred and out-of-roster requests ignored");
             Assert.AreEqual(0, em.GetBuffer<AllySpawnRequest>(configEntity).Length, "requests are consumed");
         }
     }

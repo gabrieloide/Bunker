@@ -42,6 +42,7 @@ GraphicsSettings:
   - {fileID: 4800000, guid: 49cc5455928c5f14e957ee18b643ef78, type: 3}
   - {fileID: 4800000, guid: ad31b8eb4e96aa744bc693d6d6206ca6, type: 3}
   - {fileID: 4800000, guid: b4e8c2a19d3f470681e5c9a0d2f4b6e8, type: 3}
+  - {fileID: 4800000, guid: 907b735deb9fc574bac6c9024a4dc3f1, type: 3}
   m_PreloadedShaders: []
   m_PreloadShadersBatchTimeLimit: -1
   m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
@@ -70,7 +71,7 @@ GraphicsSettings:
   m_ShaderBuildSettings:
     keywordDeclarationOverrides: []
   m_LightsUseLinearIntensity: 0
-  m_LightsUseColorTemperature: 0
+  m_LightsUseColorTemperature: 1
   m_LogWhenShaderIsCompiled: 0
   m_LightProbeOutsideHullStrategy: 0
   m_CameraRelativeLightCulling: 0

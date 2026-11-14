@@ -5,7 +5,16 @@ using UnityEngine.UIElements;
 // blocks placement and shows a monochrome notice telling the player to build a road first.
 public class AllyCard : Card
 {
-    Label noticeLabel;
+    static Label noticeLabel;
+    static IVisualElementScheduledItem hideSchedule;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        hideSchedule?.Pause();
+        hideSchedule = null;
+        noticeLabel = null;
+    }
 
     protected override void Awake()
     {
@@ -18,13 +27,6 @@ public class AllyCard : Card
         }
     }
 
-    protected override void OnDestroy()
-    {
-        HideNotice();
-        noticeLabel?.RemoveFromHierarchy();
-        base.OnDestroy();
-    }
-
     protected override bool TryGetPreviewPosition(out Vector3 position)
     {
         position = default;
@@ -34,68 +36,57 @@ public class AllyCard : Card
     protected override bool InTerritory => true;
     protected override bool HasObstacleBelow() => false;
 
-    bool HasAllyRoad => !AllyRoadNetwork.Initialized || AllyRoadNetwork.BuiltTileCount > 0;
+    bool HasAllyRoad => AllyRoadNetwork.Initialized && AllyRoadNetwork.BuiltTileCount > 0;
 
     public override bool CanPlaceNow => base.CanPlaceNow && HasAllyRoad;
 
+    protected override bool AllowPlacement()
+    {
+        if (HasAllyRoad) return true;
+        ShowNoticeOnDrop("BUILD AN ALLY ROAD FIRST");
+        return false;
+    }
+
     protected override void ShowPlacementFeedback(bool valid)
     {
-        if (!PlayableNow)
-        {
+        if (!PlayableNow || !HasAllyRoad)
             PlacementCrossIndicator.Show(PointerWorld());
-            HideNotice();
-        }
-        else if (!HasAllyRoad)
-        {
-            PlacementCrossIndicator.Show(PointerWorld());
-            ShowNotice("BUILD AN ALLY ROAD FIRST");
-        }
         else
-        {
             PlacementCrossIndicator.Hide();
-            HideNotice();
-        }
     }
 
     protected override void HidePlacementFeedback()
     {
-        HideNotice();
         base.HidePlacementFeedback();
     }
 
-    void ShowNotice(string message)
+    static void ShowNoticeOnDrop(string message)
     {
         if (GameUIPanel.Instance == null || GameUIPanel.Instance.Root == null) return;
-        if (noticeLabel == null)
+
+        var root = GameUIPanel.Instance.Root;
+        if (noticeLabel == null || noticeLabel.panel != root.panel)
         {
             noticeLabel = new Label { pickingMode = PickingMode.Ignore };
-            noticeLabel.style.position = Position.Absolute;
-            noticeLabel.style.left = 0;
-            noticeLabel.style.right = 0;
-            noticeLabel.style.bottom = 175;
-            noticeLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            noticeLabel.style.fontSize = 26;
-            noticeLabel.style.color = Color.white;
-            noticeLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            noticeLabel.style.textShadow = new TextShadow { offset = new Vector2(2, 2), blurRadius = 0, color = Color.black };
-            GameUIPanel.Instance.Root.Add(noticeLabel);
+            noticeLabel.AddToClassList("ally-road-notice");
+            root.Add(noticeLabel);
         }
+
         noticeLabel.text = message;
         noticeLabel.style.display = DisplayStyle.Flex;
-    }
+        noticeLabel.BringToFront();
 
-    void HideNotice()
-    {
-        if (noticeLabel != null)
-            noticeLabel.style.display = DisplayStyle.None;
+        hideSchedule?.Pause();
+        hideSchedule = noticeLabel.schedule.Execute(() => noticeLabel.style.display = DisplayStyle.None).StartingIn(1600);
     }
 
     protected override void CardBehaviour()
     {
-        HideNotice();
+        if (!HasAllyRoad) return;
         if (SimulationBridge.Instance != null && definition is AllyCardDefinition card)
         {
             Unity.Entities.Entity preferred = ResolvePreferredRoad();
+            if (preferred == Unity.Entities.Entity.Null) return;
             SimulationBridge.Instance.RequestAllies(card.ally, card.count, card.mix, preferred);
         }
         SoundBank.Play(Sfx.AllyDeploy);

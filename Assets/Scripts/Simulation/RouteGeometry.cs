@@ -16,6 +16,12 @@ namespace Bunker.Simulation
         // Appends a flat strip along the polyline. uv.x is the distance walked and uv.y the distance from the centre line, both in world units
         public static void AppendStrip(IReadOnlyList<Vector3> polyline, float halfWidth, List<Vector3> vertices, List<Vector2> uvs, List<int> triangles)
         {
+            AppendStrip(polyline, halfWidth, 0f, vertices, uvs, triangles);
+        }
+
+        // Appends a flat strip shifted laterally by `lateralOffset` along the segment left normal
+        public static void AppendStrip(IReadOnlyList<Vector3> polyline, float halfWidth, float lateralOffset, List<Vector3> vertices, List<Vector2> uvs, List<int> triangles)
+        {
             float walked = 0f;
             for (int i = 1; i < polyline.Count; i++)
             {
@@ -24,13 +30,15 @@ namespace Bunker.Simulation
                 if (length < 0.001f) continue;
 
                 Vector2 direction = (b - a) / length;
-                Vector2 side = new Vector2(-direction.y, direction.x) * halfWidth;
+                Vector2 perp = new Vector2(-direction.y, direction.x);
+                Vector2 shift = perp * lateralOffset;
+                Vector2 side = perp * halfWidth;
 
                 int first = vertices.Count;
-                vertices.Add(a + side);
-                vertices.Add(a - side);
-                vertices.Add(b + side);
-                vertices.Add(b - side);
+                vertices.Add(a + shift + side);
+                vertices.Add(a + shift - side);
+                vertices.Add(b + shift + side);
+                vertices.Add(b + shift - side);
                 uvs.Add(new Vector2(walked, halfWidth));
                 uvs.Add(new Vector2(walked, -halfWidth));
                 uvs.Add(new Vector2(walked + length, halfWidth));

@@ -6,9 +6,9 @@ using Unity.Transforms;
 
 namespace Bunker.Simulation
 {
-    // Sends allies out of the bunker when an ally card is played (AllySpawnRequest). The enemy routes are the only roads: allies walk them
-    // backwards, from the bunker end of a route (taking the routes that reach the bunker in turn, so the group splits like the enemies do)
-    // up through every fork to the route's start, stopping to hit any enemy in melee range, and then hit the enemy base until it falls.
+    // Sends allies out of the bunker when an ally card is played (AllySpawnRequest). Allies only spawn on and walk
+    // player-built ally roads (AllyRoadTag with at least 2 path points), stopping to hit any enemy in melee range,
+    // patrolling unfinished roads, and hitting the enemy base once a road reaches it.
     // Between waves they wait at the bunker.
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -18,9 +18,6 @@ namespace Bunker.Simulation
     {
         const float ArriveDistance = 0.01f;
 
-        EntityQuery pathQuery;
-        EntityQuery allyQuery;
-
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
@@ -28,8 +25,6 @@ namespace Bunker.Simulation
             state.RequireForUpdate<AllySpawnRequest>();
             state.RequireForUpdate<SimEvent>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
-            pathQuery = state.GetEntityQuery(ComponentType.ReadOnly<PathPoint>());
-            allyQuery = state.GetEntityQuery(ComponentType.ReadOnly<AllyTag>());
         }
 
         [BurstCompile]
@@ -44,7 +39,6 @@ namespace Bunker.Simulation
             float dt = SystemAPI.Time.DeltaTime;
 
             var pathLookup = SystemAPI.GetBufferLookup<PathPoint>(true);
-            var branchLookup = SystemAPI.GetBufferLookup<PathBranch>(true);
             var parentLookup = SystemAPI.GetBufferLookup<PathParent>(true);
             var mergeLookup = SystemAPI.GetComponentLookup<PathMergeCursor>();
             var allyRoadLookup = SystemAPI.GetComponentLookup<AllyRoadTag>(true);
@@ -56,29 +50,18 @@ namespace Bunker.Simulation
             var requests = SystemAPI.GetSingletonBuffer<AllySpawnRequest>();
             if (requests.Length > 0)
             {
-                // Routes that end at the bunker: those that don't fork further on
-                var endRoutes = new NativeList<Entity>(Allocator.Temp);
-                var pathEntities = pathQuery.ToEntityArray(Allocator.Temp);
-                foreach (var path in pathEntities)
-                    if (!allyRoadLookup.HasComponent(path) && (!branchLookup.HasBuffer(path) || branchLookup[path].Length == 0) && pathLookup[path].Length > 0)
-                        endRoutes.Add(path);
-                pathEntities.Dispose();
-
                 int typeCount = config.Roster.IsCreated ? config.Roster.Value.Types.Length : 0;
-                int turn = allyQuery.CalculateEntityCount();
                 for (int i = 0; i < requests.Length; i++)
                 {
                     if (requests[i].TypeIndex < 0 || requests[i].TypeIndex >= typeCount)
                         continue;
-                    var slotRng = Random.CreateFromIndex((uint)(SystemAPI.Time.ElapsedTime * 1000.0) + (uint)i + 1u);
                     Entity preferred = requests[i].PreferredPath;
-                    Entity route = (preferred != Entity.Null && pathLookup.HasBuffer(preferred) && pathLookup[preferred].Length > 0)
-                        ? preferred
-                        : (endRoutes.Length > 0 ? endRoutes[turn++ % endRoutes.Length] : Entity.Null);
-                    int lastIndex = route != Entity.Null ? pathLookup[route].Length - 1 : -1;
-                    SpawnAlly(requests[i].TypeIndex, route, lastIndex, slotRng.NextFloat2Direction() * math.sqrt(slotRng.NextFloat()), in config, ecb);
+                    if (preferred == Entity.Null || !allyRoadLookup.HasComponent(preferred) || !pathLookup.HasBuffer(preferred) || pathLookup[preferred].Length < 2)
+                        continue;
+                    var slotRng = Random.CreateFromIndex((uint)(SystemAPI.Time.ElapsedTime * 1000.0) + (uint)i + 1u);
+                    int lastIndex = pathLookup[preferred].Length - 1;
+                    SpawnAlly(requests[i].TypeIndex, preferred, lastIndex, slotRng.NextFloat2Direction() * math.sqrt(slotRng.NextFloat()), in config, ecb);
                 }
-                endRoutes.Dispose();
             }
             requests.Clear();
 
@@ -115,6 +98,8 @@ namespace Bunker.Simulation
                 foreach (var (transform, follower, entity) in
                          SystemAPI.Query<RefRO<LocalTransform>, RefRO<AllyPathFollower>>().WithAll<AllyTag>().WithEntityAccess())
                 {
+                    if (follower.ValueRO.PathEntity == Entity.Null || !allyRoadLookup.HasComponent(follower.ValueRO.PathEntity))
+                        continue;
                     if (!TryWaypoint(transform.ValueRO.Position, follower.ValueRO, in pathLookup, basePositions, out float3 walkerWaypoint))
                         continue;
                     walkers.Add(new Walker
@@ -191,6 +176,9 @@ namespace Bunker.Simulation
                 if (preparation)
                     continue;
 
+                if (follower.ValueRO.PathEntity == Entity.Null || !allyRoadLookup.HasComponent(follower.ValueRO.PathEntity))
+                    continue;
+
                 if (!TryWaypoint(pos, follower.ValueRO, in pathLookup, basePositions, out float3 waypoint))
                     continue;
 
@@ -218,9 +206,10 @@ namespace Bunker.Simulation
                 }
 
                 follower.ValueRW.NextIndex--;
+                bool hasParents = parentLookup.HasBuffer(pathEntity) && parentLookup[pathEntity].Length > 0;
                 // On an unfinished player-built ally road that does not reach an enemy base yet,
                 // turn around and patrol back toward the bunker instead of walking off-road across obstacles.
-                if (isCustomRoad && follower.ValueRO.NextIndex < 0)
+                if (isCustomRoad && follower.ValueRO.NextIndex < 0 && !hasParents)
                 {
                     var customPath = pathLookup[pathEntity];
                     if (customPath.Length > 0 && !IsTipNearAnyBase(customPath[0].Value.xy, basePositions, baseReaches, 3.5f))
@@ -232,7 +221,7 @@ namespace Bunker.Simulation
                 }
 
                 // Past the start of a branch: carry on backwards along a route it forked from
-                if (follower.ValueRO.NextIndex < 0 && parentLookup.HasBuffer(pathEntity) && parentLookup[pathEntity].Length > 0)
+                if (follower.ValueRO.NextIndex < 0 && hasParents)
                 {
                     var parents = parentLookup[pathEntity];
                     int parentIdx = 0;
@@ -244,7 +233,7 @@ namespace Bunker.Simulation
                         mergeLookup[pathEntity] = cursor;
                     }
                     Entity parentPath = parents[parentIdx].Path;
-                    if (pathLookup.HasBuffer(parentPath) && pathLookup[parentPath].Length > 0)
+                    if (allyRoadLookup.HasComponent(parentPath) && pathLookup.HasBuffer(parentPath) && pathLookup[parentPath].Length > 0)
                     {
                         follower.ValueRW.PathEntity = parentPath;
                         follower.ValueRW.NextIndex = pathLookup[parentPath].Length - 1;

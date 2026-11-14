@@ -88,8 +88,9 @@ public class MatchEndSequence : MonoBehaviour
             yield return Wait(explosionGap);
         }
 
-        // 4. The bunker goes dark (no ruins art yet); its smoke is already on
-        if (body != null) body.color = ruinTint;
+        // 4. Switch enemy bunker to ruins art when available; darken anything without ruins art
+        bool swappedArt = victory && target != null && target.TryGetComponent<EnemyBaseView>(out var baseView) && baseView.ApplyDestroyedVisual();
+        if (body != null && !swappedArt) body.color = ruinTint;
 
         // 5. Victory: the enemies still standing blow up one by one
         if (victory)
@@ -142,6 +143,9 @@ public class MatchEndSequence : MonoBehaviour
     // The building is its biggest sprite (not its life bar, smoke or hit effects)
     static SpriteRenderer Body(Transform target)
     {
+        if (target != null && target.TryGetComponent<EnemyBaseView>(out var baseView) && baseView.BodyRenderer != null)
+            return baseView.BodyRenderer;
+
         SpriteRenderer best = null;
         float bestArea = 0f;
         foreach (var r in target.GetComponentsInChildren<SpriteRenderer>())

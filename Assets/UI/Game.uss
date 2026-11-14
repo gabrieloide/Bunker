@@ -199,3 +199,21 @@
     -unity-text-align: middle-center;
     white-space: nowrap;
 }
+
+.ally-road-notice {
+    position: absolute;
+    left: 50%;
+    bottom: 60px;
+    translate: -50% 0;
+    margin: 0;
+    padding: 2px 6px;
+    background-color: #000000;
+    border-width: 1px;
+    border-color: #F0F6F0;
+    color: #F0F6F0;
+    -unity-font: url("project://database/Assets/Fonts/pixel_maz.ttf");
+    -unity-font-definition: initial;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}

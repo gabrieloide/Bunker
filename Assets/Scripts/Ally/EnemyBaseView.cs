@@ -19,17 +19,24 @@ public class EnemyBaseView : MonoBehaviour
 
     [Tooltip("Smoke shows at or below this fraction of life, and once destroyed")]
     [Range(0f, 1f)] [SerializeField] float smokeBelow = 0.3f;
-    BunkerSmoke smoke;
 
+    [Header("Destroyed Visual")]
+    [SerializeField] SpriteRenderer bodyRenderer;
+    [SerializeField] Sprite destroyedSprite;
+
+    BunkerSmoke smoke;
     DottedRing ring;
     bool destroyed;
+    bool destroyedVisualApplied;
 
     public bool IsDestroyed => destroyed;
+    public SpriteRenderer BodyRenderer => ResolveBodyRenderer();
 
     void Start()
     {
+        var body = ResolveBodyRenderer();
         if (lifeBar != null) lifeBar.SetValue(StartLife, StartLife);
-        smoke = new BunkerSmoke(transform, smokeBelow);
+        smoke = new BunkerSmoke(transform, smokeBelow, body);
         if (Radius > 0f)
         {
             EnemyTerritory.RegisterBase(this, transform.position, Radius);
@@ -65,5 +72,80 @@ public class EnemyBaseView : MonoBehaviour
         smoke?.SetDestroyed();
         if (destroyedParticle != null)
             OneShotEffect.EnsureFrontSorting(Instantiate(destroyedParticle, transform.position, Quaternion.identity));
+
+        var sequence = FindAnyObjectByType<MatchEndSequence>();
+        if (sequence == null || !sequence.gameObject.activeInHierarchy)
+            ApplyDestroyedVisual();
     }
+
+    /// <summary>Replaces the intact enemy base sprite with ruined art, keeping its world width.</summary>
+    public bool ApplyDestroyedVisual()
+    {
+        if (destroyedVisualApplied) return true;
+        var renderer = ResolveBodyRenderer();
+        var ruins = destroyedSprite != null ? destroyedSprite : BunkerSmoke.FallbackDestroyedBunkerSprite;
+        if (renderer == null || ruins == null) return false;
+
+        float oldWidth = renderer.bounds.size.x;
+        renderer.sprite = ruins;
+        renderer.color = Color.white;
+
+        float lossyX = Mathf.Abs(renderer.transform.lossyScale.x);
+        float newWidth = ruins.bounds.size.x * (lossyX > 0.0001f ? lossyX : 1f);
+        if (oldWidth > 0f && newWidth > 0f)
+            renderer.transform.localScale *= oldWidth / newWidth;
+
+        destroyedVisualApplied = true;
+        return true;
+    }
+
+    SpriteRenderer ResolveBodyRenderer()
+    {
+        if (bodyRenderer != null && bodyRenderer.sprite != null)
+            return bodyRenderer;
+
+        SpriteRenderer best = PickLargestSprite(GetComponentsInChildren<SpriteRenderer>());
+        if (best != null)
+        {
+            bodyRenderer = best;
+            return bodyRenderer;
+        }
+
+        float bestDistSq = 4f;
+        foreach (var candidate in FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
+        {
+            if (candidate == null || candidate.sprite == null || !candidate.enabled) continue;
+            if (IsAuxRenderer(candidate)) continue;
+            float distSq = ((Vector2)candidate.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (distSq > bestDistSq) continue;
+            if (candidate.gameObject.name.Contains("EnemyBase") || distSq < bestDistSq)
+            {
+                best = candidate;
+                bestDistSq = candidate.gameObject.name.Contains("EnemyBase") ? 0f : distSq;
+            }
+        }
+
+        if (best != null) bodyRenderer = best;
+        return bodyRenderer;
+    }
+
+    static SpriteRenderer PickLargestSprite(SpriteRenderer[] candidates)
+    {
+        SpriteRenderer best = null;
+        float bestArea = 0f;
+        foreach (var r in candidates)
+        {
+            if (r == null || r.sprite == null || !r.enabled || IsAuxRenderer(r)) continue;
+            float area = r.bounds.size.x * r.bounds.size.y;
+            if (area > bestArea) { bestArea = area; best = r; }
+        }
+        return best;
+    }
+
+    static bool IsAuxRenderer(SpriteRenderer r) =>
+        r.GetComponentInParent<PixelSmoke>() != null
+        || r.GetComponentInParent<WorldLifeBar>() != null
+        || r.GetComponentInParent<Enemy>() != null
+        || r.GetComponentInParent<AllyView>() != null
+        || r.GetComponentInParent<TurretStats>() != null;
 }
