@@ -7,18 +7,16 @@ jobs:
   acquire_alf:
     name: Acquire .alf file
     runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.3.4f1-webgl-3
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Request activation file
-        uses: game-ci/unity-request-activation-file@v2
-        id: get_alf
-        with:
-          unityVersion: 6000.3.4f1
+      - name: Generate .alf file
+        run: |
+          unity-editor -batchmode -nographics -quit -createManualActivationFile || true
+          ls -la *.alf
 
       - name: Upload .alf as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Unity-Activation-File
-          path: ${{ steps.get_alf.outputs.filePath }}
+          path: "*.alf"
