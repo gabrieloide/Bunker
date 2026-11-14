@@ -112,9 +112,20 @@ public class RetroCRTFilter : MonoBehaviour
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        if (Mat == null)
+        RenderTexture inputTex = source;
+        RenderTexture composited = null;
+        var cam = GetComponent<Camera>();
+        if (cam != null && cam.targetTexture == null && RetroCRTUIBridge.Instance != null)
         {
-            Graphics.Blit(source, destination);
+            if (RetroCRTUIBridge.Instance.TryComposite(source, out composited))
+                inputTex = composited;
+        }
+
+        if (Mat == null || !Mat.shader.isSupported)
+        {
+            Graphics.Blit(inputTex, destination);
+            if (composited != null)
+                RenderTexture.ReleaseTemporary(composited);
             return;
         }
 
@@ -134,15 +145,6 @@ public class RetroCRTFilter : MonoBehaviour
         Mat.SetFloat("_Pulse", pulse);
         Mat.SetFloat("_Glitch", danger > 0f && sinceHit < glitchTime ? 1f - sinceHit / glitchTime : 0f);
         Mat.SetFloat("_Defeat", defeat);
-
-        RenderTexture inputTex = source;
-        RenderTexture composited = null;
-        var cam = GetComponent<Camera>();
-        if (cam != null && cam.targetTexture == null && RetroCRTUIBridge.Instance != null)
-        {
-            if (RetroCRTUIBridge.Instance.TryComposite(source, out composited))
-                inputTex = composited;
-        }
 
         Graphics.Blit(inputTex, destination, Mat);
 

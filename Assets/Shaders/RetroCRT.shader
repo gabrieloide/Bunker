@@ -134,12 +134,12 @@ Shader "Hidden/RetroCRT"
                 // Phosphor Bloom / Soft Glow around bright pixels
                 if (_BloomGlow > 0.0)
                 {
-                    float2 step = _MainTex_TexelSize.xy * 1.5;
+                    float2 texelStep = _MainTex_TexelSize.xy * 1.5;
                     float3 blur = (
-                        tex2D(_MainTex, sampleUV + float2(-step.x, 0.0)).rgb +
-                        tex2D(_MainTex, sampleUV + float2( step.x, 0.0)).rgb +
-                        tex2D(_MainTex, sampleUV + float2(0.0, -step.y)).rgb +
-                        tex2D(_MainTex, sampleUV + float2(0.0,  step.y)).rgb
+                        tex2D(_MainTex, sampleUV + float2(-texelStep.x, 0.0)).rgb +
+                        tex2D(_MainTex, sampleUV + float2( texelStep.x, 0.0)).rgb +
+                        tex2D(_MainTex, sampleUV + float2(0.0, -texelStep.y)).rgb +
+                        tex2D(_MainTex, sampleUV + float2(0.0,  texelStep.y)).rgb
                     ) * 0.25;
                     col += blur * _BloomGlow;
                 }
