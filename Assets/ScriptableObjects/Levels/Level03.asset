@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea708ab0bd10e914ab09e44e8fdc1167, type: 3}
   m_Name: Level03
   m_EditorClassIdentifier: Assembly-CSharp::LevelDefinition
-  displayName: Estación Centinela-X
+  displayName: Sentinel-X Station
   description: The enemy base is fortified and your starting territory is minimal.
   sceneName: Level 3
   enemyBaseLife: 150
@@ -29,3 +29,4 @@ MonoBehaviour:
     radius: 2.5
   - position: {x: 44, y: 2}
     radius: 3
+  maxAllyRoadTiles: 12

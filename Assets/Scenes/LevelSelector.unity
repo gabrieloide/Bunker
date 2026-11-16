@@ -1500,7 +1500,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TORMENTA DE FUEGO
+  m_text: FIRESTORM
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
   m_sharedMaterial: {fileID: 9113433688832072421, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
@@ -1786,7 +1786,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ASEDIO
+  m_text: SIEGE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
   m_sharedMaterial: {fileID: 9113433688832072421, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
@@ -2058,7 +2058,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FRENTE ABIERTO
+  m_text: OPEN FRONT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
   m_sharedMaterial: {fileID: 9113433688832072421, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
@@ -2760,7 +2760,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 4036301243
+  m_SortingLayerID: -258666053
   m_SortingLayer: -1
   m_SortingOrder: -10
   m_MaskInteraction: 0
@@ -3499,7 +3499,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PRIMER CONTACTO
+  m_text: FIRST CONTACT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
   m_sharedMaterial: {fileID: 9113433688832072421, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
@@ -3786,7 +3786,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: FORTALEZA FINAL
+  m_text: FINAL FORTRESS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}
   m_sharedMaterial: {fileID: 9113433688832072421, guid: be568ee2796cdd540861a4ad1563ddf3, type: 2}

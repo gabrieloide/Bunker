@@ -15,9 +15,12 @@ public class Builder : MonoBehaviour
     [Tooltip("Walks back as this one instead, e.g. the flag bearer returns as a plain builder once the flag is planted")]
     [SerializeField] Builder returnsAs;
 
+    float activeSpeedMultiplier = 1f;
+
     // onArrive builds and returns how long the building takes
-    public void Go(Vector3 home, Vector3 site, Func<float> onArrive)
+    public void Go(Vector3 home, Vector3 site, Func<float> onArrive, float speedMultiplier = 1f)
     {
+        activeSpeedMultiplier = speedMultiplier;
         StartCoroutine(Run(home, site, onArrive));
     }
 
@@ -91,7 +94,7 @@ public class Builder : MonoBehaviour
         Face(target.x - transform.position.x);
         while ((transform.position - target).sqrMagnitude > 1e-4f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, target, speed * activeSpeedMultiplier * Time.deltaTime);
             yield return null;
         }
     }

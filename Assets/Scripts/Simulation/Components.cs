@@ -259,7 +259,6 @@ namespace Bunker.Simulation
 
     public struct WaveConfig : IComponentData
     {
-        public float StartDelay;
         public float SpawnInterval;
         public int InitialEnemyAmount;
         public int AmountIncreasePerTier;
@@ -298,5 +297,6 @@ namespace Bunker.Simulation
         public WavePhase Phase;
         public EnemyBuffKind Buff;
         public Random Rng;
+        public bool StartRequested;
     }
 }

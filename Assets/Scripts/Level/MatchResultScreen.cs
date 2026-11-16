@@ -98,6 +98,7 @@ public class MatchResultScreen : MonoBehaviour
     void End(bool victory, string title, bool offerNext)
     {
         if (sequence == null) sequence = GetComponent<MatchEndSequence>();
+        if (sequence == null) sequence = gameObject.AddComponent<MatchEndSequence>();
         if (sequence != null) sequence.Play(victory, () => Show(title, offerNext));
         else
         {

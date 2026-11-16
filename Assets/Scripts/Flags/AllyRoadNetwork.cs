@@ -102,18 +102,17 @@ public static class AllyRoadNetwork
         return true;
     }
 
-    public static List<Vector3> GetMainPolylineWorld()
+    public static List<List<Vector3>> GetLeafPolylinesWorld()
     {
-        var result = new List<Vector3>();
-        if (segments.Count == 0)
-            return result;
-
-        result.Add(CellToWorld(bunkerCell));
-        for (int s = 0; s < segments.Count; s++)
+        var leafPaths = AllyRoadPlanner.BuildLeafPaths(bunkerCell, roadCells);
+        var result = new List<List<Vector3>>(leafPaths.Count);
+        for (int p = 0; p < leafPaths.Count; p++)
         {
-            var seg = segments[s];
-            for (int i = 0; i < seg.Count; i++)
-                result.Add(CellToWorld(seg[i]));
+            var cells = leafPaths[p];
+            var worldPath = new List<Vector3>(cells.Count);
+            for (int i = 0; i < cells.Count; i++)
+                worldPath.Add(CellToWorld(cells[i]));
+            result.Add(worldPath);
         }
         return result;
     }
@@ -133,11 +132,6 @@ public static class AllyRoadNetwork
         }
 
         Vector3 world = CellToWorld(cell);
-        if (!FlagTerritory.Contains(world))
-            return false;
-        if (EnemyTerritory.Contains(world))
-            return false;
-
-        return true;
+        return AllyRoadPlanner.IsRoadTerritory(FlagTerritory.Contains(world), EnemyTerritory.Contains(world));
     }
 }

@@ -1,5 +1,5 @@
-// Air support, played during a wave: drop it on any cell (path and scenery included) and the helicopter
-// flies out of the bunker, patrols a zone around that cell shooting enemies for a while, then flies home.
+// Air support, queued during preparation and launched when the wave starts: drop it on any cell
+// (path and scenery included) and the helicopter flies out of the bunker, patrols that cell, then flies home.
 public class HelicopterCard : Card
 {
     HelicopterCardDefinition Heli => definition as HelicopterCardDefinition;
@@ -19,7 +19,6 @@ public class HelicopterCard : Card
 
     protected override void CardBehaviour()
     {
-        SpawnPlacement();
-        SoundBank.Play(Sfx.HelicopterLaunch);
+        AirSupportQueue.Enqueue(definition, DropOrigin);
     }
 }

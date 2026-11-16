@@ -14,14 +14,14 @@ public static class SetupTitleScreenCRT
         var canvasObj = GameObject.Find("Canvas");
         if (canvasObj == null)
         {
-            Debug.LogError("Canvas no encontrado en TitleScreen.unity");
+            Debug.LogError("Canvas not found in TitleScreen.unity");
             return;
         }
 
         var crtMat = AssetDatabase.LoadAssetAtPath<Material>("Assets/Shaders/CRTTurnOn.mat");
         if (crtMat == null)
         {
-            Debug.LogError("No se encontro CRTTurnOn.mat en Assets/Shaders/CRTTurnOn.mat");
+            Debug.LogError("CRTTurnOn.mat not found at Assets/Shaders/CRTTurnOn.mat");
             return;
         }
 
@@ -70,6 +70,6 @@ public static class SetupTitleScreenCRT
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("Efecto de encendido de TV CRT configurado con éxito en TitleScreen.unity.");
+        Debug.Log("CRT TV turn-on effect configured successfully in TitleScreen.unity.");
     }
 }

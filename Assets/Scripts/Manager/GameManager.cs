@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     private CardBag towerBag;
     private CardBag flagBag;
     private CardBag roadBag;
+    private CardBag supportBag;
     private int wavesCleared;
 
     private void Awake()
@@ -44,15 +45,18 @@ public class GameManager : MonoBehaviour
             Cursor.SetCursor(UIManager.instance.cursorDefault, Vector2.zero, CursorMode.Auto);
         }
 
+        // Every preparation opens by planting a flag: until then the hand only shows flag cards
+        FlagCard.BeginStep();
         if (catalog != null)
         {
             DealFlags(catalog.startingFlags);
             DealRoads(catalog.startingRoads);
             DealTowers(catalog.startingTowers);
+            DealSupport(catalog.startingSupport);
         }
+        StartingHandDealt = true;
         if (cardDrop != null && !cardDrop.HasPlayableCard)
             cardDrop.HideDeck();
-        StartingHandDealt = true;
 
         SimEventDispatcher.OnWavePhaseChanged += OnWavePhaseChanged;
         SoundBank.PlayMusic(LevelSetup.Current != null ? LevelSetup.Current.music : null);
@@ -64,7 +68,7 @@ public class GameManager : MonoBehaviour
         SoundBank.StopMusic();
     }
 
-    // Clearing a wave earns a flag to win ground back and new towers (kills only drop allies and effect cards)
+    // Clearing a wave earns a flag to win ground back, new towers, and support cards
     Bunker.Simulation.WavePhase lastPhase = Bunker.Simulation.WavePhase.WaitingToStart;
 
     void OnWavePhaseChanged(Bunker.Simulation.WavePhase phase)
@@ -79,12 +83,30 @@ public class GameManager : MonoBehaviour
             wavesCleared++;
         }
         lastPhase = phase;
-        if (phase != Bunker.Simulation.WavePhase.WaitingToStart || SimEventDispatcher.IsGameOver || catalog == null)
+        if (phase != Bunker.Simulation.WavePhase.WaitingToStart || SimEventDispatcher.IsGameOver)
             return;
-        DealFlags(catalog.flagsPerWave);
-        if (catalog.wavesPerRoad > 0 && wavesCleared > 0 && wavesCleared % catalog.wavesPerRoad == 0)
-            DealRoads(catalog.roadsPerInterval);
-        DealTowers(catalog.towersPerWave);
+
+        FlagCard.BeginStep();
+        if (catalog != null)
+        {
+            DealFlags(catalog.flagsPerWave);
+            if (catalog.wavesPerRoad > 0 && wavesCleared > 0 && wavesCleared % catalog.wavesPerRoad == 0)
+                DealRoads(catalog.roadsPerInterval);
+            DealTowers(catalog.towersPerWave);
+            DealSupport(catalog.supportPerWave);
+        }
+    }
+
+    void DealSupport(int count)
+    {
+        if (count <= 0) return;
+        if (cardDrop == null)
+            cardDrop = CardDrop.instance != null ? CardDrop.instance : FindAnyObjectByType<CardDrop>();
+        if (cardDrop == null) return;
+
+        supportBag ??= new CardBag(catalog, CardCatalog.IsSupport);
+        for (int i = 0; i < count; i++)
+            cardDrop.Deal(supportBag.Draw());
     }
 
     void DealRoads(int count)

@@ -17,8 +17,9 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     private float diametroGO;
     Camera mainCamera;
     [SerializeField] private float threshold;
-    private Vector3 MousePosition;
+    private Vector3 target;
     AirStrikeCardDefinition definition;
+    bool isShooting;
 
     public void Configure(CardDefinition card) => definition = card as AirStrikeCardDefinition;
 
@@ -28,10 +29,12 @@ public class AirAttackManager : TurretStats, ICardConfigurable
     }
     void LaunchPlane()
     {
+        target = transform.position;
         SoundBank.Play(PlaneSound);
         mainCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
-        Vector3 position = mainCamera != null ? GetPointLeftOfCamera(mainCamera, distance, diametroGO) : Vector3.zero;
-        MousePosition = PointerInput.TryGetWorldPosition(mainCamera, out Vector3 worldPos) ? worldPos : Vector3.zero;
+        Vector3 position = mainCamera != null
+            ? GetPointLeftOfCamera(mainCamera, distance, diametroGO)
+            : new Vector3(target.x - 15f, target.y, 0f);
         PlaneBehaviour(position);
     }
     public static Vector3 GetPointLeftOfCamera(Camera camera, float distance, float goDiameter)
@@ -43,24 +46,40 @@ public class AirAttackManager : TurretStats, ICardConfigurable
         var halfDiameter = goDiameter / 2f;
         return borderPoint + frustumLeft * halfDiameter;
     }
+    static float GetRightEdgeX(Camera camera, float distance, float fallbackX)
+    {
+        if (camera == null)
+            return fallbackX;
+        var ray = camera.ScreenPointToRay(new Vector3(camera.pixelWidth, camera.pixelHeight / 2f, 0));
+        return ray.GetPoint(distance).x + 2f;
+    }
     void PlaneBehaviour(Vector3 position)
     {
         GameObject newPlane = Instantiate(PlaneGO,
-            new Vector3(position.x, MousePosition.y + offsetPlaneY, transform.position.z),
+            new Vector3(position.x, target.y + offsetPlaneY, transform.position.z),
             Quaternion.identity);
 
-        newPlane.GetComponent<Rigidbody2D>().linearVelocity = new Vector2(airPlaneSpeed, 0);
+        if (newPlane.TryGetComponent<Rigidbody2D>(out var rb))
+            rb.linearVelocity = new Vector2(airPlaneSpeed, 0f);
 
-        Instantiate(ShadowPlaneGO, new Vector3(newPlane.transform.position.x, MousePosition.y, 0),
-            Quaternion.identity, newPlane.transform);
+        if (ShadowPlaneGO != null)
+        {
+            Instantiate(ShadowPlaneGO, new Vector3(newPlane.transform.position.x, target.y, 0f),
+                Quaternion.identity, newPlane.transform);
+        }
+
         StartCoroutine(checkDistance(newPlane, threshold));
+        StartCoroutine(DestroyPlaneOffscreen(newPlane));
     }
     IEnumerator checkDistance(GameObject airPlanePos, float threshold)
     {
-        while (Vector3.Distance(airPlanePos.transform.position, MousePosition) >= threshold)
-            yield return new WaitForSeconds(0.1f);
+        while (airPlanePos != null && Mathf.Abs(airPlanePos.transform.position.x - target.x) > threshold)
+            yield return null;
 
-        StartCoroutine(bulletMovement(airPlanePos));
+        if (airPlanePos == null)
+            yield break;
+
+        yield return StartCoroutine(bulletMovement(airPlanePos));
     }
     IEnumerator bulletMovement(GameObject airPlanePos)
     {
@@ -69,21 +88,49 @@ public class AirAttackManager : TurretStats, ICardConfigurable
             Debug.LogWarning($"[AirAttackManager] {name} was spawned without an AirStrikeCardDefinition; no shots fired.", this);
             yield break;
         }
-        for (int i = 0; i < definition.shotCount; i++)
+        isShooting = true;
+        try
         {
-            Shoot(airPlanePos);
-            yield return new WaitForSeconds(definition.shotInterval);
+            for (int i = 0; i < definition.shotCount; i++)
+            {
+                if (airPlanePos == null)
+                    yield break;
+                Shoot(airPlanePos);
+                yield return new WaitForSeconds(definition.shotInterval);
+            }
         }
+        finally
+        {
+            isShooting = false;
+        }
+    }
+    IEnumerator DestroyPlaneOffscreen(GameObject airPlanePos)
+    {
+        while (airPlanePos != null)
+        {
+            float rightEdgeX = GetRightEdgeX(mainCamera, distance, target.x + 20f);
+            if (airPlanePos.transform.position.x > rightEdgeX)
+            {
+                Destroy(airPlanePos);
+                break;
+            }
+            yield return null;
+        }
+        while (isShooting)
+            yield return null;
+        Destroy(gameObject);
     }
     void Shoot(GameObject airPlanePos)
     {
+        if (airPlanePos == null)
+            return;
+
         SoundBank.Play(PlaneShoot);
         if (SimulationBridge.Instance == null)
             return;
 
         Vector3 origin = airPlanePos.transform.position;
-        Vector3 fireDirection = new Vector3(1f, -1f, 0f).normalized;
-        Vector3 aimPoint = origin + fireDirection * 15f;
+        Vector3 aimPoint = new Vector3(origin.x, target.y, 0f);
         SimulationBridge.Instance.SpawnTowerProjectile(origin, aimPoint, definition.damage, definition.bulletPen);
     }
 }

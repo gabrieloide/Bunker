@@ -254,7 +254,7 @@ public static class RouteAuthoringUtility
 
             var oldBranches = route.branches;
 
-            var branchA = CreateChildRouteObject(route.name + "_RamaA", parentTransform, PickPaletteColor(existingRoutes), branchAPoints, route.flagRadius, route.bunkerRadius);
+            var branchA = CreateChildRouteObject(route.name + "_BranchA", parentTransform, PickPaletteColor(existingRoutes), branchAPoints, route.flagRadius, route.bunkerRadius);
             branchA.verticalFirst = route.verticalFirst;
             branchA.branches = oldBranches ?? new EnemyMovement[0];
 
@@ -265,7 +265,7 @@ public static class RouteAuthoringUtility
                 Vector3 side = Mathf.Abs(dirA.x) >= Mathf.Abs(dirA.y) ? Vector3.down * 2f : Vector3.left * 2f;
                 branchBStart = Snap(forkPos + side);
             }
-            var branchB = CreateChildRouteObject(route.name + "_RamaB", parentTransform, PickPaletteColor(existingRoutes + 1), new[] { branchBStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
+            var branchB = CreateChildRouteObject(route.name + "_BranchB", parentTransform, PickPaletteColor(existingRoutes + 1), new[] { branchBStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
 
             route.points = trunkPoints;
             route.branches = new[] { branchA, branchB };
@@ -281,7 +281,7 @@ public static class RouteAuthoringUtility
         if (route.Forks)
         {
             // Already forks here: add one more branch
-            var branchExtra = CreateChildRouteObject(route.name + "_Rama" + (route.branches.Length + 1), parentTransform, PickPaletteColor(existingRoutes), new[] { branchBStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
+            var branchExtra = CreateChildRouteObject(route.name + "_Branch" + (route.branches.Length + 1), parentTransform, PickPaletteColor(existingRoutes), new[] { branchBStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
             var list = new List<EnemyMovement>(route.branches) { branchExtra };
             route.branches = list.ToArray();
             EditorUtility.SetDirty(route);
@@ -292,8 +292,8 @@ public static class RouteAuthoringUtility
         else
         {
             Vector3 branchAStart = Snap(forkPos - perp);
-            var branchA = CreateChildRouteObject(route.name + "_RamaA", parentTransform, PickPaletteColor(existingRoutes), new[] { branchAStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
-            var branchB = CreateChildRouteObject(route.name + "_RamaB", parentTransform, PickPaletteColor(existingRoutes + 1), new[] { branchBStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
+            var branchA = CreateChildRouteObject(route.name + "_BranchA", parentTransform, PickPaletteColor(existingRoutes), new[] { branchAStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
+            var branchB = CreateChildRouteObject(route.name + "_BranchB", parentTransform, PickPaletteColor(existingRoutes + 1), new[] { branchBStart, branchBEnd }, route.flagRadius, route.bunkerRadius);
             route.branches = new[] { branchA, branchB };
             EditorUtility.SetDirty(route);
             Undo.CollapseUndoOperations(undoGroup);
@@ -326,7 +326,7 @@ public static class RouteAuthoringUtility
             for (int i = 0; i < tailPoints.Length; i++) tailPoints[i] = targetRoute.points[targetFlagIndex + i];
 
             int count = Object.FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None).Length;
-            var sharedTail = CreateChildRouteObject(targetRoute.name + "_Union", targetRoute.transform.parent, PickPaletteColor(count), tailPoints, targetRoute.flagRadius, targetRoute.bunkerRadius);
+            var sharedTail = CreateChildRouteObject(targetRoute.name + "_Merge", targetRoute.transform.parent, PickPaletteColor(count), tailPoints, targetRoute.flagRadius, targetRoute.bunkerRadius);
             sharedTail.verticalFirst = targetRoute.verticalFirst;
             sharedTail.branches = targetRoute.branches ?? new EnemyMovement[0];
 
@@ -362,7 +362,7 @@ public static class RouteAuthoringUtility
         int undoGroup = Undo.GetCurrentGroup();
         Undo.SetCurrentGroupName("Create new spawner and route");
 
-        var frontGo = new GameObject($"Frente_{index}");
+        var frontGo = new GameObject($"Front_{index}");
         Undo.RegisterCreatedObjectUndo(frontGo, "Create new spawner and route");
         if (parent != null) frontGo.transform.SetParent(parent, false);
         frontGo.transform.position = Vector3.zero;
@@ -395,7 +395,7 @@ public static class RouteAuthoringUtility
         Vector3 snapped = Snap(new Vector3(worldPos.x, worldPos.y, 0f));
         if (existing == null)
         {
-            Debug.LogWarning("No hay ninguna EnemyBaseView existente en la escena para clonar.");
+            Debug.LogWarning("No existing EnemyBaseView found in the scene to clone.");
             return null;
         }
         var copy = Object.Instantiate(existing, snapped, Quaternion.identity, existing.transform.parent);
@@ -452,14 +452,14 @@ public static class RouteAuthoringUtility
         var grid = Object.FindAnyObjectByType<Grid>();
         if (grid == null)
         {
-            message = "No se encontró ningún Grid en la escena.";
+            message = "No Grid found in the scene.";
             return false;
         }
 
         var pathTm = grid.transform.Find("Path")?.GetComponent<Tilemap>();
         if (pathTm == null)
         {
-            message = "No se encontró el Tilemap llamado 'Path' dentro de Grid.";
+            message = "No Tilemap named 'Path' found inside Grid.";
             return false;
         }
 
@@ -469,7 +469,7 @@ public static class RouteAuthoringUtility
 
         if (roadTiles[0] == null || roadTiles[1] == null || roadTiles[8] == null)
         {
-            message = "No se encontraron los tiles de carretera (Assets/Tiles/Map_0..Map_9).";
+            message = "Road tiles not found (Assets/Tiles/Map_0..Map_9).";
             return false;
         }
 
@@ -495,7 +495,7 @@ public static class RouteAuthoringUtility
 
         if (roadCells.Count == 0)
         {
-            message = "No hay celdas de ruta para pintar.";
+            message = "No route cells to paint.";
             return false;
         }
 
@@ -550,7 +550,7 @@ public static class RouteAuthoringUtility
 
         pathTm.RefreshAllTiles();
         EditorUtility.SetDirty(pathTm);
-        message = $"Carretera pintada en Tilemap 'Path' ({roadCells.Count} celdas).";
+        message = $"Road painted on 'Path' Tilemap ({roadCells.Count} cells).";
         return true;
     }
 }

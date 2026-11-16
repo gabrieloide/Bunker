@@ -15,6 +15,7 @@ public class MatchEndSequence : MonoBehaviour
     [SerializeField] float explosionGap = 0.15f;
     [SerializeField] float enemyGap = 0.08f;
     [SerializeField] float holdBeforePanel = 0.5f;
+    [SerializeField] float skipGrace = 0.6f;
 
     [Header("Defeat")]
     [Tooltip("Every wait of the sequence is this many times longer when the player's bunker falls")]
@@ -33,6 +34,7 @@ public class MatchEndSequence : MonoBehaviour
     Action onFinished;
     bool skipped;
     float stretch = 1f;
+    float startedAt;
 
     public bool Running { get; private set; }
 
@@ -42,13 +44,14 @@ public class MatchEndSequence : MonoBehaviour
         onFinished = finished;
         Running = true;
         skipped = false;
+        startedAt = Time.unscaledTime;
         stretch = victory ? 1f : defeatStretch;
         StartCoroutine(Run(victory));
     }
 
     void Update()
     {
-        if (Running && !skipped && BunkerInput.SkipWasPressedThisFrame)
+        if (Running && !skipped && Time.unscaledTime >= startedAt + skipGrace && BunkerInput.SkipWasPressedThisFrame)
             skipped = true;
     }
 
@@ -57,6 +60,12 @@ public class MatchEndSequence : MonoBehaviour
         // Escape would unfreeze the game underneath
         var pause = FindAnyObjectByType<PauseMenu>();
         if (pause != null) pause.enabled = false;
+
+        if (explosionPrefab == null)
+        {
+            var e = FindAnyObjectByType<Enemy>(FindObjectsInactive.Include);
+            if (e != null) explosionPrefab = e.ExplosionParticle;
+        }
 
         Transform target = victory ? FindDestroyedEnemyBase() : (TowerPlayer.instance != null ? TowerPlayer.instance.transform : null);
         SpriteRenderer body = target != null ? Body(target) : null;
@@ -68,8 +77,9 @@ public class MatchEndSequence : MonoBehaviour
 
         // 2. Slow motion, the camera travels to the fallen bunker
         Time.timeScale = slowMotion;
-        if (target != null && CameraMovement.instance != null)
-            CameraMovement.instance.Focus(target.position, cameraTravel * stretch);
+        var cam = CameraMovement.instance != null ? CameraMovement.instance : FindAnyObjectByType<CameraMovement>();
+        if (target != null && cam != null)
+            cam.Focus(target.position, cameraTravel * stretch);
         yield return Wait(cameraTravel * 0.5f);
 
         // 3. Chain of explosions across the bunker

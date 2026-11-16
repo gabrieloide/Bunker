@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("Level Configuration")]
-    [Tooltip("0 = Nivel 1, 1 = Nivel 2, etc.")]
+    [Tooltip("0 = Level 1, 1 = Level 2, etc.")]
     public int levelIndex;
     public LevelDefinition levelDefinition;
 
@@ -109,7 +109,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         isUnlocked = LevelProgress.IsUnlocked(levelIndex) && !pendingRevealLock;
         isCompleted = LevelProgress.IsCompleted(levelIndex);
 
-        // 1. Sprite: si está completado (ganado), cambiar a destroyedSprite
+        // 1. Sprite: if completed (won), switch to destroyedSprite
         if (isCompleted && destroyedSprite != null)
         {
             turretRenderer.sprite = destroyedSprite;
@@ -185,7 +185,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (isUnlocked)
         {
             SoundBank.Play(Sfx.InfoBox);
-            // Escala más grande para dar la sensación de selección
+            // Scale up to give a selection feel
             LeanTween.cancel(turretTransform.gameObject);
             LeanTween.scale(turretTransform.gameObject, initialScale * hoverScaleMultiplier, tweenDuration)
                 .setEaseOutBack();
@@ -198,7 +198,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
         else
         {
-            // Pequeña sacudida si está bloqueado
+            // Slight shake if locked
             LeanTween.cancel(turretTransform.gameObject);
             LeanTween.rotateZ(turretTransform.gameObject, 6f, 0.08f)
                 .setEasePunch()
@@ -238,7 +238,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (!isUnlocked)
         {
-            // Feedback de bloqueo
+            // Locked feedback
             LeanTween.cancel(turretTransform.gameObject);
             LeanTween.rotateZ(turretTransform.gameObject, 10f, 0.15f)
                 .setEasePunch()
@@ -247,7 +247,7 @@ public class WorldLevelNode : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
 
         SoundBank.Play(Sfx.CardPlace);
-        // Efecto punch de confirmación al hacer click
+        // Confirmation punch effect on click
         LeanTween.cancel(turretTransform.gameObject);
         LeanTween.scale(turretTransform.gameObject, initialScale * (hoverScaleMultiplier * 1.1f), 0.1f)
             .setEaseOutQuad()

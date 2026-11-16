@@ -58,13 +58,42 @@ public class FlagCard : Card
     }
 
     protected override float PlacedRange => Radius;
-    protected override bool BuiltBySoldier => true;
-    protected override bool CarriesFlag => true;
     protected override bool SnapsToGrid => true;
+
+    // The flag step: every preparation opens by planting a flag. Until one is planted only flag cards
+    // are shown and playable; the rest wait hidden in the hand (see HandLayout, Card.PlayableNow).
+    static bool awaitingPlant;
+
+    // Raised when the planted flag ends the flag step
+    public static event System.Action StepCompleted;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        awaitingPlant = false;
+        StepCompleted = null;
+    }
+
+    public static void BeginStep() => awaitingPlant = true;
+
+    // Only while a flag card can actually be reached (hand or draw pile): trashing it must not lock the hand
+    public static bool StepActive => awaitingPlant && SimulationBridge.IsPreparationPhase && !SimEventDispatcher.IsGameOver && FlagAvailable();
+
+    public static bool Allows(CardDefinition card) => !StepActive || card is FlagCardDefinition;
+
+    static bool FlagAvailable()
+    {
+        var hand = Deck.instance != null ? Deck.instance.Hand : null;
+        if (hand != null && hand.HasCard<FlagCardDefinition>()) return true;
+        return CardDrop.instance != null && CardDrop.instance.cardsQueue.Exists(c => c is FlagCardDefinition);
+    }
 
     protected override void CardBehaviour()
     {
-        SpawnPlacement();
+        bool planted = SpawnPlacement() != null;
         SoundBank.Play(Sfx.FlagPlant);
+        if (!planted || !awaitingPlant) return;
+        awaitingPlant = false;
+        StepCompleted?.Invoke();
     }
 }

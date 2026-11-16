@@ -58,8 +58,40 @@ public class UIManager : MonoBehaviour
     private const float LifebarShakeMaxOffset = 1.75f;
 
     private ChangeCardText cardPanel;
-    private Label waveText, scoreText, towerCountText;
+    private Label waveText, scoreText, towerCountText, messageLabel;
+    private Button readyButton;
     private VisualElement lifebarElement, lifeTrack, lifeFill;
+
+    private enum BannerState
+    {
+        Hidden,
+        Opening,
+        Typing,
+        Holding,
+        Closing
+    }
+
+    private bool readyVisible;
+    // Each preparation starts by planting a flag (FlagCard.StepActive): PLACE YOUR FLAG, then the deploy banner
+    private bool flagPromptShown;
+    private int flagPromptStableFrames;
+    private const string DeployBannerText = "DEPLOY YOUR ARMY";
+    private BannerState bannerState = BannerState.Hidden;
+    private string bannerText;
+    private int bannerRevealedCount;
+    private float bannerStateTimer;
+    private float bannerCharTimer;
+    private float bannerBlinkTimer;
+    private int bannerBlinkToggles;
+    private bool bannerCursorOn;
+    private float bannerHoldDuration;
+    private const float BannerOpenDuration = 0.15f;
+    private const float BannerCloseDuration = 0.12f;
+    private const float MinLineScale = 0.04f;
+    private const float BannerCharInterval = 0.035f;
+    private const float BannerBlinkInterval = 0.15f;
+    private const int BannerBlinkCount = 3;
+    private Bunker.Simulation.WavePhase lastObservedPhase = Bunker.Simulation.WavePhase.WaitingToStart;
 
     private class ActiveDamageChunk
     {
@@ -101,10 +133,39 @@ public class UIManager : MonoBehaviour
             scoreText = root.Q<Label>("score");
             waveText = root.Q<Label>("wave");
             towerCountText = root.Q<Label>("towers");
+            messageLabel = root.Q<Label>("hud-message");
+            readyButton = root.Q<Button>("ready");
             lifebarElement = root.Q("lifebar");
             lifeTrack = root.Q("lifebar-track") ?? lifebarElement;
             lifeFill = root.Q("life-fill");
         }
+
+        if (readyButton != null)
+        {
+            readyButton.clicked += OnReadyClicked;
+            readyButton.AddToClassList("hidden");
+            readyButton.SetEnabled(false);
+        }
+        if (messageLabel != null)
+        {
+            messageLabel.enableRichText = true;
+            messageLabel.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
+            messageLabel.style.scale = new Scale(Vector2.one);
+            messageLabel.AddToClassList("hidden");
+        }
+        readyVisible = false;
+        flagPromptShown = false;
+        flagPromptStableFrames = 0;
+        bannerState = BannerState.Hidden;
+        bannerText = null;
+        bannerRevealedCount = 0;
+        bannerStateTimer = 0f;
+        bannerCharTimer = 0f;
+        bannerBlinkTimer = 0f;
+        bannerBlinkToggles = 0;
+        bannerCursorOn = false;
+        bannerHoldDuration = 0f;
+        lastObservedPhase = SimEventDispatcher.CurrentPhase;
 
         lifeInitialized = false;
         lastLife = -1f;
@@ -115,18 +176,25 @@ public class UIManager : MonoBehaviour
 
         SimEventDispatcher.OnScoreChanged += SetScore;
         SimEventDispatcher.OnWaveChanged += SetWave;
+        SimEventDispatcher.OnWavePhaseChanged += OnWavePhaseChanged;
         SimEventDispatcher.OnPlayerHit += OnPlayerHit;
         SimEventDispatcher.OnBunkerHealed += OnBunkerHealed;
+        FlagCard.StepCompleted += OnFlagPlanted;
         TowerLimits.Changed += UpdateTowerCount;
         UpdateTowerCount();
     }
 
     private void OnDisable()
     {
+        if (readyButton != null)
+            readyButton.clicked -= OnReadyClicked;
+
         SimEventDispatcher.OnScoreChanged -= SetScore;
         SimEventDispatcher.OnWaveChanged -= SetWave;
+        SimEventDispatcher.OnWavePhaseChanged -= OnWavePhaseChanged;
         SimEventDispatcher.OnPlayerHit -= OnPlayerHit;
         SimEventDispatcher.OnBunkerHealed -= OnBunkerHealed;
+        FlagCard.StepCompleted -= OnFlagPlanted;
         TowerLimits.Changed -= UpdateTowerCount;
 
         ClearDamageChunks();
@@ -259,18 +327,29 @@ public class UIManager : MonoBehaviour
 
     private void SetWave(int newWave, Bunker.Simulation.EnemyBuffKind buff)
     {
-        if (waveText != null && !SimulationBridge.IsPreparationPhase)
+        if (waveText == null) return;
+
+        if (SimulationBridge.IsPreparationPhase)
         {
-            if (newWave != lastWave || wasPrepPhase)
+            if (!wasPrepPhase || newWave != lastWave)
             {
-                bool isIncrease = lastWave > 0 && newWave > lastWave;
+                wasPrepPhase = true;
                 lastWave = newWave;
-                wasPrepPhase = false;
+                lastPrepSeconds = -1;
                 waveText.text = $"WAVE\n{newWave:000000}";
-                if (isIncrease)
-                {
-                    CameraShake.MicroShake();
-                }
+            }
+            return;
+        }
+
+        if (newWave != lastWave || wasPrepPhase)
+        {
+            bool isIncrease = lastWave > 0 && newWave > lastWave;
+            lastWave = newWave;
+            wasPrepPhase = false;
+            waveText.text = $"WAVE\n{newWave:000000}";
+            if (isIncrease)
+            {
+                CameraShake.MicroShake();
             }
         }
     }
@@ -278,8 +357,7 @@ public class UIManager : MonoBehaviour
     // Seconds until the wave's first enemy reaches the player's flags once the wave has started; < 0 when it already has
     float arrivalLeft = -1f;
 
-    // Two countdowns back to back: PREP counts the real building time (towers can only be placed then), and once the wave
-    // starts WAVE counts down the enemies' walk, hitting zero as the first of them enters the player's flags
+    // Preparation shows the wave number with no countdown; once the wave starts, WAVE counts down the enemies' walk
     private void UpdateWaveDisplay()
     {
         if (waveText == null) return;
@@ -289,12 +367,13 @@ public class UIManager : MonoBehaviour
         if (SimulationBridge.IsPreparationPhase)
         {
             arrivalLeft = walk;
-            int secondsLeft = Mathf.CeilToInt(SimEventDispatcher.PhaseTimer);
-            if (!wasPrepPhase || secondsLeft != lastPrepSeconds)
+            int wave = SimEventDispatcher.Wave;
+            if (!wasPrepPhase || wave != lastWave)
             {
                 wasPrepPhase = true;
-                lastPrepSeconds = secondsLeft;
-                waveText.text = $"PREP\n{secondsLeft:00}s";
+                lastWave = wave;
+                lastPrepSeconds = -1;
+                waveText.text = $"WAVE\n{wave:000000}";
             }
             return;
         }
@@ -534,10 +613,242 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void OnReadyClicked()
+    {
+        if (!SimulationBridge.IsPreparationPhase || !FlagTerritory.HasTerritory || SimEventDispatcher.IsGameOver)
+            return;
+        if (!SimulationBridge.RequestWaveStart()) return;
+        SetReadyButtonVisible(false);
+        SoundBank.Play(Sfx.UiClick);
+    }
+
+    private void OnWavePhaseChanged(Bunker.Simulation.WavePhase phase)
+    {
+        if (phase == lastObservedPhase) return;
+
+        if (phase == Bunker.Simulation.WavePhase.Spawning && lastObservedPhase == Bunker.Simulation.WavePhase.WaitingToStart)
+        {
+            ShowBanner("BATTLE!");
+        }
+        lastObservedPhase = phase;
+    }
+
+    private void OnFlagPlanted()
+    {
+        ShowBanner(DeployBannerText);
+    }
+
+    public const float MaxBannerDelta = 1f / 30f;
+    public const float StableFrameThreshold = 0.1f;
+    public const int FlagPromptStableFramesRequired = 10;
+
+    public static bool ShouldPromptFlag(bool simReady, bool transitioning, bool prepPhase, bool gameOver, bool flagPlanted)
+        => simReady && !transitioning && prepPhase && !gameOver && !flagPlanted;
+
+    public static float ClampBannerDelta(float dt) => Mathf.Clamp(dt, 0f, MaxBannerDelta);
+
+    public static int NextStableFrameCount(int current, bool conditionMet, float dt)
+        => (!conditionMet || dt > StableFrameThreshold) ? 0 : current + 1;
+
+    public static bool ShouldStartFlagBanner(bool needFlag, bool alreadyShown, int stableFrames)
+        => needFlag && !alreadyShown && stableFrames >= FlagPromptStableFramesRequired;
+
+    public static float BannerOpenScale(float t, float duration)
+    {
+        float x = duration > 0f ? Mathf.Clamp01(t / duration) : 1f;
+        float inv = 1f - x;
+        float eased = 1f - inv * inv * inv;
+        return Mathf.Lerp(MinLineScale, 1f, eased);
+    }
+
+    /// <summary>
+    /// Shows a centered 1-bit CRT banner with smooth vertical open/close and typewriter reveal.
+    /// </summary>
+    public void ShowBanner(string text, float hold = 1.2f)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            HideBanner();
+            return;
+        }
+
+        bannerText = text;
+        bannerHoldDuration = Mathf.Max(0f, hold);
+        bannerRevealedCount = 0;
+        bannerStateTimer = 0f;
+        bannerCharTimer = 0f;
+        bannerBlinkTimer = 0f;
+        bannerBlinkToggles = 0;
+        bannerCursorOn = true;
+        bannerState = BannerState.Opening;
+
+        if (messageLabel == null) return;
+
+        messageLabel.enableRichText = true;
+        messageLabel.RemoveFromClassList("hidden");
+        messageLabel.style.scale = new Scale(new Vector2(1f, MinLineScale));
+        UpdateBannerLabelText();
+    }
+
+    private void HideBanner()
+    {
+        if (bannerState == BannerState.Hidden || bannerState == BannerState.Closing) return;
+
+        bannerState = BannerState.Closing;
+        bannerStateTimer = 0f;
+    }
+
+    private void UpdateBannerLabelText()
+    {
+        if (messageLabel == null || string.IsNullOrEmpty(bannerText)) return;
+
+        int revealed = Mathf.Clamp(bannerRevealedCount, 0, bannerText.Length);
+        string revealedPart = bannerText.Substring(0, revealed);
+        string cursorPart = bannerCursorOn ? "█" : "<alpha=#00>█</alpha>";
+        string unrevealedPart = revealed < bannerText.Length
+            ? $"<alpha=#00>{bannerText.Substring(revealed)}</alpha>"
+            : string.Empty;
+
+        messageLabel.text = revealedPart + cursorPart + unrevealedPart;
+    }
+
+    private void UpdateBanner(float dt)
+    {
+        if (bannerState == BannerState.Hidden) return;
+
+        switch (bannerState)
+        {
+            case BannerState.Opening:
+            {
+                bannerStateTimer += dt;
+                if (bannerStateTimer >= BannerOpenDuration)
+                {
+                    if (messageLabel != null)
+                        messageLabel.style.scale = new Scale(Vector2.one);
+                    bannerState = BannerState.Typing;
+                    bannerStateTimer = 0f;
+                    bannerCharTimer = 0f;
+                }
+                else if (messageLabel != null)
+                {
+                    float sy = BannerOpenScale(bannerStateTimer, BannerOpenDuration);
+                    messageLabel.style.scale = new Scale(new Vector2(1f, sy));
+                }
+                break;
+            }
+            case BannerState.Typing:
+            {
+                bannerCharTimer += dt;
+                while (bannerCharTimer >= BannerCharInterval && bannerRevealedCount < bannerText.Length)
+                {
+                    bannerCharTimer -= BannerCharInterval;
+                    bannerRevealedCount++;
+                    if (bannerRevealedCount % 2 == 1)
+                        SoundBank.Play(Sfx.UiHover);
+                    UpdateBannerLabelText();
+                }
+
+                if (bannerRevealedCount >= bannerText.Length)
+                {
+                    bannerState = BannerState.Holding;
+                    bannerStateTimer = 0f;
+                    bannerBlinkTimer = 0f;
+                    bannerBlinkToggles = 0;
+                    bannerCursorOn = false;
+                    UpdateBannerLabelText();
+                }
+                break;
+            }
+            case BannerState.Holding:
+            {
+                bannerStateTimer += dt;
+                if (bannerBlinkToggles < BannerBlinkCount * 2)
+                {
+                    bannerBlinkTimer += dt;
+                    if (bannerBlinkTimer >= BannerBlinkInterval)
+                    {
+                        bannerBlinkTimer -= BannerBlinkInterval;
+                        bannerBlinkToggles++;
+                        bannerCursorOn = (bannerBlinkToggles % 2 == 1);
+                        UpdateBannerLabelText();
+                    }
+                }
+
+                if (bannerBlinkToggles >= BannerBlinkCount * 2 && bannerStateTimer >= bannerHoldDuration)
+                {
+                    HideBanner();
+                }
+                break;
+            }
+            case BannerState.Closing:
+            {
+                bannerStateTimer += dt;
+                if (bannerStateTimer >= BannerCloseDuration)
+                {
+                    bannerState = BannerState.Hidden;
+                    if (messageLabel != null)
+                    {
+                        messageLabel.style.scale = new Scale(Vector2.one);
+                        messageLabel.AddToClassList("hidden");
+                    }
+                }
+                else if (messageLabel != null)
+                {
+                    float sy = BannerOpenScale(BannerCloseDuration - bannerStateTimer, BannerCloseDuration);
+                    messageLabel.style.scale = new Scale(new Vector2(1f, sy));
+                }
+                break;
+            }
+        }
+    }
+
+    private void SetReadyButtonVisible(bool visible)
+    {
+        if (readyButton == null || readyVisible == visible) return;
+
+        readyVisible = visible;
+        readyButton.SetEnabled(visible);
+        if (visible)
+            readyButton.RemoveFromClassList("hidden");
+        else
+            readyButton.AddToClassList("hidden");
+    }
+
+    private void UpdatePreparationHud()
+    {
+        var currentPhase = SimEventDispatcher.CurrentPhase;
+        if (currentPhase != lastObservedPhase)
+            OnWavePhaseChanged(currentPhase);
+
+        float rawDt = Time.unscaledDeltaTime;
+        bool needFlag = ShouldPromptFlag(
+            SimulationBridge.IsSimulationReady,
+            CRTTransition.IsTransitioning,
+            SimEventDispatcher.IsPreparationPhase,
+            SimEventDispatcher.IsGameOver,
+            !FlagCard.StepActive);
+
+        flagPromptStableFrames = NextStableFrameCount(flagPromptStableFrames, needFlag, rawDt);
+        if (ShouldStartFlagBanner(needFlag, flagPromptShown, flagPromptStableFrames))
+        {
+            ShowBanner("PLACE YOUR FLAG", 1.5f);
+            flagPromptShown = true;
+        }
+        if (!needFlag)
+            flagPromptShown = false;
+
+        UpdateBanner(ClampBannerDelta(rawDt));
+
+        bool prep = SimulationBridge.IsPreparationPhase && !SimEventDispatcher.IsGameOver;
+        bool showReady = prep && FlagTerritory.HasTerritory && !SimulationBridge.WaveStartPending;
+        SetReadyButtonVisible(showReady);
+    }
+
     void Update()
     {
         showTowerSlotAnimation();
         ShowDeck();
+        UpdatePreparationHud();
         UpdateWaveDisplay();
         UpdateScoreRoll();
         UpdateLife();

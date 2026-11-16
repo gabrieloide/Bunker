@@ -49,17 +49,11 @@ public abstract class Card : MonoBehaviour
 
     public static int PendingResolveCount { get; private set; }
 
-    // Towers are built between waves; allies and air support only act while a wave is on; everything else
-    // plays any time. The hand hides cards that can't be played now and the draw pile holds them back.
-    public static bool PlayableIn(CardDefinition card, bool preparation) => card switch
-    {
-        TowerCardDefinition => preparation,
-        RoadCardDefinition => preparation,
-        HelicopterCardDefinition => !preparation,
-        _ => true
-    };
+    // All cards are playable only in preparation; battle is watch-only.
+    // The hand slides down during battle and the draw pile holds cards back.
+    public static bool PlayableIn(CardDefinition card, bool preparation) => preparation;
 
-    public bool PlayableNow => PlayableIn(definition, SimulationBridge.IsPreparationPhase);
+    public bool PlayableNow => PlayableIn(definition, SimulationBridge.IsPreparationPhase) && FlagCard.Allows(definition);
 
     public static void ResetPendingResolveCount() => PendingResolveCount = 0;
 
@@ -108,6 +102,8 @@ public abstract class Card : MonoBehaviour
     // Captured on drop: placement resolves after the flip animation, when the pointer may have moved
     Vector3 dropOrigin;
     Vector3Int dropCell;
+
+    protected Vector3 DropOrigin => dropOrigin;
 
     protected GameObject SpawnPlacement()
     {
@@ -215,6 +211,20 @@ public abstract class Card : MonoBehaviour
     // button ends the drag anyway; when the PointerUp does arrive it finds nothing left to do.
     void Update()
     {
+        if (!PlayableNow)
+        {
+            if (pressed)
+            {
+                pressed = false;
+                if (activePointerId >= 0 && view.HasPointerCapture(activePointerId))
+                    view.ReleasePointer(activePointerId);
+                activePointerId = -1;
+            }
+            if (isDragging)
+                CancelDrag();
+            return;
+        }
+
         if (!pressed || PointerInput.IsPressed) return;
         pressed = false;
         if (activePointerId >= 0 && view.HasPointerCapture(activePointerId))
@@ -272,6 +282,11 @@ public abstract class Card : MonoBehaviour
 
     public void CancelDrag()
     {
+        pressed = false;
+        if (activePointerId >= 0 && view != null && view.HasPointerCapture(activePointerId))
+            view.ReleasePointer(activePointerId);
+        activePointerId = -1;
+
         if (!isDragging) return;
         isDragging = false;
 
@@ -297,7 +312,7 @@ public abstract class Card : MonoBehaviour
 
     void OnPointerEnter()
     {
-        if (isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
+        if (!PlayableNow || isDragging || (GameManager.instance != null && GameManager.instance.onDrag))
             return;
 
         ElevateCard();
@@ -386,6 +401,7 @@ public abstract class Card : MonoBehaviour
 
     void OnPointerDown(PointerDownEvent evt)
     {
+        if (!PlayableNow) return;
         if (evt.button == 1)
         {
             if (UIManager.instance != null && definition != null && GameManager.instance != null && !GameManager.instance.onDrag)
@@ -405,6 +421,11 @@ public abstract class Card : MonoBehaviour
     void OnPointerMove(PointerMoveEvent evt)
     {
         if (!pressed || evt.pointerId != activePointerId) return;
+        if (!PlayableNow)
+        {
+            CancelDrag();
+            return;
+        }
         if (!isDragging && Vector2.Distance(evt.position, pressPosition) > BeginDragDistance)
             OnBeginDrag();
         if (isDragging)
@@ -428,6 +449,7 @@ public abstract class Card : MonoBehaviour
 
     void OnBeginDrag()
     {
+        if (!PlayableNow) return;
         isDragging = true;
         hovered = false;
         Vector2 screenPos = PointerInput.ScreenPositionOrZero();
@@ -539,24 +561,7 @@ public abstract class Card : MonoBehaviour
             alpha = 0f;
             view.pickingMode = PickingMode.Ignore;
 
-            if (BuiltBySoldier && BuilderSquad.Instance != null && BuilderSquad.Instance.Available)
-            {
-                Vector3 site = UseGrid ? PlacementGrid.CellCenter(dropCell) : worldDropPos;
-                // The marker holds the cell while the soldier walks there, so nothing else drops on it
-                GameObject marker = BuilderSquad.MarkSite(site);
-                if (UseGrid)
-                    PlacementGrid.Occupy(dropCell, marker);
-                BuilderSquad.Instance.Send(site, () =>
-                {
-                    Destroy(marker);
-                    // The card may be gone if the scene is unloading
-                    return this != null ? PlayFlipAndResolve() : 0f;
-                }, CarriesFlag);
-            }
-            else
-            {
-                PlayFlipAndResolve();
-            }
+            PlayFlipAndResolve();
         }
         else
         {
@@ -565,11 +570,6 @@ public abstract class Card : MonoBehaviour
             ReturnToSlot();
         }
     }
-
-    // Cards that put an object on the map send a soldier from the bunker to build it first
-    protected virtual bool BuiltBySoldier => false;
-    // The soldier walks out carrying a flag (the flag bearer) instead of as a plain builder
-    protected virtual bool CarriesFlag => false;
 
     // Plays the flip where the object goes and resolves the card when it ends; returns the flip's length
     float PlayFlipAndResolve()
@@ -594,7 +594,7 @@ public abstract class Card : MonoBehaviour
 
     // Last say before a drop is accepted (e.g. the tower limit); false sends the card back to the hand
     protected virtual bool AllowPlacement() => true;
-    // The drop is accepted; CardBehaviour runs after the flip animation (and the builder's walk)
+    // The drop is accepted; CardBehaviour runs after the flip animation
     protected virtual void OnPlacementAccepted() { }
 
     const float FallbackFlipDuration = 0.46f;

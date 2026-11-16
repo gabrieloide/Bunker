@@ -29,10 +29,10 @@ public class RouteDesignerWindow : EditorWindow
     string statusMessage;
     MessageType statusType = MessageType.None;
 
-    [MenuItem("Bunker/Editor Visual de Rutas")]
+    [MenuItem("Bunker/Visual Route Editor")]
     public static void Open()
     {
-        var win = GetWindow<RouteDesignerWindow>("Editor de Rutas");
+        var win = GetWindow<RouteDesignerWindow>("Route Editor");
         win.minSize = new Vector2(330f, 460f);
         win.Show();
     }
@@ -93,14 +93,14 @@ public class RouteDesignerWindow : EditorWindow
         EnsureValidSelection();
 
         EditorGUILayout.Space(4);
-        EditorGUILayout.LabelField("Editor Visual de Rutas", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Visual Route Editor", EditorStyles.boldLabel);
 
         // Mode toolbar
         EditorGUILayout.BeginHorizontal();
-        DrawModeButton("Editar Puntos", ToolMode.EditPoints);
-        DrawModeButton("Pintar Camino", ToolMode.PaintBrush);
-        DrawModeButton("Dividir en 2", ToolMode.SplitAtFlag);
-        DrawModeButton("Unir Final", ToolMode.MergeTarget);
+        DrawModeButton("Edit Points", ToolMode.EditPoints);
+        DrawModeButton("Paint Path", ToolMode.PaintBrush);
+        DrawModeButton("Split in 2", ToolMode.SplitAtFlag);
+        DrawModeButton("Merge End", ToolMode.MergeTarget);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space(4);
@@ -143,10 +143,10 @@ public class RouteDesignerWindow : EditorWindow
     {
         string help = mode switch
         {
-            ToolMode.EditPoints => "Arrastra banderas para moverlas. Shift + clic agrega al final. Clic en + inserta esquina. Ctrl + clic borra bandera. Clic en otro camino para seleccionarlo.",
-            ToolMode.PaintBrush => "Haz clic y arrastra sobre el mapa en la Scene View para pintar el camino casilla a casilla. Las esquinas en L se crean solas.",
-            ToolMode.SplitAtFlag => "Haz clic sobre cualquier bandera del camino seleccionado en la Scene View para dividirlo en 2 ramas desde ese punto.",
-            ToolMode.MergeTarget => "Haz clic sobre la bandera de otro camino en la Scene View donde quieres volver a unir el final de este tramo.",
+            ToolMode.EditPoints => "Drag flags to move them. Shift + click adds at the end. Click + to insert a corner. Ctrl + click deletes a flag. Click another path to select it.",
+            ToolMode.PaintBrush => "Click and drag on the map in the Scene View to paint the path cell by cell. L corners are created automatically.",
+            ToolMode.SplitAtFlag => "Click any flag on the selected path in the Scene View to split it into 2 branches from that point.",
+            ToolMode.MergeTarget => "Click a flag on another path in the Scene View where you want to rejoin the end of this segment.",
             _ => ""
         };
         EditorGUILayout.HelpBox(help, MessageType.Info);
@@ -154,10 +154,10 @@ public class RouteDesignerWindow : EditorWindow
 
     void DrawSceneSetupActions()
     {
-        EditorGUILayout.LabelField("Frentes y Escena", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Fronts & Scene", EditorStyles.boldLabel);
         using (new EditorGUILayout.HorizontalScope())
         {
-            if (GUILayout.Button("+ Nuevo Camino y Spawner", GUILayout.Height(26)))
+            if (GUILayout.Button("+ New Path & Spawner", GUILayout.Height(26)))
             {
                 Vector3 pos = ScenePivotOrBunkerOffset();
                 var created = RouteAuthoringUtility.CreateNewSpawnerAndRoute(pos);
@@ -165,18 +165,18 @@ public class RouteDesignerWindow : EditorWindow
                 {
                     SelectRoute(created);
                     mode = ToolMode.PaintBrush;
-                    SetStatus($"Creado '{created.name}'. Pinta su recorrido en la Scene View.", MessageType.Info);
+                    SetStatus($"Created '{created.name}'. Paint its path in the Scene View.", MessageType.Info);
                 }
             }
 
-            if (GUILayout.Button("+ Base Enemiga", GUILayout.Height(26), GUILayout.Width(115)))
+            if (GUILayout.Button("+ Enemy Base", GUILayout.Height(26), GUILayout.Width(115)))
             {
                 Vector3 pos = ScenePivotOrBunkerOffset();
                 var createdBase = RouteAuthoringUtility.CreateAdditionalEnemyBase(pos);
                 if (createdBase != null)
                 {
                     Selection.activeGameObject = createdBase.gameObject;
-                    SetStatus($"Base '{createdBase.name}' creada. Muevela al inicio del nuevo camino.", MessageType.Info);
+                    SetStatus($"Base '{createdBase.name}' created. Move it to the start of the new path.", MessageType.Info);
                 }
             }
         }
@@ -184,10 +184,10 @@ public class RouteDesignerWindow : EditorWindow
 
     void DrawActiveRoutePanel()
     {
-        EditorGUILayout.LabelField("Camino Seleccionado", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Selected Path", EditorStyles.boldLabel);
         if (activeRoute == null)
         {
-            EditorGUILayout.HelpBox("No hay ningun camino en la escena. Pulsa '+ Nuevo Camino y Spawner'.", MessageType.Warning);
+            EditorGUILayout.HelpBox("No paths found in the scene. Click '+ New Path & Spawner'.", MessageType.Warning);
             return;
         }
 
@@ -196,7 +196,7 @@ public class RouteDesignerWindow : EditorWindow
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.LabelField(activeRoute.name, EditorStyles.boldLabel);
-                if (GUILayout.Button("Ver en Escena", GUILayout.Width(95)))
+                if (GUILayout.Button("Frame in Scene", GUILayout.Width(105)))
                     FrameRoute(activeRoute);
                 if (GUILayout.Button("Inspector", GUILayout.Width(72)))
                     Selection.activeGameObject = activeRoute.gameObject;
@@ -205,13 +205,13 @@ public class RouteDesignerWindow : EditorWindow
             RouteAuthoringUtility.Measure(activeRoute, out int length, out int blocked);
             var infoStyle = new GUIStyle(EditorStyles.label);
             if (blocked > 0) infoStyle.normal.textColor = RouteAuthoringUtility.BlockedColor;
-            string branchesInfo = activeRoute.Forks ? $"   Se divide en {activeRoute.branches.Length} ramas" : "   Llega al bunker";
-            EditorGUILayout.LabelField($"Longitud: {length} celdas" + (blocked > 0 ? $"   ({blocked} bloqueadas)" : "") + branchesInfo, infoStyle);
+            string branchesInfo = activeRoute.Forks ? $"   Splits into {activeRoute.branches.Length} branches" : "   Reaches the bunker";
+            EditorGUILayout.LabelField($"Length: {length} cells" + (blocked > 0 ? $"   ({blocked} blocked)" : "") + branchesInfo, infoStyle);
 
             if (activeRoute.transform.position != Vector3.zero)
             {
-                EditorGUILayout.HelpBox("Posicion del objeto distinta de (0,0,0).", MessageType.Warning);
-                if (GUILayout.Button("Centrar en (0, 0, 0)"))
+                EditorGUILayout.HelpBox("Object position is not (0, 0, 0).", MessageType.Warning);
+                if (GUILayout.Button("Center at (0, 0, 0)"))
                 {
                     Undo.RecordObject(activeRoute.transform, "Reset route transform");
                     activeRoute.transform.position = Vector3.zero;
@@ -221,7 +221,7 @@ public class RouteDesignerWindow : EditorWindow
             EditorGUILayout.Space(3);
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Re-pintar desde inicio"))
+                if (GUILayout.Button("Repaint from start"))
                 {
                     RouteAuthoringUtility.Edit(activeRoute, "Reset route points", points =>
                     {
@@ -233,10 +233,10 @@ public class RouteDesignerWindow : EditorWindow
                         points.Add(start);
                     });
                     mode = ToolMode.PaintBrush;
-                    SetStatus("Modo pincel activo: arrastra desde el inicio hacia el bunker.", MessageType.Info);
+                    SetStatus("Brush mode active: drag from the start toward the bunker.", MessageType.Info);
                 }
 
-                if (GUILayout.Button("Conectar Spawner / Bunker"))
+                if (GUILayout.Button("Snap Spawner / Bunker"))
                 {
                     RouteAuthoringUtility.Edit(activeRoute, "Snap route ends", points => RouteAuthoringUtility.SnapEnds(activeRoute, points));
                 }
@@ -244,12 +244,12 @@ public class RouteDesignerWindow : EditorWindow
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Invertir sentido"))
+                if (GUILayout.Button("Reverse direction"))
                 {
                     RouteAuthoringUtility.Edit(activeRoute, "Reverse route", points => points.Reverse());
                 }
 
-                if (GUILayout.Button("Dividir en 2 aqui"))
+                if (GUILayout.Button("Split in 2 here"))
                 {
                     int splitIndex = activeRoute.points != null && activeRoute.points.Length > 2
                         ? activeRoute.points.Length / 2
@@ -259,21 +259,21 @@ public class RouteDesignerWindow : EditorWindow
                     {
                         SelectRoute(secondBranch);
                         mode = ToolMode.PaintBrush;
-                        SetStatus($"Camino dividido. Ahora edita o pinta '{secondBranch.name}'.", MessageType.Info);
+                        SetStatus($"Path split. Now edit or paint '{secondBranch.name}'.", MessageType.Info);
                     }
                 }
 
                 Color prev = GUI.backgroundColor;
                 GUI.backgroundColor = new Color(1f, 0.55f, 0.55f, 1f);
-                if (GUILayout.Button("Borrar Ruta", GUILayout.Width(85)))
+                if (GUILayout.Button("Delete Route", GUILayout.Width(90)))
                 {
-                    if (EditorUtility.DisplayDialog("Borrar camino", $"Seguro que quieres borrar '{activeRoute.name}'?", "Borrar", "Cancelar"))
+                    if (EditorUtility.DisplayDialog("Delete path", $"Are you sure you want to delete '{activeRoute.name}'?", "Delete", "Cancel"))
                     {
                         var toDelete = activeRoute;
                         activeRoute = null;
                         RouteAuthoringUtility.DeleteRoute(toDelete);
                         EnsureValidSelection();
-                        SetStatus("Ruta eliminada.", MessageType.Info);
+                        SetStatus("Route deleted.", MessageType.Info);
                         GUI.backgroundColor = prev;
                         return;
                     }
@@ -288,7 +288,7 @@ public class RouteDesignerWindow : EditorWindow
         var allRoutes = FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None);
         var spawners = FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
 
-        EditorGUILayout.LabelField($"Caminos en Escena ({allRoutes.Length})", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField($"Paths in Scene ({allRoutes.Length})", EditorStyles.boldLabel);
 
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.MinHeight(120), GUILayout.MaxHeight(220));
         var drawn = new HashSet<EnemyMovement>();
@@ -333,8 +333,8 @@ public class RouteDesignerWindow : EditorWindow
             EditorGUI.DrawRect(swatch, route.pathColor);
 
             string title = prefix + route.name;
-            if (route.Forks) title += $" (divide en {route.branches.Length})";
-            if (blocked > 0) title += $" [{blocked} bloq]";
+            if (route.Forks) title += $" (splits into {route.branches.Length})";
+            if (blocked > 0) title += $" [{blocked} blocked]";
 
             GUIStyle btnStyle = new GUIStyle(EditorStyles.label);
             btnStyle.fontStyle = selected ? FontStyle.Bold : FontStyle.Normal;
@@ -346,7 +346,7 @@ public class RouteDesignerWindow : EditorWindow
             GUILayout.FlexibleSpace();
             GUILayout.Label($"{length}c", EditorStyles.miniLabel, GUILayout.Width(32));
 
-            if (GUILayout.Button(selected ? "Activo" : "Elegir", GUILayout.Width(54)))
+            if (GUILayout.Button(selected ? "Active" : "Select", GUILayout.Width(54)))
                 SelectRoute(route);
         }
 
@@ -362,11 +362,11 @@ public class RouteDesignerWindow : EditorWindow
 
     void DrawTilemapSection()
     {
-        EditorGUILayout.LabelField("Arte en Tilemap (Opcional)", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Tilemap Art (Optional)", EditorStyles.boldLabel);
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
-            tilemapRoadWidth = EditorGUILayout.IntPopup("Ancho de carretera", tilemapRoadWidth, new[] { "1 celda", "2 celdas (clasico)" }, new[] { 1, 2 });
-            if (GUILayout.Button("Pintar Carretera en Tilemap 'Path'", GUILayout.Height(26)))
+            tilemapRoadWidth = EditorGUILayout.IntPopup("Road width", tilemapRoadWidth, new[] { "1 cell", "2 cells (classic)" }, new[] { 1, 2 });
+            if (GUILayout.Button("Paint Road on 'Path' Tilemap", GUILayout.Height(26)))
             {
                 var allRoutes = FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None);
                 bool ok = RouteAuthoringUtility.PaintRoadTilemap(allRoutes, tilemapRoadWidth, out string msg);
@@ -487,7 +487,7 @@ public class RouteDesignerWindow : EditorWindow
                 }
             }
 
-            string tag = i == 0 ? "INICIO" : (i == points.Length - 1 ? (route.Forks ? "DIVIDE" : "FIN") : i.ToString());
+            string tag = i == 0 ? "START" : (i == points.Length - 1 ? (route.Forks ? "FORK" : "END") : i.ToString());
             Handles.Label(points[i] + new Vector3(0.3f, 0.55f, 0f), tag, EditorStyles.boldLabel);
         }
 
@@ -657,12 +657,12 @@ public class RouteDesignerWindow : EditorWindow
                 {
                     SelectRoute(branch);
                     mode = ToolMode.PaintBrush;
-                    SetStatus($"Bifurcacion creada. Pinta '{branch.name}'.", MessageType.Info);
+                    SetStatus($"Branch created. Paint '{branch.name}'.", MessageType.Info);
                 }
                 e.Use();
                 return;
             }
-            Handles.Label(points[i] + new Vector3(0.3f, 0.65f, 0f), "DIVIDIR", EditorStyles.boldLabel);
+            Handles.Label(points[i] + new Vector3(0.3f, 0.65f, 0f), "SPLIT", EditorStyles.boldLabel);
         }
     }
 
@@ -687,11 +687,11 @@ public class RouteDesignerWindow : EditorWindow
                 {
                     RouteAuthoringUtility.MergeRouteInto(route, other, i);
                     mode = ToolMode.EditPoints;
-                    SetStatus($"'{route.name}' ahora se une con '{other.name}'.", MessageType.Info);
+                    SetStatus($"'{route.name}' now merges into '{other.name}'.", MessageType.Info);
                     e.Use();
                     return;
                 }
-                Handles.Label(other.points[i] + new Vector3(0.3f, 0.65f, 0f), "UNIR AQUI", EditorStyles.boldLabel);
+                Handles.Label(other.points[i] + new Vector3(0.3f, 0.65f, 0f), "MERGE HERE", EditorStyles.boldLabel);
             }
         }
     }

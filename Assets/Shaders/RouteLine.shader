@@ -14,6 +14,8 @@ Shader "Bunker/RouteLine"
         _DashSpacing ("Dash Spacing (pixels)", Float) = 6
         _DashLength ("Dash Length (pixels)", Float) = 3
         _DashHalfWidth ("Dash Half Width (pixels)", Float) = 1
+        _SweepDistance ("Sweep Distance", Float) = 1000000
+        _SweepByKey ("Sweep by UV1.x key (0 = uv.x)", Float) = 0
     }
 
     SubShader
@@ -39,15 +41,18 @@ Shader "Bunker/RouteLine"
             float _DashSpacing;
             float _DashLength;
             float _DashHalfWidth;
+            float _SweepDistance;
+            float _SweepByKey;
 
-            struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; };
-            struct v2f { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; };
+            struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; float2 uv1 : TEXCOORD1; };
+            struct v2f { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; float key : TEXCOORD1; };
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
+                o.key = v.uv1.x;
                 return o;
             }
 
@@ -56,7 +61,9 @@ Shader "Bunker/RouteLine"
                 // Evaluate at art-pixel centres so it reads as pixel art
                 float along = floor(i.uv.x * _PixelsPerUnit) + 0.5;
                 float across = floor(abs(i.uv.y) * _PixelsPerUnit) + 0.5;
-                if (_Dashed > 0.5)
+                float sweepKey = _SweepByKey > 0.5 ? i.key : i.uv.x;
+                bool dashed = (sweepKey <= _SweepDistance) ? (_Dashed > 0.5) : (_Dashed <= 0.5);
+                if (dashed)
                 {
                     clip(_DashHalfWidth - across);
                     clip(_DashLength / _DashSpacing - frac(along / _DashSpacing));

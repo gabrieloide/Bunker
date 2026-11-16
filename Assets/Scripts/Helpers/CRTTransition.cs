@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class CRTTransition : MonoBehaviour
 {
     public static CRTTransition Instance { get; private set; }
+    public static bool IsTransitioning => Instance != null && Instance.isTransitioning;
 
     [Header("Transition Timings")]
     [SerializeField] float outDuration = 0.18f;
@@ -154,6 +155,21 @@ public class CRTTransition : MonoBehaviour
         if (op != null)
         {
             while (!op.isDone) yield return null;
+        }
+
+        if (FindAnyObjectByType<LevelCoreBootstrapper>() != null)
+        {
+            LevelCoreBootstrapper.EnsureCoreManagersLoaded();
+            float waitElapsed = 0f;
+            const float coreWaitTimeout = 2f;
+            while (waitElapsed < coreWaitTimeout)
+            {
+                var coreScene = SceneManager.GetSceneByName(LevelCoreBootstrapper.CoreManagersSceneName);
+                if (coreScene.isLoaded && Camera.main != null)
+                    break;
+                waitElapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
         }
 
         // Wait 1 frame for new scene to awake and camera to initialize

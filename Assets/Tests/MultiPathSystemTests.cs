@@ -98,7 +98,6 @@ namespace Bunker.Tests
 
             em.SetComponentData(simEntity, new WaveConfig
             {
-                StartDelay = 0f,
                 SpawnInterval = 0.5f,
                 InitialEnemyAmount = 4,
                 WavesPerTier = 10,
@@ -199,9 +198,9 @@ namespace Bunker.Tests
             buffTable.Dispose();
         }
 
-        // Preparation phase: nothing spawns while the countdown runs; at zero the wave starts immediately in Spawning phase
+        // Preparation phase: nothing spawns while waiting; only StartRequested starts the wave in Spawning phase
         [Test]
-        public void WaveSystem_Preparation_WaitsForTheCountdownThenStartsSpawning()
+        public void WaveSystem_Preparation_WaitsForStartRequestThenStartsSpawning()
         {
             var waveSystem = world.GetOrCreateSystem<WaveSystem>();
             var ecbSystem = world.GetOrCreateSystem<EndSimulationEntityCommandBufferSystem>();
@@ -210,7 +209,6 @@ namespace Bunker.Tests
 
             em.SetComponentData(simEntity, new WaveConfig
             {
-                StartDelay = 30f,
                 SpawnInterval = 1f,
                 InitialEnemyAmount = 3,
                 WavesPerTier = 10,
@@ -225,7 +223,7 @@ namespace Bunker.Tests
             {
                 Wave = 1,
                 Phase = WavePhase.WaitingToStart,
-                Timer = 30f,
+                Timer = 0f,
                 EnemyAmount = 3,
                 UnlockedTypes = 1,
                 Rng = new Unity.Mathematics.Random(1234)
@@ -235,18 +233,18 @@ namespace Bunker.Tests
             world.SetTime(new Unity.Core.TimeData(1.0, 1f));
             waveSystem.Update(world.Unmanaged);
             ecbSystem.Update(world.Unmanaged);
-            Assert.AreEqual(0, enemies.CalculateEntityCount(), "no enemy during the countdown");
+            Assert.AreEqual(0, enemies.CalculateEntityCount(), "no enemy during preparation");
 
-            // Advance 10 more seconds: timer decreases but still zero enemies
+            // Advance 10 more seconds: still WaitingToStart and zero enemies
             world.SetTime(new Unity.Core.TimeData(11.0, 10f));
             waveSystem.Update(world.Unmanaged);
             ecbSystem.Update(world.Unmanaged);
-            Assert.AreEqual(0, enemies.CalculateEntityCount(), "still zero enemies during countdown");
-            Assert.AreEqual(19f, em.GetComponentData<WaveState>(simEntity).Timer, 0.001f);
+            Assert.AreEqual(0, enemies.CalculateEntityCount(), "still zero enemies during preparation");
+            Assert.AreEqual(WavePhase.WaitingToStart, em.GetComponentData<WaveState>(simEntity).Phase);
 
-            // The player spent every card or countdown reaches zero: the bridge zeroes the timer
+            // Player presses READY: StartRequested starts the wave
             var state = em.GetComponentData<WaveState>(simEntity);
-            state.Timer = 0f;
+            state.StartRequested = true;
             em.SetComponentData(simEntity, state);
             waveSystem.Update(world.Unmanaged);
             ecbSystem.Update(world.Unmanaged);
@@ -254,7 +252,7 @@ namespace Bunker.Tests
             Assert.AreEqual(WavePhase.Spawning, em.GetComponentData<WaveState>(simEntity).Phase, "wave starts immediately");
 
             // On next update during Spawning, enemies spawn
-            world.SetTime(new Unity.Core.TimeData(1.1, 0.1f));
+            world.SetTime(new Unity.Core.TimeData(11.1, 0.1f));
             waveSystem.Update(world.Unmanaged);
             ecbSystem.Update(world.Unmanaged);
             Assert.GreaterOrEqual(enemies.CalculateEntityCount(), 1, "enemies spawn once wave starts");

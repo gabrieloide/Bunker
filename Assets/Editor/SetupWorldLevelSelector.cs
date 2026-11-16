@@ -16,7 +16,7 @@ public static class SetupWorldLevelSelector
         var catalog = AssetDatabase.LoadAssetAtPath<LevelCatalog>("Assets/ScriptableObjects/Levels/LevelCatalog.asset");
         if (catalog == null)
         {
-            Debug.LogError("No se encontro LevelCatalog en Assets/ScriptableObjects/Levels/LevelCatalog.asset");
+            Debug.LogError("LevelCatalog not found at Assets/ScriptableObjects/Levels/LevelCatalog.asset");
             return;
         }
 
@@ -145,7 +145,7 @@ public static class SetupWorldLevelSelector
 
             string lvlTitle = (catalog.levels != null && i < catalog.levels.Count && catalog.levels[i] != null)
                 ? catalog.levels[i].displayName
-                : $"NIVEL {i + 1}";
+                : $"LEVEL {i + 1}";
             tmp.text = lvlTitle.ToUpper();
 
             var rectTransform = textObj.GetComponent<RectTransform>();
@@ -227,7 +227,7 @@ public static class SetupWorldLevelSelector
                 var titleText = titleObj.GetComponent<TextMeshProUGUI>();
                 if (titleText != null)
                 {
-                    titleText.text = "SELECCIONA UN SECTOR";
+                    titleText.text = "SELECT A SECTOR";
                     titleText.fontSize = 32f;
                 }
             }
@@ -266,7 +266,7 @@ public static class SetupWorldLevelSelector
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("World Level Selector actualizado con éxito.");
+        Debug.Log("World Level Selector updated successfully.");
     }
 
     static void CreateStairs(Transform parent, string name, Vector3 pos, Sprite sprite, Vector3 scale)

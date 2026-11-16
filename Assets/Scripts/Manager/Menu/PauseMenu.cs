@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 public class PauseMenu : MonoBehaviour
 {
     public static bool GameIsPaused = false;
-    [SerializeField] string creditsScene = "Credits";
 
     VisualElement pauseMenuUI, panelPauseMain, panelPauseOptions;
 
@@ -68,13 +67,6 @@ public class PauseMenu : MonoBehaviour
             settingsBtn.clicked += OnSettingsClicked;
         }
 
-        var creditsBtn = root.Q<Button>("credits");
-        if (creditsBtn != null)
-        {
-            creditsBtn.clicked -= OnCreditsClicked;
-            creditsBtn.clicked += OnCreditsClicked;
-        }
-
         var quitBtn = root.Q<Button>("quit");
         if (quitBtn != null)
         {
@@ -88,7 +80,6 @@ public class PauseMenu : MonoBehaviour
 
     void OnRestartClicked() => Leave(LevelProgress.Retry);
     void OnSettingsClicked() => ShowOptions(true);
-    void OnCreditsClicked() => Leave(() => CRTTransition.LoadScene(creditsScene));
     void OnQuitClicked() => Leave(LevelProgress.BackToSelector);
 
     void OnDisable()

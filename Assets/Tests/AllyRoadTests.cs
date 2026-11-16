@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Bunker.Simulation;
 using NUnit.Framework;
 using Unity.Collections;
@@ -273,6 +275,127 @@ namespace Bunker.Tests
             Assert.LessOrEqual(transforms[0].Position.y, 4.1f);
             Assert.AreEqual(1, followers[0].Reversing);
             Assert.AreEqual(0, em.GetBuffer<DamageRequest>(enemyBase).Length);
+        }
+
+        [Test]
+        public void BuildLeafPaths_StraightRoad_GivesSingleLeaf()
+        {
+            var bunker = Vector3Int.zero;
+            var roadCells = new HashSet<Vector3Int>
+            {
+                new Vector3Int(1, 0, 0),
+                new Vector3Int(2, 0, 0),
+                new Vector3Int(3, 0, 0)
+            };
+
+            var paths = AllyRoadPlanner.BuildLeafPaths(bunker, roadCells);
+
+            Assert.AreEqual(1, paths.Count);
+            Assert.AreEqual(4, paths[0].Count);
+            Assert.AreEqual(bunker, paths[0][0]);
+            Assert.AreEqual(new Vector3Int(3, 0, 0), paths[0][3]);
+            AssertContiguousFromBunker(bunker, paths[0]);
+        }
+
+        [Test]
+        public void BuildLeafPaths_MidBranch_GivesTwoContiguousLeaves()
+        {
+            var bunker = Vector3Int.zero;
+            var roadCells = new HashSet<Vector3Int>
+            {
+                new Vector3Int(1, 0, 0),
+                new Vector3Int(2, 0, 0),
+                new Vector3Int(3, 0, 0),
+                new Vector3Int(2, 1, 0),
+                new Vector3Int(2, 2, 0)
+            };
+
+            var paths = AllyRoadPlanner.BuildLeafPaths(bunker, roadCells);
+
+            Assert.AreEqual(2, paths.Count);
+            // Distance 4 leaf (2,2,0) comes before distance 3 leaf (3,0,0)
+            Assert.AreEqual(new Vector3Int(2, 2, 0), paths[0][paths[0].Count - 1]);
+            Assert.AreEqual(new Vector3Int(3, 0, 0), paths[1][paths[1].Count - 1]);
+            AssertContiguousFromBunker(bunker, paths[0]);
+            AssertContiguousFromBunker(bunker, paths[1]);
+        }
+
+        [Test]
+        public void IsRoadTerritory_TruthTable()
+        {
+            Assert.IsFalse(AllyRoadPlanner.IsRoadTerritory(false, false));
+            Assert.IsTrue(AllyRoadPlanner.IsRoadTerritory(true, false));
+            Assert.IsTrue(AllyRoadPlanner.IsRoadTerritory(false, true));
+            Assert.IsTrue(AllyRoadPlanner.IsRoadTerritory(true, true));
+        }
+
+        [Test]
+        public void PlanSegment_AcceptsEnemyZoneCell_WhenUsingIsRoadTerritory()
+        {
+            var built = new HashSet<Vector3Int>();
+            var enemyCells = new HashSet<Vector3Int>
+            {
+                new Vector3Int(1, 0, 0),
+                new Vector3Int(2, 0, 0)
+            };
+
+            bool valid = AllyRoadPlanner.TryPlanSegment(
+                Vector3Int.zero,
+                built,
+                new Vector3Int(2, 0, 0),
+                maxCardTiles: 5,
+                remainingLevelTiles: 10,
+                cell => AllyRoadPlanner.IsRoadTerritory(inFlagTerritory: false, inEnemyTerritory: enemyCells.Contains(cell)),
+                out var planned,
+                out _);
+
+            Assert.IsTrue(valid);
+            Assert.AreEqual(2, planned.Count);
+            Assert.AreEqual(new Vector3Int(1, 0, 0), planned[0]);
+            Assert.AreEqual(new Vector3Int(2, 0, 0), planned[1]);
+        }
+
+        [Test]
+        public void AllyRoadOverlay_FreshlyCreatedDuringPreparation_ReportsShowingArrowsFalse()
+        {
+            var simBridgeType = Type.GetType("SimulationBridge, Assembly-CSharp");
+            Assert.IsNotNull(simBridgeType, "SimulationBridge type not found in Assembly-CSharp.");
+            var instanceProp = simBridgeType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            var isPrepProp = simBridgeType.GetProperty("IsPreparationPhase", BindingFlags.Public | BindingFlags.Static);
+            Assert.IsNotNull(instanceProp);
+            Assert.IsNotNull(isPrepProp);
+
+            Assert.IsNull(instanceProp.GetValue(null));
+            Assert.IsTrue((bool)isPrepProp.GetValue(null));
+
+            var overlayType = Type.GetType("AllyRoadOverlay, Assembly-CSharp");
+            Assert.IsNotNull(overlayType, "AllyRoadOverlay type not found in Assembly-CSharp.");
+            var showingArrowsProp = overlayType.GetProperty("ShowingArrows", BindingFlags.Public | BindingFlags.Instance);
+            Assert.IsNotNull(showingArrowsProp);
+
+            var go = new GameObject("TestAllyRoadOverlay");
+            try
+            {
+                var overlay = go.AddComponent(overlayType);
+                Assert.IsFalse((bool)showingArrowsProp.GetValue(overlay));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+            }
+        }
+
+        static void AssertContiguousFromBunker(Vector3Int bunker, List<Vector3Int> path)
+        {
+            Assert.GreaterOrEqual(path.Count, 2);
+            Assert.AreEqual(bunker, path[0]);
+            for (int i = 1; i < path.Count; i++)
+            {
+                int manhattan = Mathf.Abs(path[i].x - path[i - 1].x)
+                              + Mathf.Abs(path[i].y - path[i - 1].y)
+                              + Mathf.Abs(path[i].z - path[i - 1].z);
+                Assert.AreEqual(1, manhattan);
+            }
         }
     }
 }

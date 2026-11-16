@@ -14,5 +14,9 @@
             <ui:Label name="towers" text="TOWERS&#10;0/0" picking-mode="Ignore" class="hud-stat" style="-unity-text-outline-width: 2px; -unity-text-outline-color: rgb(255, 255, 255); -unity-font-style: bold;"/>
             <ui:Label name="wave" text="WAVE&#10;000000" picking-mode="Ignore" enabled="true" class="hud-stat" style="-unity-text-outline-color: rgb(255, 255, 255); text-shadow: 2px 2px 0 rgb(240, 246, 240); -unity-text-outline-width: 2px; text-overflow: clip; transform-origin: center; -unity-font-style: bold;"/>
         </ui:VisualElement>
+        <ui:VisualElement name="hud-banner-layer" class="screen banner-layer" picking-mode="Ignore">
+            <ui:Label name="hud-message" class="hud-message hidden" picking-mode="Ignore"/>
+        </ui:VisualElement>
+        <ui:Button name="ready" text="READY" class="hud-ready hidden" picking-mode="Position"/>
     </ui:VisualElement>
 </ui:UXML>

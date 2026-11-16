@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-// The draw pile, shared by every card type. Drawing takes the oldest card playable in the current
-// phase (towers only in preparation, helicopters only during a wave), so cards for the other phase wait their turn.
+// The draw pile, shared by every card type. All cards are playable only in preparation,
+// so the pile slides out during battle and comes back in preparation.
 // The pile is the "deck" element of UI/Game.uxml; clicking it draws.
 public class CardDrop : MonoBehaviour
 {
@@ -91,7 +91,7 @@ public class CardDrop : MonoBehaviour
             .StartingIn((long)(CountFlashTime * 1000f));
     }
 
-    // Cards a click can draw right now (the other phase's cards wait in the pile uncounted)
+    // Cards a click can draw right now (held back during battle)
     public int PlayableCount
     {
         get
@@ -99,7 +99,7 @@ public class CardDrop : MonoBehaviour
             bool preparation = SimulationBridge.IsPreparationPhase;
             int count = 0;
             foreach (var card in cardsQueue)
-                if (Card.PlayableIn(card, preparation)) count++;
+                if (Card.PlayableIn(card, preparation) && FlagCard.Allows(card)) count++;
             return count;
         }
     }
@@ -109,7 +109,7 @@ public class CardDrop : MonoBehaviour
     int NextPlayableIndex()
     {
         bool preparation = SimulationBridge.IsPreparationPhase;
-        return cardsQueue.FindIndex(c => Card.PlayableIn(c, preparation));
+        return cardsQueue.FindIndex(c => Card.PlayableIn(c, preparation) && FlagCard.Allows(c));
     }
 
     public void EnqueueCard(CardDefinition card)
@@ -124,7 +124,8 @@ public class CardDrop : MonoBehaviour
     public void Deal(CardDefinition card)
     {
         if (card == null) return;
-        if (Deck.instance != null && Deck.instance.HasRoom && Card.PlayableIn(card, SimulationBridge.IsPreparationPhase))
+        // Cards held back by the flag step still go to the hand: they wait there hidden until the flag is planted
+        if (Deck.instance != null && Deck.instance.HasRoomFor(card) && Card.PlayableIn(card, SimulationBridge.IsPreparationPhase))
             Deck.instance.SearchAviableSlots(card);
         else
             EnqueueCard(card);
@@ -132,10 +133,10 @@ public class CardDrop : MonoBehaviour
 
     public void TakeCard()
     {
-        if (Deck.instance != null && Deck.instance.HasRoom)
+        if (Deck.instance != null)
         {
             int index = NextPlayableIndex();
-            if (index >= 0)
+            if (index >= 0 && Deck.instance.HasRoomFor(cardsQueue[index]))
             {
                 // Tomar carta del deck
                 CardDefinition card = cardsQueue[index];

@@ -12,16 +12,41 @@ public class LevelCoreBootstrapper : MonoBehaviour
 {
     public const string CoreManagersSceneName = "CoreManagers";
 
+    static int lastRequestFrame = -1;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        lastRequestFrame = -1;
+    }
+
     void Awake()
     {
         EnsureCoreManagersLoaded();
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
+    }
+
+    void OnSceneUnloaded(Scene s)
+    {
+        if (s.name == CoreManagersSceneName
+            && gameObject.scene == SceneManager.GetActiveScene()
+            && !CRTTransition.IsTransitioning)
+        {
+            EnsureCoreManagersLoaded();
+        }
     }
 
     public static void EnsureCoreManagersLoaded()
     {
         var coreScene = SceneManager.GetSceneByName(CoreManagersSceneName);
-        if (!coreScene.isLoaded)
+        if (!coreScene.isLoaded && lastRequestFrame != Time.frameCount)
         {
+            lastRequestFrame = Time.frameCount;
             SceneManager.LoadScene(CoreManagersSceneName, LoadSceneMode.Additive);
         }
     }

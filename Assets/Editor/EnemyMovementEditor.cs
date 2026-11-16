@@ -16,7 +16,7 @@ public class EnemyMovementEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("Abrir Editor Visual de Rutas (Modo Facil)", GUILayout.Height(30)))
+        if (GUILayout.Button("Open Visual Route Editor (Easy Mode)", GUILayout.Height(30)))
             RouteDesignerWindow.OpenWithRoute(Route);
 
         EditorGUILayout.Space(4);
@@ -24,9 +24,9 @@ public class EnemyMovementEditor : Editor
         if (Route.transform.position != Vector3.zero)
         {
             EditorGUILayout.HelpBox(
-                "Este objeto no esta en (0, 0, 0). Los puntos de la ruta usan coordenadas del mundo.",
+                "This object is not at (0, 0, 0). Route points use world coordinates.",
                 MessageType.Warning);
-            if (GUILayout.Button("Centrar objeto en (0, 0, 0)"))
+            if (GUILayout.Button("Center object at (0, 0, 0)"))
             {
                 Undo.RecordObject(Route.transform, "Reset route transform");
                 Route.transform.position = Vector3.zero;
@@ -34,12 +34,12 @@ public class EnemyMovementEditor : Editor
         }
 
         EditorGUILayout.HelpBox(
-            "Editar ruta en Scene View:\n" +
-            "• Arrastra una bandera para moverla (snap a celda)\n" +
-            "• Shift + clic: agregar bandera al final\n" +
-            "• Clic en + sobre un tramo: insertar bandera\n" +
-            "• Ctrl + clic en una bandera: borrarla\n" +
-            "Los tramos rojos cruzan arboles o limites.", MessageType.Info);
+            "Edit route in Scene View:\n" +
+            "• Drag a flag to move it (snaps to cell)\n" +
+            "• Shift + click: add flag at the end\n" +
+            "• Click + on a segment: insert flag\n" +
+            "• Ctrl + click a flag: delete it\n" +
+            "Red segments cross trees or boundaries.", MessageType.Info);
 
         RouteAuthoringUtility.Measure(Route, out int length, out int blocked);
         var style = new GUIStyle(EditorStyles.boldLabel);

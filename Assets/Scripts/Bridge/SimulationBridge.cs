@@ -11,6 +11,29 @@ public class SimulationBridge : MonoBehaviour
 {
     public static SimulationBridge Instance { get; private set; }
     public static bool IsPreparationPhase => Instance == null || !Instance.ready || SimEventDispatcher.IsPreparationPhase;
+    public static bool IsSimulationReady => Instance != null && Instance.ready;
+    public static bool WaveStartPending => Instance != null && Instance.waveStartPending;
+    public static bool CanRequestWaveStart =>
+        Instance != null
+        && Instance.ready
+        && Instance.em.Exists(Instance.simEntity)
+        && Instance.em.HasComponent<WaveState>(Instance.simEntity)
+        && Instance.em.GetComponentData<WaveState>(Instance.simEntity).Phase == WavePhase.WaitingToStart
+        && FlagTerritory.HasTerritory
+        && !SimEventDispatcher.IsGameOver;
+
+    public static bool RequestWaveStart()
+    {
+        if (!CanRequestWaveStart || Instance.waveStartPending)
+            return false;
+
+        var state = Instance.em.GetComponentData<WaveState>(Instance.simEntity);
+        state.StartRequested = true;
+        Instance.em.SetComponentData(Instance.simEntity, state);
+        Instance.waveStartPending = true;
+        AirSupportQueue.LaunchAll();
+        return true;
+    }
 
     [SerializeField] WaveBalanceConfig balance;
 
@@ -19,11 +42,11 @@ public class SimulationBridge : MonoBehaviour
     EntityQuery needsViewQuery;
     EntityQuery enemyQuery;
     bool ready;
+    bool waveStartPending;
 
     GameObject[] enemyPrefabs;
     ObjectPooling pool;
     TowerPlayer player;
-    LootBag lootBag;
     AllyView[] allyPrefabs = new AllyView[0];
     EnemyBaseView primaryEnemyBase;
     readonly Dictionary<Entity, EnemyBaseView> enemyBaseViews = new Dictionary<Entity, EnemyBaseView>();
@@ -87,7 +110,6 @@ public class SimulationBridge : MonoBehaviour
         var path = spawner != null && spawner.path != null ? spawner.path : FindFirstObjectByType<EnemyMovement>();
         pool = FindFirstObjectByType<ObjectPooling>();
         player = FindFirstObjectByType<TowerPlayer>();
-        lootBag = FindFirstObjectByType<LootBag>();
         var allEnemyBases = FindObjectsByType<EnemyBaseView>(FindObjectsSortMode.None);
         primaryEnemyBase = allEnemyBases.Length > 0 ? allEnemyBases[0] : null;
         var allySpawner = FindFirstObjectByType<AllySpawner>();
@@ -118,7 +140,6 @@ public class SimulationBridge : MonoBehaviour
 
         var config = new WaveConfig
         {
-            StartDelay = balance.startDelay,
             SpawnInterval = balance.spawnInterval,
             InitialEnemyAmount = balance.initialEnemyAmount,
             AmountIncreasePerTier = balance.amountIncreasePerTier,
@@ -152,7 +173,7 @@ public class SimulationBridge : MonoBehaviour
             SpawnedThisWave = 0,
             EnemyAmount = balance.initialEnemyAmount,
             UnlockedTypes = balance.initialUnlockedTypes,
-            Timer = balance.startDelay,
+            Timer = 0f,
             Phase = WavePhase.WaitingToStart,
             Buff = BalanceMath.PickWeighted(ref buffBlob.Value.Weights, ref rng),
             Rng = rng
@@ -289,7 +310,8 @@ public class SimulationBridge : MonoBehaviour
 
     void CreateAllySpawner(AllySpawner spawner)
     {
-        AllyRoadPathEntity = Entity.Null;
+        allyRoadPaths.Clear();
+        nextAllyRoadIndex = 0;
         if (spawner == null || spawner.Allies == null || spawner.Allies.Length == 0) return;
         allyPrefabs = spawner.Allies;
 
@@ -333,44 +355,102 @@ public class SimulationBridge : MonoBehaviour
         AllyRoadOverlay.EnsureExists();
     }
 
-    public Entity AllyRoadPathEntity { get; private set; }
+    readonly List<Entity> allyRoadPaths = new List<Entity>();
+    int nextAllyRoadIndex;
 
-    // Rebuilds the ECS PathPoint buffer for the player-built ally road in reverse order
-    // (far tip -> bunker) so AllySystem walks allies outward from the bunker to the tip.
+    public IReadOnlyList<Entity> AllyRoadPaths => allyRoadPaths;
+    public Entity AllyRoadPathEntity => allyRoadPaths.Count > 0 ? allyRoadPaths[0] : Entity.Null;
+
+    // Rebuilds one ECS PathPoint entity per leaf road in reverse order (far tip -> bunker)
+    // so AllySystem walks allies outward from the bunker to each tip.
     public void SyncAllyRoadPath()
     {
         if (!ready) return;
 
-        var polyline = AllyRoadNetwork.GetMainPolylineWorld();
-        if (polyline.Count < 2) return;
+        var polylines = AllyRoadNetwork.GetLeafPolylinesWorld();
+        int targetIndex = 0;
 
-        if (AllyRoadPathEntity == Entity.Null || !em.Exists(AllyRoadPathEntity))
+        for (int p = 0; p < polylines.Count; p++)
         {
-            AllyRoadPathEntity = em.CreateEntity();
-            em.AddComponent<SimulationTag>(AllyRoadPathEntity);
-            em.AddComponent<AllyRoadTag>(AllyRoadPathEntity);
-            em.AddBuffer<PathPoint>(AllyRoadPathEntity);
+            var polyline = polylines[p];
+            if (polyline.Count < 2) continue;
+
+            Entity roadEntity = Entity.Null;
+            while (targetIndex < allyRoadPaths.Count)
+            {
+                Entity candidate = allyRoadPaths[targetIndex];
+                if (candidate != Entity.Null && em.Exists(candidate))
+                {
+                    roadEntity = candidate;
+                    break;
+                }
+                allyRoadPaths.RemoveAt(targetIndex);
+            }
+
+            if (roadEntity == Entity.Null)
+            {
+                roadEntity = em.CreateEntity();
+                em.AddComponent<SimulationTag>(roadEntity);
+                em.AddComponent<AllyRoadTag>(roadEntity);
+                em.AddBuffer<PathPoint>(roadEntity);
+                allyRoadPaths.Add(roadEntity);
+            }
+
+            var buffer = em.GetBuffer<PathPoint>(roadEntity);
+            buffer.Clear();
+            for (int i = polyline.Count - 1; i >= 0; i--)
+            {
+                Vector3 pt = polyline[i];
+                buffer.Add(new PathPoint { Value = new float3(pt.x, pt.y, 0f), Radius = 0.25f });
+            }
+
+            targetIndex++;
         }
 
-        var buffer = em.GetBuffer<PathPoint>(AllyRoadPathEntity);
-        buffer.Clear();
-        for (int i = polyline.Count - 1; i >= 0; i--)
+        for (int i = allyRoadPaths.Count - 1; i >= targetIndex; i--)
         {
-            Vector3 p = polyline[i];
-            buffer.Add(new PathPoint { Value = new float3(p.x, p.y, 0f), Radius = 0.25f });
+            Entity extra = allyRoadPaths[i];
+            if (extra != Entity.Null && em.Exists(extra))
+                em.DestroyEntity(extra);
+            allyRoadPaths.RemoveAt(i);
         }
+
+        nextAllyRoadIndex = allyRoadPaths.Count > 0 ? nextAllyRoadIndex % allyRoadPaths.Count : 0;
+    }
+
+    public Entity NextAllyRoadPath()
+    {
+        int count = allyRoadPaths.Count;
+        if (count == 0) return Entity.Null;
+
+        for (int i = 0; i < count; i++)
+        {
+            int idx = (nextAllyRoadIndex + i) % count;
+            Entity candidate = allyRoadPaths[idx];
+            if (candidate != Entity.Null && em.Exists(candidate))
+            {
+                nextAllyRoadIndex = (idx + 1) % count;
+                return candidate;
+            }
+        }
+        return Entity.Null;
     }
 
     // An ally card was played: `count` allies leave the bunker on the next simulation step, each a random one of `mix` when it has any
     public void RequestAllies(AllyView prefab, int count, AllyView[] mix, Entity preferredPath = default)
     {
         for (int i = 0; i < count; i++)
-            RequestAlly(mix != null && mix.Length > 0 ? mix[UnityEngine.Random.Range(0, mix.Length)] : prefab, preferredPath);
+        {
+            Entity path = preferredPath == Entity.Null ? NextAllyRoadPath() : preferredPath;
+            RequestAlly(mix != null && mix.Length > 0 ? mix[UnityEngine.Random.Range(0, mix.Length)] : prefab, path);
+        }
     }
 
     public void RequestAlly(AllyView prefab, Entity preferredPath = default)
     {
         if (!ready || !em.Exists(allySpawnerEntity)) return;
+        if (preferredPath == Entity.Null)
+            preferredPath = NextAllyRoadPath();
         if (AllyRoadNetwork.BuiltTileCount == 0 || preferredPath == Entity.Null || !em.Exists(preferredPath) || !em.HasComponent<AllyRoadTag>(preferredPath) || !em.HasBuffer<PathPoint>(preferredPath) || em.GetBuffer<PathPoint>(preferredPath).Length < 2)
             return;
         int index = prefab != null ? System.Array.IndexOf(allyPrefabs, prefab) : -1;
@@ -759,29 +839,9 @@ public class SimulationBridge : MonoBehaviour
             return;
 
         var state = em.GetComponentData<WaveState>(simEntity);
-        // Every card played: start wave now instead of waiting out the countdown
-        if (state.Phase == WavePhase.WaitingToStart && state.SpawnedThisWave == 0 && state.Timer > 0f && AllCardsSpent())
-        {
-            state.Timer = 0f;
-            em.SetComponentData(simEntity, state);
-        }
+        if (state.Phase != WavePhase.WaitingToStart)
+            waveStartPending = false;
         SimEventDispatcher.UpdatePhaseTimer(state.Phase, math.max(0f, state.Timer));
-    }
-
-    static bool AllCardsSpent()
-    {
-        if (GameManager.instance == null || !GameManager.instance.StartingHandDealt || GameManager.instance.onDrag)
-            return false;
-        // The last card may still be on its way with the builder soldier
-        if (Card.PendingResolveCount > 0)
-            return false;
-        if (Deck.instance == null || Deck.instance.Hand == null)
-            return false;
-        if (CardDrop.instance != null && CardDrop.instance.HasPlayableCard)
-            return false;
-        if (Deck.instance.Hand.VisibleCount > 0)
-            return false;
-        return true;
     }
 
     void DrainEvents()
@@ -864,7 +924,6 @@ public class SimulationBridge : MonoBehaviour
                         }
                         deadView.Enemy.OnDied();
                     }
-                    if (lootBag != null) lootBag.InstantiateLoot();
                     break;
 
                 case SimEventKind.ScoreChanged:
@@ -1178,6 +1237,7 @@ public class SimulationBridge : MonoBehaviour
 
     void OnDestroy()
     {
+        AirSupportQueue.Clear();
         PlacementGrid.Clear();
         FlagTerritory.Changed -= OnFlagTerritoryChanged;
         if (Instance == this) Instance = null;

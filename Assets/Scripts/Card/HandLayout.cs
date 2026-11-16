@@ -5,8 +5,8 @@ using UnityEngine.UIElements;
 // The hand is a row of fixed slots filled from the left: the first card always sits in the leftmost
 // slot and each new card goes right next to the last one. When a card is spent the ones to its right
 // slide one slot left. Dragged cards keep their slot until they are spent.
-// Cards that can't be played in the current phase (see Card.PlayableIn) are hidden and take no slot;
-// they come back when the phase changes. The cards are drawn in the "hand" element of UI/Game.uxml.
+// During battle the whole hand container slides off-screen downward; in preparation it slides back up.
+// The cards are drawn in the "hand" element of UI/Game.uxml.
 public class HandLayout : MonoBehaviour
 {
     [Tooltip("Slots in the row; matches Deck.maxCards")]
@@ -15,25 +15,45 @@ public class HandLayout : MonoBehaviour
     [SerializeField] float slotSpacing = 46f;
     [Tooltip("Seconds a card takes to slide to its new slot")]
     [SerializeField] float slideTime = 0.2f;
+    [Tooltip("Seconds the whole hand takes to slide off-screen for battle and back for preparation")]
+    [SerializeField] float phaseSlideTime = 0.3f;
+    [Tooltip("Vertical offset in panel units (y down) when the hand is lowered during battle")]
+    [SerializeField] float loweredOffsetY = 120f;
 
     readonly List<Card> cards = new List<Card>();
     bool? wasPreparation;
+    bool wasFlagStep;
+    Vector2 baseHandTranslate;
+    bool hasBaseTranslate;
+    float currentHandY;
+    int handTweenId = -1;
 
+    public bool Lowered { get; private set; }
     public int Count => cards.Count;
 
-    // Cards shown (and playable) right now
+    // Cards shown in the hand right now
     public int VisibleCount
     {
         get
         {
             int count = 0;
             foreach (var card in cards)
-                if (card != null && card.PlayableNow) count++;
+                if (card != null && card.gameObject.activeSelf) count++;
             return count;
         }
     }
 
     public int IndexOf(Card card) => cards.IndexOf(card);
+
+    public bool HasCard<T>() where T : CardDefinition
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (cards[i] != null && cards[i].definition is T)
+                return true;
+        }
+        return false;
+    }
 
     // Centre of slot `index` (y up); the row is centred on the hand element
     public Vector2 SlotPosition(int index) => new Vector2((index - (slotCount - 1) * 0.5f) * slotSpacing, 0f);
@@ -52,12 +72,74 @@ public class HandLayout : MonoBehaviour
 
     public void HideGhost() => Container?.Q("slot-ghost")?.RemoveFromClassList("slot-ghost--shown");
 
+    // During the flag step only flag cards are shown; the rest wait hidden in their place
+    static bool Shown(Card card) => FlagCard.Allows(card.definition);
+
     void Update()
     {
+        bool flagStep = FlagCard.StepActive;
+        if (flagStep != wasFlagStep)
+        {
+            wasFlagStep = flagStep;
+            Relayout(slideTime);
+        }
+
         bool preparation = SimulationBridge.IsPreparationPhase;
         if (wasPreparation == preparation) return;
+        bool first = !wasPreparation.HasValue;
         wasPreparation = preparation;
-        Relayout(slideTime);
+
+        if (!preparation)
+        {
+            CancelAllDrags();
+            SlideHand(true);
+        }
+        else
+        {
+            if (!first)
+                SlideHand(false);
+            Relayout(slideTime);
+        }
+    }
+
+    void CancelAllDrags()
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (cards[i] != null)
+                cards[i].CancelDrag();
+        }
+    }
+
+    void SlideHand(bool lower)
+    {
+        Lowered = lower;
+        var container = Container;
+        if (container == null) return;
+
+        if (!hasBaseTranslate)
+        {
+            var t = container.resolvedStyle.translate;
+            baseHandTranslate = new Vector2(t.x, t.y);
+            currentHandY = baseHandTranslate.y;
+            hasBaseTranslate = true;
+        }
+
+        float startY = currentHandY;
+        float targetY = lower ? baseHandTranslate.y + loweredOffsetY : baseHandTranslate.y;
+
+        if (handTweenId >= 0)
+            LeanTween.cancel(gameObject, handTweenId);
+
+        handTweenId = LeanTween.value(gameObject, y =>
+        {
+            currentHandY = y;
+            var c = Container;
+            if (c != null)
+                c.style.translate = new Translate(baseHandTranslate.x, y);
+        }, startY, targetY, phaseSlideTime)
+        .setEase(lower ? LeanTweenType.easeInBack : LeanTweenType.easeOutBack)
+        .uniqueId;
     }
 
     public void Add(Card card)
@@ -69,13 +151,17 @@ public class HandLayout : MonoBehaviour
         card.transform.localScale = Vector3.one;
         card.transform.SetSiblingIndex(cards.Count - 1);
         card.SetDrawOrder(cards.Count - 1);
-        if (!card.PlayableNow)
+
+        int slot = 0;
+        for (int i = 0; i < cards.Count - 1; i++)
+            if (cards[i] != null && cards[i].gameObject.activeSelf) slot++;
+        if (slot >= slotCount || !Shown(card))
         {
             card.gameObject.SetActive(false);
             return;
         }
         // The newcomer appears straight in its slot (it plays its own deal-in)
-        card.SetHandHome(SlotPosition(VisibleCount - 1), 0f);
+        card.SetHandHome(SlotPosition(slot), 0f);
     }
 
     public void Remove(Card card)
@@ -97,8 +183,8 @@ public class HandLayout : MonoBehaviour
         for (int i = 0; i < cards.Count; i++)
         {
             var card = cards[i];
-            // More playable cards than slots (they can pile up across a phase change): the extras wait hidden until a slot frees up
-            if (!card.PlayableNow || slot >= slotCount)
+            // More cards than slots, or held back by the flag step: they wait hidden until they can show
+            if (slot >= slotCount || !Shown(card))
             {
                 card.CancelDrag();
                 card.gameObject.SetActive(false);

@@ -10,7 +10,6 @@ public class RoadCard : Card
     bool hasValidPlan;
 
     int MaxTilesPerCard => definition is RoadCardDefinition road ? road.maxTilesPerCard : 5;
-    float BuildTime => definition is RoadCardDefinition road ? road.buildTime : 0.6f;
     float HalfWidth => definition is RoadCardDefinition road ? road.halfWidth : 0.16f;
 
     protected override bool SnapsToGrid => true;
@@ -67,23 +66,7 @@ public class RoadCard : Card
             return;
 
         var cellsToCommit = new List<Vector3Int>(plannedCells);
-        Vector3 buildSite = AllyRoadNetwork.CellToWorld(cellsToCommit[cellsToCommit.Count - 1]);
-
-        if (BuilderSquad.Instance != null && BuilderSquad.Instance.Available)
-        {
-            var marker = BuilderSquad.MarkSite(buildSite);
-            float duration = BuildTime;
-            BuilderSquad.Instance.Send(buildSite, () =>
-            {
-                if (marker != null) Destroy(marker);
-                CommitRoad(cellsToCommit);
-                return duration;
-            });
-        }
-        else
-        {
-            CommitRoad(cellsToCommit);
-        }
+        CommitRoad(cellsToCommit);
     }
 
     void CommitRoad(List<Vector3Int> cellsToCommit)

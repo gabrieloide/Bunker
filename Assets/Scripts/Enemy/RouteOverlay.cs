@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Bunker.Simulation;
 using UnityEngine;
 
-// Shows the player where everybody will walk: the enemy routes (allies walk them too, backwards). While the player plans (preparation,
-// dragging a card) they are chevrons moving towards the bunker with a ring on every enemy flag; during combat a thin still dashed line,
+// Shows the player where everybody will walk: the enemy routes (allies walk them too, backwards). While the player drags a card
+// they are chevrons moving towards the bunker with a ring on every enemy flag; otherwise a thin still dashed line,
 // because both sides walk it and arrows towards the bunker would read as allies going the wrong way.
 public class RouteOverlay : MonoBehaviour
 {
@@ -13,16 +13,22 @@ public class RouteOverlay : MonoBehaviour
     const string SortingLayer = "Background";
     const int SortingOrder = 11;
     const float EnemyHalfWidth = 0.1875f; // 3 art pixels
+    const float sweepDuration = 0.35f;
+    const float SweepCompleteDistance = 1e6f;
 
     // The dark tone of the game's palette, the only one that reads on the light ground
     static readonly Color EnemyColor = new Color32(34, 35, 35, 255);
     static readonly int ColorId = Shader.PropertyToID("_Color");
     static readonly int DashedId = Shader.PropertyToID("_Dashed");
+    static readonly int SweepDistanceId = Shader.PropertyToID("_SweepDistance");
 
     GameObject visuals, rings, flagPrefab;
     MeshRenderer routeRenderer;
     MaterialPropertyBlock routeBlock;
     bool? planning;
+    float maxRouteLength;
+    float sweepElapsed;
+    bool sweeping;
     Material lineMaterial;
     readonly List<Mesh> meshes = new List<Mesh>();
 
@@ -55,6 +61,7 @@ public class RouteOverlay : MonoBehaviour
         var vertices = new List<Vector3>();
         var uvs = new List<Vector2>();
         var triangles = new List<int>();
+        maxRouteLength = 0f;
         foreach (var route in routes)
         {
             var polyline = Polyline(route);
@@ -62,6 +69,11 @@ public class RouteOverlay : MonoBehaviour
             AppendForkLinks(route, polyline, vertices, uvs, triangles);
             AddRings(route, ringMaterial);
         }
+        // Each strip's uv.x starts at 0 (main routes and fork links alike), so the sweep
+        // finishes when it reaches the longest single strip's uv.x rather than their sum.
+        for (int i = 0; i < uvs.Count; i++)
+            if (uvs[i].x > maxRouteLength)
+                maxRouteLength = uvs[i].x;
         Apply(enemyMesh, vertices, uvs, triangles);
     }
 
@@ -149,14 +161,42 @@ public class RouteOverlay : MonoBehaviour
     void Update()
     {
         if (visuals == null || routeRenderer == null) return;
-        bool plan = SimulationBridge.IsPreparationPhase || (GameManager.instance != null && GameManager.instance.onDrag);
-        if (planning == plan) return;
-        planning = plan;
+        bool plan = GameManager.instance != null && GameManager.instance.onDrag;
+        if (planning != plan)
+        {
+            bool isInitial = !planning.HasValue;
+            planning = plan;
 
-        rings.SetActive(plan);
+            rings.SetActive(plan);
+            routeBlock ??= new MaterialPropertyBlock();
+            routeRenderer.GetPropertyBlock(routeBlock);
+            routeBlock.SetFloat(DashedId, plan ? 0f : 1f);
+            if (isInitial)
+            {
+                sweeping = false;
+                routeBlock.SetFloat(SweepDistanceId, SweepCompleteDistance);
+            }
+            else
+            {
+                sweepElapsed = 0f;
+                sweeping = true;
+                routeBlock.SetFloat(SweepDistanceId, 0f);
+            }
+            routeRenderer.SetPropertyBlock(routeBlock);
+            return;
+        }
+
+        if (!sweeping) return;
+
+        sweepElapsed += Time.unscaledDeltaTime;
+        float t = sweepDuration > 0f ? Mathf.Clamp01(sweepElapsed / sweepDuration) : 1f;
+        float distance = t >= 1f ? SweepCompleteDistance : Mathf.Lerp(0f, maxRouteLength, t);
+        if (t >= 1f)
+            sweeping = false;
+
         routeBlock ??= new MaterialPropertyBlock();
         routeRenderer.GetPropertyBlock(routeBlock);
-        routeBlock.SetFloat(DashedId, plan ? 0f : 1f);
+        routeBlock.SetFloat(SweepDistanceId, distance);
         routeRenderer.SetPropertyBlock(routeBlock);
     }
 

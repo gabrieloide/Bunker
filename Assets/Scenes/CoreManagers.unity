@@ -1588,6 +1588,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuilderSquad
   builderPrefab: {fileID: 5267304205897182278, guid: 3b0bef1efeef9154c9f15e39320f9520, type: 3}
   flagBearerPrefab: {fileID: 5267304205897182278, guid: 09dffcb3eeee65940bad2d47181f62f8, type: 3}
+  flagSpeedMultiplier: 1.5
 --- !u!4 &1149688533
 Transform:
   m_ObjectHideFlags: 0
@@ -1886,6 +1887,7 @@ GameObject:
   - component: {fileID: 1391085689}
   - component: {fileID: 1391085691}
   - component: {fileID: 1391085690}
+  - component: {fileID: 1391085692}
   m_Layer: 0
   m_Name: MatchResult
   m_TagString: Untagged
@@ -1947,6 +1949,33 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &1391085692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391085688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22988c6f7da41908995a615e7a8fabe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchEndSequence
+  hitStop: 0.12
+  slowMotion: 0.3
+  cameraTravel: 0.6
+  explosions: 6
+  explosionGap: 0.15
+  enemyGap: 0.08
+  holdBeforePanel: 0.5
+  skipGrace: 0.6
+  defeatStretch: 1.8
+  defeatExplosions: 9
+  defeatLinger: 1.2
+  explosionPrefab: {fileID: 1485747430853927361, guid: ad896c159e6515543b8b6563e5bd7dd9, type: 3}
+  ruinTint: {r: 0.35, g: 0.35, b: 0.35, a: 1}
+  shakeDuration: 0.25
+  shakeIntensity: 0.12
 --- !u!4 &1406238570 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3534583900520346756, guid: 451419a110933c34b9268ac6a337a2e6, type: 3}
@@ -2201,7 +2230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4496d61581f0385469e98e53ced8cb31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  catalog: {fileID: 11400000, guid: de13e7964c8fa1b48af5c8f6e110337c, type: 2}
 --- !u!114 &1673537171
 MonoBehaviour:
   m_ObjectHideFlags: 0

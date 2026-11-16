@@ -4,6 +4,6 @@ public class AirAttackCard : Card
 {
     protected override void CardBehaviour()
     {
-        SimulationBridge.SpawnFromCard(definition, Vector3.zero);
+        AirSupportQueue.Enqueue(definition, DropOrigin);
     }
 }

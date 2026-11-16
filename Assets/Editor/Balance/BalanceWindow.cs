@@ -667,15 +667,10 @@ public class BalanceWindow : EditorWindow
         scroll.AddToClassList("scroll");
         content.Add(scroll);
 
-        var chance = Panel("Drop chance", "Average chance that a kill drops a card. It grows as the bunker loses life, so a struggling player gets more cards. Each kill without a drop raises the next one's chance (pseudo-random), so there are no long droughts.");
-        chance.Add(Bound(new Slider("At full life", 0f, 1f) { showInputField = true }, so, "baseDropChance"));
-        chance.Add(Bound(new Slider("Extra per 10 life lost", 0f, 0.2f) { showInputField = true }, so, "dropChancePerMissingTenLife"));
-        var example = Label("", "panel__hint");
-        example.userData = (Func<string>)(() =>
-            $"→ {catalog.baseDropChance * 100f:0.#}% at full life, {Mathf.Clamp01(catalog.baseDropChance + 5 * catalog.dropChancePerMissingTenLife) * 100f:0.#}% at half life, {Mathf.Clamp01(catalog.baseDropChance + 9 * catalog.dropChancePerMissingTenLife) * 100f:0.#}% at 10 life.");
-        liveCells.Add(example);
-        chance.Add(example);
-        scroll.Add(chance);
+        var support = Panel("Support", "Support cards (allies, buffs, mines, helicopters) dealt at the start and each time a wave is cleared.");
+        support.Add(Bound(new IntegerField("Support at level start"), so, "startingSupport"));
+        support.Add(Bound(new IntegerField("Support per wave cleared"), so, "supportPerWave"));
+        scroll.Add(support);
 
         var limit = Panel("Tower limit", "Towers allowed on the map at once (0 = no limit). A tower card can also cap its own copies with the Max column in Towers / Artillery.");
         limit.Add(Bound(new IntegerField("Max towers on the map"), so, "maxTowers"));

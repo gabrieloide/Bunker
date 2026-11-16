@@ -86,17 +86,11 @@ public class AllyCard : Card
         if (SimulationBridge.Instance != null && definition is AllyCardDefinition card)
         {
             Unity.Entities.Entity preferred = ResolvePreferredRoad();
-            if (preferred == Unity.Entities.Entity.Null) return;
             SimulationBridge.Instance.RequestAllies(card.ally, card.count, card.mix, preferred);
         }
         SoundBank.Play(Sfx.AllyDeploy);
     }
 
-    Unity.Entities.Entity ResolvePreferredRoad()
-    {
-        if (AllyRoadNetwork.BuiltTileCount == 0 || SimulationBridge.Instance == null)
-            return default;
-
-        return SimulationBridge.Instance.AllyRoadPathEntity;
-    }
+    // Returning Null lets SimulationBridge distribute allies round-robin across all road branches.
+    Unity.Entities.Entity ResolvePreferredRoad() => Unity.Entities.Entity.Null;
 }

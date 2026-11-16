@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Every card in the game plus the rules for handing them out. Three pools share the list:
-// kills drop everything but towers and flags (allies, buffs, mines...); towers come only from the
-// random starting hand and the reward for clearing a wave; flags only from that reward.
+// Every card in the game plus the rules for handing them out. Four pools share the list:
+// towers, flags, roads, and support cards (allies, buffs, mines, helicopters).
 // Weights compare within a pool.
 [CreateAssetMenu(fileName = "CardCatalog", menuName = "Bunker/Card Catalog")]
 public class CardCatalog : ScriptableObject
@@ -39,20 +38,20 @@ public class CardCatalog : ScriptableObject
     [Tooltip("Marks the free neighbouring cells the ruins block; empty = blocked but unmarked")]
     public Sprite blockedCellSprite;
 
-    [Header("Kill drops")]
-    [Tooltip("Average chance that a kill drops a card at full bunker life (each kill without a drop raises the next one's chance)")]
-    [Range(0f, 1f)] public float baseDropChance = 0.25f;
-    [Tooltip("Extra drop chance per 10 bunker life missing")]
-    [Range(0f, 0.2f)] public float dropChancePerMissingTenLife = 0.02f;
+    [Header("Support")]
+    [Tooltip("Support cards (allies, buffs, mines, helicopters) dealt when a level starts")]
+    [Min(0)] public int startingSupport = 2;
+    [Tooltip("Support cards dealt each time a wave is cleared")]
+    [Min(0)] public int supportPerWave = 1;
 
     public static bool IsTower(CardDefinition card) => card is TowerCardDefinition;
     public static bool IsFlag(CardDefinition card) => card is FlagCardDefinition;
     public static bool IsRoad(CardDefinition card) => card is RoadCardDefinition;
-    public static bool DropsOnKill(CardDefinition card) => !IsTower(card) && !IsFlag(card) && !IsRoad(card);
+    public static bool IsSupport(CardDefinition card) => !IsTower(card) && !IsFlag(card) && !IsRoad(card);
 
-    // The pool a card is rolled from: towers among towers, flags among flags, roads among roads, the rest among kill drops
+    // The pool a card is rolled from: towers among towers, flags among flags, roads among roads, the rest among support
     public static System.Predicate<CardDefinition> PoolOf(CardDefinition card) =>
-        IsTower(card) ? IsTower : IsFlag(card) ? IsFlag : IsRoad(card) ? IsRoad : DropsOnKill;
+        IsTower(card) ? IsTower : IsFlag(card) ? IsFlag : IsRoad(card) ? IsRoad : IsSupport;
 
     public int TotalWeight(System.Predicate<CardDefinition> pool)
     {

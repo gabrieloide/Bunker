@@ -28,7 +28,7 @@ public class CameraMovement : MonoBehaviour
     {
         focusing = true;
         focusFrom = basePosition;
-        focusTo = new Vector3(Mathf.Clamp(target.x, minX, maxX), Mathf.Clamp(target.y, minY, maxY), basePosition.z);
+        focusTo = new Vector3(target.x, target.y, basePosition.z);
         focusStart = Time.unscaledTime;
         focusDuration = Mathf.Max(0.01f, duration);
     }

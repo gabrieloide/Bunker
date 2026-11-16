@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-// Tear a tower down: during preparation, drag it off the map onto the trash. It leaves ruins for the
+// Tear a tower down: drag it off the map onto the trash. It leaves ruins for the
 // rest of the match (see Ruin), so swapping a tower for a better one is never free.
 // Added by SimulationBridge to every tower it spawns.
 public class TowerDemolition : MonoBehaviour
@@ -31,7 +31,7 @@ public class TowerDemolition : MonoBehaviour
 
     bool CanStartDrag()
     {
-        if (!SimulationBridge.IsPreparationPhase || !PlacementGrid.Available) return false;
+        if (!PlacementGrid.Available) return false;
         if (GameManager.instance == null || GameManager.instance.onDrag) return false;
         if (PointerInput.IsPointerOverUI()) return false;
         // Same pick as tower buffs: the tower's own cell or the one under it (the art stands half a cell up)
@@ -66,7 +66,7 @@ public class TowerDemolition : MonoBehaviour
             GameManager.instance.onDrag = false;
 
         var trash = Trash.Instance;
-        if (demolish && SimulationBridge.IsPreparationPhase && trash != null && trash.IsPointerOver())
+        if (demolish && trash != null && trash.IsPointerOver())
             Demolish();
     }
 

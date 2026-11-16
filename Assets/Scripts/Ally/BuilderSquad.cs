@@ -10,6 +10,8 @@ public class BuilderSquad : MonoBehaviour
     [SerializeField] Builder builderPrefab;
     [Tooltip("Sent instead of the builder to plant a flag; empty = the builder plants it")]
     [SerializeField] Builder flagBearerPrefab;
+    [Tooltip("Flag bearers walk this much faster than builders")]
+    [Min(1f)] [SerializeField] float flagSpeedMultiplier = 1.5f;
 
     void Awake() => Instance = this;
 
@@ -25,7 +27,7 @@ public class BuilderSquad : MonoBehaviour
     {
         var prefab = carriesFlag && flagBearerPrefab != null ? flagBearerPrefab : builderPrefab;
         var builder = Instantiate(prefab, transform.position, Quaternion.identity);
-        builder.Go(transform.position, site, onArrive);
+        builder.Go(transform.position, site, onArrive, carriesFlag ? flagSpeedMultiplier : 1f);
     }
 
     // Placeholder (the same slot marker shown while dragging) that holds the site until the builder arrives

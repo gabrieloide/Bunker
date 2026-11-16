@@ -36,10 +36,10 @@ namespace Bunker.Simulation
             switch (wave.Phase)
             {
                 case WavePhase.WaitingToStart:
-                    // Preparation: no enemy until the countdown ends or the player has spent every card (the bridge zeroes Timer)
-                    wave.Timer -= dt;
-                    if (wave.Timer <= 0f)
+                    // Preparation has no clock: only the READY button starts the wave
+                    if (wave.StartRequested)
                     {
+                        wave.StartRequested = false;
                         StartSpawningPhase(ref wave, in config, events);
                     }
                     break;
@@ -72,7 +72,8 @@ namespace Bunker.Simulation
                         wave.Buff = BalanceMath.PickWeighted(ref config.BuffTable.Value.Weights, ref wave.Rng);
                         wave.Wave++;
                         wave.Phase = WavePhase.WaitingToStart;
-                        wave.Timer = config.StartDelay;
+                        wave.Timer = 0f;
+                        wave.StartRequested = false;
                         wave.SpawnedThisWave = 0;
                         events.Add(new SimEvent { Kind = SimEventKind.WaveChanged, IntValue = wave.Wave, Amount = (int)wave.Buff });
                         events.Add(new SimEvent { Kind = SimEventKind.WavePhaseChanged, IntValue = (int)wave.Phase, Amount = wave.Wave });
